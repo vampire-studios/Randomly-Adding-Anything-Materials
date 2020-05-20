@@ -1,37 +1,34 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "raa_materials",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "RAA: Materials",
+  "description": "This is the material addon for RAA",
   "authors": [
-    "Me!"
+    "Vampire Studios"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://vampirestudios.netlify.com/",
+    "sources": "https://github.com/vampire-studios/Randomly-Adding-Anything-Materials"
   },
 
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "license": "MIT",
+  "icon": "assets/raa_materials/icon.png",
 
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "net.fabricmc.example.ExampleMod"
+    "raa:addon": [
+      "io.github.vampirestudios.raa_materials.RAAMaterials"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "raa_materials.mixins.json"
   ],
 
   "depends": {
     "fabricloader": ">=0.7.4",
     "fabric": "*",
-    "minecraft": "1.15.x"
-  },
-  "suggests": {
-    "flamingo": "*"
+    "raa_core": "*"
   }
 }
