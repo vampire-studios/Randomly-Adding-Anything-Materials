@@ -1,6 +1,6 @@
 package io.github.vampirestudios.raa_materials.api.namegeneration.material;
 
-import io.github.vampirestudios.raa_core.api.namegeneration.NameGenerator;
+import io.github.vampirestudios.raa_core.api.name_generation.NameGenerator;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 
 import java.util.HashMap;

@@ -27,10 +27,10 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "com.github.vampire-studios:Randomly-Adding-Anything-Core:86ac00592c"
+	modImplementation "com.github.vampire-studios:Randomly-Adding-Anything-Core:bdae2c564f"
 
-	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-	// You may need to force-disable transitiveness on them.
+	modImplementation "com.github.oliviathevampire:artifice:55ee991d3b"
+	include ("com.github.oliviathevampire:artifice:55ee991d3b")
 }
 
 processResources {

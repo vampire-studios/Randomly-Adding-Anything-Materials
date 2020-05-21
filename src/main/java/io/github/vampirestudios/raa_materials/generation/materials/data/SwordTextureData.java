@@ -11,7 +11,7 @@ public class SwordTextureData {
     public SwordTextureData(Identifier blade, Identifier handle) {
         this.blade = blade;
         this.handle = handle;
-        this.stick = new Identifier("raa", "item/tools/sword/stick");
+        this.stick = new Identifier("raa_materials", "item/tools/sword/stick");
     }
 
     public Identifier getHandle() {

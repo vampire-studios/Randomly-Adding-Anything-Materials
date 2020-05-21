@@ -1,6 +1,8 @@
 package io.github.vampirestudios.raa_materials.utils;
 
+import io.github.vampirestudios.raa_materials.api.RAARegisteries;
 import io.github.vampirestudios.raa_materials.effects.MaterialEffects;
+import io.github.vampirestudios.raa_materials.world.gen.feature.OreFeatureConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
