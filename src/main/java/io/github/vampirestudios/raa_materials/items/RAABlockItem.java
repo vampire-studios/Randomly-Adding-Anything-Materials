@@ -1,15 +1,15 @@
 package io.github.vampirestudios.raa_materials.items;
 
-import com.ibm.icu.text.MessageFormat;
+import io.github.vampirestudios.raa_core.api.name_generation.GeneratedItemName;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.apache.commons.lang3.text.WordUtils;
 
-public class RAABlockItem extends BlockItem {
+import java.util.Locale;
+
+public class RAABlockItem extends BlockItem implements GeneratedItemName {
     private String name;
     private BlockType blockType;
 
@@ -26,9 +26,8 @@ public class RAABlockItem extends BlockItem {
 
     @Override
     public Text getName(ItemStack itemStack_1) {
-        MessageFormat format = new MessageFormat(new TranslatableText("text.raa.block." + getBlockType().name().toLowerCase()).getString());
         Object[] data = {WordUtils.capitalize(name), WordUtils.uncapitalize(name), WordUtils.uncapitalize(name).charAt(0), WordUtils.uncapitalize(name).charAt(name.length() - 1)};
-        return new LiteralText(format.format(data));
+        return this.generateName("text.raa.block." + getBlockType().name().toLowerCase(Locale.ENGLISH), data);
     }
 
     public BlockType getBlockType() {

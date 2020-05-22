@@ -1,14 +1,12 @@
 package io.github.vampirestudios.raa_materials.items;
 
-import com.ibm.icu.text.MessageFormat;
+import io.github.vampirestudios.raa_core.api.name_generation.GeneratedItemName;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.apache.commons.lang3.text.WordUtils;
 
-public class RAAFoodItem extends Item {
+public class RAAFoodItem extends Item implements GeneratedItemName {
     private String name;
 
     public RAAFoodItem(String name, Settings item$Settings_1) {
@@ -18,9 +16,8 @@ public class RAAFoodItem extends Item {
 
     @Override
     public Text getName(ItemStack itemStack_1) {
-        MessageFormat format = new MessageFormat(new TranslatableText("text.raa.item.food").getString());
         Object[] data = {WordUtils.capitalize(name), WordUtils.uncapitalize(name), WordUtils.uncapitalize(name).charAt(0), WordUtils.uncapitalize(name).charAt(name.length() - 1)};
-        return new LiteralText(format.format(data));
+        return this.generateName("text.raa.item.food", data);
     }
 
 }
