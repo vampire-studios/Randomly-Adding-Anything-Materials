@@ -5,6 +5,7 @@ import io.github.vampirestudios.raa_core.api.client.RAAAddonClient;
 import io.github.vampirestudios.raa_materials.api.enums.OreType;
 import io.github.vampirestudios.raa_materials.api.enums.TextureTypes;
 import io.github.vampirestudios.raa_materials.client.OreBakedModel;
+import io.github.vampirestudios.raa_materials.client.textures.TextureProviders;
 import io.github.vampirestudios.raa_materials.generation.materials.Material;
 import io.github.vampirestudios.raa_materials.generation.materials.data.SwordTextureData;
 import io.github.vampirestudios.raa_materials.generation.materials.data.TextureData;
@@ -32,7 +33,7 @@ import java.util.function.Function;
 
 public class RAAMaterialsClient implements RAAAddonClient {
 
-    private static final Map<Identifier, Map.Entry<Material, RAABlockItem.BlockType>> MATERIAL_ORE_IDENTIFIERS = new HashMap<>();
+    public static final Map<Identifier, Material> MATERIAL_ORE_IDENTIFIERS = new HashMap<>();
 
     @Override
     public String[] shouldLoadAfter() {
@@ -41,12 +42,13 @@ public class RAAMaterialsClient implements RAAAddonClient {
 
     @Override
     public String getId() {
-        return "raa_materials";
+        return RAAMaterials.MOD_ID;
     }
 
     @Override
     @Environment(EnvType.CLIENT)
     public void onClientInitialize() {
+        TextureProviders.init();
         ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEX)
                 .register((spriteAtlasTexture, registry) -> {
                     for (Material material : Materials.MATERIALS) {
@@ -58,25 +60,8 @@ public class RAAMaterialsClient implements RAAAddonClient {
         Artifice.registerAssets(new Identifier(RAAMaterials.MOD_ID, "pack"), clientResourcePackBuilder -> {
             Materials.MATERIALS.forEach(material -> {
                 Identifier bid = material.getId();
-                for (RAABlockItem.BlockType blockType : RAABlockItem.BlockType.values()) {
-                    Identifier id = Utils.appendToPath(bid, blockType.getSuffix());
-                    clientResourcePackBuilder.addBlockState(id, blockStateBuilder -> blockStateBuilder.variant("", variant -> {
-                        variant.model(new Identifier(id.getNamespace(), "block/" + id.getPath()));
-                    }));
-                    clientResourcePackBuilder.addBlockModel(id, modelBuilder -> {
-                        if (blockType == RAABlockItem.BlockType.BLOCK) {
-                            modelBuilder.parent(new Identifier("block/leaves"));
-                        } else {
-                            modelBuilder.parent(new Identifier("block/cube_all"));
-                        }
-                        modelBuilder.texture("all", material.getTexturesInformation().getStorageBlockTexture());
-                    });
-                    clientResourcePackBuilder.addItemModel(id, modelBuilder ->
-                            modelBuilder.parent(new Identifier(id.getNamespace(), "block/" + id.getPath())));
-                    Map<Material, RAABlockItem.BlockType> map = new HashMap<>();
-                    map.put(material, blockType);
-                    MATERIAL_ORE_IDENTIFIERS.put(id, (Map.Entry<Material, RAABlockItem.BlockType>) map.entrySet().toArray()[0]);
-                }
+                TextureProviders.generateJSON(TextureProviders.MATERIAL_BLOCK, material, clientResourcePackBuilder);
+                TextureProviders.generateJSON(TextureProviders.MATERIAL_ORE_BLOCK, material, clientResourcePackBuilder);
                 if (material.getOreInformation().getOreType() == OreType.GEM) {
                     clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_gem"), modelBuilder -> {
                         modelBuilder.parent(new Identifier("item/generated"));
@@ -234,7 +219,6 @@ public class RAAMaterialsClient implements RAAAddonClient {
             }
             Identifier identifier = new Identifier(modelIdentifier.getNamespace(), modelIdentifier.getPath());
             if (!MATERIAL_ORE_IDENTIFIERS.containsKey(identifier)) return null;
-            if (MATERIAL_ORE_IDENTIFIERS.get(identifier).getValue() == RAABlockItem.BlockType.BLOCK) return null;
             return new UnbakedModel() {
                 @Override
                 public Collection<Identifier> getModelDependencies() {
@@ -248,7 +232,7 @@ public class RAAMaterialsClient implements RAAAddonClient {
 
                 @Override
                 public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-                    return new OreBakedModel(MATERIAL_ORE_IDENTIFIERS.get(identifier).getKey());
+                    return new OreBakedModel(MATERIAL_ORE_IDENTIFIERS.get(identifier));
                 }
             };
         });
