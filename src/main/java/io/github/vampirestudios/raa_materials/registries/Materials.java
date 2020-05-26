@@ -3,10 +3,12 @@ package io.github.vampirestudios.raa_materials.registries;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Lifecycle;
+import io.github.vampirestudios.raa_core.RAACore;
 import io.github.vampirestudios.raa_core.api.name_generation.NameGenerator;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.RAARegisteries;
 import io.github.vampirestudios.raa_materials.api.enums.OreType;
+import io.github.vampirestudios.raa_materials.api.namegeneration.MaterialLanguageManager;
 import io.github.vampirestudios.raa_materials.blocks.LayeredOreBlock;
 import io.github.vampirestudios.raa_materials.blocks.RAABlock;
 import io.github.vampirestudios.raa_materials.effects.MaterialEffects;
@@ -42,7 +44,7 @@ public class Materials {
     public static void generate() {
         for (int a = 0; a < RAAMaterials.CONFIG.materialGenAmount; a++) {
             Color RGB = Rands.randColor();
-            NameGenerator nameGenerator = RAAMaterials.CONFIG.namingLanguage.getMaterialNameGenerator();
+            NameGenerator nameGenerator = RAACore.CONFIG.getLanguage().getNameGenerator(MaterialLanguageManager.MATERIAL_NAME);
 
             String name;
             Identifier id;

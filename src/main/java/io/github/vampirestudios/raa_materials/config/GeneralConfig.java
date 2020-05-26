@@ -11,8 +11,6 @@ public class GeneralConfig implements ConfigData {
 
     @Comment("Amount of materials to generate")
     public int materialGenAmount = 40;
-    @Comment("The name the materials should generate in")
-    public LangEnum namingLanguage = LangEnum.ENGLISH;
     @Comment("Should metal materials have their own buckets?")
     public boolean materialBuckets = true;
 

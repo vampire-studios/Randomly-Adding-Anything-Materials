@@ -3,9 +3,11 @@ package io.github.vampirestudios.raa_materials.config;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.vampirestudios.raa_core.RAACore;
 import io.github.vampirestudios.raa_core.helpers.GsonHelper;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.enums.OreType;
+import io.github.vampirestudios.raa_materials.api.namegeneration.MaterialLanguageManager;
 import io.github.vampirestudios.raa_materials.generation.materials.Material;
 import io.github.vampirestudios.raa_materials.generation.materials.data.CustomArmorMaterial;
 import io.github.vampirestudios.raa_materials.registries.Materials;
@@ -59,7 +61,7 @@ public class MaterialsConfig extends RAADataConfig {
             case 1:
                 iterateArrayObjects(materialsArray, material -> {
                     if (!material.has("id") || !JsonHelper.isString(material.get("id"))) {
-                        material.addProperty("id", RAAMaterials.MOD_ID + ":" + RAAMaterials.CONFIG.namingLanguage.getMaterialNameGenerator().asId(JsonHelper.getString(material, "name")));
+                        material.addProperty("id", RAAMaterials.MOD_ID + ":" + RAACore.CONFIG.getLanguage().getNameGenerator(MaterialLanguageManager.MATERIAL_NAME).asId(JsonHelper.getString(material, "name")));
                     }
 
                     if (!material.has("miningLevel"))

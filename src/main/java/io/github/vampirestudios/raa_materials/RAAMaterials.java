@@ -3,6 +3,7 @@ package io.github.vampirestudios.raa_materials;
 import io.github.vampirestudios.raa_core.api.RAAAddon;
 import io.github.vampirestudios.raa_materials.api.RAARegisteries;
 import io.github.vampirestudios.raa_materials.api.RAAWorldAPI;
+import io.github.vampirestudios.raa_materials.api.namegeneration.MaterialLanguageManager;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
 import io.github.vampirestudios.raa_materials.config.MaterialsConfig;
 import io.github.vampirestudios.raa_materials.config.OreTargetConfig;
@@ -47,6 +48,7 @@ public class RAAMaterials implements RAAAddon {
 
     @Override
     public void onInitialize() {
+        MaterialLanguageManager.init();
         AutoConfig.register(GeneralConfig.class, GsonConfigSerializer::new);
         CONFIG = AutoConfig.getConfigHolder(GeneralConfig.class).getConfig();
         Textures.init();
