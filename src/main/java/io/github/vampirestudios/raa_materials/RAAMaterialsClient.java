@@ -2,16 +2,11 @@ package io.github.vampirestudios.raa_materials;
 
 import com.swordglowsblue.artifice.api.Artifice;
 import io.github.vampirestudios.raa_core.api.client.RAAAddonClient;
-import io.github.vampirestudios.raa_materials.api.enums.OreType;
-import io.github.vampirestudios.raa_materials.api.enums.TextureTypes;
 import io.github.vampirestudios.raa_materials.client.OreBakedModel;
-import io.github.vampirestudios.raa_materials.client.textures.TextureProviders;
+import io.github.vampirestudios.raa_materials.client.textures.MaterialTextureProviders;
 import io.github.vampirestudios.raa_materials.generation.materials.Material;
 import io.github.vampirestudios.raa_materials.generation.materials.data.SwordTextureData;
-import io.github.vampirestudios.raa_materials.generation.materials.data.TextureData;
-import io.github.vampirestudios.raa_materials.items.RAABlockItem;
 import io.github.vampirestudios.raa_materials.registries.Materials;
-import io.github.vampirestudios.vampirelib.utils.Rands;
 import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -48,7 +43,7 @@ public class RAAMaterialsClient implements RAAAddonClient {
     @Override
     @Environment(EnvType.CLIENT)
     public void onClientInitialize() {
-        TextureProviders.init();
+        MaterialTextureProviders.init();
         ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEX)
                 .register((spriteAtlasTexture, registry) -> {
                     for (Material material : Materials.MATERIALS) {
@@ -59,96 +54,16 @@ public class RAAMaterialsClient implements RAAAddonClient {
 
         Artifice.registerAssets(new Identifier(RAAMaterials.MOD_ID, "pack"), clientResourcePackBuilder -> {
             Materials.MATERIALS.forEach(material -> {
-                Identifier bid = material.getId();
-                TextureProviders.generateJSON(TextureProviders.MATERIAL_BLOCK, material, clientResourcePackBuilder);
-                TextureProviders.generateJSON(TextureProviders.MATERIAL_ORE_BLOCK, material, clientResourcePackBuilder);
-                if (material.getOreInformation().getOreType() == OreType.GEM) {
-                    clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_gem"), modelBuilder -> {
-                        modelBuilder.parent(new Identifier("item/generated"));
-                        modelBuilder.texture("layer0", material.getTexturesInformation().getResourceItemTexture());
-                    });
-                }
-                if (material.getOreInformation().getOreType() == OreType.METAL) {
-                    clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_ingot"), modelBuilder -> {
-                        modelBuilder.parent(new Identifier("item/generated"));
-                        modelBuilder.texture("layer0", material.getTexturesInformation().getResourceItemTexture());
-                    });
-                    clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_nugget"), modelBuilder -> {
-                        modelBuilder.parent(new Identifier("item/generated"));
-                        modelBuilder.texture("layer0", material.getTexturesInformation().getNuggetTexture());
-                    });
-                }
-                if (material.getOreInformation().getOreType() == OreType.CRYSTAL) {
-                    clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_crystal"), modelBuilder -> {
-                        modelBuilder.parent(new Identifier("item/generated"));
-                        modelBuilder.texture("layer0", material.getTexturesInformation().getResourceItemTexture());
-                    });
-                }
-                clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_helmet"), modelBuilder -> {
-                    modelBuilder.parent(new Identifier("item/generated"));
-                    modelBuilder.texture("layer0", material.getTexturesInformation().getHelmetTexture());
-                });
-                clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_chestplate"), modelBuilder -> {
-                    modelBuilder.parent(new Identifier("item/generated"));
-                    modelBuilder.texture("layer0", material.getTexturesInformation().getChestplateTexture());
-                });
-                clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_leggings"), modelBuilder -> {
-                    modelBuilder.parent(new Identifier("item/generated"));
-                    modelBuilder.texture("layer0", material.getTexturesInformation().getLeggingsTexture());
-                });
-                clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_boots"), modelBuilder -> {
-                    modelBuilder.parent(new Identifier("item/generated"));
-                    modelBuilder.texture("layer0", material.getTexturesInformation().getBootsTexture());
-                });
-                clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_axe"), modelBuilder -> {
-                    modelBuilder.parent(new Identifier("item/handheld"));
-                    TextureData entry = material.getTexturesInformation().getAxeTexture();
-                    modelBuilder.texture("layer0", entry.getStick());
-                    modelBuilder.texture("layer1", entry.getHead());
-                });
-                clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_shovel"), modelBuilder -> {
-                    modelBuilder.parent(new Identifier("item/handheld"));
-                    TextureData entry = material.getTexturesInformation().getShovelTexture();
-                    modelBuilder.texture("layer0", entry.getStick());
-                    modelBuilder.texture("layer1", entry.getHead());
-                });
-                clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_pickaxe"), modelBuilder -> {
-                    modelBuilder.parent(new Identifier("item/handheld"));
-                    TextureData entry = material.getTexturesInformation().getPickaxeTexture();
-                    modelBuilder.texture("layer0", entry.getStick());
-                    modelBuilder.texture("layer1", entry.getHead());
-                });
-                clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_sword"), modelBuilder -> {
-                    modelBuilder.parent(new Identifier("item/handheld"));
-                    SwordTextureData entry = material.getTexturesInformation().getSwordTexture();
-                    modelBuilder.texture("layer0", entry.getStick());
-                    modelBuilder.texture("layer1", entry.getBlade());
-                    modelBuilder.texture("layer2", entry.getHandle());
-                });
-                clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_hoe"), modelBuilder -> {
-                    modelBuilder.parent(new Identifier("item/handheld"));
-                    TextureData entry = material.getTexturesInformation().getHoeTexture();
-                    modelBuilder.texture("layer0", entry.getStick());
-                    modelBuilder.texture("layer1", entry.getHead());
-                });
-                clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_shears"), modelBuilder -> {
-                    modelBuilder.parent(new Identifier("item/generated"));
-                    modelBuilder.texture("layer1", new Identifier(RAAMaterials.MOD_ID, "item/tools/shears_base"));
-                    modelBuilder.texture("layer0", new Identifier(RAAMaterials.MOD_ID, "item/tools/shears_metal"));
-                });
+                MaterialTextureProviders.generateJSON(MaterialTextureProviders.MATERIAL_BLOCKS, material, clientResourcePackBuilder);
+                MaterialTextureProviders.generateJSON(MaterialTextureProviders.MATERIAL_ITEMS, material, clientResourcePackBuilder);
 
-                clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_horse_armor"), modelBuilder -> {
-                    modelBuilder.parent(new Identifier("item/generated"));
-                    modelBuilder.texture("layer0", new Identifier(RAAMaterials.MOD_ID, "item/armor/horse_armor_base"));
-                    modelBuilder.texture("layer1", Rands.list(TextureTypes.HORSE_ARMOR_SADDLE_TEXTURES));
-                });
+                if (material.hasArmor()) MaterialTextureProviders.generateJSON(MaterialTextureProviders.MATERIAL_ARMORS, material, clientResourcePackBuilder);
 
-                if (material.hasFood()) {
-                    clientResourcePackBuilder.addItemModel(Utils.appendToPath(bid, "_fruit"), modelBuilder -> {
-                        modelBuilder.parent(new Identifier("item/generated"));
-                        modelBuilder.texture("layer0", material.getTexturesInformation().getFruitTexture());
-                    });
-                }
+                if (material.hasTools()) MaterialTextureProviders.generateJSON(MaterialTextureProviders.MATERIAL_TOOLS, material, clientResourcePackBuilder);
+
+                if (material.hasWeapons()) MaterialTextureProviders.generateJSON(MaterialTextureProviders.MATERIAL_WEAPONS, material, clientResourcePackBuilder);
+
+
             });
         });
 

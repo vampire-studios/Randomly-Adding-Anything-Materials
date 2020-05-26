@@ -141,7 +141,7 @@ public class Textures {
     }
 
     private static void addTextureToList(List<Identifier> textures, String name) {
-        textures.add(new Identifier(RAAMaterials.MOD_ID, name));
+        addTextureToList(textures, new Identifier(RAAMaterials.MOD_ID, name));
     }
 
     private static void addTextureToList(List<Identifier> textures, Identifier name) {
