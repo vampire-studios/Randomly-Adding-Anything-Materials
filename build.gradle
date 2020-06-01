@@ -27,7 +27,7 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "com.github.vampire-studios:Randomly-Adding-Anything-Core:c9afd44525"
+	modImplementation "com.github.vampire-studios:Randomly-Adding-Anything-Core:${project.core_version}"
 }
 
 processResources {
