@@ -7,6 +7,7 @@ import io.github.vampirestudios.raa_materials.api.namegeneration.MaterialLanguag
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
 import io.github.vampirestudios.raa_materials.config.MaterialsConfig;
 import io.github.vampirestudios.raa_materials.config.OreTargetConfig;
+import io.github.vampirestudios.raa_materials.generation.materials.MaterialRecipes;
 import io.github.vampirestudios.raa_materials.generation.targets.OreTargetGenerator;
 import io.github.vampirestudios.raa_materials.registries.CustomTargets;
 import io.github.vampirestudios.raa_materials.registries.Materials;
@@ -63,9 +64,9 @@ public class RAAMaterials implements RAAAddon {
             ORE_TARGET_CONFIG.load();
         }
 
-        for (OreFeatureConfig.Target target : RAARegisteries.TARGET_REGISTRY) {
-            System.out.println(target.getId().toString());
-        }
+//        for (OreFeatureConfig.Target target : RAARegisteries.TARGET_REGISTRY) {
+//            System.out.println(target.getId().toString());
+//        }
 
         MATERIALS_CONFIG = new MaterialsConfig("materials/material_config");
         if (CONFIG.materialGenAmount > 0) {
@@ -77,6 +78,8 @@ public class RAAMaterials implements RAAAddon {
             }
         }
         Materials.createMaterialResources();
+
+        MaterialRecipes.init();
 
         Registry.BIOME.forEach(biome -> RAARegisteries.TARGET_REGISTRY.forEach(target -> RAAWorldAPI.generateOresForTarget(biome, target)));
     }
