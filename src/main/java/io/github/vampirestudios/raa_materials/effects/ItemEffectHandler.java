@@ -1,8 +1,10 @@
 package io.github.vampirestudios.raa_materials.effects;
 
 import com.google.gson.JsonElement;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.projectile.FireballEntity;
@@ -15,7 +17,7 @@ public class ItemEffectHandler {
     public static void spawnLightning(World world, LivingEntity target, LivingEntity attacker, JsonElement config) {
         if (world.getRandom().nextInt(config.getAsJsonObject().get("chance").getAsInt()) == 0) {
             if (!world.isClient()) {
-                world.spawnEntity(new LightningEntity(world, target.getBlockPos().getX(), target.getBlockPos().getZ(), target.getBlockPos().getZ(), true));
+                world.spawnEntity(EntityType.LIGHTNING_BOLT.create(world, null, null, null, target.getBlockPos(), SpawnReason.TRIGGERED, true, false));
             }
         }
     }
