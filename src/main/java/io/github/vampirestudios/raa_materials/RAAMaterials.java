@@ -7,6 +7,7 @@ import io.github.vampirestudios.raa_materials.api.namegeneration.MaterialLanguag
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
 import io.github.vampirestudios.raa_materials.config.MaterialsConfig;
 import io.github.vampirestudios.raa_materials.config.OreTargetConfig;
+import io.github.vampirestudios.raa_materials.data.MaterialDataProviders;
 import io.github.vampirestudios.raa_materials.generation.materials.MaterialRecipes;
 import io.github.vampirestudios.raa_materials.generation.targets.OreTargetGenerator;
 import io.github.vampirestudios.raa_materials.registries.CustomTargets;
@@ -49,6 +50,7 @@ public class RAAMaterials implements RAAAddon {
 
     @Override
     public void onInitialize() {
+        MaterialDataProviders.init();
         MaterialLanguageManager.init();
         AutoConfig.register(GeneralConfig.class, GsonConfigSerializer::new);
         CONFIG = AutoConfig.getConfigHolder(GeneralConfig.class).getConfig();
