@@ -11,10 +11,13 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-//	maven { url = "https://jitpack.io"}
+	maven { url = "https://jitpack.io"}
 	maven {
 		name = "Cotton"
 		url = "https://server.bbkr.space/artifactory/libs-release"
+	}
+	maven {
+		url = "https://dl.bintray.com/vampirestudios/Minecraft-Libs"
 	}
 }
 
@@ -27,7 +30,7 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "io.github.vampirestudios:raa-core:0.1.0"
+	modImplementation "io.github.vampirestudios:raa-core:0.1.1"
 }
 
 processResources {
