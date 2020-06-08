@@ -28,7 +28,7 @@ public class RAAShovelItem extends ShovelItem {
 
     @Override
     public Text getName(ItemStack itemStack_1) {
-        MessageFormat format = new MessageFormat(new TranslatableText("text.raa.item.shovel").getString());
+        MessageFormat format = new MessageFormat(new TranslatableText("text.raa_materials.item.shovel").getString());
         Object[] data = {WordUtils.capitalize(material.getName()), WordUtils.uncapitalize(material.getName()),
                 WordUtils.uncapitalize(material.getName()).charAt(0), WordUtils.uncapitalize(material.getName()).charAt(material.getName().length() - 1)};
         return new LiteralText(format.format(data));

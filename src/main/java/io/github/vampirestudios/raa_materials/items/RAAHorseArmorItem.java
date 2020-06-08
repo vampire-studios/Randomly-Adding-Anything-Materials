@@ -27,7 +27,7 @@ public class RAAHorseArmorItem extends DyeableHorseArmorItem implements Generate
     public Text getName(ItemStack itemStack_1) {
         Object[] data = {WordUtils.capitalize(material.getName()), WordUtils.uncapitalize(material.getName()),
                 WordUtils.uncapitalize(material.getName()).charAt(0), WordUtils.uncapitalize(material.getName()).charAt(material.getName().length() - 1)};
-        return this.generateName("text.raa.item.horse_armor", data);
+        return this.generateName("text.raa_materials.item.horse_armor", data);
     }
 
     @Override

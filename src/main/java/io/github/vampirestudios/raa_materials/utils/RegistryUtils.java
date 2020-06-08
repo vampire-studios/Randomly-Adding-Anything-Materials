@@ -29,7 +29,6 @@ import io.github.vampirestudios.raa_materials.items.RAABlockItem;
 import io.github.vampirestudios.raa_materials.items.RAABlockItemAlt;
 import io.github.vampirestudios.raa_materials.world.gen.feature.OreFeatureConfig;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -42,8 +41,6 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-
-import java.util.function.Predicate;
 
 public class RegistryUtils {
 

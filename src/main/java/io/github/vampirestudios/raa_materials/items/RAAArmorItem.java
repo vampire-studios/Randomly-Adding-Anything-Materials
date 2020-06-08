@@ -28,7 +28,7 @@ public class RAAArmorItem extends DyeableArmorItem implements GeneratedItemName 
     public Text getName(ItemStack itemStack_1) {
         Object[] data = {WordUtils.capitalize(material.getName()),
                 WordUtils.uncapitalize(material.getName()), WordUtils.uncapitalize(material.getName()).charAt(0), WordUtils.uncapitalize(material.getName()).charAt(material.getName().length() - 1)};
-        return this.generateName("text.raa.item.armor_" + this.equipmentSlot_1.getName(), data);
+        return this.generateName("text.raa_materials.item.armor_" + this.equipmentSlot_1.getName(), data);
     }
 
 }

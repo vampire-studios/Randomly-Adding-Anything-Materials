@@ -20,7 +20,7 @@ public class RAAShearItem extends ShearsItem implements GeneratedItemName {
     public Text getName(ItemStack itemStack_1) {
         Object[] data = {WordUtils.capitalize(material.getName()), WordUtils.uncapitalize(material.getName()),
                 WordUtils.uncapitalize(material.getName()).charAt(0), WordUtils.uncapitalize(material.getName()).charAt(material.getName().length() - 1)};
-        return this.generateName("text.raa.item.shears", data);
+        return this.generateName("text.raa_materials.item.shears", data);
     }
 
 }
