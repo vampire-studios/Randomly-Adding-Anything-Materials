@@ -23,7 +23,7 @@ public class OreFeatureConfig implements FeatureConfig {
     public static final Codec<OreFeatureConfig> CODEC = RecordCodecBuilder.create((instance) -> {
         return instance.group(Target.CODEC.fieldOf("target").forGetter((oreFeatureConfig) -> {
             return oreFeatureConfig.target;
-        }), BlockState.field_24734.fieldOf("state").forGetter((oreFeatureConfig) -> {
+        }), BlockState.CODEC.fieldOf("state").forGetter((oreFeatureConfig) -> {
             return oreFeatureConfig.state;
         }), Codec.INT.fieldOf("size").withDefault(0).forGetter((oreFeatureConfig) -> {
             return oreFeatureConfig.size;
