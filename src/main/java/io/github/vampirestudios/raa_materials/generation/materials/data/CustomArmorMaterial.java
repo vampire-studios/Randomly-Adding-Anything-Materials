@@ -85,10 +85,10 @@ public class CustomArmorMaterial implements ArmorMaterial {
         return this.toughness;
     }
 
-    @Override
-    public float getKnockbackResistance() {
-        return this.knockbackResistance;
-    }
+//    @Override
+//    public float getKnockbackResistance() {
+//        return this.knockbackResistance;
+//    }
 
     public int getHorseArmorBonus() {
         return horseArmorBonus;

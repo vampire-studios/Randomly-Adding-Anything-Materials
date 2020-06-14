@@ -68,8 +68,8 @@ public class CustomToolMaterial implements ToolMaterial {
     }
 
     @Override
-    public float getMiningSpeedMultiplier() {
-        return miningSpeed;
+    public float getMiningSpeed() {
+        return this.miningSpeed;
     }
 
     @Deprecated

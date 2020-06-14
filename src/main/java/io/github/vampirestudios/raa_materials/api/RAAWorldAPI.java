@@ -22,7 +22,7 @@ public class RAAWorldAPI {
         Materials.MATERIALS.forEach(material -> {
             if (Registry.BLOCK.get(material.getOreInformation().getTargetId()) == target.getBlock()) {
                 biome.addFeature(GenerationStep.Feature.UNDERGROUND_ORES,
-                        new OreFeature(OreFeatureConfig.CODEC).configure(new OreFeatureConfig(target,
+                        new OreFeature(OreFeatureConfig::deserialize).configure(new OreFeatureConfig(target,
                                 Registry.BLOCK.get(Utils.appendToPath(material.getId(), "_ore")).getDefaultState(), material.getOreInformation().getOreClusterSize()))
                                 .createDecoratedFeature(Decorator.COUNT_RANGE.configure(new SimpleRangeDecoratorConfig(material.getOreInformation().getOreCount(),
                                         0, 256))));

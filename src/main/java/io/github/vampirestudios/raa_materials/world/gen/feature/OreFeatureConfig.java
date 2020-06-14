@@ -1,10 +1,12 @@
 package io.github.vampirestudios.raa_materials.world.gen.feature;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.google.common.collect.ImmutableMap;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.DynamicOps;
 import io.github.vampirestudios.raa_materials.api.RAARegisteries;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.predicate.block.BlockPredicate;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
@@ -20,16 +22,6 @@ import java.util.stream.Collectors;
 
 public class OreFeatureConfig implements FeatureConfig {
 
-    public static final Codec<OreFeatureConfig> CODEC = RecordCodecBuilder.create((instance) -> {
-        return instance.group(Target.CODEC.fieldOf("target").forGetter((oreFeatureConfig) -> {
-            return oreFeatureConfig.target;
-        }), BlockState.CODEC.fieldOf("state").forGetter((oreFeatureConfig) -> {
-            return oreFeatureConfig.state;
-        }), Codec.INT.fieldOf("size").withDefault(0).forGetter((oreFeatureConfig) -> {
-            return oreFeatureConfig.size;
-        })).apply(instance, OreFeatureConfig::new);
-    });
-
     public final OreFeatureConfig.Target target;
     public final int size;
     public final BlockState state;
@@ -40,20 +32,23 @@ public class OreFeatureConfig implements FeatureConfig {
         this.target = target;
     }
 
+    @Override
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic(ops, ops.createMap(ImmutableMap.of(ops.createString("size"), ops.createInt(this.size), ops.createString("target"), ops.createString(this.target.getId().toString()), ops.createString("state"), BlockState.serialize(ops, this.state).getValue())));
+    }
+
+    public static OreFeatureConfig deserialize(Dynamic<?> dynamic) {
+        int i = dynamic.get("size").asInt(0);
+        Target target = Target.byName(dynamic.get("target").asString(""));
+        BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
+        return new OreFeatureConfig(target, blockState, i);
+    }
+
     public static class Target {
         private final Identifier name;
         private final Identifier predicate;
         private final Identifier block;
 
-        public static final Codec<OreFeatureConfig.Target> CODEC = RecordCodecBuilder.create((targetInstance) -> {
-            return targetInstance.group(Identifier.CODEC.fieldOf("name").forGetter(target -> {
-                return target.name;
-            }), Identifier.CODEC.fieldOf("predicate").forGetter(target -> {
-                return target.predicate;
-            }), Identifier.CODEC.fieldOf("block").forGetter(target -> {
-                return target.block;
-            })).apply(targetInstance, Target::new);
-        });
 //        private static final Map<String, OreFeatureConfig.Target> nameMap = (Map) Arrays.stream(values()).collect(Collectors.toMap(net.minecraft.world.gen.feature.OreFeatureConfig.Target::getName, (target) -> {
 //            return target;
 //        }));

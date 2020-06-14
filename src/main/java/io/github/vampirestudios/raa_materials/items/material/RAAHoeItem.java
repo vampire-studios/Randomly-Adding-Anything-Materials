@@ -21,8 +21,8 @@ public class RAAHoeItem extends HoeItem {
 
     private Material material;
 
-    public RAAHoeItem(Material material, ToolMaterial toolMaterial, float attackDamage, float attackSpeed, Settings settings) {
-        super(toolMaterial, (int) attackDamage, attackSpeed, settings);
+    public RAAHoeItem(Material material, ToolMaterial toolMaterial, float attackSpeed, Settings settings) {
+        super(toolMaterial, attackSpeed, settings);
         this.material = material;
     }
 

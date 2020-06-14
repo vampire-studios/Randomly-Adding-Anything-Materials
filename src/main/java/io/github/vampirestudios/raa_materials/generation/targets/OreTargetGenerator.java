@@ -2,17 +2,15 @@ package io.github.vampirestudios.raa_materials.generation.targets;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Lifecycle;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.WeightedList;
+import net.minecraft.util.WeightedList;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 
 import java.util.*;
 
 public class OreTargetGenerator {
-    private static final SimpleRegistry<OreTargetData> SURFACE_BUILDERS = new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier("vampirelib:modules")), Lifecycle.stable());
+    private static final SimpleRegistry<OreTargetData> ORE_TARGET_REGISTRY = Registry.register(Registry.REGISTRIES, new Identifier("raa_materials:ore_targets"), new SimpleRegistry<>());
     private static final Map<String, Class<? extends OreTargetData>> ID_ORE_TARGET_MAP = new HashMap<>();
     private static final WeightedList<Class<? extends OreTargetData>> WEIGHTED_TARGETS = new WeightedList<>();
 
@@ -32,7 +30,7 @@ public class OreTargetGenerator {
     private static void registerElement(OreTargetData e, int weight) {
         ID_ORE_TARGET_MAP.put(e.getName().toString(), e.getClass());
         WEIGHTED_TARGETS.add(e.getClass(), weight);
-        Registry.register(SURFACE_BUILDERS, e.getName(), e);
+        Registry.register(ORE_TARGET_REGISTRY, e.getName(), e);
     }
 
     public static void load(JsonObject obj) {
@@ -57,8 +55,8 @@ public class OreTargetGenerator {
     }
 
     public static void save(JsonObject obj) {
-        SURFACE_BUILDERS.getIds().forEach(id -> {
-            OreTargetData data = SURFACE_BUILDERS.get(id);
+        ORE_TARGET_REGISTRY.getIds().forEach(id -> {
+            OreTargetData data = ORE_TARGET_REGISTRY.get(id);
 
             JsonArray targets = new JsonArray();
 

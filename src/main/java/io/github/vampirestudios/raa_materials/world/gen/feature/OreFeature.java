@@ -1,51 +1,26 @@
 package io.github.vampirestudios.raa_materials.world.gen.feature;
 
-import com.mojang.serialization.Codec;
+import com.mojang.datafixers.Dynamic;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 
 import java.util.BitSet;
 import java.util.Random;
+import java.util.function.Function;
 
 public class OreFeature extends Feature<OreFeatureConfig> {
-    public OreFeature(Codec<OreFeatureConfig> codec) {
-        super(codec);
+
+
+    public OreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> configDeserializer) {
+        super(configDeserializer);
     }
 
-    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig) {
-        float f = random.nextFloat() * 3.1415927F;
-        float g = (float)oreFeatureConfig.size / 8.0F;
-        int i = MathHelper.ceil(((float)oreFeatureConfig.size / 16.0F * 2.0F + 1.0F) / 2.0F);
-        double d = (double)((float)blockPos.getX() + MathHelper.sin(f) * g);
-        double e = (double)((float)blockPos.getX() - MathHelper.sin(f) * g);
-        double h = (double)((float)blockPos.getZ() + MathHelper.cos(f) * g);
-        double j = (double)((float)blockPos.getZ() - MathHelper.cos(f) * g);
-        double l = (double)(blockPos.getY() + random.nextInt(3) - 2);
-        double m = (double)(blockPos.getY() + random.nextInt(3) - 2);
-        int n = blockPos.getX() - MathHelper.ceil(g) - i;
-        int o = blockPos.getY() - 2 - i;
-        int p = blockPos.getZ() - MathHelper.ceil(g) - i;
-        int q = 2 * (MathHelper.ceil(g) + i);
-        int r = 2 * (2 + i);
-
-        for(int s = n; s <= n + q; ++s) {
-            for(int t = p; t <= p + q; ++t) {
-                if (o <= serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) {
-                    return this.generateVeinPart(serverWorldAccess, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
-                }
-            }
-        }
-
-        return false;
-    }
-
-    protected boolean generateVeinPart(WorldAccess world, Random random, OreFeatureConfig config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int size, int i) {
+    protected boolean generateVeinPart(IWorld world, Random random, OreFeatureConfig config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int size, int i) {
         int j = 0;
         BitSet bitSet = new BitSet(size * i * size);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -130,5 +105,33 @@ public class OreFeature extends Feature<OreFeatureConfig> {
         }
 
         return j > 0;
+    }
+
+    @Override
+    public boolean generate(IWorld serverWorldAccess, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig) {
+        float f = random.nextFloat() * 3.1415927F;
+        float g = (float)oreFeatureConfig.size / 8.0F;
+        int i = MathHelper.ceil(((float)oreFeatureConfig.size / 16.0F * 2.0F + 1.0F) / 2.0F);
+        double d = (double)((float)blockPos.getX() + MathHelper.sin(f) * g);
+        double e = (double)((float)blockPos.getX() - MathHelper.sin(f) * g);
+        double h = (double)((float)blockPos.getZ() + MathHelper.cos(f) * g);
+        double j = (double)((float)blockPos.getZ() - MathHelper.cos(f) * g);
+        double l = (double)(blockPos.getY() + random.nextInt(3) - 2);
+        double m = (double)(blockPos.getY() + random.nextInt(3) - 2);
+        int n = blockPos.getX() - MathHelper.ceil(g) - i;
+        int o = blockPos.getY() - 2 - i;
+        int p = blockPos.getZ() - MathHelper.ceil(g) - i;
+        int q = 2 * (MathHelper.ceil(g) + i);
+        int r = 2 * (2 + i);
+
+        for(int s = n; s <= n + q; ++s) {
+            for(int t = p; t <= p + q; ++t) {
+                if (o <= serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) {
+                    return this.generateVeinPart(serverWorldAccess, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
+                }
+            }
+        }
+
+        return false;
     }
 }

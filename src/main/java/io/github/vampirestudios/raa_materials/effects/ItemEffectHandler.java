@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.projectile.FireballEntity;
@@ -17,7 +17,7 @@ public class ItemEffectHandler {
     public static void spawnLightning(World world, LivingEntity target, LivingEntity attacker, JsonElement config) {
         if (world.getRandom().nextInt(config.getAsJsonObject().get("chance").getAsInt()) == 0) {
             if (!world.isClient()) {
-                world.spawnEntity(EntityType.LIGHTNING_BOLT.create(world, null, null, null, target.getBlockPos(), SpawnReason.TRIGGERED, true, false));
+                world.spawnEntity(EntityType.LIGHTNING_BOLT.create(world, null, null, null, target.getBlockPos(), SpawnType.TRIGGERED, true, false));
             }
         }
     }
@@ -60,7 +60,7 @@ public class ItemEffectHandler {
 
     public static void knockbackEntity(World world, LivingEntity target, LivingEntity attacker, JsonElement config) {
         if (!world.isClient()) {
-            target.takeKnockback(config.getAsJsonObject().get("speed").getAsFloat(), config.getAsJsonObject().get("xMovement").getAsDouble(), config.getAsJsonObject().get("zMovement").getAsDouble());
+            target.takeKnockback(attacker, config.getAsJsonObject().get("speed").getAsFloat(), config.getAsJsonObject().get("xMovement").getAsDouble(), config.getAsJsonObject().get("zMovement").getAsDouble());
         }
     }
 

@@ -6,7 +6,7 @@ import io.github.vampirestudios.raa_materials.world.gen.feature.OreFeatureConfig
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.WeightedList;
+import net.minecraft.util.WeightedList;
 import net.minecraft.util.registry.Registry;
 
 import java.util.Random;

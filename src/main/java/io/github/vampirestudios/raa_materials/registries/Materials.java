@@ -2,7 +2,6 @@ package io.github.vampirestudios.raa_materials.registries;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Lifecycle;
 import io.github.vampirestudios.raa_core.RAACore;
 import io.github.vampirestudios.raa_core.api.name_generation.NameGenerator;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
@@ -30,14 +29,13 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 
 import java.util.*;
 
 public class Materials {
     public static final Set<Identifier> MATERIAL_IDS = new HashSet<>();
-    public static final SimpleRegistry<Material> MATERIALS = new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier("raa_materials:materials")), Lifecycle.stable());
+    public static final SimpleRegistry<Material> MATERIALS = Registry.register(Registry.REGISTRIES, new Identifier("raa_materials:materials"), new SimpleRegistry<>());
     public static final int[] BASE_DURABILITY = new int[]{13, 15, 16, 11};
     public static boolean ready = false;
 
@@ -277,7 +275,6 @@ public class Materials {
                         new RAAHoeItem(
                                 material,
                                 material.getToolMaterial(),
-                                1.5F,
                                 -3.0F + material.getToolMaterial().getHoeAttackSpeed(),
                                 new Item.Settings().group(RAAMaterials.RAA_TOOLS).recipeRemainder(repairItem)
                         ),
