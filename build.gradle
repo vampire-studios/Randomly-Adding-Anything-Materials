@@ -30,7 +30,9 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "io.github.vampirestudios:raa-core:${project.core_version}"
+	modImplementation("io.github.vampirestudios:raa-core:${project.core_version}") {
+		exclude group: 'me.shedaniel'
+	}
 }
 
 processResources {
