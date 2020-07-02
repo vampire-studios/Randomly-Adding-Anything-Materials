@@ -126,7 +126,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 
         for(int s = n; s <= n + q; ++s) {
             for(int t = p; t <= p + q; ++t) {
-                if (o <= serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) {
+                if (o <= serverWorldAccess.getTop(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) {
                     return this.generateVeinPart(serverWorldAccess, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
                 }
             }

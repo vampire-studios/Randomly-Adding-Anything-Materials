@@ -6,7 +6,6 @@ import io.github.vampirestudios.raa_materials.registries.CustomTargets;
 import net.fabricmc.fabric.api.client.render.ColorProviderRegistry;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
-import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
 import net.fabricmc.fabric.api.renderer.v1.material.RenderMaterial;
 import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
@@ -17,6 +16,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.block.BlockColorProvider;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
 import net.minecraft.client.texture.Sprite;
@@ -52,27 +52,27 @@ public class OreBakedModel extends RAABakedModel {
         MeshBuilder builder = renderer.meshBuilder();
         QuadEmitter emitter = builder.getEmitter();
 
-        RenderMaterial mat = renderer.materialFinder().blendMode(0, BlendMode.CUTOUT_MIPPED).disableDiffuse(0, true).disableAo(0, false).find();
+        RenderMaterial mat = renderer.materialFinder().blendMode(0, RenderLayer.CUTOUT_MIPPED).disableDiffuse(0, true).disableAo(0, false).find();
         int color = 0xFFFFFFFF;
         Sprite sprite;
         Identifier baseTexture = new Identifier(Registry.BLOCK.getId(Objects.requireNonNull(
                 RAARegisteries.TARGET_REGISTRY.get(material.getOreInformation().getTargetId())).getBlock()).getNamespace(), "block/" +
                 Registry.BLOCK.getId(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.get(material.getOreInformation().getTargetId())).getBlock()).getPath());
         if (material.getOreInformation().getTargetId() != CustomTargets.DOES_NOT_APPEAR.getId()) {
-            sprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(baseTexture);
+            sprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(baseTexture);
         } else {
-            sprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/oak_planks"));
+            sprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/oak_planks"));
         }
 
         this.renderBase(emitter, mat, sprite, renderer, blockView, pos, color);
 
         if (material.isGlowing()) {
-            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).emissive(0, true).find();
+            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, RenderLayer.CUTOUT_MIPPED).emissive(0, true).find();
         } else {
-            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
+            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, RenderLayer.CUTOUT_MIPPED).find();
         }
         color = material.getColor();
-        sprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(this.material.getTexturesInformation().getOverlayTexture());
+        sprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(this.material.getTexturesInformation().getOverlayTexture());
 
         this.renderOverlay(emitter, mat, sprite, color);
 
@@ -109,12 +109,11 @@ public class OreBakedModel extends RAABakedModel {
                     .spriteColor(0, color, color, color, color)
                     .spriteBake(0, sprite, MutableQuadView.BAKE_LOCK_UV + MutableQuadView.BAKE_FLIP_U).emit();
         } else if (material.getOreInformation().getTargetId().toString().equals(CustomTargets.GRASS_BLOCK.getId().toString())) {
-            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
-            Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/grass_block_side"));
-            Sprite sideOverlaySprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).
-                    apply(new Identifier("block/grass_block_side_overlay"));
-            Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/grass_block_top"));
-            Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/dirt"));
+            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, RenderLayer.CUTOUT_MIPPED).find();
+            Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/grass_block_side"));
+            Sprite sideOverlaySprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/grass_block_side_overlay"));
+            Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/grass_block_top"));
+            Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/dirt"));
             int color2 = 0xffffff;
             BlockColorProvider blockColor = ColorProviderRegistry.BLOCK.get(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.
                     get(material.getOreInformation().getTargetId())).getBlock());
@@ -165,10 +164,10 @@ public class OreBakedModel extends RAABakedModel {
                     .spriteColor(0, color2, color2, color2, color2)
                     .spriteBake(0, sideOverlaySprite, MutableQuadView.BAKE_LOCK_UV).emit();
         } else if (material.getOreInformation().getTargetId().toString().equals(CustomTargets.SANDSTONE.getId().toString())) {
-            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
-            Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/sandstone"));
-            Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/sandstone_top"));
-            Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/sandstone_bottom"));
+            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, RenderLayer.CUTOUT_MIPPED).find();
+            Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/sandstone"));
+            Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/sandstone_top"));
+            Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/sandstone_bottom"));
 
             emitter.square(Direction.SOUTH, 0, 0, 1, 1, 0)
                     .material(mat)
@@ -195,11 +194,10 @@ public class OreBakedModel extends RAABakedModel {
                     .spriteColor(0, color, color, color, color)
                     .spriteBake(0, topSprite, MutableQuadView.BAKE_LOCK_UV + MutableQuadView.BAKE_FLIP_U).emit();
         } else if (material.getOreInformation().getTargetId().toString().equals(CustomTargets.RED_SANDSTONE.getId().toString())) {
-            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
-            Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/red_sandstone"));
-            Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/red_sandstone_top"));
-            Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).
-                    apply(new Identifier("block/red_sandstone_bottom"));
+            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, RenderLayer.CUTOUT_MIPPED).find();
+            Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/red_sandstone"));
+            Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/red_sandstone_top"));
+            Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/red_sandstone_bottom"));
 
             emitter.square(Direction.SOUTH, 0, 0, 1, 1, 0)
                     .material(mat)
@@ -226,10 +224,10 @@ public class OreBakedModel extends RAABakedModel {
                     .spriteColor(0, color, color, color, color)
                     .spriteBake(0, topSprite, MutableQuadView.BAKE_LOCK_UV + MutableQuadView.BAKE_FLIP_U).emit();
         } else {
-            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
-            Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/podzol_side"));
-            Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/podzol_top"));
-            Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/dirt"));
+            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, RenderLayer.CUTOUT_MIPPED).find();
+            Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/podzol_side"));
+            Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/podzol_top"));
+            Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("block/dirt"));
 
             emitter.square(Direction.SOUTH, 0, 0, 1, 1, 0)
                     .material(mat)
@@ -259,12 +257,11 @@ public class OreBakedModel extends RAABakedModel {
 
         if (FabricLoader.getInstance().isModLoaded("thehallow")) {
             if (material.getOreInformation().getTargetId() == Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.get(new Identifier("thehallow", "deceased_grass_block"))).getId()) {
-                mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
-                Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("thehallow", "block/deceased_grass_block_side"));
-                Sprite sideOverlaySprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).
-                        apply(new Identifier("thehallow", "block/deceased_grass_block_side_overlay"));
-                Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("thehallow", "block/deceased_grass_block_top"));
-                Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("thehallow", "block/deceased_dirt"));
+                mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, RenderLayer.CUTOUT_MIPPED).find();
+                Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("thehallow", "block/deceased_grass_block_side"));
+                Sprite sideOverlaySprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("thehallow", "block/deceased_grass_block_side_overlay"));
+                Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("thehallow", "block/deceased_grass_block_top"));
+                Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("thehallow", "block/deceased_dirt"));
                 int color2 = 0xffffff;
                 BlockColorProvider blockColor = ColorProviderRegistry.BLOCK.get(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.
                         get(material.getOreInformation().getTargetId())).getBlock());
@@ -315,10 +312,10 @@ public class OreBakedModel extends RAABakedModel {
                         .spriteColor(0, color2, color2, color2, color2)
                         .spriteBake(0, sideOverlaySprite, MutableQuadView.BAKE_LOCK_UV).emit();
             } else if (material.getOreInformation().getTargetId() == RAARegisteries.TARGET_REGISTRY.get(new Identifier("thehallow", "tainted_sandstone")).getId()) {
-                mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
-                Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("thehallow", "block/tainted_sandstone"));
-                Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("thehallow", "block/tainted_sandstone_top"));
-                Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("thehallow", "block/tainted_sandstone_bottom"));
+                mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, RenderLayer.CUTOUT_MIPPED).find();
+                Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("thehallow", "block/tainted_sandstone"));
+                Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("thehallow", "block/tainted_sandstone_top"));
+                Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas().getSprite(new Identifier("thehallow", "block/tainted_sandstone_bottom"));
                 int color2 = 0xffffff;
                 BlockColorProvider blockColor = ColorProviderRegistry.BLOCK.get(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.
                         get(material.getOreInformation().getTargetId())).getBlock());
@@ -399,7 +396,7 @@ public class OreBakedModel extends RAABakedModel {
 
     @Override
     public Sprite getSprite() {
-        return MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(this.material.getTexturesInformation().getOverlayTexture());
+        return MinecraftClient.getInstance().getSpriteAtlas().getSprite(this.material.getTexturesInformation().getOverlayTexture());
     }
 
     @Override

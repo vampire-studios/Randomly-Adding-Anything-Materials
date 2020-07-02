@@ -43,11 +43,6 @@ public abstract class RAABakedModel implements BakedModel, FabricBakedModel {
     }
 
     @Override
-    public boolean isSideLit() {
-        return true;
-    }
-
-    @Override
     public boolean isBuiltin() {
         return false;
     }

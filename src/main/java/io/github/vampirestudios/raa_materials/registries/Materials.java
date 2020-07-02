@@ -103,7 +103,7 @@ public class Materials {
                 JsonElement e = new JsonObject();
 
                 //get an effect from a weighted list
-                MaterialEffects effect = Utils.EFFECT_LIST.pickRandom(Rands.getRandom());
+                MaterialEffects effect = (MaterialEffects) Rands.values(Utils.EFFECT_LIST.stream().toArray());
                 effect.jsonConsumer.accept(e);
                 effects.put(effect, e);
             }
@@ -128,7 +128,7 @@ public class Materials {
             net.minecraft.block.Material baseBlockMaterial = baseBlock.getDefaultState().getMaterial();
             if (baseBlockMaterial == net.minecraft.block.Material.STONE) {
                 blockSettings.breakByTool(FabricToolTags.PICKAXES, material.getMiningLevel());
-            } else if (baseBlockMaterial == net.minecraft.block.Material.GOURD) {
+            } else if (baseBlockMaterial == net.minecraft.block.Material.EARTH) {
                 blockSettings.breakByTool(FabricToolTags.SHOVELS, material.getMiningLevel());
             } else {
                 blockSettings.breakByHand(true);

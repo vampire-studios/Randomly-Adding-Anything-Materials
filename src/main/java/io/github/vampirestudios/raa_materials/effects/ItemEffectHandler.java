@@ -35,9 +35,9 @@ public class ItemEffectHandler {
         if (world.getRandom().nextInt(config.getAsJsonObject().get("chance").getAsInt()) == 0) {
             if (!world.isClient()) {
                 Vec3d vec3d = attacker.getRotationVec(1.0F);
-                double f = target.getX() - (attacker.getX() + vec3d.x * 4.0D);
-                double g = target.getBodyY(0.5D) - (0.5D + attacker.getBodyY(0.5D));
-                double h = target.getZ() - (attacker.getZ() + vec3d.z * 4.0D);
+                double f = target.x - (attacker.x + vec3d.x * 4.0D);
+                double g = (target.y + (double)target.getHeight() * 0.5D) - (0.5D + (attacker.y + (double)target.getHeight() * 0.5D));
+                double h = target.z - (attacker.z + vec3d.z * 4.0D);
 
                 FireballEntity fireballEntity = new FireballEntity(world, target, f, g, h);
                 fireballEntity.explosionPower = 1;
