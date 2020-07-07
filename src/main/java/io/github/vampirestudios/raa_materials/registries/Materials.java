@@ -19,7 +19,7 @@ import io.github.vampirestudios.raa_materials.items.material.*;
 import io.github.vampirestudios.raa_materials.utils.Utils;
 import io.github.vampirestudios.vampirelib.utils.Color;
 import io.github.vampirestudios.vampirelib.utils.Rands;
-import io.github.vampirestudios.vampirelib.utils.registry.RegistryUtils;
+import io.github.vampirestudios.vampirelib.utils.registry.RegistryHelper;
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.tools.FabricToolTags;
@@ -40,6 +40,7 @@ public class Materials {
     public static final SimpleRegistry<Material> MATERIALS = new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier("raa_materials:materials")), Lifecycle.stable());
     public static final int[] BASE_DURABILITY = new int[]{13, 15, 16, 11};
     public static boolean ready = false;
+    private static RegistryHelper MOD_REGISTRY = RegistryHelper.createRegistryHelper(RAAMaterials.MOD_ID);
 
     public static void generate() {
         for (int a = 0; a < RAAMaterials.CONFIG.materialGenAmount; a++) {
@@ -155,92 +156,92 @@ public class Materials {
             }
             if (material.getOreInformation().getOreType() == OreType.METAL) {
                 Item item;
-                item = RegistryUtils.registerItem(
+                item = MOD_REGISTRY.registerItem(
                         repairItem = new RAASimpleItem(
                                 material.getName(),
                                 new Item.Settings().group(RAAMaterials.RAA_RESOURCES),
                                 RAASimpleItem.SimpleItemType.INGOT
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_ingot")
+                        identifier.getPath() + "_ingot"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount() - 1.0F);
-                item = RegistryUtils.registerItem(
+                item = MOD_REGISTRY.registerItem(
                         new RAASimpleItem(
                                 material.getName(),
                                 new Item.Settings().group(RAAMaterials.RAA_RESOURCES),
                                 RAASimpleItem.SimpleItemType.NUGGET
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_nugget")
+                        identifier.getPath() + "_nugget"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount() - 0.5F);
             } else if (material.getOreInformation().getOreType() == OreType.GEM) {
-                Item item = RegistryUtils.registerItem(
+                Item item = MOD_REGISTRY.registerItem(
                         repairItem = new RAASimpleItem(
                                 material.getName(),
                                 new Item.Settings().group(RAAMaterials.RAA_RESOURCES),
                                 RAASimpleItem.SimpleItemType.GEM
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_gem")
+                        identifier.getPath() + "_gem"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount() + 0.5F);
             } else {
-                Item item = RegistryUtils.registerItem(
+                Item item = MOD_REGISTRY.registerItem(
                         repairItem = new RAASimpleItem(
                                 material.getName(),
                                 new Item.Settings().group(RAAMaterials.RAA_RESOURCES),
                                 RAASimpleItem.SimpleItemType.CRYSTAL
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_crystal")
+                        identifier.getPath() + "_crystal"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount() + 0.5F);
             }
             if (material.hasArmor()) {
                 Item item;
-                item = RegistryUtils.registerItem(
+                item = MOD_REGISTRY.registerItem(
                         new RAAArmorItem(
                                 material,
                                 EquipmentSlot.HEAD,
                                 new Item.Settings().group(RAAMaterials.RAA_ARMOR).recipeRemainder(repairItem)
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_helmet")
+                        identifier.getPath() + "_helmet"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
-                item = RegistryUtils.registerItem(
+                item = MOD_REGISTRY.registerItem(
                         new RAAArmorItem(
                                 material,
                                 EquipmentSlot.CHEST,
                                 new Item.Settings().group(RAAMaterials.RAA_ARMOR).recipeRemainder(repairItem)
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_chestplate")
+                        identifier.getPath() + "_chestplate"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
-                item = RegistryUtils.registerItem(
+                item = MOD_REGISTRY.registerItem(
                         new RAAArmorItem(
                                 material,
                                 EquipmentSlot.LEGS,
                                 new Item.Settings().group(RAAMaterials.RAA_ARMOR).recipeRemainder(repairItem)
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_leggings")
+                        identifier.getPath() + "_leggings"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
-                item = RegistryUtils.registerItem(
+                item = MOD_REGISTRY.registerItem(
                         new RAAArmorItem(
                                 material,
                                 EquipmentSlot.FEET,
                                 new Item.Settings().group(RAAMaterials.RAA_ARMOR).recipeRemainder(repairItem)
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_boots")
+                        identifier.getPath() + "_boots"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
-                item = RegistryUtils.registerItem(
+                item = MOD_REGISTRY.registerItem(
                         new RAAHorseArmorItem(material),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_horse_armor")
+                        identifier.getPath() + "_horse_armor"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
             }
             if (material.hasTools()) {
                 Item item;
-                item = RegistryUtils.registerItem(
+                item = MOD_REGISTRY.registerItem(
                         new RAAPickaxeItem(
                                 material,
                                 material.getToolMaterial(),
@@ -248,10 +249,10 @@ public class Materials {
                                 -2.8F,
                                 new Item.Settings().group(RAAMaterials.RAA_TOOLS).recipeRemainder(repairItem)
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_pickaxe")
+                        identifier.getPath() + "_pickaxe"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
-                item = RegistryUtils.registerItem(
+                item = MOD_REGISTRY.registerItem(
                         new RAAAxeItem(
                                 material,
                                 material.getToolMaterial(),
@@ -259,10 +260,10 @@ public class Materials {
                                 -3.2F + material.getToolMaterial().getAxeAttackSpeed(),
                                 new Item.Settings().group(RAAMaterials.RAA_TOOLS).recipeRemainder(repairItem)
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_axe")
+                        identifier.getPath() + "_axe"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
-                item = RegistryUtils.registerItem(
+                item = MOD_REGISTRY.registerItem(
                         new RAAShovelItem(
                                 material,
                                 material.getToolMaterial(),
@@ -270,10 +271,10 @@ public class Materials {
                                 -3.0F,
                                 new Item.Settings().group(RAAMaterials.RAA_TOOLS).recipeRemainder(repairItem)
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_shovel")
+                        identifier.getPath() + "_shovel"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
-                item = RegistryUtils.registerItem(
+                item = MOD_REGISTRY.registerItem(
                         new RAAHoeItem(
                                 material,
                                 material.getToolMaterial(),
@@ -281,15 +282,15 @@ public class Materials {
                                 -3.0F + material.getToolMaterial().getHoeAttackSpeed(),
                                 new Item.Settings().group(RAAMaterials.RAA_TOOLS).recipeRemainder(repairItem)
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_hoe")
+                        identifier.getPath() + "_hoe"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
-                item = RegistryUtils.registerItem(
+                item = MOD_REGISTRY.registerItem(
                         new RAAShearItem(
                                 material,
                                 new Item.Settings().group(RAAMaterials.RAA_TOOLS).recipeRemainder(repairItem)
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_shears")
+                        identifier.getPath() + "_shears"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
                 /*item = RegistryUtils.registerItem(
@@ -304,12 +305,12 @@ public class Materials {
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());*/
             }
             if (material.hasWeapons()) {
-                Item item = RegistryUtils.registerItem(
+                Item item = MOD_REGISTRY.registerItem(
                         new RAASwordItem(
                                 material,
                                 new Item.Settings().group(RAAMaterials.RAA_WEAPONS).recipeRemainder(repairItem)
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_sword")
+                        identifier.getPath() + "_sword"
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
             }
@@ -321,12 +322,12 @@ public class Materials {
                 foodComponent.hunger(material.getFoodData().getHunger());
                 foodComponent.saturationModifier(material.getFoodData().getSaturationModifier());
 
-                Item item = RegistryUtils.registerItem(
+                Item item = MOD_REGISTRY.registerItem(
                         new RAAFoodItem(
                                 material.getName(),
                                 new Item.Settings().group(RAAMaterials.RAA_FOOD).food(foodComponent.build())
                         ),
-                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_fruit")
+                        identifier.getPath() + "_fruit"
                 );
 
                 CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
