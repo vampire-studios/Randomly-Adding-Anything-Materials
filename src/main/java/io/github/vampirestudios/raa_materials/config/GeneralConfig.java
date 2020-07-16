@@ -10,7 +10,8 @@ public class GeneralConfig implements ConfigData {
 
     @Comment("Amount of materials to generate")
     public int materialGenAmount = 40;
-    @Comment("Should metal materials have their own buckets?")
-    public boolean materialBuckets = true;
+
+    public boolean useOnlyVanillaPotionEffects = true;
+    public String[] blacklistedPotionEffects = new String[] {"immersive_portals:longer_reach"};
 
 }
