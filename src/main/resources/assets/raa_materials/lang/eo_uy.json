@@ -1,4 +1,4 @@
-{
+﻿{
   "itemGroup.raa_materials.ores": "RAA: Ercoj",
   "itemGroup.raa_materials.resources": "RAA: Rimedoj",
   "itemGroup.raa_materials.tools": "RAA: Iloj",
@@ -17,7 +17,7 @@
   "text.raa_materials.item.hoe": "{0} sarkilo",
   "text.raa_materials.item.shovel": "{0} fosilo",
   "text.raa_materials.item.shears": "{0} tondilo",
-  "text.raa_materials.item.food": "{0} Frukto",
+  "text.raa_materials.item.food": "{0} frukto",
   "text.raa_materials.item.horse_armor": "{0} ĉevala kiraso",
   "text.raa_materials.item.armor_head": "{0} kasko",
   "text.raa_materials.item.armor_chest": "{0} kiraso",
