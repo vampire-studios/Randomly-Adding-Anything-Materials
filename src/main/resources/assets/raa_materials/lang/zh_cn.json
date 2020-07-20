@@ -1,4 +1,4 @@
-{
+﻿{
   "itemGroup.raa_materials.ores": "RAA：矿石",
   "itemGroup.raa_materials.resources": "RAA: 资源",
   "itemGroup.raa_materials.tools": "RAA：工具",
@@ -13,14 +13,14 @@
   "text.raa_materials.item.nugget": "{0}粒",
   "text.raa_materials.item.axe": "{0}斧",
   "text.raa_materials.item.sword": "{0}剑",
-  "text.raa_materials.item.horse_armor": "{0}马铠",
-  "text.raa_materials.item.food": "{0}果",
   "text.raa_materials.item.pickaxe": "{0}镐",
   "text.raa_materials.item.hoe": "{0}锄",
   "text.raa_materials.item.shovel": "{0}锹",
+  "text.raa_materials.item.shears": "{0}剪刀",
+  "text.raa_materials.item.food": "{0}果",
+  "text.raa_materials.item.horse_armor": "{0}马铠",
   "text.raa_materials.item.armor_head": "{0}头盔",
   "text.raa_materials.item.armor_chest": "{0}胸甲",
   "text.raa_materials.item.armor_legs": "{0}护腿",
-  "text.raa_materials.item.armor_feet": "{0}靴子",
-  "text.raa_materials.item.shears": "{0}剪刀"
+  "text.raa_materials.item.armor_feet": "{0}靴子"
 }
