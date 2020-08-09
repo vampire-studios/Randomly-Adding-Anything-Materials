@@ -13,7 +13,6 @@ import io.github.vampirestudios.raa_materials.generation.targets.OreTargetGenera
 import io.github.vampirestudios.raa_materials.registries.CustomTargets;
 import io.github.vampirestudios.raa_materials.registries.Materials;
 import io.github.vampirestudios.raa_materials.registries.Textures;
-import io.github.vampirestudios.raa_materials.world.gen.feature.OreFeatureConfig;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.GsonConfigSerializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
@@ -22,7 +21,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.BuiltinRegistries;
 
 public class RAAMaterials implements RAAAddon {
     public static final String MOD_ID = "raa_materials";
@@ -83,7 +82,7 @@ public class RAAMaterials implements RAAAddon {
 
         MaterialRecipes.init();
 
-        Registry.BIOME.forEach(biome -> RAARegisteries.TARGET_REGISTRY.forEach(target -> RAAWorldAPI.generateOresForTarget(biome, target)));
+        BuiltinRegistries.BIOME.forEach(biome -> RAARegisteries.TARGET_REGISTRY.forEach(target -> RAAWorldAPI.generateOresForTarget(biome, target)));
     }
 
 }

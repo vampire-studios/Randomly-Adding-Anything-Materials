@@ -2,16 +2,15 @@ package io.github.vampirestudios.raa_materials.utils;
 
 import io.github.vampirestudios.raa_materials.api.RAARegisteries;
 import io.github.vampirestudios.raa_materials.effects.MaterialEffects;
-import io.github.vampirestudios.raa_materials.world.gen.feature.OreFeatureConfig;
+import io.github.vampirestudios.raa_materials.generation.targets.OreTarget;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.WeightedList;
 import net.minecraft.util.registry.Registry;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Predicate;
 
 public class Utils {
 
@@ -48,7 +47,7 @@ public class Utils {
         return min + rand.nextDouble() * (max - min);
     }
 
-    public static OreFeatureConfig.Target registerOreTarget(Identifier name, OreFeatureConfig.Target target) {
+    public static OreTarget registerOreTarget(Identifier name, OreTarget target) {
         if (RAARegisteries.TARGET_REGISTRY.get(name) == null) {
             return Registry.register(RAARegisteries.TARGET_REGISTRY, name, target);
         } else {
@@ -56,14 +55,14 @@ public class Utils {
         }
     }
 
-    public static OreFeatureConfig.Target registerOreTarget(String name, Block blockStatePredicate, Block block) {
-        return registerOreTarget(new Identifier(name), blockStatePredicate, block);
+    public static OreTarget registerOreTarget(String name, RuleTest ruleTest, Block block) {
+        return registerOreTarget(new Identifier(name), ruleTest, block);
     }
 
-    public static OreFeatureConfig.Target registerOreTarget(Identifier name, Block blockStatePredicate, Block block) {
-        OreFeatureConfig.Target target = new OreFeatureConfig.Target(name, Registry.BLOCK.getId(blockStatePredicate), Registry.BLOCK.getId(block));
-        if (RAARegisteries.TARGET_REGISTRY.get(target.getId()) == null) {
-            return Registry.register(RAARegisteries.TARGET_REGISTRY, target.getId(), target);
+    public static OreTarget registerOreTarget(Identifier name, RuleTest ruleTest, Block block) {
+        OreTarget target = new OreTarget(name, ruleTest, block);
+        if (RAARegisteries.TARGET_REGISTRY.get(target.getName()) == null) {
+            return Registry.register(RAARegisteries.TARGET_REGISTRY, target.getName(), target);
         } else {
             return target;
         }

@@ -24,10 +24,8 @@
 
 package io.github.vampirestudios.raa_materials.utils;
 
-import io.github.vampirestudios.raa_materials.api.RAARegisteries;
 import io.github.vampirestudios.raa_materials.items.RAABlockItem;
 import io.github.vampirestudios.raa_materials.items.RAABlockItemAlt;
-import io.github.vampirestudios.raa_materials.world.gen.feature.OreFeatureConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -39,6 +37,7 @@ import net.minecraft.item.Item.Settings;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
@@ -88,7 +87,7 @@ public class RegistryUtils {
     }
 
     public static Biome registerBiome(Identifier name, Biome biome) {
-        return Registry.register(Registry.BIOME, name, biome);
+        return Registry.register(BuiltinRegistries.BIOME, name, biome);
     }
 
     public static Item registerItem(Item item, Identifier name) {
@@ -98,27 +97,6 @@ public class RegistryUtils {
             return item;
         }
     }
-
-    public static OreFeatureConfig.Target registerOreTarget(Identifier name, OreFeatureConfig.Target target) {
-        if (RAARegisteries.TARGET_REGISTRY.get(name) == null) {
-            return Registry.register(RAARegisteries.TARGET_REGISTRY, name, target);
-        } else {
-            return target;
-        }
-    }
-
-//    public static OreFeatureConfig.Target registerOreTarget(String name, Predicate<BlockState> blockStatePredicate, Block block) {
-//        return registerOreTarget(new Identifier(name), blockStatePredicate, block);
-//    }
-//
-//    public static OreFeatureConfig.Target registerOreTarget(Identifier name, Predicate<BlockState> blockStatePredicate, Block block) {
-//        OreFeatureConfig.Target target = new OreFeatureConfig.Target(name, blockStatePredicate, block);
-//        if (RAARegisteries.TARGET_REGISTRY.get(target.getId()) == null) {
-//            return Registry.register(RAARegisteries.TARGET_REGISTRY, target.getId(), target);
-//        } else {
-//            return target;
-//        }
-//    }
 
     public static <T extends BlockEntity> BlockEntityType<T> registerBlockEntity(Builder<T> builder, Identifier name) {
         BlockEntityType<T> blockEntityType = builder.build(null);

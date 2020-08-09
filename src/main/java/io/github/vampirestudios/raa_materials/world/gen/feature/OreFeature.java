@@ -4,9 +4,8 @@ import com.mojang.serialization.Codec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -18,16 +17,16 @@ public class OreFeature extends Feature<OreFeatureConfig> {
         super(codec);
     }
 
-    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig) {
+    public boolean generate(StructureWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig) {
         float f = random.nextFloat() * 3.1415927F;
         float g = (float)oreFeatureConfig.size / 8.0F;
         int i = MathHelper.ceil(((float)oreFeatureConfig.size / 16.0F * 2.0F + 1.0F) / 2.0F);
-        double d = (double)((float)blockPos.getX() + MathHelper.sin(f) * g);
-        double e = (double)((float)blockPos.getX() - MathHelper.sin(f) * g);
-        double h = (double)((float)blockPos.getZ() + MathHelper.cos(f) * g);
-        double j = (double)((float)blockPos.getZ() - MathHelper.cos(f) * g);
-        double l = (double)(blockPos.getY() + random.nextInt(3) - 2);
-        double m = (double)(blockPos.getY() + random.nextInt(3) - 2);
+        double d = (double)blockPos.getX() + Math.sin(f) * (double)g;
+        double e = (double)blockPos.getX() - Math.sin(f) * (double)g;
+        double h = (double)blockPos.getZ() + Math.cos(f) * (double)g;
+        double j = (double)blockPos.getZ() - Math.cos(f) * (double)g;
+        double l = blockPos.getY() + random.nextInt(3) - 2;
+        double m = blockPos.getY() + random.nextInt(3) - 2;
         int n = blockPos.getX() - MathHelper.ceil(g) - i;
         int o = blockPos.getY() - 2 - i;
         int p = blockPos.getZ() - MathHelper.ceil(g) - i;
@@ -49,39 +48,40 @@ public class OreFeature extends Feature<OreFeatureConfig> {
         int j = 0;
         BitSet bitSet = new BitSet(size * i * size);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        double[] ds = new double[config.size * 4];
+        int k = config.size;
+        double[] ds = new double[k * 4];
 
-        int m;
-        double o;
+        int n;
         double p;
         double q;
         double r;
-        for(m = 0; m < config.size; ++m) {
-            float f = (float)m / (float)config.size;
-            o = MathHelper.lerp((double)f, startX, endX);
-            p = MathHelper.lerp((double)f, startY, endY);
-            q = MathHelper.lerp((double)f, startZ, endZ);
-            r = random.nextDouble() * (double)config.size / 16.0D;
-            double l = ((double)(MathHelper.sin(3.1415927F * f) + 1.0F) * r + 1.0D) / 2.0D;
-            ds[m * 4 + 0] = o;
-            ds[m * 4 + 1] = p;
-            ds[m * 4 + 2] = q;
-            ds[m * 4 + 3] = l;
+        double s;
+        for(n = 0; n < k; ++n) {
+            float f = (float)n / (float)k;
+            p = MathHelper.lerp(f, startX, endX);
+            q = MathHelper.lerp(f, startY, endY);
+            r = MathHelper.lerp(f, startZ, endZ);
+            s = random.nextDouble() * (double)k / 16.0D;
+            double m = ((double)(MathHelper.sin(3.1415927F * f) + 1.0F) * s + 1.0D) / 2.0D;
+            ds[n * 4] = p;
+            ds[n * 4 + 1] = q;
+            ds[n * 4 + 2] = r;
+            ds[n * 4 + 3] = m;
         }
 
-        for(m = 0; m < config.size - 1; ++m) {
-            if (ds[m * 4 + 3] > 0.0D) {
-                for(int n = m + 1; n < config.size; ++n) {
-                    if (ds[n * 4 + 3] > 0.0D) {
-                        o = ds[m * 4 + 0] - ds[n * 4 + 0];
-                        p = ds[m * 4 + 1] - ds[n * 4 + 1];
-                        q = ds[m * 4 + 2] - ds[n * 4 + 2];
-                        r = ds[m * 4 + 3] - ds[n * 4 + 3];
-                        if (r * r > o * o + p * p + q * q) {
-                            if (r > 0.0D) {
-                                ds[n * 4 + 3] = -1.0D;
+        for(n = 0; n < k - 1; ++n) {
+            if (ds[n * 4 + 3] > 0.0D) {
+                for(int o = n + 1; o < k; ++o) {
+                    if (ds[o * 4 + 3] > 0.0D) {
+                        p = ds[n * 4] - ds[o * 4];
+                        q = ds[n * 4 + 1] - ds[o * 4 + 1];
+                        r = ds[n * 4 + 2] - ds[o * 4 + 2];
+                        s = ds[n * 4 + 3] - ds[o * 4 + 3];
+                        if (s * s > p * p + q * q + r * r) {
+                            if (s > 0.0D) {
+                                ds[o * 4 + 3] = -1.0D;
                             } else {
-                                ds[m * 4 + 3] = -1.0D;
+                                ds[n * 4 + 3] = -1.0D;
                             }
                         }
                     }
@@ -89,33 +89,33 @@ public class OreFeature extends Feature<OreFeatureConfig> {
             }
         }
 
-        for(m = 0; m < config.size; ++m) {
-            double t = ds[m * 4 + 3];
-            if (t >= 0.0D) {
-                double u = ds[m * 4 + 0];
-                double v = ds[m * 4 + 1];
-                double w = ds[m * 4 + 2];
-                int aa = Math.max(MathHelper.floor(u - t), x);
-                int ab = Math.max(MathHelper.floor(v - t), y);
-                int ac = Math.max(MathHelper.floor(w - t), z);
-                int ad = Math.max(MathHelper.floor(u + t), aa);
-                int ae = Math.max(MathHelper.floor(v + t), ab);
-                int af = Math.max(MathHelper.floor(w + t), ac);
+        for(n = 0; n < k; ++n) {
+            double u = ds[n * 4 + 3];
+            if (u >= 0.0D) {
+                double v = ds[n * 4];
+                double w = ds[n * 4 + 1];
+                double aa = ds[n * 4 + 2];
+                int ab = Math.max(MathHelper.floor(v - u), x);
+                int ac = Math.max(MathHelper.floor(w - u), y);
+                int ad = Math.max(MathHelper.floor(aa - u), z);
+                int ae = Math.max(MathHelper.floor(v + u), ab);
+                int af = Math.max(MathHelper.floor(w + u), ac);
+                int ag = Math.max(MathHelper.floor(aa + u), ad);
 
-                for(int ag = aa; ag <= ad; ++ag) {
-                    double ah = ((double)ag + 0.5D - u) / t;
-                    if (ah * ah < 1.0D) {
-                        for(int ai = ab; ai <= ae; ++ai) {
-                            double aj = ((double)ai + 0.5D - v) / t;
-                            if (ah * ah + aj * aj < 1.0D) {
-                                for(int ak = ac; ak <= af; ++ak) {
-                                    double al = ((double)ak + 0.5D - w) / t;
-                                    if (ah * ah + aj * aj + al * al < 1.0D) {
-                                        int am = ag - x + (ai - y) * size + (ak - z) * size * i;
-                                        if (!bitSet.get(am)) {
-                                            bitSet.set(am);
-                                            mutable.set(ag, ai, ak);
-                                            if (config.target.getCondition().test(world.getBlockState(mutable))) {
+                for(int ah = ab; ah <= ae; ++ah) {
+                    double ai = ((double)ah + 0.5D - v) / u;
+                    if (ai * ai < 1.0D) {
+                        for(int aj = ac; aj <= af; ++aj) {
+                            double ak = ((double)aj + 0.5D - w) / u;
+                            if (ai * ai + ak * ak < 1.0D) {
+                                for(int al = ad; al <= ag; ++al) {
+                                    double am = ((double)al + 0.5D - aa) / u;
+                                    if (ai * ai + ak * ak + am * am < 1.0D) {
+                                        int an = ah - x + (aj - y) * size + (al - z) * size * i;
+                                        if (!bitSet.get(an)) {
+                                            bitSet.set(an);
+                                            mutable.set(ah, aj, al);
+                                            if (config.target.test(world.getBlockState(mutable), random)) {
                                                 world.setBlockState(mutable, config.state, 2);
                                                 ++j;
                                             }

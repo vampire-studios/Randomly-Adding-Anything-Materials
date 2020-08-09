@@ -28,7 +28,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +43,7 @@ public class LayeredOreBlock extends OreBlock {
     public LayeredOreBlock(Material material, Settings settings) {
         super(settings);
         this.material = material;
-        this.block = material.getOreInformation().getTargetId() == CustomTargets.DOES_NOT_APPEAR.getId() ? Blocks.STONE :
+        this.block = material.getOreInformation().getTargetId() == CustomTargets.DOES_NOT_APPEAR.getName() ? Blocks.STONE :
                 Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.get(material.getOreInformation().getTargetId())).getBlock();
     }
 
@@ -55,10 +54,6 @@ public class LayeredOreBlock extends OreBlock {
 
     public boolean isTranslucent(BlockState blockState_1, BlockView blockView_1, BlockPos blockPos_1) {
         return true;
-    }
-
-    public boolean isSimpleFullBlock(BlockState blockState_1, BlockView blockView_1, BlockPos blockPos_1) {
-        return false;
     }
 
     @Override
@@ -83,7 +78,7 @@ public class LayeredOreBlock extends OreBlock {
         return block.getSlipperiness();
     }
 
-    public void onStacksDropped(BlockState blockState_1, World world_1, BlockPos blockPos_1, ItemStack itemStack_1) {
+    public void onStacksDropped(BlockState blockState_1, ServerWorld world_1, BlockPos blockPos_1, ItemStack itemStack_1) {
         super.onStacksDropped(blockState_1, world_1, blockPos_1, itemStack_1);
         if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack_1) == 0) {
             int int_1 = this.getExperienceWhenMined(world_1.random);

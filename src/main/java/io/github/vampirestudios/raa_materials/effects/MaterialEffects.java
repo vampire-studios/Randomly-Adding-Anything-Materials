@@ -5,6 +5,7 @@ import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.utils.Utils;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -54,7 +55,7 @@ public enum MaterialEffects {
         this.jsonConsumer = jsonConsumer;
     }
 
-    public void apply(World world, LivingEntity target, LivingEntity attacker, JsonElement config) {
+    public void apply(ServerWorld world, LivingEntity target, LivingEntity attacker, JsonElement config) {
         this.function.apply(world, target, attacker, config);
     }
 

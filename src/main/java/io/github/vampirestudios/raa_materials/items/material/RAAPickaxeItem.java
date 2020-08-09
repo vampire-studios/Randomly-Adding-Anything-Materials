@@ -8,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.PickaxeItem;
 import net.minecraft.item.ToolMaterial;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -36,7 +37,7 @@ public class RAAPickaxeItem extends PickaxeItem {
 
     @Override
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        World world = Objects.requireNonNull(target).world;
+        ServerWorld world = Objects.requireNonNull(target).getServer().getWorld(target.getEntityWorld().getRegistryKey());
         if (!world.isClient()) {
             for (Map.Entry<MaterialEffects, JsonElement> effect : material.getSpecialEffects().entrySet()) {
                 effect.getKey().apply(world, target, attacker, effect.getValue());

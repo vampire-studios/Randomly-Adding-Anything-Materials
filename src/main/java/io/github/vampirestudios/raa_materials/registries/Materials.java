@@ -69,7 +69,7 @@ public class Materials {
                     .oreType(Rands.values(OreType.values()))
                     .color(RGB.getColor())
                     .foodData(materialFoodData)
-                    .target(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.getRandom(Rands.getRandom())).getId())
+                    .target(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.getRandom(Rands.getRandom())).getName())
                     .armor(Rands.chance(2))
                     .tools(!Rands.chance(3))
                     .oreFlower(Rands.chance(4))
@@ -121,13 +121,13 @@ public class Materials {
             Item repairItem;
             FabricBlockSettings blockSettings;
             Block idk = Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.get(material.getOreInformation().getTargetId()), "Invalid target! " + material.getOreInformation().getTargetId().toString()).getBlock();
-            if (material.getOreInformation().getTargetId() != CustomTargets.DOES_NOT_APPEAR.getId()) {
+            if (material.getOreInformation().getTargetId() != CustomTargets.DOES_NOT_APPEAR.getName()) {
                 blockSettings = FabricBlockSettings.copy(idk != null ? idk : Blocks.STONE);
             } else {
                 blockSettings = FabricBlockSettings.copy(Blocks.STONE);
             }
 
-            Block baseBlock = material.getOreInformation().getTargetId() != CustomTargets.DOES_NOT_APPEAR.getId() ? idk != null ? idk : Blocks.STONE : Blocks.STONE;
+            Block baseBlock = material.getOreInformation().getTargetId() != CustomTargets.DOES_NOT_APPEAR.getName() ? idk != null ? idk : Blocks.STONE : Blocks.STONE;
             net.minecraft.block.Material baseBlockMaterial = baseBlock.getDefaultState().getMaterial();
             if (baseBlockMaterial == net.minecraft.block.Material.STONE) {
                 blockSettings.breakByTool(FabricToolTags.PICKAXES, material.getMiningLevel());
@@ -145,7 +145,7 @@ public class Materials {
                     RAABlockItem.BlockType.BLOCK
             );
             if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(Registry.ITEM.get(Registry.BLOCK.getId(block)), material.getCompostableAmount());
-            if (!material.getOreInformation().getTargetId().toString().equals(CustomTargets.DOES_NOT_APPEAR.getId().toString())) {
+            if (!material.getOreInformation().getTargetId().toString().equals(CustomTargets.DOES_NOT_APPEAR.getName().toString())) {
                 io.github.vampirestudios.raa_materials.utils.RegistryUtils.register(
                         new LayeredOreBlock(material, blockSettings.build()),
                         io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_ore"),

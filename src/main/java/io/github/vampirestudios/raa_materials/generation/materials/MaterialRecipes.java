@@ -5,12 +5,9 @@ import com.swordglowsblue.artifice.api.Artifice;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.enums.OreType;
 import io.github.vampirestudios.raa_materials.data.MaterialDataProviders;
-import io.github.vampirestudios.raa_materials.registries.CustomTargets;
 import io.github.vampirestudios.raa_materials.registries.Materials;
-import io.github.vampirestudios.raa_materials.world.gen.feature.OreFeatureConfig;
 import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 

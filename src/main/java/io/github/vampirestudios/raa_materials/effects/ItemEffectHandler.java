@@ -8,13 +8,14 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class ItemEffectHandler {
-    public static void spawnLightning(World world, LivingEntity target, LivingEntity attacker, JsonElement config) {
+    public static void spawnLightning(ServerWorld world, LivingEntity target, LivingEntity attacker, JsonElement config) {
         if (world.getRandom().nextInt(config.getAsJsonObject().get("chance").getAsInt()) == 0) {
             if (!world.isClient()) {
                 world.spawnEntity(EntityType.LIGHTNING_BOLT.create(world, null, null, null, target.getBlockPos(), SpawnReason.TRIGGERED, true, false));
@@ -22,7 +23,7 @@ public class ItemEffectHandler {
         }
     }
 
-    public static void statusEffectForTarget(World world, LivingEntity target, LivingEntity attacker, JsonElement config) {
+    public static void statusEffectForTarget(ServerWorld world, LivingEntity target, LivingEntity attacker, JsonElement config) {
         if (!world.isClient()) {
             target.addStatusEffect(new StatusEffectInstance(
                     Registry.STATUS_EFFECT.get(new Identifier(config.getAsJsonObject().get("type").getAsString())),
@@ -31,7 +32,7 @@ public class ItemEffectHandler {
         }
     }
 
-    public static void spawnFireball(World world, LivingEntity target, LivingEntity attacker, JsonElement config) {
+    public static void spawnFireball(ServerWorld world, LivingEntity target, LivingEntity attacker, JsonElement config) {
         if (world.getRandom().nextInt(config.getAsJsonObject().get("chance").getAsInt()) == 0) {
             if (!world.isClient()) {
                 Vec3d vec3d = attacker.getRotationVec(1.0F);
@@ -46,19 +47,19 @@ public class ItemEffectHandler {
         }
     }
 
-    public static void stopEntity(World world, LivingEntity target, LivingEntity attacker, JsonElement config) {
+    public static void stopEntity(ServerWorld world, LivingEntity target, LivingEntity attacker, JsonElement config) {
         if (!world.isClient()) {
             target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, config.getAsJsonObject().get("duration").getAsInt(), 127, false, false, false));
         }
     }
 
-    public static void burnEntity(World world, LivingEntity target, LivingEntity attacker, JsonElement config) {
+    public static void burnEntity(ServerWorld world, LivingEntity target, LivingEntity attacker, JsonElement config) {
         if (!world.isClient()) {
             target.setOnFireFor(config.getAsJsonObject().get("seconds").getAsInt());
         }
     }
 
-    public static void knockbackEntity(World world, LivingEntity target, LivingEntity attacker, JsonElement config) {
+    public static void knockbackEntity(ServerWorld world, LivingEntity target, LivingEntity attacker, JsonElement config) {
         if (!world.isClient()) {
             target.takeKnockback(config.getAsJsonObject().get("speed").getAsFloat(), config.getAsJsonObject().get("xMovement").getAsDouble(), config.getAsJsonObject().get("zMovement").getAsDouble());
         }

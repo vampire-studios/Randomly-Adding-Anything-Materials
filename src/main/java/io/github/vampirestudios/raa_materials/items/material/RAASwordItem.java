@@ -7,6 +7,7 @@ import io.github.vampirestudios.raa_materials.generation.materials.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -35,7 +36,7 @@ public class RAASwordItem extends SwordItem {
 
     @Override
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        World world = Objects.requireNonNull(target).world;
+        ServerWorld world = Objects.requireNonNull(target).getServer().getWorld(target.getEntityWorld().getRegistryKey());
         if (!world.isClient()) {
             for (Map.Entry<MaterialEffects, JsonElement> effect : material.getSpecialEffects().entrySet()) {
                 effect.getKey().apply(world, target, attacker, effect.getValue());

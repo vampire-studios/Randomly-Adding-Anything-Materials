@@ -1,9 +1,11 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.fabricmc.example.mixin",
+  "package": "io.github.vampirestudios.raa_materials.mixins",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [],
+  "mixins": [
+    "MixinGenerationSettings"
+  ],
   "client": [],
   "injectors": {
     "defaultRequire": 1
