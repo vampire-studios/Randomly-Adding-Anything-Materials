@@ -57,7 +57,7 @@ public class OreBakedModel extends RAABakedModel {
         Identifier baseTexture = new Identifier(Registry.BLOCK.getId(Objects.requireNonNull(
                 RAARegisteries.TARGET_REGISTRY.get(material.getOreInformation().getTargetId())).getBlock()).getNamespace(), "block/" +
                 Registry.BLOCK.getId(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.get(material.getOreInformation().getTargetId())).getBlock()).getPath());
-        if (material.getOreInformation().getTargetId() != CustomTargets.DOES_NOT_APPEAR.getId()) {
+        if (material.getOreInformation().getTargetId() != CustomTargets.DOES_NOT_APPEAR.getName()) {
             sprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(baseTexture);
         } else {
             sprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/oak_planks"));
@@ -79,10 +79,10 @@ public class OreBakedModel extends RAABakedModel {
     }
 
     private void renderBase(QuadEmitter emitter, RenderMaterial mat, Sprite sprite, Renderer renderer, BlockRenderView blockView, BlockPos pos, int color) {
-        if (!material.getOreInformation().getTargetId().toString().equals(CustomTargets.GRASS_BLOCK.getId().toString()) &&
-                !material.getOreInformation().getTargetId().toString().equals(CustomTargets.PODZOL.getId().toString())&&
-                !material.getOreInformation().getTargetId().toString().equals(CustomTargets.SANDSTONE.getId().toString()) &&
-                !material.getOreInformation().getTargetId().toString().equals(CustomTargets.RED_SANDSTONE.getId().toString())) {
+        if (!material.getOreInformation().getTargetId().toString().equals(CustomTargets.GRASS_BLOCK.getName().toString()) &&
+                !material.getOreInformation().getTargetId().toString().equals(CustomTargets.PODZOL.getName().toString())&&
+                !material.getOreInformation().getTargetId().toString().equals(CustomTargets.SANDSTONE.getName().toString()) &&
+                !material.getOreInformation().getTargetId().toString().equals(CustomTargets.RED_SANDSTONE.getName().toString())) {
             emitter.square(Direction.SOUTH, 0, 0, 1, 1, 0)
                     .material(mat)
                     .spriteColor(0, color, color, color, color)
@@ -107,7 +107,7 @@ public class OreBakedModel extends RAABakedModel {
                     .material(mat)
                     .spriteColor(0, color, color, color, color)
                     .spriteBake(0, sprite, MutableQuadView.BAKE_LOCK_UV + MutableQuadView.BAKE_FLIP_U).emit();
-        } else if (material.getOreInformation().getTargetId().toString().equals(CustomTargets.GRASS_BLOCK.getId().toString())) {
+        } else if (material.getOreInformation().getTargetId().toString().equals(CustomTargets.GRASS_BLOCK.getName().toString())) {
             mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
             Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/grass_block_side"));
             Sprite sideOverlaySprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).
@@ -163,7 +163,7 @@ public class OreBakedModel extends RAABakedModel {
                     .material(mat)
                     .spriteColor(0, color2, color2, color2, color2)
                     .spriteBake(0, sideOverlaySprite, MutableQuadView.BAKE_LOCK_UV).emit();
-        } else if (material.getOreInformation().getTargetId().toString().equals(CustomTargets.SANDSTONE.getId().toString())) {
+        } else if (material.getOreInformation().getTargetId().toString().equals(CustomTargets.SANDSTONE.getName().toString())) {
             mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
             Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/sandstone"));
             Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/sandstone_top"));
@@ -193,7 +193,7 @@ public class OreBakedModel extends RAABakedModel {
                     .material(mat)
                     .spriteColor(0, color, color, color, color)
                     .spriteBake(0, topSprite, MutableQuadView.BAKE_LOCK_UV + MutableQuadView.BAKE_FLIP_U).emit();
-        } else if (material.getOreInformation().getTargetId().toString().equals(CustomTargets.RED_SANDSTONE.getId().toString())) {
+        } else if (material.getOreInformation().getTargetId().toString().equals(CustomTargets.RED_SANDSTONE.getName().toString())) {
             mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
             Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/red_sandstone"));
             Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("block/red_sandstone_top"));
@@ -255,110 +255,13 @@ public class OreBakedModel extends RAABakedModel {
                     .spriteColor(0, color, color, color, color)
                     .spriteBake(0, topSprite, MutableQuadView.BAKE_LOCK_UV).emit();
         }
-
-        if (FabricLoader.getInstance().isModLoaded("thehallow")) {
-            if (material.getOreInformation().getTargetId() == Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.get(new Identifier("thehallow", "deceased_grass_block"))).getId()) {
-                mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
-                Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("thehallow", "block/deceased_grass_block_side"));
-                Sprite sideOverlaySprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).
-                        apply(new Identifier("thehallow", "block/deceased_grass_block_side_overlay"));
-                Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("thehallow", "block/deceased_grass_block_top"));
-                Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("thehallow", "block/deceased_dirt"));
-                int color2 = 0xffffff;
-                BlockColorProvider blockColor = ColorProviderRegistry.BLOCK.get(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.
-                        get(material.getOreInformation().getTargetId())).getBlock());
-                if (blockColor != null) {
-                    color2 = 0xff000000 | blockColor.getColor(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.
-                            get(material.getOreInformation().getTargetId())).getBlock().getDefaultState(), blockView, pos, 1);
-                }
-
-                emitter.square(Direction.SOUTH, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color, color, color, color)
-                        .spriteBake(0, sideSprite, MutableQuadView.BAKE_LOCK_UV).emit();
-                emitter.square(Direction.EAST, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color, color, color, color)
-                        .spriteBake(0, sideSprite, MutableQuadView.BAKE_LOCK_UV).emit();
-                emitter.square(Direction.WEST, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color, color, color, color)
-                        .spriteBake(0, sideSprite, MutableQuadView.BAKE_LOCK_UV).emit();
-                emitter.square(Direction.NORTH, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color, color, color, color)
-                        .spriteBake(0, sideSprite, MutableQuadView.BAKE_LOCK_UV).emit();
-                emitter.square(Direction.DOWN, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color, color, color, color)
-                        .spriteBake(0, bottomSprite, MutableQuadView.BAKE_LOCK_UV).emit();
-                emitter.square(Direction.UP, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color2, color2, color2, color2)
-                        .spriteBake(0, topSprite, MutableQuadView.BAKE_LOCK_UV).emit();
-
-                emitter.square(Direction.SOUTH, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color2, color2, color2, color2)
-                        .spriteBake(0, sideOverlaySprite, MutableQuadView.BAKE_LOCK_UV).emit();
-                emitter.square(Direction.EAST, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color2, color2, color2, color2)
-                        .spriteBake(0, sideOverlaySprite, MutableQuadView.BAKE_LOCK_UV).emit();
-                emitter.square(Direction.WEST, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color2, color2, color2, color2)
-                        .spriteBake(0, sideOverlaySprite, MutableQuadView.BAKE_LOCK_UV).emit();
-                emitter.square(Direction.NORTH, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color2, color2, color2, color2)
-                        .spriteBake(0, sideOverlaySprite, MutableQuadView.BAKE_LOCK_UV).emit();
-            } else if (material.getOreInformation().getTargetId() == RAARegisteries.TARGET_REGISTRY.get(new Identifier("thehallow", "tainted_sandstone")).getId()) {
-                mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
-                Sprite sideSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("thehallow", "block/tainted_sandstone"));
-                Sprite topSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("thehallow", "block/tainted_sandstone_top"));
-                Sprite bottomSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(new Identifier("thehallow", "block/tainted_sandstone_bottom"));
-                int color2 = 0xffffff;
-                BlockColorProvider blockColor = ColorProviderRegistry.BLOCK.get(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.
-                        get(material.getOreInformation().getTargetId())).getBlock());
-                if (blockColor != null) {
-                    color2 = 0xff000000 | blockColor.getColor(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.
-                            get(material.getOreInformation().getTargetId())).getBlock().getDefaultState(), blockView, pos, 1);
-                }
-
-                emitter.square(Direction.SOUTH, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color, color, color, color)
-                        .spriteBake(0, sideSprite, MutableQuadView.BAKE_LOCK_UV).emit();
-                emitter.square(Direction.EAST, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color, color, color, color)
-                        .spriteBake(0, sideSprite, MutableQuadView.BAKE_LOCK_UV).emit();
-                emitter.square(Direction.WEST, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color, color, color, color)
-                        .spriteBake(0, sideSprite, MutableQuadView.BAKE_LOCK_UV).emit();
-                emitter.square(Direction.NORTH, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color, color, color, color)
-                        .spriteBake(0, sideSprite, MutableQuadView.BAKE_LOCK_UV).emit();
-                emitter.square(Direction.DOWN, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color, color, color, color)
-                        .spriteBake(0, bottomSprite, MutableQuadView.BAKE_LOCK_UV).emit();
-                emitter.square(Direction.UP, 0, 0, 1, 1, 0)
-                        .material(mat)
-                        .spriteColor(0, color2, color2, color2, color2)
-                        .spriteBake(0, topSprite, MutableQuadView.BAKE_LOCK_UV).emit();
-            }
-        }
     }
 
     private void renderOverlay(QuadEmitter emitter, RenderMaterial mat, Sprite sprite, int color) {
-        if (!material.getOreInformation().getTargetId().toString().equals(CustomTargets.GRASS_BLOCK.getId().toString()) &&
-                !material.getOreInformation().getTargetId().toString().equals(CustomTargets.PODZOL.getId().toString())&&
-                !material.getOreInformation().getTargetId().toString().equals(CustomTargets.SANDSTONE.getId().toString()) &&
-                !material.getOreInformation().getTargetId().toString().equals(CustomTargets.RED_SANDSTONE.getId().toString())) {
+        if (!material.getOreInformation().getTargetId().toString().equals(CustomTargets.GRASS_BLOCK.getName().toString()) &&
+                !material.getOreInformation().getTargetId().toString().equals(CustomTargets.PODZOL.getName().toString())&&
+                !material.getOreInformation().getTargetId().toString().equals(CustomTargets.SANDSTONE.getName().toString()) &&
+                !material.getOreInformation().getTargetId().toString().equals(CustomTargets.RED_SANDSTONE.getName().toString())) {
             emitter.square(Direction.SOUTH, 0, 0, 1, 1, 0)
                     .material(mat)
                     .spriteColor(0, color, color, color, color)

@@ -44,7 +44,7 @@ public class LayeredOreBlock extends OreBlock {
     public LayeredOreBlock(Material material, Settings settings) {
         super(settings);
         this.material = material;
-        this.block = material.getOreInformation().getTargetId() == CustomTargets.DOES_NOT_APPEAR.getId() ? Blocks.STONE :
+        this.block = material.getOreInformation().getTargetId() == CustomTargets.DOES_NOT_APPEAR.getName() ? Blocks.STONE :
                 Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.get(material.getOreInformation().getTargetId())).getBlock();
     }
 

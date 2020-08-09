@@ -2,17 +2,29 @@ package io.github.vampirestudios.raa_materials;
 
 import com.swordglowsblue.artifice.api.Artifice;
 import io.github.vampirestudios.raa_core.api.client.RAAAddonClient;
+import io.github.vampirestudios.raa_materials.api.RAARegisteries;
 import io.github.vampirestudios.raa_materials.client.OreBakedModel;
 import io.github.vampirestudios.raa_materials.client.textures.MaterialTextureProviders;
 import io.github.vampirestudios.raa_materials.generation.materials.Material;
 import io.github.vampirestudios.raa_materials.generation.materials.data.SwordTextureData;
+import io.github.vampirestudios.raa_materials.registries.CustomTargets;
 import io.github.vampirestudios.raa_materials.registries.Materials;
+import io.github.vampirestudios.vampirelib.colorSnifferApi.ColorSniffer;
 import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
+import net.fabricmc.fabric.api.client.render.ColorProviderRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
+import net.fabricmc.fabric.impl.blockrenderlayer.BlockRenderLayerMapImpl;
 import net.fabricmc.fabric.impl.client.rendering.ColorProviderRegistryImpl;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.GrassBlock;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.color.block.BlockColorProvider;
+import net.minecraft.client.color.world.GrassColors;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.ModelLoader;
@@ -20,8 +32,11 @@ import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.BlockRenderView;
 
 import java.util.*;
 import java.util.function.Function;
@@ -126,31 +141,129 @@ public class RAAMaterialsClient implements RAAAddonClient {
             ColorProviderRegistryImpl.BLOCK.register((blockstate, blockview, blockpos, layer) -> material.getColor(),
                     Registry.BLOCK.get(Utils.appendToPath(id, "_block"))
             );
-        });
 
-        ModelLoadingRegistry.INSTANCE.registerVariantProvider(resourceManager -> (modelIdentifier, modelProviderContext) -> {
-            if (!modelIdentifier.getNamespace().equals(RAAMaterials.MOD_ID)) {
-                return null;
+            if (FabricLoader.getInstance().isModLoaded("optifabric") || FabricLoader.getInstance().isModLoaded("sodium")) {
+                if (material.getOreInformation().getTargetId().toString().equals(CustomTargets.GRASS_BLOCK.getName().toString())) {
+                    ColorProviderRegistryImpl.BLOCK.register((blockstate, blockview, blockpos, layer) -> {
+                        int color2 = 0xffffff;
+                        BlockColorProvider blockColor = ColorProviderRegistry.BLOCK.get(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.
+                                get(material.getOreInformation().getTargetId())).getBlock());
+                        if (blockColor != null) {
+                            color2 = 0xff000000 | blockColor.getColor(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.
+                                    get(material.getOreInformation().getTargetId())).getBlock().getDefaultState(), blockview, blockpos, 1);
+                        }
+                        if (layer == 1 || layer == 2) {
+                            return color2;
+                        } else if (layer == 3) {
+                            return material.getColor();
+                        } else {
+                            return 0xFFFFFF;
+                        }
+                    }, Registry.BLOCK.get(Utils.appendToPath(id, "_ore")));
+                    ColorProviderRegistryImpl.ITEM.register((stack, tintIndex) -> {
+                        if (tintIndex == 1 || tintIndex == 2) {
+                            BlockState blockState = ((BlockItem)stack.getItem()).getBlock().getDefaultState();
+                            return MinecraftClient.getInstance().getBlockColors().getColor(blockState, null, null, 1);
+                        } else if (tintIndex == 3) {
+                            return material.getColor();
+                        } else {
+                            return 0xFFFFFF;
+                        }
+                    }, Registry.BLOCK.get(Utils.appendToPath(id, "_ore")));
+                } else if (material.getOreInformation().getTargetId().toString().equals(CustomTargets.SANDSTONE.getName().toString())) {
+                    ColorProviderRegistryImpl.BLOCK.register((blockstate, blockview, blockpos, layer) -> {
+                        if (layer == 3) {
+                            return material.getColor();
+                        } else {
+                            return 0xFFFFFF;
+                        }
+                    }, Registry.BLOCK.get(Utils.appendToPath(id, "_ore")));
+                    ColorProviderRegistryImpl.ITEM.register((stack, tintIndex) -> {
+                        if(tintIndex == 3) {
+                            return material.getColor();
+                        } else {
+                            return 0xFFFFFF;
+                        }
+                    }, Registry.BLOCK.get(Utils.appendToPath(id, "_ore")));
+                } else if (material.getOreInformation().getTargetId().toString().equals(CustomTargets.RED_SANDSTONE.getName().toString())) {
+                    ColorProviderRegistryImpl.BLOCK.register((blockstate, blockview, blockpos, layer) -> {
+                        if (layer == 3) {
+                            return material.getColor();
+                        } else {
+                            return 0xFFFFFF;
+                        }
+                    }, Registry.BLOCK.get(Utils.appendToPath(id, "_ore")));
+                    ColorProviderRegistryImpl.ITEM.register((stack, tintIndex) -> {
+                        if(tintIndex == 3) {
+                            return material.getColor();
+                        } else {
+                            return 0xFFFFFF;
+                        }
+                    }, Registry.BLOCK.get(Utils.appendToPath(id, "_ore")));
+                } else if (material.getOreInformation().getTargetId().toString().equals(CustomTargets.PODZOL.getName().toString())) {
+                    ColorProviderRegistryImpl.BLOCK.register((blockstate, blockview, blockpos, layer) -> {
+                        if (layer == 3) {
+                            return material.getColor();
+                        } else {
+                            return 0xFFFFFF;
+                        }
+                    }, Registry.BLOCK.get(Utils.appendToPath(id, "_ore")));
+                    ColorProviderRegistryImpl.ITEM.register((stack, tintIndex) -> {
+                        if(tintIndex == 3) {
+                            return material.getColor();
+                        } else {
+                            return 0xFFFFFF;
+                        }
+                    }, Registry.BLOCK.get(Utils.appendToPath(id, "_ore")));
+                }
+
+                if (!material.getOreInformation().getTargetId().toString().equals(CustomTargets.GRASS_BLOCK.getName().toString()) &&
+                        !material.getOreInformation().getTargetId().toString().equals(CustomTargets.PODZOL.getName().toString()) &&
+                        !material.getOreInformation().getTargetId().toString().equals(CustomTargets.SANDSTONE.getName().toString()) &&
+                        !material.getOreInformation().getTargetId().toString().equals(CustomTargets.RED_SANDSTONE.getName().toString())) {
+                    ColorProviderRegistryImpl.BLOCK.register((blockstate, blockview, blockpos, layer) -> {
+                        if(layer == 1) {
+                            return material.getColor();
+                        } else {
+                            return 0xFFFFFF;
+                        }
+                    }, Registry.BLOCK.get(Utils.appendToPath(id, "_ore")));
+                    ColorProviderRegistryImpl.ITEM.register((stack, tintIndex) -> {
+                        if(tintIndex == 1) {
+                            return material.getColor();
+                        } else {
+                            return 0xFFFFFF;
+                        }
+                    }, Registry.BLOCK.get(Utils.appendToPath(id, "_ore")));
+                }
             }
-            Identifier identifier = new Identifier(modelIdentifier.getNamespace(), modelIdentifier.getPath());
-            if (!MATERIAL_ORE_IDENTIFIERS.containsKey(identifier)) return null;
-            return new UnbakedModel() {
-                @Override
-                public Collection<Identifier> getModelDependencies() {
-                    return Collections.emptyList();
-                }
-
-                @Override
-                public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<com.mojang.datafixers.util.Pair<String, String>> unresolvedTextureReferences) {
-                    return Collections.emptyList();
-                }
-
-                @Override
-                public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-                    return new OreBakedModel(MATERIAL_ORE_IDENTIFIERS.get(identifier));
-                }
-            };
+            BlockRenderLayerMapImpl.INSTANCE.putBlock(Registry.BLOCK.get(Utils.appendToPath(id, "_ore")), RenderLayer.getCutoutMipped());
         });
+        if (!FabricLoader.getInstance().isModLoaded("optifabric") && !FabricLoader.getInstance().isModLoaded("sodium")) {
+            ModelLoadingRegistry.INSTANCE.registerVariantProvider(resourceManager -> (modelIdentifier, modelProviderContext) -> {
+                if (!modelIdentifier.getNamespace().equals(RAAMaterials.MOD_ID)) {
+                    return null;
+                }
+                Identifier identifier = new Identifier(modelIdentifier.getNamespace(), modelIdentifier.getPath());
+                if (!MATERIAL_ORE_IDENTIFIERS.containsKey(identifier)) return null;
+                return new UnbakedModel() {
+                    @Override
+                    public Collection<Identifier> getModelDependencies() {
+                        return Collections.emptyList();
+                    }
+
+                    @Override
+                    public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<com.mojang.datafixers.util.Pair<String, String>> unresolvedTextureReferences) {
+                        return Collections.emptyList();
+                    }
+
+                    @Override
+                    public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+                        return new OreBakedModel(MATERIAL_ORE_IDENTIFIERS.get(identifier));
+                    }
+                };
+            });
+        }
     }
 
 }

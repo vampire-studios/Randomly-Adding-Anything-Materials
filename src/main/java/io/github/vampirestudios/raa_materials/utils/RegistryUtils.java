@@ -99,14 +99,6 @@ public class RegistryUtils {
         }
     }
 
-    public static OreFeatureConfig.Target registerOreTarget(Identifier name, OreFeatureConfig.Target target) {
-        if (RAARegisteries.TARGET_REGISTRY.get(name) == null) {
-            return Registry.register(RAARegisteries.TARGET_REGISTRY, name, target);
-        } else {
-            return target;
-        }
-    }
-
 //    public static OreFeatureConfig.Target registerOreTarget(String name, Predicate<BlockState> blockStatePredicate, Block block) {
 //        return registerOreTarget(new Identifier(name), blockStatePredicate, block);
 //    }

@@ -19,7 +19,7 @@ public class MaterialItemsBlocksDataProvider extends RAAMaterialDataProvider {
         MaterialRecipes.MaterialRecipeObject recipeObject = (MaterialRecipes.MaterialRecipeObject) t;
 
         if (recipeObject.getOreType() == OreType.METAL) {
-            if (recipeObject.getTarget() != CustomTargets.DOES_NOT_APPEAR.getId() && Registry.BLOCK.getOrEmpty(recipeObject.suffix("_ore")).isPresent()) {
+            if (recipeObject.getTarget() != CustomTargets.DOES_NOT_APPEAR.getName() && Registry.BLOCK.getOrEmpty(recipeObject.suffix("_ore")).isPresent()) {
                 serverResourcePackBuilder.addSmeltingRecipe(recipeObject.suffix("_ingot"), cookingRecipeBuilder -> {
                     cookingRecipeBuilder.cookingTime(200);
                     cookingRecipeBuilder.ingredientItem(recipeObject.suffix("_ore"));
