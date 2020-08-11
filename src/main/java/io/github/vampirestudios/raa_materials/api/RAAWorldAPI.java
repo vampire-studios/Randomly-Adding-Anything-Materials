@@ -12,6 +12,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.CountExtraDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 
 public class RAAWorldAPI {
@@ -24,14 +25,14 @@ public class RAAWorldAPI {
      */
     public static void generateOresForTarget(Biome biome, OreTarget target) {
         Materials.MATERIALS.forEach(material -> {
+            Feature<OreFeatureConfig> oreFeature = Registry.register(Registry.FEATURE, Utils.appendToPath(material.getId(), "_ore_feature" + Rands.getRandom().nextInt()), new OreFeature(OreFeatureConfig.CODEC));
             if (Registry.BLOCK.get(material.getOreInformation().getTargetId()) == target.getBlock()) {
-                Feature<OreFeatureConfig> oreFeature = Registry.register(Registry.FEATURE, Utils.appendToPath(material.getId(), "_ore_feature" + Rands.getRandom().nextInt()), new OreFeature(OreFeatureConfig.CODEC));
-                BiomeUtils.addFeatureToBiome(biome, GenerationStep.Feature.UNDERGROUND_ORES,
-                        oreFeature.configure(new OreFeatureConfig(target.getTest(),
-                                Registry.BLOCK.get(Utils.appendToPath(material.getId(), "_ore")).getDefaultState(), material.getOreInformation().getOreClusterSize()))
-                                .decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(material.getOreInformation().getOreCount(),
-                                        0, 256))));
+                ConfiguredFeature<?, ?> configuredFeature = BiomeUtils.newConfiguredFeature(material.getId().getPath() + "_ore_feature" + Rands.getRandom().nextInt(), oreFeature.configure(new OreFeatureConfig(target.getTest(),
+                        Registry.BLOCK.get(Utils.appendToPath(material.getId(), "_ore")).getDefaultState(), material.getOreInformation().getOreClusterSize()))
+                        .decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(material.getOreInformation().getOreCount(), 0, 256))));
+                BiomeUtils.addFeatureToBiome(biome, GenerationStep.Feature.UNDERGROUND_ORES, configuredFeature);
             }
         });
     }
+
 }

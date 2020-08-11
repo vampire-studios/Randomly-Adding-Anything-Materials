@@ -8,7 +8,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -26,6 +25,17 @@ public enum MaterialEffects {
         } else {
             while (isInBlackList(effectID)) {
                 effectID = Rands.list(new ArrayList<>(Registry.STATUS_EFFECT.getIds())).toString();
+            }
+        }
+        if (effectID.equals("")) {
+            if (RAAMaterials.CONFIG.useOnlyVanillaPotionEffects) {
+                while (!new Identifier(effectID).getNamespace().equals("minecraft")) {
+                    effectID = Rands.list(new ArrayList<>(Registry.STATUS_EFFECT.getIds())).toString();
+                }
+            } else {
+                while (isInBlackList(effectID)) {
+                    effectID = Rands.list(new ArrayList<>(Registry.STATUS_EFFECT.getIds())).toString();
+                }
             }
         }
         element.getAsJsonObject().addProperty("type", effectID);

@@ -28,6 +28,7 @@
   "mixins": [
     "raa_materials.mixins.json"
   ],
+  "accessWidener": "raa_materials.accesswidener",
 
   "depends": {
     "fabricloader": ">=0.7.4",
