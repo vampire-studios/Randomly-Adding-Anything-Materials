@@ -1,6 +1,7 @@
 package io.github.vampirestudios.raa_materials;
 
 import io.github.vampirestudios.raa_core.api.RAAAddon;
+import io.github.vampirestudios.raa_materials.api.DynamicRegistryProvider;
 import io.github.vampirestudios.raa_materials.api.RAARegisteries;
 import io.github.vampirestudios.raa_materials.api.RAAWorldAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.MaterialLanguageManager;
@@ -21,7 +22,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.BuiltinRegistries;
 
 public class RAAMaterials implements RAAAddon {
     public static final String MOD_ID = "raa_materials";
@@ -82,7 +82,8 @@ public class RAAMaterials implements RAAAddon {
 
         MaterialRecipes.init();
 
-        BuiltinRegistries.BIOME.forEach(biome -> RAARegisteries.TARGET_REGISTRY.forEach(target -> RAAWorldAPI.generateOresForTarget(biome, target)));
+        RAARegisteries.TARGET_REGISTRY.forEach(RAAWorldAPI::generateOresForTarget);
+        DynamicRegistryProvider
     }
 
 }

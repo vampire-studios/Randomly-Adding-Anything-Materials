@@ -1,6 +1,5 @@
 package io.github.vampirestudios.raa_materials.utils;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import net.minecraft.util.Identifier;
@@ -17,18 +16,18 @@ import java.util.stream.Collectors;
 
 public class BiomeUtils {
 
-        public static void addFeatureToBiome(Biome biome, GenerationStep.Feature feature, ConfiguredFeature<?, ?> configuredFeature) {
-            convertImmutableFeatures(biome);
-            List<List<Supplier<ConfiguredFeature<?, ?>>>> biomeFeatures = biome.getGenerationSettings().features;
-            while (biomeFeatures.size() <= feature.ordinal()) {
-                biomeFeatures.add(Lists.newArrayList());
-            }
-            biomeFeatures.get(feature.ordinal()).add(() -> configuredFeature);
+    public static void addFeatureToBiome(Biome biome, GenerationStep.Feature feature, ConfiguredFeature<?, ?> configuredFeature) {
+        ConvertImmutableFeatures(biome);
+        List<List<Supplier<ConfiguredFeature<?, ?>>>> biomeFeatures = biome.getGenerationSettings().features;
+        while (biomeFeatures.size() <= feature.ordinal()) {
+            biomeFeatures.add(Lists.newArrayList());
         }
-    private static void convertImmutableFeatures(Biome biome) {
-        if (biome.getGenerationSettings().features instanceof ImmutableList) {
-            biome.getGenerationSettings().features = biome.getGenerationSettings().features.stream().map(Lists::newArrayList).collect(Collectors.toList());
-        }
+        biomeFeatures.get(feature.ordinal()).add(() -> configuredFeature);
+
+    }
+
+    private static void ConvertImmutableFeatures(Biome biome) {
+        biome.getGenerationSettings().features = biome.getGenerationSettings().features.stream().map(Lists::newArrayList).collect(Collectors.toList());
     }
 
     public static ConfiguredFeature<?, ?> newConfiguredFeature(String registryName, ConfiguredFeature<?, ?> configuredFeature) {

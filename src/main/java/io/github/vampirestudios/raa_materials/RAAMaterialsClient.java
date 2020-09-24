@@ -53,7 +53,7 @@ public class RAAMaterialsClient implements RAAAddonClient {
     @Environment(EnvType.CLIENT)
     public void onClientInitialize() {
         MaterialTextureProviders.init();
-        ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEX)
+        ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)
                 .register((spriteAtlasTexture, registry) -> {
                     for (Material material : Materials.MATERIALS) {
                         registry.register(material.getTexturesInformation().getOverlayTexture());
