@@ -348,7 +348,7 @@ public class OreBakedModel extends RAABakedModel {
         }
     }
 
-    private void renderOverlay(QuadEmitter emitter, RenderMaterial mat, Renderer renderer, Sprite sprite, int color) {
+    private void renderOverlay(QuadEmitter emitter, RenderMaterial mat, Sprite sprite, int color) {
         if (!material.getOreInformation().getTargetId().toString().equals(CustomTargets.GRASS_BLOCK.getName().toString()) &&
                 !material.getOreInformation().getTargetId().toString().equals(CustomTargets.PODZOL.getName().toString())&&
                 !material.getOreInformation().getTargetId().toString().equals(CustomTargets.SANDSTONE.getName().toString()) &&
