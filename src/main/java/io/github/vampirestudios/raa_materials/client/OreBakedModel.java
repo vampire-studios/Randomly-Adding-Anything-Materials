@@ -72,7 +72,7 @@ public class OreBakedModel extends RAABakedModel {
         color = material.getColor();
         sprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(this.material.getTexturesInformation().getOverlayTexture());
 
-        this.renderOverlay(emitter, mat, renderer, sprite, color);
+        this.renderOverlay(emitter, mat, sprite, color);
 
         return builder.build();
     }
