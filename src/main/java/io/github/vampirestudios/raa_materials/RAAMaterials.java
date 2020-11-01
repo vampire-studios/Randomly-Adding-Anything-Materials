@@ -11,10 +11,11 @@ import io.github.vampirestudios.raa_materials.data.MaterialDataProviders;
 import io.github.vampirestudios.raa_materials.generation.materials.MaterialRecipes;
 import io.github.vampirestudios.raa_materials.generation.targets.OreTargetGenerator;
 import io.github.vampirestudios.raa_materials.registries.CustomTargets;
+import io.github.vampirestudios.raa_materials.registries.Features;
 import io.github.vampirestudios.raa_materials.registries.Materials;
 import io.github.vampirestudios.raa_materials.registries.Textures;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
-import me.sargunvohra.mcmods.autoconfig1u.serializer.GsonConfigSerializer;
+import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemGroup;
@@ -50,10 +51,11 @@ public class RAAMaterials implements RAAAddon {
     public void onInitialize() {
         MaterialDataProviders.init();
         MaterialLanguageManager.init();
-        AutoConfig.register(GeneralConfig.class, GsonConfigSerializer::new);
+        AutoConfig.register(GeneralConfig.class, JanksonConfigSerializer::new);
         CONFIG = AutoConfig.getConfigHolder(GeneralConfig.class).getConfig();
         Textures.init();
         CustomTargets.init();
+        Features.init();
 
         OreTargetGenerator.registerElements();
         ORE_TARGET_CONFIG = new OreTargetConfig("targets/ore_target_config");
