@@ -61,7 +61,7 @@ public class RAAMaterialsClient implements RAAAddonClient {
                     }
                 });
 
-        Artifice.registerAssets(new Identifier(RAAMaterials.MOD_ID, "pack"), clientResourcePackBuilder -> {
+        Artifice.registerAssetPack(new Identifier(RAAMaterials.MOD_ID, "pack"), clientResourcePackBuilder -> {
             Materials.MATERIALS.forEach(material -> {
                 MaterialTextureProviders.generateJSON(MaterialTextureProviders.MATERIAL_BLOCKS, material, clientResourcePackBuilder);
                 MaterialTextureProviders.generateJSON(MaterialTextureProviders.MATERIAL_ITEMS, material, clientResourcePackBuilder);

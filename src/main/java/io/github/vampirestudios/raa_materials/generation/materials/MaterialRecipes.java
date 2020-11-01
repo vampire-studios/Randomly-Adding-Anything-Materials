@@ -14,7 +14,7 @@ import net.minecraft.util.registry.Registry;
 public class MaterialRecipes {
 
     public static void init() {
-        Artifice.registerData(new Identifier(RAAMaterials.MOD_ID, "recipe_pack_1"), serverResourcePackBuilder -> {
+        Artifice.registerDataPack(new Identifier(RAAMaterials.MOD_ID, "recipe_pack_1"), serverResourcePackBuilder -> {
 //            RandomlyAddingAnything.MODCOMPAT.generateCompatRecipes(serverResourcePackBuilder);
             Materials.MATERIALS.forEach(material -> {
                 Item repairItem;

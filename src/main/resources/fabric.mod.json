@@ -23,9 +23,6 @@
     ],
     "raa:addon_client": [
       "io.github.vampirestudios.raa_materials.RAAMaterialsClient"
-    ],
-    "dynamic-registry-provider": [
-      "io.github.vampirestudios.hidden_gems.TestDynamicRegistryProvider"
     ]
   },
   "mixins": [

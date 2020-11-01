@@ -3,10 +3,7 @@
   "minVersion": "0.8",
   "package": "io.github.vampirestudios.raa_materials.mixins",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
-    "DynamicRegistryManagerMixin",
-    "MixinGenerationSettings"
-  ],
+  "mixins": [],
   "client": [],
   "injectors": {
     "defaultRequire": 1

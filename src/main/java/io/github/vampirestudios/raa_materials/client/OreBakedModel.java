@@ -50,7 +50,7 @@ public class OreBakedModel extends RAABakedModel {
         MeshBuilder builder = renderer.meshBuilder();
         QuadEmitter emitter = builder.getEmitter();
 
-        RenderMaterial mat = renderer.materialFinder().blendMode(0, BlendMode.CUTOUT_MIPPED).disableDiffuse(0, true).disableAo(0, false).find();
+        RenderMaterial mat = renderer.materialFinder().blendMode(0, BlendMode.CUTOUT_MIPPED).disableDiffuse(0, false).disableAo(0, false).find();
         int color = 0xFFFFFFFF;
         Sprite sprite;
         Identifier baseTexture = new Identifier(Registry.BLOCK.getId(Objects.requireNonNull(
@@ -65,14 +65,14 @@ public class OreBakedModel extends RAABakedModel {
         this.renderBase(emitter, mat, sprite, renderer, blockView, pos, color);
 
         if (material.isGlowing()) {
-            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).emissive(0, true).find();
+            mat = renderer.materialFinder().disableDiffuse(0, true).disableAo(0, true).blendMode(0, BlendMode.CUTOUT_MIPPED).emissive(0, true).find();
         } else {
-            mat = renderer.materialFinder().disableDiffuse(0, false).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
+            mat = renderer.materialFinder().disableDiffuse(0, true).disableAo(0, true).blendMode(0, BlendMode.CUTOUT_MIPPED).find();
         }
         color = material.getColor();
         sprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(this.material.getTexturesInformation().getOverlayTexture());
 
-        this.renderOverlay(emitter, mat, sprite, color);
+        this.renderOverlay(emitter, mat, renderer, sprite, color);
 
         return builder.build();
     }
@@ -348,7 +348,7 @@ public class OreBakedModel extends RAABakedModel {
         }
     }
 
-    private void renderOverlay(QuadEmitter emitter, RenderMaterial mat, Sprite sprite, int color) {
+    private void renderOverlay(QuadEmitter emitter, RenderMaterial mat, Renderer renderer, Sprite sprite, int color) {
         if (!material.getOreInformation().getTargetId().toString().equals(CustomTargets.GRASS_BLOCK.getName().toString()) &&
                 !material.getOreInformation().getTargetId().toString().equals(CustomTargets.PODZOL.getName().toString())&&
                 !material.getOreInformation().getTargetId().toString().equals(CustomTargets.SANDSTONE.getName().toString()) &&

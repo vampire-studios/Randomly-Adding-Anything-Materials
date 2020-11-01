@@ -65,8 +65,10 @@ public class Materials {
                     .snack(Rands.chance(10))
                     .build();
 
-            Material material = Material.Builder.create(id, name)
-                    .oreType(Rands.values(OreType.values()))
+            OreType oreType = Rands.values(OreType.values());
+
+            Material.Builder material = Material.Builder.create(id, name)
+                    .oreType(oreType)
                     .color(RGB.getColor())
                     .foodData(materialFoodData)
                     .target(Objects.requireNonNull(RAARegisteries.TARGET_REGISTRY.getRandom(Rands.getRandom())).getName())
@@ -82,15 +84,11 @@ public class Materials {
                     .compostbleAmount(Rands.randFloatRange(0.3F, 3.0F))
                     .compostable(Rands.chance(10))
                     .beaconBase(Rands.chance(10))
-                    .specialEffects(generateSpecialEffects())
-                    .build();
-
-            Registry.register(MATERIALS, id, material);
-
-            // Debug Only
-            /*if (RAAMaterials.CONFIG.debug) {
-                ConsolePrinting.materialDebug(material, RGB);
-            }*/
+                    .specialEffects(generateSpecialEffects());
+            if(oreType == OreType.CRYSTAL) {
+                material.hasOre(Rands.chance(5));
+            }
+            Registry.register(MATERIALS, id, material.build());
         }
         ready = true;
     }
@@ -145,7 +143,7 @@ public class Materials {
                     RAABlockItem.BlockType.BLOCK
             );
             if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(Registry.ITEM.get(Registry.BLOCK.getId(block)), material.getCompostableAmount());
-            if (!material.getOreInformation().getTargetId().toString().equals(CustomTargets.DOES_NOT_APPEAR.getName().toString())) {
+            if (!material.getOreInformation().getTargetId().toString().equals(CustomTargets.DOES_NOT_APPEAR.getName().toString())/* && material.hasOre()*/) {
                 io.github.vampirestudios.raa_materials.utils.RegistryUtils.register(
                         new LayeredOreBlock(material, blockSettings.build()),
                         io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_ore"),
@@ -154,6 +152,14 @@ public class Materials {
                         RAABlockItem.BlockType.ORE);
 //                if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(Registry.ITEM.get(Registry.BLOCK.getId(block2)), material.getCompostableAmount());
             }
+            /*if (!material.hasOre() && material.getOreInformation().getOreType() == OreType.CRYSTAL) {
+                io.github.vampirestudios.raa_materials.utils.RegistryUtils.register(
+                        new OreCrystalBlock(material, blockSettings.build()),
+                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_crystal"),
+                        RAAMaterials.RAA_ORES,
+                        material.getName(),
+                        RAABlockItem.BlockType.CRYSTAL);
+            }*/
             if (material.getOreInformation().getOreType() == OreType.METAL) {
                 Item item;
                 item = MOD_REGISTRY.registerItem(

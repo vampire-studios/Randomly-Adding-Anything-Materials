@@ -36,7 +36,8 @@ public class RAABlockItem extends BlockItem implements GeneratedItemName {
 
     public enum BlockType {
         ORE("_ore"),
-        BLOCK("_block");
+        BLOCK("_block"),
+        CRYSTAL("_crystal");
 
         private String suffix;
 

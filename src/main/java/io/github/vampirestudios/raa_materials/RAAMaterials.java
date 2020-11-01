@@ -1,7 +1,6 @@
 package io.github.vampirestudios.raa_materials;
 
 import io.github.vampirestudios.raa_core.api.RAAAddon;
-import io.github.vampirestudios.raa_materials.api.DynamicRegistryProvider;
 import io.github.vampirestudios.raa_materials.api.RAARegisteries;
 import io.github.vampirestudios.raa_materials.api.RAAWorldAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.MaterialLanguageManager;
@@ -83,7 +82,6 @@ public class RAAMaterials implements RAAAddon {
         MaterialRecipes.init();
 
         RAARegisteries.TARGET_REGISTRY.forEach(RAAWorldAPI::generateOresForTarget);
-        DynamicRegistryProvider
     }
 
 }

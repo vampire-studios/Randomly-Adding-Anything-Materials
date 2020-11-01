@@ -30,10 +30,11 @@ public class Material {
     private float compostableAmount;
     private boolean compostable;
     private boolean beaconBase;
+    private boolean hasOre;
 
     Material(OreInformation oreInformation, Identifier id, String name, MaterialTexturesInformation texturesInformation, int color, int miningLevel, boolean armor,
              CustomArmorMaterial armorMaterial, boolean tools, boolean weapons, CustomToolMaterial toolMaterial, boolean glowing, boolean oreFlower, boolean food,
-             MaterialFoodData materialFoodData, float compostableAmount, boolean compostable, boolean beaconBase, Map<MaterialEffects, JsonElement> specialEffects) {
+             MaterialFoodData materialFoodData, float compostableAmount, boolean compostable, boolean beaconBase, Map<MaterialEffects, JsonElement> specialEffects, boolean hasOre) {
         this.oreInformation = oreInformation;
         this.id = id;
         this.name = name;
@@ -53,6 +54,7 @@ public class Material {
         this.compostable = compostable;
         this.beaconBase = beaconBase;
         this.specialEffects = specialEffects;
+        this.hasOre = hasOre;
     }
 
     public OreInformation getOreInformation() {
@@ -132,6 +134,10 @@ public class Material {
         return beaconBase;
     }
 
+    public boolean hasOre() {
+        return hasOre;
+    }
+
     public Map<MaterialEffects, JsonElement> getSpecialEffects() {
         return specialEffects;
     }
@@ -161,9 +167,10 @@ public class Material {
         private float compostableAmount;
         private boolean compostable;
         private boolean beaconBase;
+        private boolean hasOre;
 
         protected Builder() {
-            oreCount = Rands.randInt(30) + 1;
+            oreCount = 85;
             miningLevel = Rands.randInt(5);
         }
 
@@ -177,26 +184,6 @@ public class Material {
             builder.id = id;
             builder.name = name;
             return builder;
-        }
-
-        public Builder oreCount(int oreCount) {
-            this.oreCount = oreCount;
-            return this;
-        }
-
-        public Builder miningLevel(int miningLevel) {
-            this.miningLevel = miningLevel;
-            return this;
-        }
-
-        public Builder id(Identifier id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = name;
-            return this;
         }
 
         public Builder oreType(OreType oreType) {
@@ -297,6 +284,11 @@ public class Material {
             return this;
         }
 
+        public Builder hasOre(boolean hasOre) {
+            this.hasOre = hasOre;
+            return this;
+        }
+
         public Builder specialEffects(Map<MaterialEffects, JsonElement> specialEffects) {
             this.specialEffects = specialEffects;
             return this;
@@ -388,7 +380,7 @@ public class Material {
             OreInformation oreInformation = new OreInformation(oreType, generatesIn, oreCount, minXPAmount, maxXPAmount, oreClusterSize);
 
             return new Material(oreInformation, id, name, texturesInformation, RGB, miningLevel, armor, armorMaterial, tools, weapons, toolMaterial, glowing, oreFlower,
-                    food, foodData, compostableAmount, compostable, beaconBase, specialEffects);
+                    food, foodData, compostableAmount, compostable, beaconBase, specialEffects, hasOre);
         }
     }
 
