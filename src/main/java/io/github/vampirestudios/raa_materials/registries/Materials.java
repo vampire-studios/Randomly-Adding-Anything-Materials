@@ -11,6 +11,7 @@ import io.github.vampirestudios.raa_materials.api.enums.OreType;
 import io.github.vampirestudios.raa_materials.api.namegeneration.MaterialLanguageManager;
 import io.github.vampirestudios.raa_materials.blocks.LayeredOreBlock;
 import io.github.vampirestudios.raa_materials.blocks.RAABlock;
+import io.github.vampirestudios.raa_materials.blocks.RoundBlock;
 import io.github.vampirestudios.raa_materials.effects.MaterialEffects;
 import io.github.vampirestudios.raa_materials.generation.materials.Material;
 import io.github.vampirestudios.raa_materials.generation.materials.data.MaterialFoodData;
@@ -150,6 +151,15 @@ public class Materials {
                         RAAMaterials.RAA_ORES,
                         material.getName(),
                         RAABlockItem.BlockType.ORE);
+//                if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(Registry.ITEM.get(Registry.BLOCK.getId(block2)), material.getCompostableAmount());
+            }
+            if (!material.getOreInformation().getTargetId().toString().equals(CustomTargets.DOES_NOT_APPEAR.getName().toString())/* && material.hasOre()*/) {
+                io.github.vampirestudios.raa_materials.utils.RegistryUtils.register(
+                        new RoundBlock(blockSettings.build()),
+                        io.github.vampirestudios.vampirelib.utils.Utils.appendToPath(identifier, "_ball"),
+                        RAAMaterials.RAA_ORES,
+                        material.getName(),
+                        RAABlockItem.BlockType.BALL);
 //                if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(Registry.ITEM.get(Registry.BLOCK.getId(block2)), material.getCompostableAmount());
             }
             /*if (!material.hasOre() && material.getOreInformation().getOreType() == OreType.CRYSTAL) {

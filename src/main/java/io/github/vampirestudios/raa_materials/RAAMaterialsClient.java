@@ -3,17 +3,26 @@ package io.github.vampirestudios.raa_materials;
 import com.swordglowsblue.artifice.api.Artifice;
 import io.github.vampirestudios.raa_core.api.client.RAAAddonClient;
 import io.github.vampirestudios.raa_materials.api.RAARegisteries;
+import io.github.vampirestudios.raa_materials.client.ModelBuilder;
 import io.github.vampirestudios.raa_materials.client.OreBakedModel;
+import io.github.vampirestudios.raa_materials.client.SimpleModel;
+import io.github.vampirestudios.raa_materials.client.SimpleUnbakedModel;
 import io.github.vampirestudios.raa_materials.client.textures.MaterialTextureProviders;
 import io.github.vampirestudios.raa_materials.generation.materials.Material;
 import io.github.vampirestudios.raa_materials.registries.CustomTargets;
 import io.github.vampirestudios.raa_materials.registries.Materials;
+import io.github.vampirestudios.vampirelib.utils.Color;
+import io.github.vampirestudios.vampirelib.utils.Rands;
 import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
+import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
+import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
+import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
+import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
 import net.fabricmc.fabric.impl.blockrenderlayer.BlockRenderLayerMapImpl;
 import net.fabricmc.fabric.impl.client.rendering.ColorProviderRegistryImpl;
 import net.fabricmc.loader.api.FabricLoader;
@@ -28,7 +37,9 @@ import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.BlockItem;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -38,6 +49,7 @@ import java.util.function.Function;
 public class RAAMaterialsClient implements RAAAddonClient {
 
     public static final Map<Identifier, Material> MATERIAL_ORE_IDENTIFIERS = new HashMap<>();
+    public static final Map<Identifier, Material> MATERIAL_BALL_IDENTIFIERS = new HashMap<>();
 
     @Override
     public String[] shouldLoadAfter() {
@@ -304,6 +316,20 @@ public class RAAMaterialsClient implements RAAAddonClient {
                         return new OreBakedModel(MATERIAL_ORE_IDENTIFIERS.get(identifier));
                     }
                 };
+            });
+            ModelLoadingRegistry.INSTANCE.registerVariantProvider(resourceManager -> (modelIdentifier, modelProviderContext) -> {
+                if (!modelIdentifier.getNamespace().equals(RAAMaterials.MOD_ID)) {
+                    return null;
+                }
+                Identifier identifier = new Identifier(modelIdentifier.getNamespace(), modelIdentifier.getPath());
+                if (!MATERIAL_BALL_IDENTIFIERS.containsKey(identifier)) return null;
+                return new SimpleUnbakedModel(mb -> {
+                    Material material = MATERIAL_BALL_IDENTIFIERS.get(identifier);
+                    final Sprite sprite = mb.getSprite("minecraft:block/white_concrete");
+                    ModelBuilder.makeIcosahedron(new Vector3f(0.5f, 0.5f, 0.5f), 0.5f, mb.builder.getEmitter(), mb.finder().disableAo(0, true).emissive(0, true).find(),
+                            sprite, false, material);
+                    return new SimpleModel(mb.builder.build(), null, sprite, ModelHelper.MODEL_TRANSFORM_BLOCK, null);
+                });
             });
         }
     }

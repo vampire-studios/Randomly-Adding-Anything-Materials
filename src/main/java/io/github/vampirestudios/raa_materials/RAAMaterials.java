@@ -14,14 +14,20 @@ import io.github.vampirestudios.raa_materials.registries.CustomTargets;
 import io.github.vampirestudios.raa_materials.registries.Features;
 import io.github.vampirestudios.raa_materials.registries.Materials;
 import io.github.vampirestudios.raa_materials.registries.Textures;
+import ladysnake.satin.api.event.PickEntityShaderCallback;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.gl.ShaderEffect;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class RAAMaterials implements RAAAddon {
     public static final String MOD_ID = "raa_materials";
@@ -82,6 +88,9 @@ public class RAAMaterials implements RAAAddon {
         Materials.createMaterialResources();
 
         MaterialRecipes.init();
+
+        PickEntityShaderCallback.EVENT.register((entity, consumer, supplier) -> {
+        });
 
         RAARegisteries.TARGET_REGISTRY.forEach(RAAWorldAPI::generateOresForTarget);
     }

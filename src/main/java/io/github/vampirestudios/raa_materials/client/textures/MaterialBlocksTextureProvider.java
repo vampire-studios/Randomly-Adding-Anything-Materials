@@ -105,5 +105,10 @@ public class MaterialBlocksTextureProvider extends RAAMaterialTextureProvider {
         if (!FabricLoader.getInstance().isModLoaded("optifabric") && !FabricLoader.getInstance().isModLoaded("sodium")) {
             RAAMaterialsClient.MATERIAL_ORE_IDENTIFIERS.put(id2, material);
         }
+
+        Identifier id3 = Utils.appendToPath(material.getId(), "_ball");
+        if (!FabricLoader.getInstance().isModLoaded("optifabric") && !FabricLoader.getInstance().isModLoaded("sodium")) {
+            RAAMaterialsClient.MATERIAL_BALL_IDENTIFIERS.put(id3, material);
+        }
     }
 }

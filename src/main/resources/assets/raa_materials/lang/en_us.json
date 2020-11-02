@@ -8,6 +8,8 @@
 
   "text.raa_materials.block.ore": "{0} Ore",
   "text.raa_materials.block.block": "{0} Block",
+  "text.raa_materials.block.crystal": "{0} Crystal",
+  "text.raa_materials.block.ball": "{0} Ball",
 
   "text.raa_materials.item.gem": "{0} Gem",
   "text.raa_materials.item.ingot": "{0} Ingot",
