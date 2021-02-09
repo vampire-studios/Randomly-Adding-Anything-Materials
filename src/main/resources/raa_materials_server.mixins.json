@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.vampirestudios.raa_materials.mixins.server",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "GenerationSettingsAccessor",
+//    "MinecraftServerMixin",
+    "RecipeManagerAccessor",
+    "RecipeManagerMixin",
+//    "ServerWorldMixin",
+    "SimpleRegistryMixin",
+    "TagGroupLoaderMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

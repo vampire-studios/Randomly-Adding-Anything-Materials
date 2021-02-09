@@ -13,7 +13,7 @@ public class OreTargetConfig extends RAADataConfig {
 
     @Override
     public void generate() {
-
+        OreTargetGenerator.registerElements();
     }
 
     @Override

@@ -11,6 +11,7 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
+	mavenLocal()
 	maven { url = "https://jitpack.io"}
 	maven {
 		name = "Cotton"
@@ -21,9 +22,7 @@ repositories {
 	}
 }
 
-minecraft {
-	accessWidener = file("src/main/resources/raa_materials.accesswidener")
-}
+minecraft { }
 
 dependencies {
 	//to change the versions see the gradle.properties file
@@ -34,12 +33,18 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "io.github.ladysnake:Satin:${satin_version}"
-	include "io.github.ladysnake:Satin:${satin_version}"
-
 	modImplementation 'com.github.shartte:DebugWorldGenIssues:1.0.0'
 
 	modImplementation "io.github.vampirestudios:raa-core:${project.core_version}"
+
+	modImplementation "TechReborn:TechReborn-1.16:3.7.3+build.192"
+
+	modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
+
+	modImplementation("me.shedaniel:RoughlyEnoughItems:${project.rei_version}") {
+		exclude group: "io.github.prospector.modmenu"
+		exclude group :"net.fabricmc.fabric-api"
+	}
 }
 
 processResources {

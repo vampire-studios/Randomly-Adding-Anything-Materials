@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.vampirestudios.raa_materials.mixins.client",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "ItemModelsMixin",
+    "MinecraftClientMixin",
+    "ModelLoaderMixin",
+    "SpriteAtlasTextureMixin",
+    "TranslationStorageMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

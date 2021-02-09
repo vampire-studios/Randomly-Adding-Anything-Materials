@@ -26,14 +26,20 @@
     ]
   },
   "mixins": [
-    "raa_materials.mixins.json"
+    {
+      "config": "raa_materials_server.mixins.json",
+      "environment": "*"
+    },
+    {
+      "config": "raa_materials_client.mixins.json",
+      "environment": "client"
+    }
   ],
-  "accessWidener": "raa_materials.accesswidener",
 
   "depends": {
-    "fabricloader": ">=0.7.4",
+    "fabricloader": ">=0.10.8",
     "fabric": "*",
-    "raa_core": ">=0.1.7",
-    "minecraft": ">1.16-alpha.20.20.a"
+    "raa_core": ">=0.3.2",
+    "minecraft": ">=1.16.4"
   }
 }

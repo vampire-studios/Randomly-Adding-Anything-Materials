@@ -173,140 +173,140 @@ public class Materials {
             if (material.getOreInformation().getOreType() == OreType.METAL) {
                 Item item;
                 item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_ingot",
                         repairItem = new RAASimpleItem(
                                 material.getName(),
                                 new Item.Settings().group(RAAMaterials.RAA_RESOURCES),
                                 RAASimpleItem.SimpleItemType.INGOT
-                        ),
-                        identifier.getPath() + "_ingot"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount() - 1.0F);
                 item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_nugget",
                         new RAASimpleItem(
                                 material.getName(),
                                 new Item.Settings().group(RAAMaterials.RAA_RESOURCES),
                                 RAASimpleItem.SimpleItemType.NUGGET
-                        ),
-                        identifier.getPath() + "_nugget"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount() - 0.5F);
             } else if (material.getOreInformation().getOreType() == OreType.GEM) {
                 Item item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_gem",
                         repairItem = new RAASimpleItem(
                                 material.getName(),
                                 new Item.Settings().group(RAAMaterials.RAA_RESOURCES),
                                 RAASimpleItem.SimpleItemType.GEM
-                        ),
-                        identifier.getPath() + "_gem"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount() + 0.5F);
             } else {
                 Item item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_crystal",
                         repairItem = new RAASimpleItem(
                                 material.getName(),
                                 new Item.Settings().group(RAAMaterials.RAA_RESOURCES),
                                 RAASimpleItem.SimpleItemType.CRYSTAL
-                        ),
-                        identifier.getPath() + "_crystal"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount() + 0.5F);
             }
             if (material.hasArmor()) {
                 Item item;
                 item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_helmet",
                         new RAAArmorItem(
                                 material,
                                 EquipmentSlot.HEAD,
                                 new Item.Settings().group(RAAMaterials.RAA_ARMOR).recipeRemainder(repairItem)
-                        ),
-                        identifier.getPath() + "_helmet"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
                 item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_helmet",
                         new RAAArmorItem(
                                 material,
                                 EquipmentSlot.CHEST,
                                 new Item.Settings().group(RAAMaterials.RAA_ARMOR).recipeRemainder(repairItem)
-                        ),
-                        identifier.getPath() + "_chestplate"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
                 item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_leggings",
                         new RAAArmorItem(
                                 material,
                                 EquipmentSlot.LEGS,
                                 new Item.Settings().group(RAAMaterials.RAA_ARMOR).recipeRemainder(repairItem)
-                        ),
-                        identifier.getPath() + "_leggings"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
                 item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_boots",
                         new RAAArmorItem(
                                 material,
                                 EquipmentSlot.FEET,
                                 new Item.Settings().group(RAAMaterials.RAA_ARMOR).recipeRemainder(repairItem)
-                        ),
-                        identifier.getPath() + "_boots"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
                 item = MOD_REGISTRY.registerItem(
-                        new RAAHorseArmorItem(material),
-                        identifier.getPath() + "_horse_armor"
+                        identifier.getPath() + "_horse_armor",
+                        new RAAHorseArmorItem(material)
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
             }
             if (material.hasTools()) {
                 Item item;
                 item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_pickaxe",
                         new RAAPickaxeItem(
                                 material,
                                 material.getToolMaterial(),
                                 1,
                                 -2.8F,
                                 new Item.Settings().group(RAAMaterials.RAA_TOOLS).recipeRemainder(repairItem)
-                        ),
-                        identifier.getPath() + "_pickaxe"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
                 item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_axe",
                         new RAAAxeItem(
                                 material,
                                 material.getToolMaterial(),
                                 5.0F + material.getToolMaterial().getAxeAttackDamage(),
                                 -3.2F + material.getToolMaterial().getAxeAttackSpeed(),
                                 new Item.Settings().group(RAAMaterials.RAA_TOOLS).recipeRemainder(repairItem)
-                        ),
-                        identifier.getPath() + "_axe"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
                 item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_shovel",
                         new RAAShovelItem(
                                 material,
                                 material.getToolMaterial(),
                                 1.5F,
                                 -3.0F,
                                 new Item.Settings().group(RAAMaterials.RAA_TOOLS).recipeRemainder(repairItem)
-                        ),
-                        identifier.getPath() + "_shovel"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
                 item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_hoe",
                         new RAAHoeItem(
                                 material,
                                 material.getToolMaterial(),
                                 1.5F,
                                 -3.0F + material.getToolMaterial().getHoeAttackSpeed(),
                                 new Item.Settings().group(RAAMaterials.RAA_TOOLS).recipeRemainder(repairItem)
-                        ),
-                        identifier.getPath() + "_hoe"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
                 item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_shears",
                         new RAAShearItem(
                                 material,
                                 new Item.Settings().group(RAAMaterials.RAA_TOOLS).recipeRemainder(repairItem)
-                        ),
-                        identifier.getPath() + "_shears"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
                 /*item = RegistryUtils.registerItem(
@@ -322,11 +322,11 @@ public class Materials {
             }
             if (material.hasWeapons()) {
                 Item item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_sword",
                         new RAASwordItem(
                                 material,
                                 new Item.Settings().group(RAAMaterials.RAA_WEAPONS).recipeRemainder(repairItem)
-                        ),
-                        identifier.getPath() + "_sword"
+                        )
                 );
                 if (material.isCompostable()) CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());
             }
@@ -339,11 +339,11 @@ public class Materials {
                 foodComponent.saturationModifier(material.getFoodData().getSaturationModifier());
 
                 Item item = MOD_REGISTRY.registerItem(
+                        identifier.getPath() + "_fruit",
                         new RAAFoodItem(
                                 material.getName(),
                                 new Item.Settings().group(RAAMaterials.RAA_FOOD).food(foodComponent.build())
-                        ),
-                        identifier.getPath() + "_fruit"
+                        )
                 );
 
                 CompostingChanceRegistry.INSTANCE.add(item, material.getCompostableAmount());

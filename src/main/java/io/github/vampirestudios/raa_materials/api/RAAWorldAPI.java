@@ -29,7 +29,7 @@ public class RAAWorldAPI {
             RegistryKey<ConfiguredFeature<?, ?>> registryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_WORLDGEN, new Identifier(RAAMaterials.MOD_ID, material.getId().getPath() + "_ore_cf"));
             ConfiguredFeature<?, ?> configuredOreFeature = BiomeUtils.newConfiguredFeature(registryKey.getValue(), Features.ORE_FEATURE.configure(new OreFeatureConfig(target.getTest(),
                     Registry.BLOCK.get(Utils.appendToPath(material.getId(), "_ore")).getDefaultState(), material.getOreInformation().getOreClusterSize()))
-                    .method_30377(256).spreadHorizontally().repeatRandomly(material.getOreInformation().getOreCount()));
+                    .rangeOf(256).spreadHorizontally().repeatRandomly(material.getOreInformation().getOreCount()));
             if (Registry.BLOCK.get(material.getOreInformation().getTargetId()) == target.block) {
                 BiomeModifications.create(material.getId())
                     .add(ModificationPhase.ADDITIONS, BiomeSelectors.all(), modification -> {

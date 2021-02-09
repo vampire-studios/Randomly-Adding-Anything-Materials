@@ -8,15 +8,12 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class OreFeatureConfig implements FeatureConfig {
 
-    public static final Codec<OreFeatureConfig> CODEC = RecordCodecBuilder.create((instance) -> {
-        return instance.group(RuleTest.field_25012.fieldOf("target").forGetter((oreFeatureConfig) -> {
-            return oreFeatureConfig.target;
-        }), BlockState.CODEC.fieldOf("state").forGetter((oreFeatureConfig) -> {
-            return oreFeatureConfig.state;
-        }), Codec.intRange(0, 64).fieldOf("size").forGetter((oreFeatureConfig) -> {
-            return oreFeatureConfig.size;
-        })).apply(instance, OreFeatureConfig::new);
-    });
+    public static final Codec<OreFeatureConfig> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
+            RuleTest.field_25012.fieldOf("target").forGetter((oreFeatureConfig) -> oreFeatureConfig.target),
+            BlockState.CODEC.fieldOf("state").forGetter((oreFeatureConfig) -> oreFeatureConfig.state),
+            Codec.intRange(0, 64).fieldOf("size").forGetter((oreFeatureConfig) -> oreFeatureConfig.size)
+    ).apply(instance, OreFeatureConfig::new));
+
     public final RuleTest target;
     public final int size;
     public final BlockState state;

@@ -1,5 +1,6 @@
 package io.github.vampirestudios.raa_materials.utils;
 
+import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.RAARegisteries;
 import io.github.vampirestudios.raa_materials.effects.MaterialEffects;
 import io.github.vampirestudios.raa_materials.generation.targets.OreTarget;
@@ -56,7 +57,7 @@ public class Utils {
     }
 
     public static OreTarget registerOreTarget(String name, RuleTest ruleTest, Block block) {
-        return registerOreTarget(new Identifier(name), ruleTest, block);
+        return registerOreTarget(new Identifier(RAAMaterials.MOD_ID, name), ruleTest, block);
     }
 
     public static OreTarget registerOreTarget(Identifier name, RuleTest ruleTest, Block block) {
