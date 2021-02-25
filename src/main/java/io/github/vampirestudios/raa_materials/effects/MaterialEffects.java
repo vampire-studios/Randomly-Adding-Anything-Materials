@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials.effects;
 
 import com.google.gson.JsonElement;
-import io.github.vampirestudios.raa_materials.RAAMaterials;
+import io.github.vampirestudios.raa_materials.config.GeneralConfig;
 import io.github.vampirestudios.raa_materials.utils.Utils;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.minecraft.entity.LivingEntity;
@@ -18,7 +18,7 @@ public enum MaterialEffects {
     })),
     EFFECT(ItemEffectHandler::statusEffectForTarget, (element -> {
         String effectID = "";
-        if (RAAMaterials.CONFIG.useOnlyVanillaPotionEffects) {
+        if (GeneralConfig.useOnlyVanillaPotionEffects.getValue()) {
             while (!new Identifier(effectID).getNamespace().equals("minecraft")) {
                 effectID = Rands.list(new ArrayList<>(Registry.STATUS_EFFECT.getIds())).toString();
             }
@@ -28,7 +28,7 @@ public enum MaterialEffects {
             }
         }
         if (effectID.equals("")) {
-            if (RAAMaterials.CONFIG.useOnlyVanillaPotionEffects) {
+            if (GeneralConfig.useOnlyVanillaPotionEffects.getValue()) {
                 while (!new Identifier(effectID).getNamespace().equals("minecraft")) {
                     effectID = Rands.list(new ArrayList<>(Registry.STATUS_EFFECT.getIds())).toString();
                 }
@@ -70,7 +70,7 @@ public enum MaterialEffects {
     }
 
     private static boolean isInBlackList(String id) {
-        for (String string : RAAMaterials.CONFIG.blacklistedPotionEffects)
+        for (String string : GeneralConfig.blacklistedPotionEffects.getValue())
             if (string.equals(id)) return true;
         return false;
     }

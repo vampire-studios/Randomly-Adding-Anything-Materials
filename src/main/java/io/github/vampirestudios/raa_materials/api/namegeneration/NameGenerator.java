@@ -2,8 +2,6 @@ package io.github.vampirestudios.raa_materials.api.namegeneration;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import io.github.vampirestudios.raa_core.RAACore;
-import io.github.vampirestudios.raa_core.api.name_generation.Language;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 
 import java.io.InputStream;
@@ -13,8 +11,10 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class NameGenerator {
-	private static final MarkovChain ORE_GEN = RAACore.CONFIG.getLanguage() == Language.ENGLISH ? makeChain("ores") : makeLanguageChain("ores", RAACore.CONFIG.getLanguage().getId());
-	private static final MarkovChain ROCKS = RAACore.CONFIG.getLanguage() == Language.ENGLISH ? makeChain("rocks") : makeLanguageChain("rocks", RAACore.CONFIG.getLanguage().getId());
+//	private static final MarkovChain ORE_GEN = RAACore.CONFIG.getLanguage() == Language.ENGLISH ? makeChain("ores") : makeLanguageChain("ores", Language.LANGUAGE_REGISTRY.get(new Identifier(RAACoreConfig.namingLanguage.getValue())).getId());
+//	private static final MarkovChain ROCKS = RAACore.CONFIG.getLanguage() == Language.ENGLISH ? makeChain("rocks") : makeLanguageChain("rocks", Language.LANGUAGE_REGISTRY.get(new Identifier(RAACoreConfig.namingLanguage.getValue())).getId());
+	private static final MarkovChain ORE_GEN = makeChain("ores");
+	private static final MarkovChain ROCKS = makeChain("rocks");
 	private static final Map<String, String> NAMES = Maps.newHashMap();
 	private static final Set<String> GENERATED = Sets.newHashSet();
 

@@ -12,6 +12,7 @@ import io.github.vampirestudios.raa_materials.api.namegeneration.MaterialLanguag
 import io.github.vampirestudios.raa_materials.blocks.LayeredOreBlock;
 import io.github.vampirestudios.raa_materials.blocks.RAABlock;
 import io.github.vampirestudios.raa_materials.blocks.RoundBlock;
+import io.github.vampirestudios.raa_materials.config.GeneralConfig;
 import io.github.vampirestudios.raa_materials.effects.MaterialEffects;
 import io.github.vampirestudios.raa_materials.generation.materials.Material;
 import io.github.vampirestudios.raa_materials.generation.materials.data.MaterialFoodData;
@@ -44,7 +45,7 @@ public class Materials {
     private static RegistryHelper MOD_REGISTRY = RegistryHelper.createRegistryHelper(RAAMaterials.MOD_ID);
 
     public static void generate() {
-        for (int a = 0; a < RAAMaterials.CONFIG.materialGenAmount; a++) {
+        for (int a = 0; a < GeneralConfig.materialGenAmount.getValue(); a++) {
             Color RGB = Rands.randColor();
             NameGenerator nameGenerator = RAACore.CONFIG.getLanguage().getNameGenerator(MaterialLanguageManager.MATERIAL_NAME);
 

@@ -23,6 +23,9 @@
     ],
     "raa:addon_client": [
       "io.github.vampirestudios.raa_materials.RAAMaterialsClient"
+    ],
+    "config": [
+      "io.github.vampirestudios.raa_materials.config.GeneralConfig"
     ]
   },
   "mixins": [

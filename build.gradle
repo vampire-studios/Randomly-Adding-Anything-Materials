@@ -1,6 +1,7 @@
 plugins {
-	id 'fabric-loom' version '0.5-SNAPSHOT'
+	id 'fabric-loom' version '0.6-SNAPSHOT'
 	id 'maven-publish'
+	id "io.github.vampirestudios.modrinthmaven" version "1.0.1"
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -12,6 +13,7 @@ group = project.maven_group
 
 repositories {
 	mavenLocal()
+	jcenter()
 	maven { url = "https://jitpack.io"}
 	maven {
 		name = "Cotton"
@@ -19,6 +21,11 @@ repositories {
 	}
 	maven {
 		url = "https://dl.bintray.com/vampirestudios/Minecraft-Libs"
+	}
+	maven { url "https://maven.shedaniel.me/" }
+	maven { url = "http://maven.terraformersmc.com/" }
+	maven {
+		url "https://hephaestus.dev/release"
 	}
 }
 
@@ -37,14 +44,21 @@ dependencies {
 
 	modImplementation "io.github.vampirestudios:raa-core:${project.core_version}"
 
-	modImplementation "TechReborn:TechReborn-1.16:3.7.3+build.192"
-
-	modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
+	modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}") {
+		transitive(false)
+	}
+	modRuntime("com.terraformersmc:modmenu:${project.modmenu_version}") {
+		transitive(false)
+	}
 
 	modImplementation("me.shedaniel:RoughlyEnoughItems:${project.rei_version}") {
 		exclude group: "io.github.prospector.modmenu"
 		exclude group :"net.fabricmc.fabric-api"
 	}
+
+	modImplementation "net.fabricmc.fabric-api:fabric-config-api-v1:${project.config_version}"
+	modImplementation "dev.monarkhes:vivid-fapi:${project.vivid_version}"
+	modImplementation "dev.monarkhes:Conrad-fapi:${project.conrad_version}"
 }
 
 processResources {
