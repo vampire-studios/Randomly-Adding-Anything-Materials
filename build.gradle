@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.5-SNAPSHOT'
+	id 'fabric-loom' version '0.7-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -20,6 +20,10 @@ repositories {
 	maven {
 		url = "https://dl.bintray.com/vampirestudios/Minecraft-Libs"
 	}
+	maven {
+		url  "https://dl.bintray.com/natanfudge/libs"
+	}
+	maven { url "https://maven.shedaniel.me/" }
 }
 
 minecraft { }
@@ -37,14 +41,16 @@ dependencies {
 
 	modImplementation "io.github.vampirestudios:raa-core:${project.core_version}"
 
-	modImplementation "TechReborn:TechReborn-1.16:3.7.3+build.192"
-
 	modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
 
-	modImplementation("me.shedaniel:RoughlyEnoughItems:${project.rei_version}") {
+	/*modCompileOnly ("me.shedaniel:RoughlyEnoughItems-api:ABC") {
 		exclude group: "io.github.prospector.modmenu"
 		exclude group :"net.fabricmc.fabric-api"
 	}
+	modRuntime ("me.shedaniel:RoughlyEnoughItems:ABC") {
+		exclude group: "io.github.prospector.modmenu"
+		exclude group :"net.fabricmc.fabric-api"
+	}*/
 }
 
 processResources {

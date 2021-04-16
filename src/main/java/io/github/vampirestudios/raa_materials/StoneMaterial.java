@@ -11,7 +11,7 @@ import net.fabricmc.fabric.api.biome.v1.ModificationPhase;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.MaterialColor;
+import net.minecraft.block.MapColor;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
@@ -20,9 +20,12 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.YOffset;
+import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
+import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 import java.util.Random;
 import java.util.Set;
@@ -58,7 +61,7 @@ public class StoneMaterial extends ComplexMaterial {
 	public StoneMaterial(Random random) {
 		this.name = NameGenerator.makeRockName(random);
 		String regName = this.name.toLowerCase();
-		FabricBlockSettings material = FabricBlockSettings.copyOf(Blocks.STONE).materialColor(MaterialColor.GRAY);
+		FabricBlockSettings material = FabricBlockSettings.copyOf(Blocks.STONE).materialColor(MapColor.GRAY);
 
 		stone = InnerRegistry.registerBlockAndItem(regName, new BaseBlock(material), CreativeTabs.BLOCKS);
 		polished = InnerRegistry.registerBlockAndItem("polished_" + regName, new BaseBlock(material), CreativeTabs.BLOCKS);
@@ -109,10 +112,10 @@ public class StoneMaterial extends ComplexMaterial {
 	@Override
 	public void generate(ServerWorld world) {
 		String regName = this.name.toLowerCase();
-		RegistryKey<ConfiguredFeature<?, ?>> registryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_WORLDGEN, new Identifier(RAAMaterials.MOD_ID, regName + "_stone_cf"));
-		BiomeUtils.newConfiguredFeature(registryKey.getValue(), Feature.ORE
+		RegistryKey<ConfiguredFeature<?, ?>> registryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, new Identifier(RAAMaterials.MOD_ID, regName + "_stone_cf"));
+		BiomeUtils.newConfiguredFeature(regName + "_stone_cf", Feature.ORE
 				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 12))
-				.rangeOf(256)
+				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.fixed(0), YOffset.getTop())))
 				.spreadHorizontally()
 				.repeatRandomly(2));
 

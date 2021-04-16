@@ -5,7 +5,7 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourceReloadMonitor;
+import net.minecraft.resource.ResourceReload;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 
@@ -35,7 +35,7 @@ public class SilentWorldReloader extends Thread {
 		if (other == this) {
 			resourcePackManager.scanPacks();
 			List<ResourcePack> list = resourcePackManager.createResourcePacks();
-			ResourceReloadMonitor monitor = resourceManager.beginMonitoredReload(Util.getMainWorkerExecutor(), client, future, list);
+			ResourceReload monitor = resourceManager.reload(Util.getMainWorkerExecutor(), client, future, list);
 			monitor.whenComplete().thenRun(() -> {
 				worldRenderer.reload();
 				client.getItemRenderer().getModels().reloadModels();

@@ -6,8 +6,11 @@ import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.items.CustomAxeItem;
 import io.github.vampirestudios.raa_materials.items.CustomHoeItem;
 import io.github.vampirestudios.raa_materials.items.CustomPickaxeItem;
-import io.github.vampirestudios.raa_materials.utils.*;
-import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderingRegistry;
+import io.github.vampirestudios.raa_materials.utils.BufferTexture;
+import io.github.vampirestudios.raa_materials.utils.ColorGradient;
+import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
+import io.github.vampirestudios.raa_materials.utils.TextureHelper;
+import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
@@ -88,7 +91,7 @@ public class CrystalOreMaterial extends OreMaterial {
 		shovel = InnerRegistry.registerItem(regName + "_shovel",
 				new ShovelItem(toolMaterial, toolMaterial.getShovelAttackDamage(), toolMaterial.getShovelAttackSpeed(), new Item.Settings().group(RAAMaterials.RAA_TOOLS).maxCount(1)));
 
-		Artifice.registerDataPack(id(regName + "_ore_recipes"), dataPackBuilder -> {
+		Artifice.registerDataPack(id(regName + "_ore_recipes" + Rands.getRandom().nextInt()), dataPackBuilder -> {
 			dataPackBuilder.addShapedRecipe(id(regName + "_helmet"), shapedRecipeBuilder -> {
 				shapedRecipeBuilder.group(id("helmets"));
 				shapedRecipeBuilder.ingredientItem('i', id(regName + "_crystal"));
@@ -252,13 +255,13 @@ public class CrystalOreMaterial extends OreMaterial {
 		InnerRegistry.registerItemModel(this.shovel, ModelHelper.makeTwoLayerItem(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName + "_shovel"), this.name + " Shovel");
 
-		texture = TextureHelper.createColoredArmorTextures(gradient, TextureHelper.loadImage(RAAMaterials.id("models/armor/testing2_layer_1")));
-		textureID = RAAMaterials.id("models/armor/testing2_layer_1");
-		InnerRegistry.registerTexture(textureID, texture);
-		texture = TextureHelper.createColoredArmorTextures(gradient, TextureHelper.loadImage(RAAMaterials.id("models/armor/testing2_layer_2")));
-		texture2ID = RAAMaterials.id("models/armor/testing2_layer_2");
-		InnerRegistry.registerTexture(texture2ID, texture);
-		ArmorRenderingRegistry.registerSimpleTexture(RAAMaterials.id("testing2"), this.helmet, this.chestplate, this.legging, this.boot);
+//		texture = TextureHelper.createColoredArmorTextures(gradient, TextureHelper.loadImage(RAAMaterials.id("models/armor/testing2_layer_1")));
+//		textureID = RAAMaterials.id("models/armor/testing2_layer_1");
+//		InnerRegistry.registerTexture(textureID, texture);
+//		texture = TextureHelper.createColoredArmorTextures(gradient, TextureHelper.loadImage(RAAMaterials.id("models/armor/testing2_layer_2")));
+//		texture2ID = RAAMaterials.id("models/armor/testing2_layer_2");
+//		InnerRegistry.registerTexture(texture2ID, texture);
+//		ArmorRenderingRegistry.registerSimpleTexture(RAAMaterials.id("testing2"), this.helmet, this.chestplate, this.legging, this.boot);
 	}
 
 	private void loadStaticImages() {

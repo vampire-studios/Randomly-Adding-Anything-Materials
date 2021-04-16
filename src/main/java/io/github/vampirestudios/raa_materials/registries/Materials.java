@@ -105,7 +105,7 @@ public class Materials {
                 JsonElement e = new JsonObject();
 
                 //get an effect from a weighted list
-                MaterialEffects effect = Utils.EFFECT_LIST.pickRandom(Rands.getRandom());
+                MaterialEffects effect = Utils.EFFECT_LIST.shuffle().stream().findFirst().get();
                 effect.jsonConsumer.accept(e);
                 effects.put(effect, e);
             }

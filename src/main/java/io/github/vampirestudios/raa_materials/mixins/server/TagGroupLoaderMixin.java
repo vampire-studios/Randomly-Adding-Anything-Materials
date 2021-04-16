@@ -12,21 +12,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 @Mixin(TagGroupLoader.class)
 public class TagGroupLoaderMixin {
 	@Shadow
-	private String entryType;
+	private String dataType;
 
-	@Inject(method = "prepareReload", at = @At("RETURN"), cancellable = true)
-	public void prepareReload(ResourceManager manager, Executor prepareExecutor, CallbackInfoReturnable<CompletableFuture<Map<Identifier, Tag.Builder>>> info) {
-		CompletableFuture<Map<Identifier, Tag.Builder>> future = info.getReturnValue();
-		info.setReturnValue(CompletableFuture.supplyAsync(() -> {
-			Map<Identifier, Tag.Builder> map = future.join();
-			TagHelper.apply(entryType, map);
-			return map;
-		}));
+	@Inject(method = "loadTags", at = @At("RETURN"), cancellable = true)
+	public void prepareReload(ResourceManager manager, CallbackInfoReturnable<Map<Identifier, Tag.Builder>> cir) {
+		Map<Identifier, Tag.Builder> future = cir.getReturnValue();
+		TagHelper.apply(dataType, future);
+		cir.setReturnValue(future);
 	}
 }

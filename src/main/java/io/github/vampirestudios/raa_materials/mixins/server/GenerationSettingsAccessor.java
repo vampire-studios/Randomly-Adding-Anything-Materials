@@ -2,7 +2,6 @@ package io.github.vampirestudios.raa_materials.mixins.server;
 
 import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
@@ -16,10 +15,4 @@ public interface GenerationSettingsAccessor {
 	
 	@Accessor("features")
 	void raaSetFeatures(List<List<Supplier<ConfiguredFeature<?, ?>>>> features);
-	
-	@Accessor("structureFeatures")
-	List<Supplier<ConfiguredStructureFeature<?, ?>>> raaGetStructures();
-	
-	@Accessor("structureFeatures")
-	void raaSetStructures(List<Supplier<ConfiguredStructureFeature<?, ?>>> structures);
 }

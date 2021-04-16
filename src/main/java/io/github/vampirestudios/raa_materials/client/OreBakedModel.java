@@ -28,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockRenderView;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -409,7 +410,7 @@ public class OreBakedModel extends RAABakedModel {
         }
 
         @Override
-        public BakedModel apply(BakedModel bakedModel, ItemStack stack, ClientWorld world, LivingEntity livingEntity) {
+        public BakedModel apply(BakedModel model, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int seed) {
             return OreBakedModel.this;
         }
     }

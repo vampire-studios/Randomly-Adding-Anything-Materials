@@ -11,12 +11,12 @@ import net.minecraft.block.PillarBlock;
 import net.minecraft.client.render.model.json.ModelVariant;
 import net.minecraft.client.render.model.json.WeightedUnbakedModel;
 import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.client.util.math.AffineTransformation;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 
 import java.util.List;
@@ -124,11 +124,11 @@ public class ModelHelper {
 		WeightedUnbakedModel side = new WeightedUnbakedModel(Lists.newArrayList(variant));
 		InnerRegistry.registerBlockModel(block.getDefaultState().with(PillarBlock.AXIS, Direction.Axis.Y), side);
 
-		variant = new ModelVariant(model, new AffineTransformation(null, Vector3f.POSITIVE_Z.getDegreesQuaternion(90), null, null), false, 1);
+		variant = new ModelVariant(model, new AffineTransformation(null, Vec3f.POSITIVE_Z.getDegreesQuaternion(90), null, null), false, 1);
 		side = new WeightedUnbakedModel(Lists.newArrayList(variant));
 		InnerRegistry.registerBlockModel(block.getDefaultState().with(PillarBlock.AXIS, Direction.Axis.X), side);
 
-		variant = new ModelVariant(model, new AffineTransformation(null, Vector3f.POSITIVE_X.getDegreesQuaternion(90), null, null), false, 1);
+		variant = new ModelVariant(model, new AffineTransformation(null, Vec3f.POSITIVE_X.getDegreesQuaternion(90), null, null), false, 1);
 		side = new WeightedUnbakedModel(Lists.newArrayList(variant));
 		InnerRegistry.registerBlockModel(block.getDefaultState().with(PillarBlock.AXIS, Direction.Axis.Z), side);
 

@@ -4,10 +4,10 @@ import com.mojang.serialization.Codec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 import java.util.BitSet;
 import java.util.Random;
@@ -17,7 +17,12 @@ public class OreFeature extends Feature<OreFeatureConfig> {
         super(codec);
     }
 
-    public boolean generate(StructureWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig) {
+    @Override
+    public boolean generate(FeatureContext<OreFeatureConfig> context) {
+        Random random = context.getRandom();
+        OreFeatureConfig oreFeatureConfig = context.getConfig();
+        BlockPos blockPos = context.getOrigin();
+        ServerWorldAccess serverWorldAccess = context.getWorld();
         float f = random.nextFloat() * 3.1415927F;
         float g = (float)oreFeatureConfig.size / 8.0F;
         int i = MathHelper.ceil(((float)oreFeatureConfig.size / 16.0F * 2.0F + 1.0F) / 2.0F);

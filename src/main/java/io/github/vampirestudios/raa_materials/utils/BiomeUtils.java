@@ -1,5 +1,6 @@
 package io.github.vampirestudios.raa_materials.utils;
 
+import io.github.vampirestudios.raa_materials.RAAMaterials;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
@@ -17,8 +18,8 @@ public class BiomeUtils {
         }
     }
 
-    public static ConfiguredFeature<?, ?> newConfiguredFeature(Identifier registryName, ConfiguredFeature<?, ?> configuredFeature) {
-        System.out.println(registryName);
+    public static ConfiguredFeature<?, ?> newConfiguredFeature(String name, ConfiguredFeature<?, ?> configuredFeature) {
+        Identifier registryName = RAAMaterials.id(name);
         if (BuiltinRegistries.CONFIGURED_FEATURE.containsId(registryName)) {
             return configuredFeature;
         } else {

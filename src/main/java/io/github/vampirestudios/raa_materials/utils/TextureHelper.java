@@ -4,10 +4,10 @@ import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -326,8 +326,8 @@ public class TextureHelper {
 
 	public static BufferTexture distort(BufferTexture texture, BufferTexture distortion, float amount) {
 		BufferTexture result = new BufferTexture(texture.getWidth(), texture.getHeight());
-		Vector3f dirX = new Vector3f();
-		Vector3f dirY = new Vector3f();
+		Vec3f dirX = new Vec3f();
+		Vec3f dirY = new Vec3f();
 		COLOR.forceRGB();
 		for (int x = 0; x < texture.getWidth(); x++) {
 			for (int y = 0; y < texture.getHeight(); y++) {

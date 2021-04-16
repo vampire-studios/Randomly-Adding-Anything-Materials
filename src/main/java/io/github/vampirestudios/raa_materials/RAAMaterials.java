@@ -13,24 +13,21 @@ import io.github.vampirestudios.raa_materials.generation.materials.MaterialRecip
 import io.github.vampirestudios.raa_materials.registries.CustomTargets;
 import io.github.vampirestudios.raa_materials.registries.Features;
 import io.github.vampirestudios.raa_materials.registries.Textures;
-import io.github.vampirestudios.raa_materials.utils.SilentWorldReloader;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
-import io.github.vampirestudios.vampirelib.callbacks.PlayerJoinCallback;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
@@ -89,8 +86,7 @@ public class RAAMaterials implements RAAAddon {
 			server.reloadResources(server.getDataPackManager().getEnabledNames());
 		});
 
-//        ServerLifecycleEvents.SERVER_STARTING.register(server -> server.getWorlds().forEach(RAAMaterials::onServerStart));
-        ServerWorldEvents.LOAD.register((server, world) -> onServerStart(world));
+        ServerLifecycleEvents.SERVER_STARTED.register(this::onServerStart);
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> onServerStop());
 
         MaterialRecipes.init();
@@ -106,7 +102,8 @@ public class RAAMaterials implements RAAAddon {
         return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
     }
 
-    public void onServerStart(ServerWorld world) {
+    public void onServerStart(MinecraftServer server) {
+        ServerWorld world = server.getOverworld();
         synchronized(world) {
             if (register && seed != world.getSeed()) {
                 System.out.println("Start new generator!");
@@ -167,19 +164,14 @@ public class RAAMaterials implements RAAAddon {
                 if (isClient()) {
                     materials.forEach((material) -> material.initClient(RANDOM));
 
-                    SilentWorldReloader.setSilent();
+//                    SilentWorldReloader.setSilent();
                     MinecraftClient.getInstance().reloadResources();
                     MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels();
                     world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
-					world.getServer().getPlayerManager().getPlayerList().forEach(serverPlayerEntity ->
-							serverPlayerEntity.sendMessage(new LiteralText("The server needs to be restarted in order for recipes " +
-									"and things like ore spawning to work"), false));
                 }
             }
-
-			PlayerJoinCallback.EVENT.register(serverPlayerEntity -> serverPlayerEntity.getScoreboardTags().remove("NotLoaded"));
-			world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
         }
+        world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
     }
 
     public void onServerStop() {

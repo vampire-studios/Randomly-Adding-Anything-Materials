@@ -1,6 +1,5 @@
 package io.github.vampirestudios.raa_materials.api;
 
-import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.generation.targets.OreTarget;
 import io.github.vampirestudios.raa_materials.registries.Features;
 import io.github.vampirestudios.raa_materials.registries.Materials;
@@ -10,12 +9,13 @@ import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.biome.v1.ModificationPhase;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.YOffset;
+import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 public class RAAWorldAPI {
 
@@ -26,10 +26,10 @@ public class RAAWorldAPI {
      */
     public static void generateOresForTarget(OreTarget target) {
         Materials.MATERIALS.forEach(material -> {
-            RegistryKey<ConfiguredFeature<?, ?>> registryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_WORLDGEN, new Identifier(RAAMaterials.MOD_ID, material.getId().getPath() + "_ore_cf"));
-            ConfiguredFeature<?, ?> configuredOreFeature = BiomeUtils.newConfiguredFeature(registryKey.getValue(), Features.ORE_FEATURE.configure(new OreFeatureConfig(target.getTest(),
+            ConfiguredFeature<?, ?> configuredOreFeature = BiomeUtils.newConfiguredFeature(material.getId().getPath() + "_ore_cf", Features.ORE_FEATURE.configure(new OreFeatureConfig(target.getTest(),
                     Registry.BLOCK.get(Utils.appendToPath(material.getId(), "_ore")).getDefaultState(), material.getOreInformation().getOreClusterSize()))
-                    .rangeOf(256).spreadHorizontally().repeatRandomly(material.getOreInformation().getOreCount()));
+                    .range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.fixed(0), YOffset.getTop())))
+                    .spreadHorizontally().repeatRandomly(material.getOreInformation().getOreCount()));
             if (Registry.BLOCK.get(material.getOreInformation().getTargetId()) == target.block) {
                 BiomeModifications.create(material.getId())
                     .add(ModificationPhase.ADDITIONS, BiomeSelectors.all(), modification -> {
