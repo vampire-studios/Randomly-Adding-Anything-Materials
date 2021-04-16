@@ -68,7 +68,7 @@ public class MetalOreMaterial extends OreMaterial {
 	public final Item shovel;
 
 	public MetalOreMaterial(Target targetIn, Random random) {
-		super(targetIn, random);
+		super("metal", targetIn, random);
 		String regName = this.name.toLowerCase();
 		ingot = InnerRegistry.registerItem(regName + "_ingot", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
 		FurnaceRecipe.make(regName, ore, ingot).setXP(MathHelper.floor(random.nextFloat() * 10) / 10F).build();
@@ -310,17 +310,20 @@ public class MetalOreMaterial extends OreMaterial {
 								raaMultiResultBuilder.item(id(regName + "_plate"), 9);
 							})
 			);
-			try {
-				dataPackBuilder.dumpResources("testing", "data");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+
+			new Thread(() -> {
+				try {
+					dataPackBuilder.dumpResources("testing", "data");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}).start();
 		});
 	}
 
 	@Override
-	protected void initClientCustom(Random random) {
-		loadStaticImages();
+	public void initClient(Random random) {
+		super.initClient(random);
 		String regName = this.name.toLowerCase();
 
 		ColorGradient gradient = ProceduralTextures.makeMetalPalette(random);
@@ -413,7 +416,9 @@ public class MetalOreMaterial extends OreMaterial {
 //		ArmorRenderingRegistry.registerSimpleTexture(id("testing2"), this.helmet, this.chestplate, this.legging, this.boot);
 	}
 
-	private void loadStaticImages() {
+	@Override
+	public void loadStaticImages() {
+		super.loadStaticImages();
 		if (oreVeins == null) {
 			oreVeins = new BufferTexture[19];
 			for (int i = 0; i < oreVeins.length; i++) {

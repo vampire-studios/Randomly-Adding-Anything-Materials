@@ -46,16 +46,16 @@ public class ProceduralTextures {
 				.setSaturation(MHelper.randRange(0.4F, 1, random))
 				.setBrightness(MHelper.randRange(0.8F, 1, random));
 		float cos = MathHelper.cos(color.getHue() * MHelper.PI2);
-		float hue = cos * 0.05F;
-		float sat = cos * 0.12F;
+		float hue = cos * 0.1F;
+		float sat = cos * 0.15F;
 		return TextureHelper.makeDistortedPalette(color, hue, sat, 1F);
 	}
 
 	public static ColorGradient makeCrystalPalette(Random random) {
 		CustomColor color = new CustomColor(true)
 				.setHue(random.nextFloat())
-				.setSaturation(MHelper.randRange(0.4F, 0.6F, random))
-				.setBrightness(MHelper.randRange(0.8F, 1, random));
+				.setSaturation(MHelper.randRange(0.3F, 1F, random))
+				.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
 		float cos = MathHelper.cos(color.getHue() * MHelper.PI2);
 		float hue = cos * 0.05F;
 		float sat = cos * 0.12F;
@@ -64,8 +64,8 @@ public class ProceduralTextures {
 
 	public static BufferTexture makeStoneTexture(ColorGradient gradient, Random random) {
 		BufferTexture texture = TextureHelper.makeNoiseTexture(random, 64, MHelper.randRange(0.4F, 0.6F, random) / 4F);
-		BufferTexture distort = TextureHelper.makeNoiseTexture(random, 64, MHelper.randRange(0.4F, 0.6F, random) / 4F);
-		BufferTexture additions = TextureHelper.makeNoiseTexture(random, 64, MHelper.randRange(0.5F, 0.8F, random) / 4F);
+		BufferTexture distort = TextureHelper.makeNoiseTexture(random, 64, MHelper.randRange(0.4F, 0.8F, random) / 4F);
+		BufferTexture additions = TextureHelper.makeNoiseTexture(random, 64, MHelper.randRange(0.5F, 1.0F, random) / 4F);
 		BufferTexture result = TextureHelper.distort(texture, distort, MHelper.randRange(0F, 5F, random));
 		BufferTexture pass = TextureHelper.heightPass(result, -1, -1);
 

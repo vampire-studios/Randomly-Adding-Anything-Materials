@@ -8,8 +8,17 @@ import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.Comment;
 @Config(name = RAAMaterials.MOD_ID)
 public class GeneralConfig implements ConfigData {
 
-    @Comment("Amount of materials to generate")
-    public int materialGenAmount = 40;
+    @Deprecated
+    @Comment("Amount of metal materials to generate")
+    public int legacyMaterialGenAmount = 100;
+    @Comment("Amount of metal materials to generate")
+    public int metalMaterialAmount = 40;
+    @Comment("Amount of gem materials to generate")
+    public int gemMaterialAmount = 40;
+    @Comment("Amount of crystal types to generate")
+    public int crystalTypeAmount = 40;
+    @Comment("Amount of stone types to generate")
+    public int stoneTypeAmount = 40;
 
     public boolean useOnlyVanillaPotionEffects = true;
     public String[] blacklistedPotionEffects = new String[] {"immersive_portals:longer_reach"};

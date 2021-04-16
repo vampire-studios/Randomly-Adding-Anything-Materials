@@ -13,6 +13,7 @@ import io.github.vampirestudios.raa_materials.generation.materials.MaterialRecip
 import io.github.vampirestudios.raa_materials.registries.CustomTargets;
 import io.github.vampirestudios.raa_materials.registries.Features;
 import io.github.vampirestudios.raa_materials.registries.Textures;
+import io.github.vampirestudios.raa_materials.utils.SilentWorldReloader;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
@@ -20,6 +21,7 @@ import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -82,11 +84,10 @@ public class RAAMaterials implements RAAAddon {
         }
         Materials.createMaterialResources();*/
 
-		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-			server.reloadResources(server.getDataPackManager().getEnabledNames());
-		});
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> server.reloadResources(server.getDataPackManager().getEnabledNames()));
 
-        ServerLifecycleEvents.SERVER_STARTED.register(this::onServerStart);
+        ServerWorldEvents.LOAD.register((server, world) -> onServerStart(world));
+//        ServerLifecycleEvents.SERVER_STARTED.register(this::onServerStart);
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> onServerStop());
 
         MaterialRecipes.init();
@@ -102,8 +103,9 @@ public class RAAMaterials implements RAAAddon {
         return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
     }
 
-    public void onServerStart(MinecraftServer server) {
-        ServerWorld world = server.getOverworld();
+//    public void onServerStart(MinecraftServer server) {
+//        ServerWorld world = server.getOverworld();
+    public void onServerStart(ServerWorld world) {
         synchronized(world) {
             if (register && seed != world.getSeed()) {
                 System.out.println("Start new generator!");
@@ -122,7 +124,7 @@ public class RAAMaterials implements RAAAddon {
 
                 RANDOM.setSeed(seed);
                 List<ComplexMaterial> materials = Lists.newArrayList();
-                for (int i = 0; i < 40; i++) {
+                for (int i = 0; i < CONFIG.stoneTypeAmount; i++) {
                     StoneMaterial material = new StoneMaterial(RANDOM);
                     materials.add(material);
                 }
@@ -136,18 +138,20 @@ public class RAAMaterials implements RAAAddon {
                         OreMaterial.Target.NETHERRACK,
                         OreMaterial.Target.DIRT,
                         OreMaterial.Target.SAND,
-                        OreMaterial.Target.RED_SAND
+                        OreMaterial.Target.RED_SAND,
+                        OreMaterial.Target.DEEPSLATE,
+                        OreMaterial.Target.TUFF
                 };
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < CONFIG.metalMaterialAmount; i++) {
                     OreMaterial material = new MetalOreMaterial(Rands.values(TARGETS), RANDOM);
                     materials.add(material);
                 }
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < CONFIG.gemMaterialAmount; i++) {
                     OreMaterial material = new GemOreMaterial(Rands.values(TARGETS), RANDOM);
                     materials.add(material);
                 }
-                for (int i = 0; i < 100; i++) {
-                    OreMaterial material = new CrystalOreMaterial(Rands.values(TARGETS), RANDOM);
+                for (int i = 0; i < CONFIG.crystalTypeAmount; i++) {
+                    OreMaterial material = new CrystalMaterial(Rands.values(TARGETS), RANDOM);
                     materials.add(material);
                 }
 
@@ -157,17 +161,17 @@ public class RAAMaterials implements RAAAddon {
                     }
                 });
 
-                world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
+//                world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
 
                 System.out.println("Make Client update!");
                 RANDOM.setSeed(seed);
                 if (isClient()) {
                     materials.forEach((material) -> material.initClient(RANDOM));
 
-//                    SilentWorldReloader.setSilent();
+                    SilentWorldReloader.setSilent();
                     MinecraftClient.getInstance().reloadResources();
                     MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels();
-                    world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
+//                    world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
                 }
             }
         }

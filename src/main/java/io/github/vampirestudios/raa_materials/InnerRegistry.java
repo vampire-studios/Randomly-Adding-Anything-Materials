@@ -48,7 +48,7 @@ public class InnerRegistry {
 		StoneMaterial.resetMaterials();
 		MetalOreMaterial.resetMaterials();
 		GemOreMaterial.resetMaterials();
-		CrystalOreMaterial.resetMaterials();
+		CrystalMaterial.resetMaterials();
 	}
 	
 	private static <T> void clearRegistry(DefaultedRegistry<T> registry, Set<Identifier> ids) {

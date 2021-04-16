@@ -33,6 +33,10 @@ public class ModelHelper {
 		return String.format("{\"parent\": \"minecraft:block/cube_all\", \"textures\": {\"all\": \"%s:%s\"}}", texture.getNamespace(), texture.getPath());
 	}
 
+	public static String makeCross(Identifier texture) {
+		return String.format("{\"parent\": \"minecraft:block/cross\", \"textures\": {\"cross\": \"%s:%s\"}}", texture.getNamespace(), texture.getPath());
+	}
+
 	public static String makeCubeMirrored(Identifier texture) {
 		return String.format("{\"parent\": \"minecraft:block/cube_mirrored_all\", \"textures\": {\"all\": \"%s:%s\"}}", texture.getNamespace(), texture.getPath());
 	}

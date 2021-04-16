@@ -44,7 +44,7 @@ public class Materials {
     private static RegistryHelper MOD_REGISTRY = RegistryHelper.createRegistryHelper(RAAMaterials.MOD_ID);
 
     public static void generate() {
-        for (int a = 0; a < RAAMaterials.CONFIG.materialGenAmount; a++) {
+        for (int a = 0; a < RAAMaterials.CONFIG.legacyMaterialGenAmount; a++) {
             Color RGB = Rands.randColor();
             NameGenerator nameGenerator = RAACore.CONFIG.getLanguage().getNameGenerator(MaterialLanguageManager.MATERIAL_NAME);
 

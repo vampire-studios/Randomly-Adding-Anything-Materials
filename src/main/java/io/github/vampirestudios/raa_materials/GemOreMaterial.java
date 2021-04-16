@@ -54,7 +54,7 @@ public class GemOreMaterial extends OreMaterial {
 	public final Item shovel;
 
 	public GemOreMaterial(Target targetIn, Random random) {
-		super(targetIn, random);
+		super("gem", targetIn, random);
 		String regName = this.name.toLowerCase();
 		gem = InnerRegistry.registerItem(regName + "_gem", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
 		drop = gem;
@@ -166,18 +166,20 @@ public class GemOreMaterial extends OreMaterial {
 				shapedRecipeBuilder.pattern("iii", "iii", "iii");
 				shapedRecipeBuilder.result(id(regName + "_block"), 1);
 			});
-			
-			try {
-				dataPackBuilder.dumpResources("testing", "data");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+
+			new Thread(() -> {
+				try {
+					dataPackBuilder.dumpResources("testing", "data");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}).start();
 		});
 	}
 
 	@Override
-	protected void initClientCustom(Random random) {
-		loadStaticImages();
+	public void initClient(Random random) {
+		super.initClient(random);
 		String regName = this.name.toLowerCase();
 
 		ColorGradient gradient = ProceduralTextures.makeGemPalette(random);
@@ -254,17 +256,11 @@ public class GemOreMaterial extends OreMaterial {
 		InnerRegistry.registerTexture(texture2ID, texture);
 		InnerRegistry.registerItemModel(this.shovel, ModelHelper.makeTwoLayerItem(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName + "_shovel"), this.name + " Shovel");
-
-//		texture = TextureHelper.createColoredArmorTextures(gradient, TextureHelper.loadImage(RAAMaterials.id("models/armor/testing2_layer_1")));
-//		textureID = RAAMaterials.id("models/armor/testing2_layer_1");
-//		InnerRegistry.registerTexture(textureID, texture);
-//		texture = TextureHelper.createColoredArmorTextures(gradient, TextureHelper.loadImage(RAAMaterials.id("models/armor/testing2_layer_2")));
-//		texture2ID = RAAMaterials.id("models/armor/testing2_layer_2");
-//		InnerRegistry.registerTexture(texture2ID, texture);
-//		ArmorRenderingRegistry.registerSimpleTexture(RAAMaterials.id("testing2"), this.helmet, this.chestplate, this.legging, this.boot);
 	}
 
-	private void loadStaticImages() {
+	@Override
+	public void loadStaticImages() {
+		super.loadStaticImages();
 		if (oreVeins == null) {
 			oreVeins = new BufferTexture[17];
 			for (int i = 0; i < oreVeins.length; i++) {
