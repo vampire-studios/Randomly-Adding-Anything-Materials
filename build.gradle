@@ -24,6 +24,7 @@ repositories {
 		url  "https://dl.bintray.com/natanfudge/libs"
 	}
 	maven { url "https://maven.shedaniel.me/" }
+	maven { url "https://maven.terraformersmc.com/" }
 }
 
 minecraft { }
@@ -51,6 +52,7 @@ dependencies {
 		exclude group: "io.github.prospector.modmenu"
 		exclude group :"net.fabricmc.fabric-api"
 	}*/
+	modImplementation "com.terraformersmc:modmenu:2.0.0-beta.4"
 }
 
 processResources {

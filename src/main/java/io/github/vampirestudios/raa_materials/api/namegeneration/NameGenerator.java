@@ -69,7 +69,7 @@ public class NameGenerator {
 	public static String makeOreName(String oreType, Random random) {
 		switch (oreType) {
 			case "crystal":
-				return generateOreName(ORE_GEN, random);
+				return generateOreName(CRYSTAL_GEN, random);
 			case "metal":
 				return generateOreName(METAL_GEN, random);
 			case "gem":

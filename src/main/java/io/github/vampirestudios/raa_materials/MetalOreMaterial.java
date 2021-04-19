@@ -8,6 +8,9 @@ import io.github.vampirestudios.raa_materials.items.CustomHoeItem;
 import io.github.vampirestudios.raa_materials.items.CustomPickaxeItem;
 import io.github.vampirestudios.raa_materials.utils.*;
 import io.github.vampirestudios.vampirelib.utils.Rands;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
@@ -22,7 +25,9 @@ import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 public class MetalOreMaterial extends OreMaterial {
 	private static BufferTexture[] oreVeins;
 	private static BufferTexture[] storageBlocks;
+	private static BufferTexture[] rawBlocks;
 
+	private static BufferTexture[] rawItems;
 	private static BufferTexture[] ingots;
 	private static BufferTexture[] nuggets;
 
@@ -47,6 +52,9 @@ public class MetalOreMaterial extends OreMaterial {
 	private static BufferTexture[] shovelHeads;
 	private static BufferTexture[] shovelSticks;
 
+	public final Block rawMaterialBlock;
+
+	public final Item rawMaterial;
 	public final Item ingot;
 
 	public final Item nugget;
@@ -70,7 +78,12 @@ public class MetalOreMaterial extends OreMaterial {
 	public MetalOreMaterial(Target targetIn, Random random) {
 		super("metal", targetIn, random);
 		String regName = this.name.toLowerCase();
+		rawMaterialBlock = InnerRegistry.registerBlockAndItem("raw_" + regName + "_block", new Block(AbstractBlock.Settings.copy(Blocks.RAW_IRON_BLOCK)), RAAMaterials.RAA_ORES);
+		FurnaceRecipe.make(regName, rawMaterialBlock, this.storageBlock).setXP(MathHelper.floor(random.nextFloat() * 10) / 10F).build();
+
+		rawMaterial = InnerRegistry.registerItem("raw_" + regName, new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
 		ingot = InnerRegistry.registerItem(regName + "_ingot", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
+		FurnaceRecipe.make(regName, rawMaterial, ingot).setXP(MathHelper.floor(random.nextFloat() * 10) / 10F).build();
 		FurnaceRecipe.make(regName, ore, ingot).setXP(MathHelper.floor(random.nextFloat() * 10) / 10F).build();
 
 		nugget = InnerRegistry.registerItem(regName + "_nugget", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
@@ -191,6 +204,13 @@ public class MetalOreMaterial extends OreMaterial {
 				shapedRecipeBuilder.result(id(regName + "_block"), 1);
 			});
 
+			dataPackBuilder.addShapedRecipe(id("raw_" + regName + "_block_from_raw_material"), shapedRecipeBuilder -> {
+				shapedRecipeBuilder.group(id("raw_blocks"));
+				shapedRecipeBuilder.ingredientItem('i', id("raw_" + regName));
+				shapedRecipeBuilder.pattern("iii", "iii", "iii");
+				shapedRecipeBuilder.result(id("raw_" + regName + "_block"), 1);
+			});
+
 			dataPackBuilder.addShapelessRecipe(id(regName + "_dust"), shapelessRecipeBuilder -> {
 				shapelessRecipeBuilder.group(id("dusts"));
 				shapelessRecipeBuilder.ingredientItem(id("small_" + regName + "_dust"));
@@ -210,6 +230,12 @@ public class MetalOreMaterial extends OreMaterial {
 				shapelessRecipeBuilder.group(id("ingots"));
 				shapelessRecipeBuilder.ingredientItem(id(regName + "_block"));
 				shapelessRecipeBuilder.result(id(regName + "_ingot"), 9);
+			});
+
+			dataPackBuilder.addShapelessRecipe(id(regName + "_raw_material_from_raw_block"), shapelessRecipeBuilder -> {
+				shapelessRecipeBuilder.group(id("raw_material"));
+				shapelessRecipeBuilder.ingredientItem(id("raw_" + regName + "_block"));
+				shapelessRecipeBuilder.result(id("raw_" + regName), 9);
 			});
 
 			dataPackBuilder.addShapedRecipe(id(regName + "_ingot_from_nugget"), shapelessRecipeBuilder -> {
@@ -232,7 +258,7 @@ public class MetalOreMaterial extends OreMaterial {
 				shapelessRecipeBuilder.result(id("small_" + regName + "_dust"), 4);
 			});
 
-			recipeHelpers.addBlastingFurnaceRecipe(id("boots_to_" + regName),
+			/*recipeHelpers.addBlastingFurnaceRecipe(id("boots_to_" + regName),
 					trBlastFurnaceRecipeBuilder -> trBlastFurnaceRecipeBuilder.heat(1000)
 							.power(128)
 							.time(140)
@@ -309,7 +335,7 @@ public class MetalOreMaterial extends OreMaterial {
 							.multiResult(raaMultiResultBuilder -> {
 								raaMultiResultBuilder.item(id(regName + "_plate"), 9);
 							})
-			);
+			);*/
 
 			new Thread(() -> {
 				try {
@@ -346,7 +372,14 @@ public class MetalOreMaterial extends OreMaterial {
 		InnerRegistry.registerBlockModel(this.storageBlock, ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(regName + "_block"), this.name + " Block");
 
+		textureID = TextureHelper.makeItemTextureID("raw_" + regName + "_block");
+		texture = ProceduralTextures.randomColored(rawBlocks, gradient, random);
+		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistry.registerItemModel(this.rawMaterialBlock.asItem(), ModelHelper.makeCube(textureID));
+		InnerRegistry.registerBlockModel(this.rawMaterialBlock, ModelHelper.makeCube(textureID));
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock("raw_" + regName + "_block"), "Raw " + this.name + " Block");
 
+		makeColoredItemAssets(rawItems, rawMaterial, gradient, random, "raw_" + regName, "Raw %s");
 		makeColoredItemAssets(ingots, ingot, gradient, random, regName + "_ingot", "%s Ingot");
 		makeColoredItemAssets(nuggets, nugget, gradient, random, regName + "_nugget", "%s Nugget");
 
@@ -430,13 +463,22 @@ public class MetalOreMaterial extends OreMaterial {
 				storageBlocks[i] = TextureHelper.loadTexture("textures/block/storage_blocks/metals/metal_" + (i+1) + ".png");
 				TextureHelper.normalize(storageBlocks[i], 0.35F, 1F);
 			}
+			rawBlocks = new BufferTexture[2];
+			for (int i = 0; i < rawBlocks.length; i++) {
+				rawBlocks[i] = TextureHelper.loadTexture("textures/block/storage_blocks/metals/raw_" + (i+1) + ".png");
+				TextureHelper.normalize(rawBlocks[i], 0.35F, 1F);
+			}
 
+			rawItems = new BufferTexture[5];
+			for (int i = 0; i < rawItems.length; i++) {
+				rawItems[i] = TextureHelper.loadTexture("textures/item/raw/raw_" + (i+1) + ".png");
+				TextureHelper.normalize(rawItems[i]);
+			}
 			ingots = new BufferTexture[19];
 			for (int i = 0; i < ingots.length; i++) {
 				ingots[i] = TextureHelper.loadTexture("textures/item/ingots/ingot_" + (i+1) + ".png");
 				TextureHelper.normalize(ingots[i]);
 			}
-
 			nuggets = new BufferTexture[8];
 			for (int i = 0; i < nuggets.length; i++) {
 				nuggets[i] = TextureHelper.loadTexture("textures/item/nuggets/nugget_" + (i+1) + ".png");

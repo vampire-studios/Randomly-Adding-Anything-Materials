@@ -1,13 +1,13 @@
 package io.github.vampirestudios.raa_materials;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
+import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
 import io.github.vampirestudios.raa_materials.utils.*;
-import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
-import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
-import net.fabricmc.fabric.api.biome.v1.ModificationPhase;
+import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -17,7 +17,6 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.YOffset;
@@ -27,8 +26,11 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class StoneMaterial extends ComplexMaterial {
 	private static final Set<Biome> INJECTED = Sets.newHashSet();
@@ -109,20 +111,49 @@ public class StoneMaterial extends ComplexMaterial {
 //		TagHelper.addTags(pressure_plate, BlockTags.PRESSURE_PLATES, BlockTags.STONE_PRESSURE_PLATES);
 	}
 
+	private static void addFeature(GenerationStep.Feature featureStep, ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
+		int index = featureStep.ordinal();
+		if (features.size() > index) {
+			features.get(index).add(() -> feature);
+		}
+		else {
+			List<Supplier<ConfiguredFeature<?, ?>>> newFeature = Lists.newArrayList();
+			newFeature.add(() -> feature);
+			features.add(newFeature);
+		}
+	}
+
 	@Override
 	public void generate(ServerWorld world) {
 		String regName = this.name.toLowerCase();
-		RegistryKey<ConfiguredFeature<?, ?>> registryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, new Identifier(RAAMaterials.MOD_ID, regName + "_stone_cf"));
-		BiomeUtils.newConfiguredFeature(regName + "_stone_cf", Feature.ORE
-				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 12))
-				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.fixed(0), YOffset.getTop())))
+		ConfiguredFeature<?, ?> configuredFeature = BiomeUtils.newConfiguredFeature(regName + "_stone_cf", Feature.ORE
+				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 64))
+				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
 				.spreadHorizontally()
 				.repeatRandomly(2));
 
-		BiomeModifications.create(RAAMaterials.id(regName + "_stone"))
-				.add(ModificationPhase.ADDITIONS, BiomeSelectors.all(), biomeModificationContext -> {
-					biomeModificationContext.getGenerationSettings().addFeature(GenerationStep.Feature.UNDERGROUND_ORES, registryKey);
-				});
+		ConfiguredFeature<?, ?> configuredFeature2 = BiomeUtils.newConfiguredFeature(regName + "_stone_cf2", Feature.ORE
+				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 32))
+				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
+				.spreadHorizontally()
+				.repeatRandomly(4));
+
+		ConfiguredFeature<?, ?> configuredFeature3 = BiomeUtils.newConfiguredFeature(regName + "_stone_cf3", Feature.ORE
+				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 16))
+				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
+				.spreadHorizontally()
+				.repeatRandomly(10));
+
+		world.getRegistryManager().get(Registry.BIOME_KEY).forEach(biome -> {
+			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
+			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
+			List<List<Supplier<ConfiguredFeature<?, ?>>>> features = new ArrayList<>(preFeatures.size());
+			preFeatures.forEach((list) -> {
+				features.add(Lists.newArrayList(list));
+			});
+			addFeature(GenerationStep.Feature.UNDERGROUND_ORES, Rands.values(new ConfiguredFeature[]{ configuredFeature, configuredFeature2, configuredFeature3 }), features);
+			accessor.raaSetFeatures(features);
+		});
 	}
 
 	@Override
@@ -159,7 +190,7 @@ public class StoneMaterial extends ComplexMaterial {
 		NameGenerator.addTranslation("block." + mainName, name);
 
 		ModelHelper.registerSimpleBlockModel(polished, frameTexID);
-		NameGenerator.addTranslation("block." + mainName + "_polished", name);
+		NameGenerator.addTranslation("block.raa_materials." + "polished_" + textureBaseName, name);
 
 		ModelHelper.registerSimpleBlockModel(bricks, bricksTexID);
 		NameGenerator.addTranslation("block." + mainName + "_bricks", name);
@@ -173,17 +204,17 @@ public class StoneMaterial extends ComplexMaterial {
 			stoneFrame = new BufferTexture[1];
 			for (int i = 0; i < stoneFrame.length; i++) {
 				stoneFrame[i] = TextureHelper.loadTexture("textures/block/stone_frame_0" + (i+1) + ".png");
-				TextureHelper.normalize(stoneFrame[i], 0.35F, 1F);
+				TextureHelper.normalize(stoneFrame[i], 0.1F, 1F);
 			}
 			stoneBricks = new BufferTexture[3];
 			for (int i = 0; i < stoneBricks.length; i++) {
 				stoneBricks[i] = TextureHelper.loadTexture("textures/block/stone_bricks_0" + (i+1) + ".png");
-				TextureHelper.normalize(stoneBricks[i], 0.35F, 1F);
+				TextureHelper.normalize(stoneBricks[i], 0.1F, 1F);
 			}
-			stoneTiles = new BufferTexture[1];
+			stoneTiles = new BufferTexture[2];
 			for (int i = 0; i < stoneTiles.length; i++) {
 				stoneTiles[i] = TextureHelper.loadTexture("textures/block/stone_tiles_0" + (i+1) + ".png");
-				TextureHelper.normalize(stoneTiles[i], 0.35F, 1F);
+				TextureHelper.normalize(stoneTiles[i], 0.1F, 1F);
 			}
 		}
 	}

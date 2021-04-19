@@ -23,6 +23,9 @@
     ],
     "raa:addon_client": [
       "io.github.vampirestudios.raa_materials.RAAMaterialsClient"
+    ],
+    "modmenu": [
+      "io.github.vampirestudios.raa_materials.config.RAAModMenuScreen"
     ]
   },
   "mixins": [
@@ -35,11 +38,19 @@
       "environment": "client"
     }
   ],
-
   "depends": {
     "fabricloader": ">=0.10.8",
     "fabric": "*",
     "raa_core": ">=0.3.2",
     "minecraft": ">=1.16.4"
+  },"custom": {
+  "modmenu": {
+    "links": {
+      "modmenu.discord": "https://discord.gg/2HKGqJE"
+    },
+    "parent": {
+      "id": "raa-core"
+    }
   }
+}
 }

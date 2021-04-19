@@ -98,10 +98,10 @@ public class ProceduralTextures {
 		BufferTexture b2 = TextureHelper.offset(texture, -1,  0);
 		BufferTexture b3 = TextureHelper.offset(texture,  0,  1);
 		BufferTexture b4 = TextureHelper.offset(texture,  0, -1);
-		result = TextureHelper.blend(result, b1, 0.0F);
-		result = TextureHelper.blend(result, b2, 0.0F);
-		result = TextureHelper.blend(result, b3, 0.0F);
-		result = TextureHelper.blend(result, b4, 0.0F);
+		result = TextureHelper.blend(result, b1, 0.01F);
+		result = TextureHelper.blend(result, b2, 0.01F);
+		result = TextureHelper.blend(result, b3, 0.01F);
+		result = TextureHelper.blend(result, b4, 0.01F);
 		return result;
 	}
 

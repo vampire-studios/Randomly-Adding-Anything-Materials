@@ -102,7 +102,7 @@ public class InnerRegistry {
 	public static void registerTexture(Identifier id, BufferTexture image) {
 		TEXTURES.put(id, image);
 	}
-	
+
 	public static void registerBlockModel(BlockState state, String json) {
 		JsonUnbakedModel model = JsonUnbakedModel.deserialize(json);
 		registerBlockModel(state, model);

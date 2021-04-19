@@ -59,7 +59,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		if(hasStorageBlock) storageBlock = InnerRegistry.registerBlockAndItem(regName + "_block", new BaseDropBlock(material), RAAMaterials.RAA_ORES);
 	}
 
-	private static void addFeature(GenerationStep.Feature featureStep, ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
+	static void addFeature(GenerationStep.Feature featureStep, ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
 		int index = featureStep.ordinal();
 		if (features.size() > index) {
 			features.get(index).add(() -> feature);
