@@ -27,7 +27,7 @@ public class RAABlockItem extends BlockItem implements GeneratedItemName {
     @Override
     public Text getName(ItemStack itemStack_1) {
         Object[] data = {WordUtils.capitalize(name), WordUtils.uncapitalize(name), WordUtils.uncapitalize(name).charAt(0), WordUtils.uncapitalize(name).charAt(name.length() - 1)};
-        return this.generateName("text.raa_materials.block." + getBlockType().name().toLowerCase(Locale.ENGLISH), data);
+        return this.generateName("text.raa_materials.block." + getBlockType().name().toLowerCase(Locale.ROOT), data);
     }
 
     public BlockType getBlockType() {

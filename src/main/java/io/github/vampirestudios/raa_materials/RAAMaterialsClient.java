@@ -71,14 +71,9 @@ public class RAAMaterialsClient implements RAAAddonClient {
             Materials.MATERIALS.forEach(material -> {
                 MaterialTextureProviders.generateJSON(MaterialTextureProviders.MATERIAL_BLOCKS, material, clientResourcePackBuilder);
                 MaterialTextureProviders.generateJSON(MaterialTextureProviders.MATERIAL_ITEMS, material, clientResourcePackBuilder);
-
                 if (material.hasArmor()) MaterialTextureProviders.generateJSON(MaterialTextureProviders.MATERIAL_ARMORS, material, clientResourcePackBuilder);
-
                 if (material.hasTools()) MaterialTextureProviders.generateJSON(MaterialTextureProviders.MATERIAL_TOOLS, material, clientResourcePackBuilder);
-
                 if (material.hasWeapons()) MaterialTextureProviders.generateJSON(MaterialTextureProviders.MATERIAL_WEAPONS, material, clientResourcePackBuilder);
-
-
             });
         });
 

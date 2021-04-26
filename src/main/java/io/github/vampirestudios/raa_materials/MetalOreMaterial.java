@@ -18,6 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Random;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
@@ -77,7 +78,7 @@ public class MetalOreMaterial extends OreMaterial {
 
 	public MetalOreMaterial(Target targetIn, Random random) {
 		super("metal", targetIn, random);
-		String regName = this.name.toLowerCase();
+		String regName = this.name.toLowerCase(Locale.ROOT);
 		rawMaterialBlock = InnerRegistry.registerBlockAndItem("raw_" + regName + "_block", new Block(AbstractBlock.Settings.copy(Blocks.RAW_IRON_BLOCK)), RAAMaterials.RAA_ORES);
 		FurnaceRecipe.make(regName, rawMaterialBlock, this.storageBlock).setXP(MathHelper.floor(random.nextFloat() * 10) / 10F).build();
 
@@ -350,7 +351,7 @@ public class MetalOreMaterial extends OreMaterial {
 	@Override
 	public void initClient(Random random) {
 		super.initClient(random);
-		String regName = this.name.toLowerCase();
+		String regName = this.name.toLowerCase(Locale.ROOT);
 
 		ColorGradient gradient = ProceduralTextures.makeMetalPalette(random);
 

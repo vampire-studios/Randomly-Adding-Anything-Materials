@@ -26,10 +26,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class StoneMaterial extends ComplexMaterial {
@@ -62,8 +59,8 @@ public class StoneMaterial extends ComplexMaterial {
 
 	public StoneMaterial(Random random) {
 		this.name = NameGenerator.makeRockName(random);
-		String regName = this.name.toLowerCase();
-		FabricBlockSettings material = FabricBlockSettings.copyOf(Blocks.STONE).materialColor(MapColor.GRAY);
+		String regName = this.name.toLowerCase(Locale.ROOT);
+		FabricBlockSettings material = FabricBlockSettings.copyOf(Blocks.STONE).mapColor(MapColor.GRAY);
 
 		stone = InnerRegistry.registerBlockAndItem(regName, new BaseBlock(material), CreativeTabs.BLOCKS);
 		polished = InnerRegistry.registerBlockAndItem("polished_" + regName, new BaseBlock(material), CreativeTabs.BLOCKS);
@@ -125,7 +122,7 @@ public class StoneMaterial extends ComplexMaterial {
 
 	@Override
 	public void generate(ServerWorld world) {
-		String regName = this.name.toLowerCase();
+		String regName = this.name.toLowerCase(Locale.ROOT);
 		ConfiguredFeature<?, ?> configuredFeature = BiomeUtils.newConfiguredFeature(regName + "_stone_cf", Feature.ORE
 				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 64))
 				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
@@ -160,7 +157,7 @@ public class StoneMaterial extends ComplexMaterial {
 	public void initClient(Random random) {
 		loadStaticImages();
 
-		String textureBaseName = name.toLowerCase();
+		String textureBaseName = name.toLowerCase(Locale.ROOT);
 		String mainName = RAAMaterials.MOD_ID + "." + textureBaseName;
 
 		// Texture Genearation

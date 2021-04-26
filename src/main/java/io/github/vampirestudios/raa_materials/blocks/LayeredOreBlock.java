@@ -22,6 +22,7 @@ import net.minecraft.world.BlockView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class LayeredOreBlock extends OreBlock {
@@ -76,9 +77,9 @@ public class LayeredOreBlock extends OreBlock {
             items.add(new ItemStack(this.asItem()));
         } else {
             if (material.getOreInformation().getOreType() == OreType.GEM) {
-                items.add(new ItemStack(Registry.ITEM.get(new Identifier(RAAMaterials.MOD_ID, material.getName().toLowerCase().replace(" ", "_")  + "_gem"))));
+                items.add(new ItemStack(Registry.ITEM.get(new Identifier(RAAMaterials.MOD_ID, material.getName().toLowerCase(Locale.ROOT).replace(" ", "_")  + "_gem"))));
             } else {
-                items.add(new ItemStack(Registry.ITEM.get(new Identifier(RAAMaterials.MOD_ID, material.getName().toLowerCase().replace(" ", "_") + "_crystal"))));
+                items.add(new ItemStack(Registry.ITEM.get(new Identifier(RAAMaterials.MOD_ID, material.getName().toLowerCase(Locale.ROOT).replace(" ", "_") + "_crystal"))));
             }
         }
         return items;

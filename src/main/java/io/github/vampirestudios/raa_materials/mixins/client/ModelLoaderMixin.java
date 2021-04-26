@@ -70,12 +70,10 @@ public class ModelLoaderMixin {
 						putModel(modelID, model);
 						unbakedModels.put(identifier2, model);
 						info.cancel();
+					} else {
+						System.out.printf("Missing item model for %s%n", cleanID);
 					}
-					else {
-						System.out.println(String.format("Missing item model for %s", cleanID));
-					}
-				}
-				else {
+				} else {
 					Block block = Registry.BLOCK.get(cleanID);
 					block.getStateManager().getStates().forEach((state) -> {
 						UnbakedModel model = InnerRegistry.getModel(state);

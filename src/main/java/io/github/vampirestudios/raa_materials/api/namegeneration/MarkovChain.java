@@ -4,13 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class MarkovChain {
 	private static final char[] VOCALS = new char[] { 'a', 'e', 'i', 'o', 'u' };
@@ -38,7 +32,7 @@ public class MarkovChain {
 	}
 
 	public void addWord(String word) {
-		word = word.toLowerCase().replace(" ", "");
+		word = word.toLowerCase(Locale.ROOT).replace(" ", "");
 		words.add(word);
 
 		POSITIONS.clear();

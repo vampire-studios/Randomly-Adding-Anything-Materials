@@ -8,6 +8,7 @@ import io.github.vampirestudios.raa_materials.generation.materials.data.*;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.minecraft.util.Identifier;
 
+import java.util.Locale;
 import java.util.Map;
 
 public class Material {
@@ -66,7 +67,7 @@ public class Material {
     }
 
     public String getName() {
-        return name.toLowerCase();
+        return name.toLowerCase(Locale.ROOT);
     }
 
     @Deprecated

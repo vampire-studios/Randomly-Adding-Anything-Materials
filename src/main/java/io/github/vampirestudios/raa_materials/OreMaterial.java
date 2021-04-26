@@ -28,6 +28,7 @@ import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.function.Supplier;
 
@@ -49,7 +50,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 	public OreMaterial(String oreType, Target targetIn, Random random, boolean hasStorageBlock, boolean hasOre, boolean hasOreGeneration) {
 		this.name = NameGenerator.makeOreName(oreType, random);
 		this.hasOreGeneration = hasOreGeneration;
-		String regName = this.name.toLowerCase();
+		String regName = this.name.toLowerCase(Locale.ROOT);
 		target = targetIn;
 
 		FabricBlockSettings material = FabricBlockSettings.copyOf(target.getBlock()).mapColor(MapColor.GRAY);
@@ -74,7 +75,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 	@Override
 	public void generate(ServerWorld world) {
 		if (hasOreGeneration) {
-			String regName = this.name.toLowerCase();
+			String regName = this.name.toLowerCase(Locale.ROOT);
 			ConfiguredFeature<?, ?> configuredFeatureMiddleRare = BiomeUtils.newConfiguredFeature(regName + "_ore_cf", Feature.ORE
 					.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.getBlock()), ore.getDefaultState(), 9, Rands.chance(60) ? 0.5F : 0F))
 					.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
@@ -94,9 +95,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 				GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
 				List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
 				List<List<Supplier<ConfiguredFeature<?, ?>>>> features = new ArrayList<>(preFeatures.size());
-				preFeatures.forEach((list) -> {
-					features.add(Lists.newArrayList(list));
-				});
+				preFeatures.forEach((list) -> features.add(Lists.newArrayList(list)));
 				addFeature(GenerationStep.Feature.UNDERGROUND_ORES, Rands.values(new ConfiguredFeature[]{ configuredFeatureCommon, configuredFeatureMiddleRare, configuredFeatureHugeRare }), features);
 				accessor.raaSetFeatures(features);
 			});

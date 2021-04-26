@@ -46,7 +46,7 @@ public class ChineseMaterials  implements NameGenerator {
                     System.out.println(id+","+specialCharacter.getKey()+","+specialCharacter.getValue());
                 }
             }
-            id = id.toLowerCase(Locale.ENGLISH);
+            id = id.toLowerCase(Locale.ROOT);
             generated_identifier.add(id);
 
         }

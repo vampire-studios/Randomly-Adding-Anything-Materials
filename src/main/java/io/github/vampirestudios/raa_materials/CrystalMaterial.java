@@ -30,6 +30,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.function.Supplier;
 
@@ -48,7 +49,7 @@ public class CrystalMaterial extends OreMaterial {
 
 	public CrystalMaterial(Target targetIn, Random random) {
 		super("crystal", targetIn, random, false, false, false);
-		String regName = this.name.toLowerCase();
+		String regName = this.name.toLowerCase(Locale.ROOT);
 		ore = InnerRegistry.registerBlockAndItem(regName + "_block", new AmethystBlock(FabricBlockSettings.copyOf(target.getBlock()).mapColor(MapColor.GRAY)), RAA_ORES);
 		shard = InnerRegistry.registerItem(regName + "_shard", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
 		drop = shard;
@@ -74,7 +75,7 @@ public class CrystalMaterial extends OreMaterial {
 	@Override
 	public void initClient(Random random) {
 		super.initClient(random);
-		String regName = this.name.toLowerCase();
+		String regName = this.name.toLowerCase(Locale.ROOT);
 
 		ColorGradient gradient = ProceduralTextures.makeCrystalPalette(random);
 
@@ -90,7 +91,7 @@ public class CrystalMaterial extends OreMaterial {
 		texture = ProceduralTextures.randomColored(shardTexture, gradient, random);
 		InnerRegistry.registerTexture(textureID, texture);
 
-		Artifice.registerAssetPack(id(regName + "_assets"), clientResourcePackBuilder -> {
+		Artifice.registerAssetPack(id(regName + "_crystal_assets" + Rands.getRandom().nextInt()), clientResourcePackBuilder -> {
 				Identifier crystalBlock = id(regName + "_block");
 				clientResourcePackBuilder.addBlockState(crystalBlock, blockStateBuilder ->
 						blockStateBuilder.variant("", variant ->
@@ -184,11 +185,4 @@ public class CrystalMaterial extends OreMaterial {
 		});
 	}
 
-	public void makeColoredItemAssets(BufferTexture textureArray, Item item, ColorGradient gradient, Random random, String regName, String name) {
-		BufferTexture texture = ProceduralTextures.randomColored(textureArray, gradient, random);
-		Identifier textureID = TextureHelper.makeItemTextureID(regName);
-		InnerRegistry.registerTexture(textureID, texture);
-		InnerRegistry.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName),  String.format(name, this.name));
-	}
 }

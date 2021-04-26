@@ -11,13 +11,15 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.util.Locale;
+
 public class RAAHorseArmorItem extends DyeableHorseArmorItem implements GeneratedItemName {
 
     private final Identifier entityTexture;
     private Material material;
 
     public RAAHorseArmorItem(Material material) {
-        super(material.getArmorMaterial().getHorseArmorBonus(), material.getName().toLowerCase(), (new Settings()).maxCount(1)
+        super(material.getArmorMaterial().getHorseArmorBonus(), material.getName().toLowerCase(Locale.ROOT), (new Settings()).maxCount(1)
                 .group(RAAMaterials.RAA_ARMOR));
         this.material = material;
         this.entityTexture = Rands.list(TextureTypes.HORSE_ARMOR_MODEL_TEXTURES);
