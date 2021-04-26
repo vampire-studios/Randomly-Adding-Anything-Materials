@@ -15,7 +15,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.util.Identifier;
-import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -93,7 +92,7 @@ public class GemOreMaterial extends OreMaterial {
 		shovel = InnerRegistry.registerItem(regName + "_shovel",
 				new ShovelItem(toolMaterial, toolMaterial.getShovelAttackDamage(), toolMaterial.getShovelAttackSpeed(), new Item.Settings().group(RAAMaterials.RAA_TOOLS).maxCount(1)));
 
-		Artifice.registerDataPack(id(regName + "_ore_recipes" + Rands.getRandom().nextInt()), dataPackBuilder -> {
+		Artifice.registerDataPack(id(regName + "_gem_ore_recipes" + Rands.getRandom().nextInt()), dataPackBuilder -> {
 			dataPackBuilder.addShapedRecipe(id(regName + "_helmet"), shapedRecipeBuilder -> {
 				shapedRecipeBuilder.group(id("helmets"));
 				shapedRecipeBuilder.ingredientItem('i', id(regName + "_gem"));
@@ -193,9 +192,16 @@ public class GemOreMaterial extends OreMaterial {
 		texture = TextureHelper.cover(texture, outline);
 		InnerRegistry.registerTexture(textureID, texture);
 
+		InnerRegistry.registerItemModel(this.ore.asItem(), ModelHelper.makeCube(textureID));
+		InnerRegistry.registerBlockModel(this.ore, ModelHelper.makeCube(textureID));
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(regName + "_ore"), this.name + " Ore");
+
 		textureID = TextureHelper.makeItemTextureID(regName + "_block");
 		texture = ProceduralTextures.randomColored(storageBlocks, gradient, random);
 		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistry.registerItemModel(this.storageBlock.asItem(), ModelHelper.makeCube(textureID));
+		InnerRegistry.registerBlockModel(this.storageBlock, ModelHelper.makeCube(textureID));
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(regName + "_block"), this.name + " Block");
 
 		makeColoredItemAssets(gems, gem, gradient, random, regName + "_gem", "%s Gem");
 
@@ -203,7 +209,6 @@ public class GemOreMaterial extends OreMaterial {
 		makeColoredItemAssets(chestplates, chestplate, gradient, random, regName + "_chestplate", "%s Chestplate");
 		makeColoredItemAssets(leggings, legging, gradient, random, regName + "_leggings", "%s Leggings");
 		makeColoredItemAssets(boots, boot, gradient, random, regName + "_boots", "%s Boots");
-
 
 		texture = ProceduralTextures.randomColored(swordBlades, gradient, random);
 		textureID = TextureHelper.makeItemTextureID(regName + "_sword_blade");
@@ -223,10 +228,10 @@ public class GemOreMaterial extends OreMaterial {
 		InnerRegistry.registerItemModel(this.pickaxe, ModelHelper.makeTwoLayerItem(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName + "_pickaxe"), this.name + " Pickaxe");
 
-		texture = ProceduralTextures.randomColored(pickaxeHeads, gradient, random);
+		texture = ProceduralTextures.randomColored(axeHeads, gradient, random);
 		textureID = TextureHelper.makeItemTextureID(regName + "_axe_head");
 		InnerRegistry.registerTexture(textureID, texture);
-		texture = ProceduralTextures.nonColored(pickaxeSticks, random);
+		texture = ProceduralTextures.nonColored(axeSticks, random);
 		texture2ID = TextureHelper.makeItemTextureID(regName + "_axe_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
 		InnerRegistry.registerItemModel(this.axe, ModelHelper.makeTwoLayerItem(textureID, texture2ID));
@@ -249,35 +254,6 @@ public class GemOreMaterial extends OreMaterial {
 		InnerRegistry.registerTexture(texture2ID, texture);
 		InnerRegistry.registerItemModel(this.shovel, ModelHelper.makeTwoLayerItem(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName + "_shovel"), this.name + " Shovel");
-
-		Artifice.registerAssetPack(id(regName + "_gem_assets" + Rands.getRandom().nextInt()), clientResourcePackBuilder -> {
-			Identifier ore = id(regName + "_ore");
-			clientResourcePackBuilder.addBlockState(ore, blockStateBuilder ->
-					blockStateBuilder.variant("", variant ->
-							variant.model(id("block/" + ore.getPath()))));
-			clientResourcePackBuilder.addBlockModel(ore, modelBuilder -> {
-				modelBuilder.parent(new Identifier("block/cube_all"));
-				modelBuilder.texture("all", id("block/" + ore.getPath()));
-			});
-			clientResourcePackBuilder.addItemModel(ore, modelBuilder ->
-					modelBuilder.parent(id("block/" + ore.getPath())));
-
-			Identifier storageBlock = id(regName + "_block");
-			clientResourcePackBuilder.addBlockState(storageBlock, blockStateBuilder ->
-					blockStateBuilder.variant("", variant ->
-							variant.model(id("block/" + storageBlock.getPath()))));
-			clientResourcePackBuilder.addBlockModel(storageBlock, modelBuilder -> {
-				modelBuilder.parent(new Identifier("block/cube_all"));
-				modelBuilder.texture("all", id("block/" + storageBlock.getPath()));
-			});
-			clientResourcePackBuilder.addItemModel(storageBlock, modelBuilder ->
-					modelBuilder.parent(id("block/" + storageBlock.getPath())));
-
-			clientResourcePackBuilder.addTranslations(id("en_us"), translationBuilder -> {
-				translationBuilder.entry(String.format("block.raa_materials.%s", storageBlock.getPath()),
-						WordUtils.capitalizeFully(storageBlock.getPath().replace("_", " ")));
-			});
-		});
 	}
 
 	@Override
@@ -392,5 +368,7 @@ public class GemOreMaterial extends OreMaterial {
 		BufferTexture texture = ProceduralTextures.randomColored(textureArray, gradient, random);
 		Identifier textureID = TextureHelper.makeItemTextureID(regName);
 		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistry.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName), String.format(name, this.name));
 	}
 }

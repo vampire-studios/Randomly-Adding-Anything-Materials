@@ -12,10 +12,10 @@ import java.util.Random;
 public class PaletteTest {
     public static void main(String[] args) throws Exception {
         int paletteSize = 7;
-        int mainColor = 0x432e63;
-        double hueshift = -130;
+        int mainColor = 0x751414;
+        double hueshift = 40;
         double proportion = 1.3;
-        double bias = 2.0;
+        double bias = 5.0;
         double extra = 1.6;
 
         int[] palette = PaletteGenerator.generateUpliftPalette(
@@ -27,7 +27,7 @@ public class PaletteTest {
             bias,
             extra,
             0.03,
-            0.0,
+            0.1,
             0.0,
             0.0
         );

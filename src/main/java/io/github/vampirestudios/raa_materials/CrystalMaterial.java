@@ -2,8 +2,8 @@ package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
 import com.swordglowsblue.artifice.api.Artifice;
-import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
-import io.github.vampirestudios.raa_materials.client.ModelHelper;
+import io.github.vampirestudios.raa_materials.blocks.CustomCrystalBlock;
+import io.github.vampirestudios.raa_materials.blocks.CustomCrystalClusterBlock;
 import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
@@ -12,11 +12,15 @@ import io.github.vampirestudios.raa_materials.utils.TextureHelper;
 import io.github.vampirestudios.raa_materials.world.gen.feature.CrystalSpikeFeature;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.*;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.CountExtraDecoratorConfig;
@@ -44,16 +48,15 @@ public class CrystalMaterial extends OreMaterial {
 
 	public final Item shard;
 	public final Block crystal;
-	private final int spawnChance = Rands.randIntRange(20, 100);
-	private final int amountPerChunk = Rands.randIntRange(1, 3);
 
 	public CrystalMaterial(Target targetIn, Random random) {
 		super("crystal", targetIn, random, false, false, false);
 		String regName = this.name.toLowerCase(Locale.ROOT);
-		ore = InnerRegistry.registerBlockAndItem(regName + "_block", new AmethystBlock(FabricBlockSettings.copyOf(target.getBlock()).mapColor(MapColor.GRAY)), RAA_ORES);
+		ore = InnerRegistry.registerBlockAndItem(regName + "_block", new CustomCrystalBlock(FabricBlockSettings.copyOf(target.getBlock()).mapColor(MapColor.GRAY)), RAA_ORES);
 		shard = InnerRegistry.registerItem(regName + "_shard", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
 		drop = shard;
-		crystal = InnerRegistry.registerBlockAndItem(regName + "_crystal", new AmethystClusterBlock(7, 3, AbstractBlock.Settings.copy(Blocks.AMETHYST_CLUSTER)), RAA_ORES);
+		crystal = InnerRegistry.registerBlockAndItem(regName + "_crystal", new CustomCrystalClusterBlock(7, 3, AbstractBlock.Settings.copy(Blocks.AMETHYST_CLUSTER), () -> shard), RAA_ORES);
+
 		Artifice.registerDataPack(id(regName + "_ore_recipes" + Rands.getRandom().nextInt()), dataPackBuilder -> {
 			dataPackBuilder.addShapedRecipe(id(regName + "_block_from_shard"), shapedRecipeBuilder -> {
 				shapedRecipeBuilder.group(id("crystal_blocks"));
@@ -152,9 +155,9 @@ public class CrystalMaterial extends OreMaterial {
 				clientResourcePackBuilder.addTranslations(id("en_us"), translationBuilder -> {
 					translationBuilder.entry(String.format("block.raa_materials.%s", crystalBlock.getPath()),
 							WordUtils.capitalizeFully(crystalBlock.getPath().replace("_", " ")));
-					translationBuilder.entry(String.format("block.hidden_gems.%s", cluster.getPath()),
+					translationBuilder.entry(String.format("block.raa_materials.%s", cluster.getPath()),
 							WordUtils.capitalizeFully(cluster.getPath().replace("_", " ")));
-					translationBuilder.entry(String.format("item.hidden_gems.%s", shard.getPath()),
+					translationBuilder.entry(String.format("item.raa_materials.%s", shard.getPath()),
 							WordUtils.capitalizeFully(shard.getPath().replace("_", " ")));
 				});
 		});
@@ -171,8 +174,8 @@ public class CrystalMaterial extends OreMaterial {
 	@Override
 	public void generate(ServerWorld world) {
 		Feature<SingleStateFeatureConfig> CRYSTAL_SPIKE = new CrystalSpikeFeature(SingleStateFeatureConfig.CODEC, this.crystal, this.ore);
-		ConfiguredFeature<?, ?> CRYSTAL_SPIKE_CF = CRYSTAL_SPIKE.configure(new SingleStateFeatureConfig(this.ore.getDefaultState()))
-				.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.2F, 1))).spreadHorizontally();
+		ConfiguredFeature<?, ?> CRYSTAL_SPIKE_CF = Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id(this.name.toLowerCase(Locale.ROOT) + "_crystal_spike"), CRYSTAL_SPIKE.configure(new SingleStateFeatureConfig(this.ore.getDefaultState()))
+				.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).decorate(Decorator..configure(new CountExtraDecoratorConfig(0, 0.002F, 1))).spreadHorizontally());
 		world.getRegistryManager().get(Registry.BIOME_KEY).forEach(biome -> {
 			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
 			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();

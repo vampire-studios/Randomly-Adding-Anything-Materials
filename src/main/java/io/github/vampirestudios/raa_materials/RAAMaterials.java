@@ -1,19 +1,11 @@
 package io.github.vampirestudios.raa_materials;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Lifecycle;
 import io.github.vampirestudios.raa_core.api.RAAAddon;
-import io.github.vampirestudios.raa_materials.api.RAARegisteries;
-import io.github.vampirestudios.raa_materials.api.RAAWorldAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
-import io.github.vampirestudios.raa_materials.data.MaterialDataProviders;
-import io.github.vampirestudios.raa_materials.generation.materials.MaterialRecipes;
-import io.github.vampirestudios.raa_materials.registries.CustomTargets;
-import io.github.vampirestudios.raa_materials.registries.Features;
-import io.github.vampirestudios.raa_materials.registries.Textures;
 import io.github.vampirestudios.raa_materials.utils.SilentWorldReloader;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
 import io.github.vampirestudios.vampirelib.utils.Rands;
@@ -38,7 +30,6 @@ import net.minecraft.util.registry.SimpleRegistry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Consumer;
 
 public class RAAMaterials implements RAAAddon {
     public static final String MOD_ID = "raa_materials";
@@ -70,13 +61,8 @@ public class RAAMaterials implements RAAAddon {
     @Override
     public void onInitialize() {
         NameGenerator.init();
-        MaterialDataProviders.init();
-//        MaterialLanguageManager.init();
         AutoConfig.register(GeneralConfig.class, JanksonConfigSerializer::new);
         CONFIG = AutoConfig.getConfigHolder(GeneralConfig.class).getConfig();
-        Textures.init();
-        CustomTargets.init();
-        Features.init();
 
         Registry.register(TARGETS, id("stone"), OreMaterial.Target.STONE);
         Registry.register(TARGETS, id("diorite"), OreMaterial.Target.DIORITE);
@@ -90,26 +76,10 @@ public class RAAMaterials implements RAAAddon {
         Registry.register(TARGETS, id("deepslate"), OreMaterial.Target.DEEPSLATE);
         Registry.register(TARGETS, id("tuff"), OreMaterial.Target.TUFF);
 
-        /*MATERIALS_CONFIG = new MaterialsConfig("materials/material_config");
-        if (CONFIG.materialGenAmount > 0) {
-            if (!MATERIALS_CONFIG.fileExist()) {
-                MATERIALS_CONFIG.generate();
-                MATERIALS_CONFIG.save();
-            } else {
-                MATERIALS_CONFIG.load();
-            }
-        }
-        Materials.createMaterialResources();*/
-
-//		ServerLifecycleEvents.SERVER_STARTED.register(server -> server.reloadResources(server.getDataPackManager().getEnabledNames()));
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> server.reloadResources(server.getDataPackManager().getEnabledNames()));
 
         ServerWorldEvents.LOAD.register((server, world) -> onServerStart(world));
-//        ServerLifecycleEvents.SERVER_STARTED.register(this::onServerStart);
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> onServerStop());
-
-        MaterialRecipes.init();
-
-        RAARegisteries.TARGET_REGISTRY.forEach(RAAWorldAPI::generateOresForTarget);
     }
 
     public static Identifier id(String name) {
@@ -120,8 +90,6 @@ public class RAAMaterials implements RAAAddon {
         return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
     }
 
-//    public void onServerStart(MinecraftServer server) {
-//        ServerWorld world = server.getOverworld();
     public void onServerStart(ServerWorld world) {
         synchronized(world) {
             if (register && seed != world.getSeed()) {
@@ -149,36 +117,39 @@ public class RAAMaterials implements RAAAddon {
                 List<OreMaterial.Target> targets = new ArrayList<>();
                 TARGETS.forEach(targets::add);
 
-                for (int i = 0; i < CONFIG.metalMaterialAmount; i++) {
-                    OreMaterial material = new MetalOreMaterial(Rands.list(targets), RANDOM);
-                    materials.add(material);
+                if (CONFIG.metalMaterialAmount != 0) {
+                    for (int i = 0; i < CONFIG.metalMaterialAmount; i++) {
+                        OreMaterial material = new MetalOreMaterial(Rands.list(targets), RANDOM);
+                        materials.add(material);
+                    }
                 }
-                for (int i = 0; i < CONFIG.gemMaterialAmount; i++) {
-                    OreMaterial material = new GemOreMaterial(Rands.list(targets), RANDOM);
-                    materials.add(material);
+                if (CONFIG.gemMaterialAmount != 0) {
+                    for (int i = 0; i < CONFIG.gemMaterialAmount; i++) {
+                        OreMaterial material = new GemOreMaterial(Rands.list(targets), RANDOM);
+                        materials.add(material);
+                    }
                 }
-                for (int i = 0; i < CONFIG.crystalTypeAmount; i++) {
-                    OreMaterial material = new CrystalMaterial(Rands.list(targets), RANDOM);
-                    materials.add(material);
+                if (CONFIG.crystalTypeAmount != 0) {
+                    for (int i = 0; i < CONFIG.crystalTypeAmount; i++) {
+                        OreMaterial material = new CrystalMaterial(Rands.list(targets), RANDOM);
+                        materials.add(material);
+                    }
                 }
 
-//                materials.forEach((material) -> {
-//                    if(material instanceof OreMaterial) {
-//                        material.generate(world);
-//                    }
-//                });
-
-//                world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
+                materials.forEach((material) -> {
+                    if(material instanceof OreMaterial) {
+                        material.generate(world);
+                    }
+                });
 
                 System.out.println("Make Client update!");
                 RANDOM.setSeed(seed);
                 if (isClient()) {
                     materials.forEach((material) -> material.initClient(RANDOM));
 
-//                    SilentWorldReloader.setSilent();
-//                    MinecraftClient.getInstance().reloadResources();
-//                    MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels();
-//                    world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
+                    SilentWorldReloader.setSilent();
+                    MinecraftClient.getInstance().reloadResources();
+                    MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels();
                 }
             }
         }

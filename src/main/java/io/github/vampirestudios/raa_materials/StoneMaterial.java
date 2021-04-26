@@ -187,13 +187,13 @@ public class StoneMaterial extends ComplexMaterial {
 		NameGenerator.addTranslation("block." + mainName, name);
 
 		ModelHelper.registerSimpleBlockModel(polished, frameTexID);
-		NameGenerator.addTranslation("block.raa_materials." + "polished_" + textureBaseName, name);
+		NameGenerator.addTranslation("block.raa_materials." + "polished_" + textureBaseName, "Polished " + name);
 
 		ModelHelper.registerSimpleBlockModel(bricks, bricksTexID);
-		NameGenerator.addTranslation("block." + mainName + "_bricks", name);
+		NameGenerator.addTranslation("block." + mainName + "_bricks", name + " Bricks");
 
 		ModelHelper.registerSimpleBlockModel(tiles, tilesTexID);
-		NameGenerator.addTranslation("block." + mainName + "_tiles", name);
+		NameGenerator.addTranslation("block." + mainName + "_tiles", name + " Tiles");
 	}
 
 	private void loadStaticImages() {

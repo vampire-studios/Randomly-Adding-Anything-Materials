@@ -61,7 +61,7 @@ public class CrystalSpikeFeature extends Feature<SingleStateFeatureConfig> {
 						if (!(downState.isOf(crystalBlock) || isSoil(downState) || isStone(downState) || downState.getBlock() == Blocks.GRAVEL) || downState.getBlock() instanceof SandBlock)
 							continue;
 
-						world.setBlockState(placePos, context.getConfig().state, 4);
+						world.setBlockState(placePos, context.getConfig().state, 2);
 						rockPositions.add(placePos);
 					}
 				}
