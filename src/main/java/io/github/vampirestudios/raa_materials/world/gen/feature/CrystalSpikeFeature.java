@@ -44,7 +44,7 @@ public class CrystalSpikeFeature extends Feature<SingleStateFeatureConfig> {
 			return false;
 		} else {
 			List<BlockPos> rockPositions = Lists.newArrayList();
-			for (int i = 0; i < 4; ++i) {
+			for (int i = 0; i < 2; ++i) {
 				int xSize = random.nextInt(3);
 				int ySize = random.nextInt(4);
 				int zSize = random.nextInt(3);

@@ -171,7 +171,7 @@ public class CrystalMaterial extends OreMaterial {
 	public void generate(ServerWorld world) {
 		Feature<SingleStateFeatureConfig> CRYSTAL_SPIKE = new CrystalSpikeFeature(SingleStateFeatureConfig.CODEC, this.crystal, this.ore);
 		ConfiguredFeature<?, ?> CRYSTAL_SPIKE_CF = CRYSTAL_SPIKE.configure(new SingleStateFeatureConfig(this.ore.getDefaultState()))
-				.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.4F, 2))).spreadHorizontally();
+				.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.2F, 1))).spreadHorizontally();
 		world.getRegistryManager().get(Registry.BIOME_KEY).forEach(biome -> {
 			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
 			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();

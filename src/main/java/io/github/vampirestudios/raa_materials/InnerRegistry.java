@@ -19,10 +19,7 @@ import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.OptionalInt;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 public class InnerRegistry {
@@ -66,7 +63,7 @@ public class InnerRegistry {
 	}
 
 	public static Block registerBlockAndItem(String name, Block block, ItemGroup group) {
-		Identifier id = RAAMaterials.id(name);
+		Identifier id = RAAMaterials.id(name.toLowerCase(Locale.ENGLISH));
 		if (!Registry.BLOCK.containsId(id)) {
 			registerBlock(id, block);
 			registerItem(id, new BlockItem(block, new Item.Settings().group(group)));
@@ -77,21 +74,23 @@ public class InnerRegistry {
 	}
 
 	public static void registerBlock(Identifier id, Block block) {
-		if (Registry.BLOCK.containsId(id)) {
-			replace(Registry.BLOCK, id, block);
+		Identifier newId = new Identifier(id.getNamespace(), id.getPath().toLowerCase(Locale.ENGLISH));
+		if (Registry.BLOCK.containsId(newId)) {
+			replace(Registry.BLOCK, newId, block);
 		} else {
-			Registry.register(Registry.BLOCK, id, block);
+			Registry.register(Registry.BLOCK, newId, block);
 		}
-		BLOCKS.put(id, block);
+		BLOCKS.put(newId, block);
 	}
 	
 	public static Item registerItem(Identifier id, Item item) {
+		Identifier newId = new Identifier(id.getNamespace(), id.getPath().toLowerCase(Locale.ENGLISH));
 		if (Registry.ITEM.containsId(id)) {
-			replace(Registry.ITEM, id, item);
+			replace(Registry.ITEM, newId, item);
 		} else {
-			Registry.register(Registry.ITEM, id, item);
+			Registry.register(Registry.ITEM, newId, item);
 		}
-		ITEMS.put(id, item);
+		ITEMS.put(newId, item);
 		return item;
 	}
 

@@ -7,7 +7,6 @@ import io.github.vampirestudios.raa_materials.api.RAAWorldAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
-import io.github.vampirestudios.raa_materials.config.MaterialsConfig;
 import io.github.vampirestudios.raa_materials.data.MaterialDataProviders;
 import io.github.vampirestudios.raa_materials.generation.materials.MaterialRecipes;
 import io.github.vampirestudios.raa_materials.registries.CustomTargets;
@@ -28,7 +27,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 
@@ -39,7 +37,6 @@ public class RAAMaterials implements RAAAddon {
     public static final String MOD_ID = "raa_materials";
 
     public static GeneralConfig CONFIG;
-    public static MaterialsConfig MATERIALS_CONFIG;
 
     public static final ItemGroup RAA_ORES = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "ores"), () -> new ItemStack(Blocks.IRON_ORE));
     public static final ItemGroup RAA_RESOURCES = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "resources"), () -> new ItemStack(Items.IRON_INGOT));
