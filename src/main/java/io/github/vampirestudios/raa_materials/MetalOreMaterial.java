@@ -409,12 +409,12 @@ public class MetalOreMaterial extends OreMaterial {
 				oreVeins[i] = TextureHelper.loadTexture("textures/block/ores/metals/ore_" + (i+1) + ".png");
 				TextureHelper.normalize(oreVeins[i], 0.35F, 1F);
 			}
-			storageBlocks = new BufferTexture[17];
+			storageBlocks = new BufferTexture[18];
 			for (int i = 0; i < storageBlocks.length; i++) {
 				storageBlocks[i] = TextureHelper.loadTexture("textures/block/storage_blocks/metals/metal_" + (i+1) + ".png");
 				TextureHelper.normalize(storageBlocks[i], 0.35F, 1F);
 			}
-			rawBlocks = new BufferTexture[2];
+			rawBlocks = new BufferTexture[5];
 			for (int i = 0; i < rawBlocks.length; i++) {
 				rawBlocks[i] = TextureHelper.loadTexture("textures/block/storage_blocks/metals/raw_" + (i+1) + ".png");
 				TextureHelper.normalize(rawBlocks[i], 0.35F, 1F);
