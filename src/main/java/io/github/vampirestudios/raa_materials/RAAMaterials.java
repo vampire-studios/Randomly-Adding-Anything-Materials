@@ -75,8 +75,10 @@ public class RAAMaterials implements RAAAddon {
         Registry.register(TARGETS, id("red_sand"), OreMaterial.Target.RED_SAND);
         Registry.register(TARGETS, id("deepslate"), OreMaterial.Target.DEEPSLATE);
         Registry.register(TARGETS, id("tuff"), OreMaterial.Target.TUFF);
+        Registry.register(TARGETS, id("soul_sand"), OreMaterial.Target.SOUL_SAND);
+        Registry.register(TARGETS, id("soul_soil"), OreMaterial.Target.SOUL_SOIL);
 
-		ServerLifecycleEvents.SERVER_STARTED.register(server -> server.reloadResources(server.getDataPackManager().getEnabledNames()));
+//		ServerLifecycleEvents.SERVER_STARTED.register(server -> server.reloadResources(server.getDataPackManager().getEnabledNames()));
 
         ServerWorldEvents.LOAD.register((server, world) -> onServerStart(world));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> onServerStop());
@@ -131,7 +133,7 @@ public class RAAMaterials implements RAAAddon {
                 }
                 if (CONFIG.crystalTypeAmount != 0) {
                     for (int i = 0; i < CONFIG.crystalTypeAmount; i++) {
-                        OreMaterial material = new CrystalMaterial(Rands.list(targets), RANDOM);
+                        ComplexMaterial material = new CrystalMaterial(RANDOM);
                         materials.add(material);
                     }
                 }

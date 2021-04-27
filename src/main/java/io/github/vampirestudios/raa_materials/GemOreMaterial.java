@@ -260,7 +260,7 @@ public class GemOreMaterial extends OreMaterial {
 	public void loadStaticImages() {
 		super.loadStaticImages();
 		if (oreVeins == null) {
-			oreVeins = new BufferTexture[17];
+			oreVeins = new BufferTexture[23];
 			for (int i = 0; i < oreVeins.length; i++) {
 				oreVeins[i] = TextureHelper.loadTexture("textures/block/ores/gems/ore_" + (i+1) + ".png");
 				TextureHelper.normalize(oreVeins[i], 0.35F, 1F);

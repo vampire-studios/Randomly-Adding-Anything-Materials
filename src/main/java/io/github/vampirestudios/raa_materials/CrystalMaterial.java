@@ -2,6 +2,7 @@ package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
 import com.swordglowsblue.artifice.api.Artifice;
+import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.CustomCrystalBlock;
 import io.github.vampirestudios.raa_materials.blocks.CustomCrystalClusterBlock;
 import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
@@ -9,7 +10,8 @@ import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
 import io.github.vampirestudios.raa_materials.utils.TextureHelper;
-import io.github.vampirestudios.raa_materials.world.gen.feature.CrystalSpikeFeature;
+import io.github.vampirestudios.raa_materials.world.gen.feature.CrystalSpikeFeatureConfig;
+import io.github.vampirestudios.raa_materials.world.gen.feature.SmaragdantCrystalFeature;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
@@ -26,9 +28,7 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.CountExtraDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.IOException;
@@ -38,23 +38,25 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.function.Supplier;
 
+import static io.github.vampirestudios.raa_materials.OreMaterial.addFeature;
 import static io.github.vampirestudios.raa_materials.RAAMaterials.RAA_ORES;
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 
-public class CrystalMaterial extends OreMaterial {
+public class CrystalMaterial extends ComplexMaterial {
 	private static BufferTexture crystalBlockTexture;
 	private static BufferTexture crystalTexture;
 	private static BufferTexture shardTexture;
 
-	public final Item shard;
+	public final Block block;
 	public final Block crystal;
+	public final Item shard;
 
-	public CrystalMaterial(Target targetIn, Random random) {
-		super("crystal", targetIn, random, false, false, false);
+	public final String name;
+	public CrystalMaterial(Random random) {
+		this.name = NameGenerator.makeOreName("crystal", random);
 		String regName = this.name.toLowerCase(Locale.ROOT);
-		ore = InnerRegistry.registerBlockAndItem(regName + "_block", new CustomCrystalBlock(FabricBlockSettings.copyOf(target.getBlock()).mapColor(MapColor.GRAY)), RAA_ORES);
+		block = InnerRegistry.registerBlockAndItem(regName + "_block", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.AMETHYST_BLOCK).mapColor(MapColor.GRAY)), RAA_ORES);
 		shard = InnerRegistry.registerItem(regName + "_shard", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
-		drop = shard;
 		crystal = InnerRegistry.registerBlockAndItem(regName + "_crystal", new CustomCrystalClusterBlock(7, 3, AbstractBlock.Settings.copy(Blocks.AMETHYST_CLUSTER), () -> shard), RAA_ORES);
 
 		Artifice.registerDataPack(id(regName + "_ore_recipes" + Rands.getRandom().nextInt()), dataPackBuilder -> {
@@ -77,7 +79,10 @@ public class CrystalMaterial extends OreMaterial {
 
 	@Override
 	public void initClient(Random random) {
-		super.initClient(random);
+		crystalBlockTexture = TextureHelper.loadTexture("textures/block/crystal_block.png");
+		crystalTexture = TextureHelper.loadTexture("textures/block/crystal.png");
+		shardTexture = TextureHelper.loadTexture("textures/item/shard.png");
+
 		String regName = this.name.toLowerCase(Locale.ROOT);
 
 		ColorGradient gradient = ProceduralTextures.makeCrystalPalette(random);
@@ -164,18 +169,11 @@ public class CrystalMaterial extends OreMaterial {
 	}
 
 	@Override
-	public void loadStaticImages() {
-		super.loadStaticImages();
-		crystalBlockTexture = TextureHelper.loadTexture("textures/block/crystal_block.png");
-		crystalTexture = TextureHelper.loadTexture("textures/block/crystal.png");
-		shardTexture = TextureHelper.loadTexture("textures/item/shard.png");
-	}
-
-	@Override
 	public void generate(ServerWorld world) {
-		Feature<SingleStateFeatureConfig> CRYSTAL_SPIKE = new CrystalSpikeFeature(SingleStateFeatureConfig.CODEC, this.crystal, this.ore);
-		ConfiguredFeature<?, ?> CRYSTAL_SPIKE_CF = Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id(this.name.toLowerCase(Locale.ROOT) + "_crystal_spike"), CRYSTAL_SPIKE.configure(new SingleStateFeatureConfig(this.ore.getDefaultState()))
-				.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).decorate(Decorator..configure(new CountExtraDecoratorConfig(0, 0.002F, 1))).spreadHorizontally());
+		Feature<CrystalSpikeFeatureConfig> CRYSTAL_SPIKE = Registry.register(Registry.FEATURE, id(this.name.toLowerCase(Locale.ROOT) + "_crystal_spike"), new SmaragdantCrystalFeature(CrystalSpikeFeatureConfig.CODEC));
+		ConfiguredFeature<?, ?> CRYSTAL_SPIKE_CF = Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id(this.name.toLowerCase(Locale.ROOT) + "_crystal_spike"), CRYSTAL_SPIKE
+				.configure(new CrystalSpikeFeatureConfig(this.block.getDefaultState(), this.crystal.getDefaultState()))
+				.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(1, 0.01F, 1))).spreadHorizontally());
 		world.getRegistryManager().get(Registry.BIOME_KEY).forEach(biome -> {
 			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
 			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
@@ -183,7 +181,7 @@ public class CrystalMaterial extends OreMaterial {
 			preFeatures.forEach((list) -> {
 				features.add(Lists.newArrayList(list));
 			});
-			addFeature(GenerationStep.Feature.VEGETAL_DECORATION, CRYSTAL_SPIKE_CF, features);
+			addFeature(GenerationStep.Feature.LOCAL_MODIFICATIONS, CRYSTAL_SPIKE_CF, features);
 			accessor.raaSetFeatures(features);
 		});
 	}

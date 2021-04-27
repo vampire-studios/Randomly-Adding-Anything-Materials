@@ -344,7 +344,7 @@ public class MetalOreMaterial extends OreMaterial {
 		makeColoredItemAssets(ingots, ingot, gradient, random, regName + "_ingot", "%s Ingot");
 		makeColoredItemAssets(nuggets, nugget, gradient, random, regName + "_nugget", "%s Nugget");
 
-		makeColoredItemAssets(plates, plate, gradient, random, regName + "_plate", "%s Dust");
+		makeColoredItemAssets(plates, plate, gradient, random, regName + "_plate", "%s Plate");
 		makeColoredItemAssets(small_dusts, small_dust, gradient, random, "small_" + regName + "_dust", "Small %s Dust");
 		makeColoredItemAssets(gears, gear, gradient, random, regName + "_gear", "%s Gear");
 		makeColoredItemAssets(dusts, dust, gradient, random, regName + "_dust", "%s Dust");

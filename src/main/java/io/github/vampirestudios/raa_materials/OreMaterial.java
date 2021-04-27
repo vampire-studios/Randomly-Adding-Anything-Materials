@@ -126,6 +126,8 @@ public abstract class OreMaterial extends ComplexMaterial {
 		public static final Target RED_SAND = new Target(Blocks.RED_SAND, "red_sand", new Identifier("textures/block/red_sand.png"), new CustomColor(178, 96, 31), new CustomColor(210, 117, 43));
 		public static final Target DEEPSLATE = new Target(Blocks.DEEPSLATE, "deepslate", new Identifier("textures/block/deepslate.png"), new CustomColor(61, 61, 67), new CustomColor(121, 121, 121));
 		public static final Target TUFF = new Target(Blocks.TUFF, "tuff", new Identifier("textures/block/tuff.png"), new CustomColor(77, 80, 70), new CustomColor(160, 162, 151));
+		public static final Target SOUL_SAND = new Target(Blocks.SOUL_SAND, "soul_sand", new Identifier("textures/block/soul_sand.png"), new CustomColor(0x352922), new CustomColor(0x796152));
+		public static final Target SOUL_SOIL = new Target(Blocks.SOUL_SOIL, "soul_soil", new Identifier("textures/block/soul_soil.png"), new CustomColor(0x352922), new CustomColor(0x6a5244));
 
 		private final Block block;
 		private final String name;
