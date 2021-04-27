@@ -41,23 +41,17 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 	public final String name;
 	protected Target target;
-	private final boolean hasOreGeneration;
 
 	public OreMaterial(String oreType, Target targetIn, Random random) {
-		this(oreType, targetIn, random, true, true, true);
-	}
-
-	public OreMaterial(String oreType, Target targetIn, Random random, boolean hasStorageBlock, boolean hasOre, boolean hasOreGeneration) {
 		this.name = NameGenerator.makeOreName(oreType, random);
-		this.hasOreGeneration = hasOreGeneration;
 		String regName = this.name.toLowerCase(Locale.ROOT);
 		target = targetIn;
 
 		FabricBlockSettings material = FabricBlockSettings.copyOf(target.getBlock()).mapColor(MapColor.GRAY);
-		if(hasOre) ore = InnerRegistry.registerBlockAndItem(regName + "_ore", new BaseDropBlock(material, () -> drop), RAAMaterials.RAA_ORES);
-		if(hasOre) drop = ore.asItem();
+		ore = InnerRegistry.registerBlockAndItem(regName + "_ore", new BaseDropBlock(material, () -> drop), RAAMaterials.RAA_ORES);
+		drop = ore.asItem();
 
-		if(hasStorageBlock) storageBlock = InnerRegistry.registerBlockAndItem(regName + "_block", new BaseDropBlock(material), RAAMaterials.RAA_ORES);
+		storageBlock = InnerRegistry.registerBlockAndItem(regName + "_block", new BaseDropBlock(material), RAAMaterials.RAA_ORES);
 	}
 
 	static void addFeature(GenerationStep.Feature featureStep, ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
@@ -74,32 +68,30 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 	@Override
 	public void generate(ServerWorld world) {
-		if (hasOreGeneration) {
-			String regName = this.name.toLowerCase(Locale.ROOT);
-			ConfiguredFeature<?, ?> configuredFeatureMiddleRare = BiomeUtils.newConfiguredFeature(regName + "_ore_cf", Feature.ORE
-					.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.getBlock()), ore.getDefaultState(), 9, Rands.chance(60) ? 0.5F : 0F))
-					.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
-					.spreadHorizontally()
-					.repeatRandomly(6));
-			ConfiguredFeature<?, ?> configuredFeatureCommon = BiomeUtils.newConfiguredFeature(regName + "_ore_cf3", Feature.ORE
-					.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.getBlock()), ore.getDefaultState(), 9, Rands.chance(60) ? 0.7F : 0F))
-					.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
-					.spreadHorizontally()
-					.repeatRandomly(40));
-			ConfiguredFeature<?, ?> configuredFeatureHugeRare = BiomeUtils.newConfiguredFeature(regName + "_ore_cf2", Feature.ORE
-					.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.getBlock()), ore.getDefaultState(), 12, Rands.chance(60) ? 0.7F : 0F))
-					.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
-					.spreadHorizontally()
-					.repeatRandomly(9));
-			world.getRegistryManager().get(Registry.BIOME_KEY).forEach(biome -> {
-				GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
-				List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
-				List<List<Supplier<ConfiguredFeature<?, ?>>>> features = new ArrayList<>(preFeatures.size());
-				preFeatures.forEach((list) -> features.add(Lists.newArrayList(list)));
-				addFeature(GenerationStep.Feature.UNDERGROUND_ORES, Rands.values(new ConfiguredFeature[]{ configuredFeatureCommon, configuredFeatureMiddleRare, configuredFeatureHugeRare }), features);
-				accessor.raaSetFeatures(features);
-			});
-		}
+		String regName = this.name.toLowerCase(Locale.ROOT);
+		ConfiguredFeature<?, ?> configuredFeatureMiddleRare = BiomeUtils.newConfiguredFeature(regName + "_ore_cf", Feature.ORE
+				.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.getBlock()), ore.getDefaultState(), 9, Rands.chance(60) ? 0.5F : 0F))
+				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
+				.spreadHorizontally()
+				.repeatRandomly(6));
+		ConfiguredFeature<?, ?> configuredFeatureCommon = BiomeUtils.newConfiguredFeature(regName + "_ore_cf3", Feature.ORE
+				.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.getBlock()), ore.getDefaultState(), 9, Rands.chance(60) ? 0.7F : 0F))
+				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
+				.spreadHorizontally()
+				.repeatRandomly(40));
+		ConfiguredFeature<?, ?> configuredFeatureHugeRare = BiomeUtils.newConfiguredFeature(regName + "_ore_cf2", Feature.ORE
+				.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.getBlock()), ore.getDefaultState(), 12, Rands.chance(60) ? 0.7F : 0F))
+				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
+				.spreadHorizontally()
+				.repeatRandomly(9));
+		world.getRegistryManager().get(Registry.BIOME_KEY).forEach(biome -> {
+			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
+			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
+			List<List<Supplier<ConfiguredFeature<?, ?>>>> features = new ArrayList<>(preFeatures.size());
+			preFeatures.forEach((list) -> features.add(Lists.newArrayList(list)));
+			addFeature(GenerationStep.Feature.UNDERGROUND_ORES, Rands.values(new ConfiguredFeature[]{ configuredFeatureCommon, configuredFeatureMiddleRare, configuredFeatureHugeRare }), features);
+			accessor.raaSetFeatures(features);
+		});
 	}
 
 	@Override
