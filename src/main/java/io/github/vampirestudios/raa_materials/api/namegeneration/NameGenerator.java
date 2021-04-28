@@ -37,7 +37,7 @@ public class NameGenerator {
 	private static String generateRockName(Random random) {
 		String result = WordUtils.capitalizeFully(NameGenerator.ROCKS.makeWord(6, 12, random).toLowerCase(Locale.ROOT));
 		result = result.isEmpty() ?WordUtils.capitalizeFully( NameGenerator.ROCKS.makeWord(6, 12, random).toLowerCase(Locale.ROOT)): result;
-		for (int i = 0; i < 600 && GENERATED.contains(result); i++) {
+		for (int i = 0; i < 1200 && GENERATED.contains(result); i++) {
 			result = WordUtils.capitalizeFully(NameGenerator.ROCKS.makeWord(6, 12, random).toLowerCase(Locale.ROOT));
 			result = result.isEmpty() ? WordUtils.capitalizeFully(NameGenerator.ROCKS.makeWord(6, 12, random).toLowerCase(Locale.ROOT)) : result;
 		}
@@ -51,7 +51,7 @@ public class NameGenerator {
 	private static String generateOreName(MarkovChain type, Random random) {
 		String result = WordUtils.capitalizeFully(type.makeWord(6, 12, random).toLowerCase(Locale.ROOT));
 		result = result.isEmpty() ? WordUtils.capitalizeFully(type.makeWord(6, 12, random).toLowerCase(Locale.ROOT)) : result;
-		for (int i = 0; i < 600 && GENERATED.contains(result); i++) {
+		for (int i = 0; i < 1200 && GENERATED.contains(result); i++) {
 			result = WordUtils.capitalizeFully(type.makeWord(6, 12, random).toLowerCase(Locale.ROOT));
 			result = result.isEmpty() ? WordUtils.capitalizeFully(type.makeWord(6, 12, random).toLowerCase(Locale.ROOT)) : result;
 		}

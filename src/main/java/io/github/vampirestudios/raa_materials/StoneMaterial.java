@@ -2,7 +2,10 @@ package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import io.github.vampirestudios.raa_core.RAACore;
+import io.github.vampirestudios.raa_materials.api.namegeneration.MaterialLanguageManager;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
+import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
@@ -58,7 +61,8 @@ public class StoneMaterial extends ComplexMaterial {
 	public final String name;
 
 	public StoneMaterial(Random random) {
-		this.name = NameGenerator.makeRockName(random);
+		io.github.vampirestudios.raa_core.api.name_generation.NameGenerator nameGenerator = RAACore.CONFIG.getLanguage().getNameGenerator(MaterialLanguageManager.MATERIAL_NAME);
+		this.name = /*NameGenerator.makeRockName(random)*//*nameGenerator.generate()*/TestNameGenerator.generateStoneName();
 		String regName = this.name.toLowerCase(Locale.ROOT);
 		FabricBlockSettings material = FabricBlockSettings.copyOf(Blocks.STONE).mapColor(MapColor.GRAY);
 

@@ -24,7 +24,7 @@ public class SmaragdantCrystalFeature extends Feature<CrystalSpikeFeatureConfig>
 		BlockPos pos = context.getOrigin();
 		Random random = context.getRandom();
 		CrystalSpikeFeatureConfig config = context.getConfig();
-		if (!world.getBlockState(pos).isIn(BlockTags.BASE_STONE_OVERWORLD)) {
+		if (!world.getBlockState(pos.down()).isIn(BlockTags.DIRT)) {
 			return false;
 		}
 
@@ -43,12 +43,12 @@ public class SmaragdantCrystalFeature extends Feature<CrystalSpikeFeatureConfig>
 					mut.setY(mut.getY() - 1);
 					state = world.getBlockState(mut);
 				}
-				if (state.isSolidBlock(world, mut) && !world.getBlockState(mut.up()).isOf(crystal.getBlock())) {
+				if (world.getBlockState(pos.down()).isIn(BlockTags.DIRT) && !world.getBlockState(mut.up()).isOf(crystal.getBlock())) {
 					for (int j = 0; j <= dist; j++) {
 						BlocksHelper.setWithoutUpdate(world, mut, crystal);
 						mut.setY(mut.getY() + 1);
+						System.out.printf("X: %d, Y: %d, Z: %d%n", mut.getX(), mut.getY(), mut.getZ());
 					}
-					boolean waterlogged = !world.getFluidState(mut).isEmpty();
 					BlocksHelper.setWithoutUpdate(world, mut, shard);
 				}
 			}

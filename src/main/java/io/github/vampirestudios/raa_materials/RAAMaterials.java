@@ -3,6 +3,7 @@ package io.github.vampirestudios.raa_materials;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Lifecycle;
 import io.github.vampirestudios.raa_core.api.RAAAddon;
+import io.github.vampirestudios.raa_materials.api.namegeneration.MaterialLanguageManager;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
@@ -61,6 +62,7 @@ public class RAAMaterials implements RAAAddon {
     @Override
     public void onInitialize() {
         NameGenerator.init();
+        MaterialLanguageManager.init();
         AutoConfig.register(GeneralConfig.class, JanksonConfigSerializer::new);
         CONFIG = AutoConfig.getConfigHolder(GeneralConfig.class).getConfig();
 
@@ -111,9 +113,11 @@ public class RAAMaterials implements RAAAddon {
 
                 RANDOM.setSeed(seed);
                 List<ComplexMaterial> materials = Lists.newArrayList();
-                for (int i = 0; i < CONFIG.stoneTypeAmount; i++) {
-                    StoneMaterial material = new StoneMaterial(RANDOM);
-                    materials.add(material);
+                if (CONFIG.stoneTypeAmount != 0) {
+                    for (int i = 0; i < CONFIG.stoneTypeAmount; i++) {
+                        StoneMaterial material = new StoneMaterial(RANDOM);
+                        materials.add(material);
+                    }
                 }
 
                 List<OreMaterial.Target> targets = new ArrayList<>();

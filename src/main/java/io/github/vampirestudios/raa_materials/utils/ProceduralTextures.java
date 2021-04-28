@@ -43,10 +43,10 @@ public class ProceduralTextures {
 	public static ColorGradient makeGemPalette(Random random) {
 		CustomColor color = new CustomColor(true)
 				.setHue(random.nextFloat())
-				.setSaturation(MHelper.randRange(0.4F, 1, random))
-				.setBrightness(MHelper.randRange(0.8F, 1, random));
+				.setSaturation(MHelper.randRange(0.6F, 1, random))
+				.setBrightness(MHelper.randRange(0.6F, 1, random));
 		float cos = MathHelper.cos(color.getHue() * MHelper.PI2);
-		float hue = cos * 0.1F;
+		float hue = cos * 0.15F;
 		float sat = cos * 0.15F;
 		return TextureHelper.makeDistortedPalette(color, hue, sat, 1F);
 	}
@@ -54,10 +54,10 @@ public class ProceduralTextures {
 	public static ColorGradient makeCrystalPalette(Random random) {
 		CustomColor color = new CustomColor(true)
 				.setHue(random.nextFloat())
-				.setSaturation(MHelper.randRange(0.3F, 1F, random))
+				.setSaturation(MHelper.randRange(0.4F, 1F, random))
 				.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
 		float cos = MathHelper.cos(color.getHue() * MHelper.PI2);
-		float hue = cos * 0.05F;
+		float hue = cos * 0.1F;
 		float sat = cos * 0.12F;
 		return TextureHelper.makeDistortedPalette(color, hue, sat, 0.5F);
 	}

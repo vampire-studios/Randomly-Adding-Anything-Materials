@@ -2,7 +2,9 @@ package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
 import com.swordglowsblue.artifice.api.Artifice;
-import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
+import io.github.vampirestudios.raa_core.RAACore;
+import io.github.vampirestudios.raa_materials.api.namegeneration.MaterialLanguageManager;
+import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.CustomCrystalBlock;
 import io.github.vampirestudios.raa_materials.blocks.CustomCrystalClusterBlock;
 import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
@@ -53,7 +55,8 @@ public class CrystalMaterial extends ComplexMaterial {
 
 	public final String name;
 	public CrystalMaterial(Random random) {
-		this.name = NameGenerator.makeOreName("crystal", random);
+		io.github.vampirestudios.raa_core.api.name_generation.NameGenerator nameGenerator = RAACore.CONFIG.getLanguage().getNameGenerator(MaterialLanguageManager.MATERIAL_NAME);
+		this.name = /*NameGenerator.makeRockName("crystal", random)*//*nameGenerator.generate()*/TestNameGenerator.generateOreName();
 		String regName = this.name.toLowerCase(Locale.ROOT);
 		block = InnerRegistry.registerBlockAndItem(regName + "_block", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.AMETHYST_BLOCK).mapColor(MapColor.GRAY)), RAA_ORES);
 		shard = InnerRegistry.registerItem(regName + "_shard", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
@@ -181,7 +184,7 @@ public class CrystalMaterial extends ComplexMaterial {
 			preFeatures.forEach((list) -> {
 				features.add(Lists.newArrayList(list));
 			});
-			addFeature(GenerationStep.Feature.LOCAL_MODIFICATIONS, CRYSTAL_SPIKE_CF, features);
+			addFeature(GenerationStep.Feature.RAW_GENERATION, CRYSTAL_SPIKE_CF, features);
 			accessor.raaSetFeatures(features);
 		});
 	}
