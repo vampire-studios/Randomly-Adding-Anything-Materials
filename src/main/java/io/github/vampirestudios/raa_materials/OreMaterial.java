@@ -1,8 +1,6 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
-import io.github.vampirestudios.raa_core.RAACore;
-import io.github.vampirestudios.raa_materials.api.namegeneration.MaterialLanguageManager;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseDropBlock;
 import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
@@ -45,8 +43,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 	protected Target target;
 
 	public OreMaterial(String oreType, Target targetIn, Random random) {
-		io.github.vampirestudios.raa_core.api.name_generation.NameGenerator nameGenerator = RAACore.CONFIG.getLanguage().getNameGenerator(MaterialLanguageManager.MATERIAL_NAME);
-		this.name = /*NameGenerator.makeOreName(random)*//*nameGenerator.generate()*/TestNameGenerator.generateOreName();
+		this.name = /*NameGenerator.makeOreName(random)*/TestNameGenerator.generateOreName();
 		String regName = this.name.toLowerCase(Locale.ROOT);
 		target = targetIn;
 

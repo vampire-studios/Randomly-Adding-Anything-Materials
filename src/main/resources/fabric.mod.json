@@ -33,6 +33,10 @@
     {
       "config": "raa_materials_client.mixins.json",
       "environment": "client"
+    },
+    {
+      "config": "fabric-recipe-api-v1.mixins.json",
+      "environment": "*"
     }
   ],
   "depends": {
@@ -40,14 +44,15 @@
     "fabric": "*",
     "raa_core": ">=0.3.2",
     "minecraft": ">=1.16.4"
-  },"custom": {
-  "modmenu": {
-    "links": {
-      "modmenu.discord": "https://discord.gg/2HKGqJE"
-    },
-    "parent": {
-      "id": "raa-core"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/2HKGqJE"
+      },
+      "parent": {
+        "id": "raa-core"
+      }
     }
   }
-}
 }
