@@ -42,8 +42,8 @@ public abstract class OreMaterial extends ComplexMaterial {
 	public final String name;
 	protected Target target;
 
-	public OreMaterial(String oreType, Target targetIn, Random random) {
-		this.name = /*NameGenerator.makeOreName(random)*/TestNameGenerator.generateOreName();
+	public OreMaterial(Target targetIn) {
+		this.name = TestNameGenerator.generateOreName();
 		String regName = this.name.toLowerCase(Locale.ROOT);
 		target = targetIn;
 

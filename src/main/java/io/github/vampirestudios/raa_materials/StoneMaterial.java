@@ -43,15 +43,15 @@ public class StoneMaterial extends ComplexMaterial {
 	private static BufferTexture[] stoneTiles;
 
 	public final Block stone;
-	public final Block stairs;
-	public final Block slab;
+//	public final Block stairs;
+//	public final Block slab;
 
 	public final Block polished;
 	public final Block tiles;
 
 	public final Block bricks;
-	public final Block brick_stairs;
-	public final Block brick_slab;
+//	public final Block brick_stairs;
+//	public final Block brick_slab;
 
 	public final String name;
 
@@ -61,19 +61,19 @@ public class StoneMaterial extends ComplexMaterial {
 		FabricBlockSettings material = FabricBlockSettings.copyOf(Blocks.STONE).mapColor(MapColor.GRAY);
 
 		stone = InnerRegistry.registerBlockAndItem(regName, new BaseBlock(material), CreativeTabs.BLOCKS);
-		stairs = InnerRegistry.registerBlockAndItem(regName + "_stairs", new BaseStairsBlock(stone), CreativeTabs.BLOCKS);
-		slab = InnerRegistry.registerBlockAndItem(regName + "_slab", new BaseSlabBlock(stone), CreativeTabs.BLOCKS);
+//		stairs = InnerRegistry.registerBlockAndItem(regName + "_stairs", new BaseStairsBlock(stone), CreativeTabs.BLOCKS);
+//		slab = InnerRegistry.registerBlockAndItem(regName + "_slab", new BaseSlabBlock(stone), CreativeTabs.BLOCKS);
 
 		polished = InnerRegistry.registerBlockAndItem("polished_" + regName, new BaseBlock(material), CreativeTabs.BLOCKS);
 		tiles = InnerRegistry.registerBlockAndItem(regName + "_tiles", new BaseBlock(material), CreativeTabs.BLOCKS);
 
 		bricks = InnerRegistry.registerBlockAndItem(regName + "_bricks", new BaseBlock(material), CreativeTabs.BLOCKS);
-		brick_stairs = InnerRegistry.registerBlockAndItem(regName + "_brick_stairs", new BaseStairsBlock(bricks), CreativeTabs.BLOCKS);
-		brick_slab = InnerRegistry.registerBlockAndItem(regName + "_brick_slab", new BaseSlabBlock(bricks), CreativeTabs.BLOCKS);
+//		brick_stairs = InnerRegistry.registerBlockAndItem(regName + "_brick_stairs", new BaseStairsBlock(bricks), CreativeTabs.BLOCKS);
+//		brick_slab = InnerRegistry.registerBlockAndItem(regName + "_brick_slab", new BaseSlabBlock(bricks), CreativeTabs.BLOCKS);
 
 		// Recipes //
 		RecipeManagerHelper.registerDynamicRecipes(handler -> {
-			handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_stairs"),
+			/*handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_stairs"),
 					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"#  ", "## ", "###"})
 							.ingredient('#', stone)
 							.output(new ItemStack(stairs, 4))
@@ -82,7 +82,7 @@ public class StoneMaterial extends ComplexMaterial {
 					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"###"})
 							.ingredient('#', stone)
 							.output(new ItemStack(slab, 6))
-							.build(id, "slabs"));
+							.build(id, "slabs"));*/
 			handler.register(new Identifier(RAAMaterials.MOD_ID, "polished_" + regName),
 					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"##", "##"})
 							.ingredient('#', bricks)
@@ -98,7 +98,7 @@ public class StoneMaterial extends ComplexMaterial {
 							.ingredient('#', stone)
 							.output(new ItemStack(bricks, 4))
 							.build(id, "bricks"));
-			handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_brick_stairs"),
+			/*handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_brick_stairs"),
 					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"#  ", "## ", "###"})
 							.ingredient('#', bricks)
 							.output(new ItemStack(brick_stairs, 4))
@@ -107,11 +107,11 @@ public class StoneMaterial extends ComplexMaterial {
 					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"###"})
 							.ingredient('#', bricks)
 							.output(new ItemStack(brick_slab, 6))
-							.build(id, "slabs"));
+							.build(id, "slabs"));*/
 		});
 
 		// Item Tags //
-		TagHelper.addTag(ItemTags.SLABS, slab, brick_slab);
+//		TagHelper.addTag(ItemTags.SLABS, slab, brick_slab);
 		TagHelper.addTag(ItemTags.STONE_BRICKS, bricks);
 		TagHelper.addTag(ItemTags.STONE_CRAFTING_MATERIALS, stone);
 		TagHelper.addTag(ItemTags.STONE_TOOL_MATERIALS, stone);
@@ -119,7 +119,7 @@ public class StoneMaterial extends ComplexMaterial {
 		// Block Tags //
 		TagHelper.addTag(BlockTags.BASE_STONE_OVERWORLD, stone);
 		TagHelper.addTag(BlockTags.STONE_BRICKS, bricks);
-		TagHelper.addTag(BlockTags.SLABS, slab, brick_slab);
+//		TagHelper.addTag(BlockTags.SLABS, slab, brick_slab);
 	}
 
 	private static void addFeature(GenerationStep.Feature featureStep, ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
@@ -198,21 +198,21 @@ public class StoneMaterial extends ComplexMaterial {
 
 		// Registering models
 		ModelHelper.registerRandMirrorBlockModel(stone, stoneTexID);
-		ModelHelper.registerSimpleBlockModel(bricks, Utils.appendToPath(stoneTexID, "_slab"));
-		ModelHelper.registerSimpleBlockModel(bricks, Utils.appendToPath(stoneTexID, "_stairs"));
+//		ModelHelper.registerSimpleBlockModel(bricks, Utils.appendToPath(stoneTexID, "_slab"));
+//		ModelHelper.registerSimpleBlockModel(bricks, Utils.appendToPath(stoneTexID, "_stairs"));
 		NameGenerator.addTranslation("block." + mainName, name);
-		NameGenerator.addTranslation("block." + mainName + "_stairs", name + " Stairs");
-		NameGenerator.addTranslation("block." + mainName + "_slab", name + " Slab");
+//		NameGenerator.addTranslation("block." + mainName + "_stairs", name + " Stairs");
+//		NameGenerator.addTranslation("block." + mainName + "_slab", name + " Slab");
 
 		ModelHelper.registerSimpleBlockModel(polished, frameTexID);
 		NameGenerator.addTranslation("block.raa_materials." + "polished_" + textureBaseName, "Polished " + name);
 
 		ModelHelper.registerSimpleBlockModel(bricks, bricksTexID);
-		ModelHelper.registerSimpleBlockModel(bricks, Utils.appendToPath(bricksTexID, "_slab"));
-		ModelHelper.registerSimpleBlockModel(bricks, Utils.appendToPath(bricksTexID, "_stairs"));
+//		ModelHelper.registerSimpleBlockModel(bricks, Utils.appendToPath(bricksTexID, "_slab"));
+//		ModelHelper.registerSimpleBlockModel(bricks, Utils.appendToPath(bricksTexID, "_stairs"));
 		NameGenerator.addTranslation("block." + mainName + "_bricks", name + " Bricks");
-		NameGenerator.addTranslation("block." + mainName + "_bricks_stairs", name + " Bricks Stairs");
-		NameGenerator.addTranslation("block." + mainName + "_bricks_slab", name + " Bricks Slab");
+//		NameGenerator.addTranslation("block." + mainName + "_bricks_stairs", name + " Bricks Stairs");
+//		NameGenerator.addTranslation("block." + mainName + "_bricks_slab", name + " Bricks Slab");
 
 		ModelHelper.registerSimpleBlockModel(tiles, tilesTexID);
 		NameGenerator.addTranslation("block." + mainName + "_tiles", name + " Tiles");

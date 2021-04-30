@@ -54,8 +54,8 @@ public class GemOreMaterial extends OreMaterial {
 	public final Item hoe;
 	public final Item shovel;
 
-	public GemOreMaterial(Target targetIn, Random random) {
-		super("gem", targetIn, random);
+	public GemOreMaterial(Target targetIn) {
+		super(targetIn);
 		String regName = this.name.toLowerCase(Locale.ROOT);
 		gem = InnerRegistry.registerItem(regName + "_gem", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
 		drop = gem;

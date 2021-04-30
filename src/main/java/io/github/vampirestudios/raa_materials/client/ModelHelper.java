@@ -6,6 +6,7 @@ import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.TextureHelper;
+import net.minecraft.block.AmethystClusterBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.client.render.model.json.ModelVariant;
@@ -164,6 +165,40 @@ public class ModelHelper {
 		InnerRegistry.registerBlockModel(block.getDefaultState().with(PillarBlock.AXIS, Direction.Axis.Z), side);
 
 		InnerRegistry.registerItemModel(block.asItem(), json);
+	}
+
+	public static void registerCrystal(Block block, Identifier texture) {
+		String json = makeCross(texture);
+
+		Identifier id = Registry.BLOCK.getId(block);
+		Identifier model = new Identifier(id.getNamespace(), "block/" + id.getPath());
+		InnerRegistry.registerModel(model, json);
+
+		ModelVariant variant = new ModelVariant(model, AffineTransformation.identity(), false, 1);
+		WeightedUnbakedModel side = new WeightedUnbakedModel(Lists.newArrayList(variant));
+		InnerRegistry.registerBlockModel(block.getDefaultState().with(AmethystClusterBlock.FACING, Direction.UP), side);
+
+		variant = new ModelVariant(model, new AffineTransformation(null, Vec3f.POSITIVE_Z.getDegreesQuaternion(180), null, null), false, 1);
+		side = new WeightedUnbakedModel(Lists.newArrayList(variant));
+		InnerRegistry.registerBlockModel(block.getDefaultState().with(AmethystClusterBlock.FACING, Direction.DOWN), side);
+
+		variant = new ModelVariant(model, new AffineTransformation(null, Vec3f.POSITIVE_Z.getDegreesQuaternion(90), null, Vec3f.POSITIVE_X.getDegreesQuaternion(180)), false, 1);
+		side = new WeightedUnbakedModel(Lists.newArrayList(variant));
+		InnerRegistry.registerBlockModel(block.getDefaultState().with(AmethystClusterBlock.FACING, Direction.EAST), side);
+
+		variant = new ModelVariant(model, new AffineTransformation(null, Vec3f.POSITIVE_Z.getDegreesQuaternion(180), null, Vec3f.POSITIVE_X.getDegreesQuaternion(90)), false, 1);
+		side = new WeightedUnbakedModel(Lists.newArrayList(variant));
+		InnerRegistry.registerBlockModel(block.getDefaultState().with(AmethystClusterBlock.FACING, Direction.NORTH), side);
+
+		variant = new ModelVariant(model, new AffineTransformation(null, Vec3f.POSITIVE_Z.getDegreesQuaternion(180), null, Vec3f.POSITIVE_X.getDegreesQuaternion(90)), false, 1);
+		side = new WeightedUnbakedModel(Lists.newArrayList(variant));
+		InnerRegistry.registerBlockModel(block.getDefaultState().with(AmethystClusterBlock.FACING, Direction.SOUTH), side);
+
+		variant = new ModelVariant(model, new AffineTransformation(null, Vec3f.POSITIVE_Z.getDegreesQuaternion(180), null, Vec3f.POSITIVE_X.getDegreesQuaternion(270)), false, 1);
+		side = new WeightedUnbakedModel(Lists.newArrayList(variant));
+		InnerRegistry.registerBlockModel(block.getDefaultState().with(AmethystClusterBlock.FACING, Direction.WEST), side);
+
+		InnerRegistry.registerItemModel(block.asItem(), makeFlatItem(texture));
 	}
 
 	public static void createBlockAssets(Identifier id, BufferTexture texture) {

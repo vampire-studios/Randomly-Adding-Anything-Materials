@@ -77,7 +77,7 @@ public class MetalOreMaterial extends OreMaterial {
 	public final Item shovel;
 
 	public MetalOreMaterial(Target targetIn, Random random) {
-		super("metal", targetIn, random);
+		super(targetIn);
 		String regName = this.name.toLowerCase(Locale.ROOT);
 		rawMaterialBlock = InnerRegistry.registerBlockAndItem("raw_" + regName + "_block", new Block(AbstractBlock.Settings.copy(Blocks.RAW_IRON_BLOCK)), RAAMaterials.RAA_ORES);
 
@@ -414,10 +414,10 @@ public class MetalOreMaterial extends OreMaterial {
 				storageBlocks[i] = TextureHelper.loadTexture("textures/block/storage_blocks/metals/metal_" + (i+1) + ".png");
 				TextureHelper.normalize(storageBlocks[i], 0.35F, 1F);
 			}
-			rawBlocks = new BufferTexture[5];
+			rawBlocks = new BufferTexture[7];
 			for (int i = 0; i < rawBlocks.length; i++) {
 				rawBlocks[i] = TextureHelper.loadTexture("textures/block/storage_blocks/metals/raw_" + (i+1) + ".png");
-				TextureHelper.normalize(rawBlocks[i], 0.35F, 1F);
+				TextureHelper.normalize(rawBlocks[i], 0.2F, 1F);
 			}
 
 			rawItems = new BufferTexture[5];

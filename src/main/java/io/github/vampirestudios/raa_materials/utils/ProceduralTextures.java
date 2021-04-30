@@ -57,7 +57,7 @@ public class ProceduralTextures {
 				.setSaturation(MHelper.randRange(0.4F, 1F, random))
 				.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
 		float cos = MathHelper.cos(color.getHue() * MHelper.PI2);
-		float hue = cos * 0.1F;
+		float hue = cos * 0.07F;
 		float sat = cos * 0.12F;
 		return TextureHelper.makeDistortedPalette(color, hue, sat, 0.5F);
 	}

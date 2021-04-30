@@ -9,7 +9,9 @@ import java.util.Random;
 public abstract class ComplexMaterial {
 	private static final List<ComplexMaterial> MATERIALS = Lists.newArrayList();
 
-	public ComplexMaterial() {}
+	public ComplexMaterial() {
+		MATERIALS.add(this);
+	}
 
 	public abstract void initClient(Random random);
 

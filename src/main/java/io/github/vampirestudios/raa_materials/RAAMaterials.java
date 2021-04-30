@@ -100,11 +100,6 @@ public class RAAMaterials implements RAAAddon {
 
                 InnerRegistry.clearRegistries();
                 TagHelper.clearTags();
-                StoneMaterial.resetMaterials();
-                MetalOreMaterial.resetMaterials();
-                CrystalMaterial.resetMaterials();
-                GemOreMaterial.resetMaterials();
-                NameGenerator.clearNames();
 
                 if (isClient()) {
                     ModelHelper.clearModels();
@@ -131,13 +126,13 @@ public class RAAMaterials implements RAAAddon {
                 }
                 if (CONFIG.gemMaterialAmount != 0) {
                     for (int i = 0; i < CONFIG.gemMaterialAmount; i++) {
-                        OreMaterial material = new GemOreMaterial(Rands.list(targets), RANDOM);
+                        OreMaterial material = new GemOreMaterial(Rands.list(targets));
                         materials.add(material);
                     }
                 }
                 if (CONFIG.crystalTypeAmount != 0) {
                     for (int i = 0; i < CONFIG.crystalTypeAmount; i++) {
-                        ComplexMaterial material = new CrystalMaterial(RANDOM);
+                        ComplexMaterial material = new CrystalMaterial();
                         materials.add(material);
                     }
                 }
@@ -153,7 +148,7 @@ public class RAAMaterials implements RAAAddon {
                 System.out.println("Make Client update!");
                 RANDOM.setSeed(seed);
                 if (isClient()) {
-                    materials.forEach((material) -> material.initClient(RANDOM));
+                    ComplexMaterial.initMaterialsClient(RANDOM);
 
                     SilentWorldReloader.setSilent();
                     MinecraftClient.getInstance().reloadResources();
