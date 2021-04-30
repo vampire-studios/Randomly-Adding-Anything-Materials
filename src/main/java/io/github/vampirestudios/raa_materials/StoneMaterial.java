@@ -68,8 +68,8 @@ public class StoneMaterial extends ComplexMaterial {
 		tiles = InnerRegistry.registerBlockAndItem(regName + "_tiles", new BaseBlock(material), CreativeTabs.BLOCKS);
 
 		bricks = InnerRegistry.registerBlockAndItem(regName + "_bricks", new BaseBlock(material), CreativeTabs.BLOCKS);
-		brick_stairs = InnerRegistry.registerBlockAndItem(regName + "_bricks_stairs", new BaseStairsBlock(bricks), CreativeTabs.BLOCKS);
-		brick_slab = InnerRegistry.registerBlockAndItem(regName + "_bricks_slab", new BaseSlabBlock(bricks), CreativeTabs.BLOCKS);
+		brick_stairs = InnerRegistry.registerBlockAndItem(regName + "_brick_stairs", new BaseStairsBlock(bricks), CreativeTabs.BLOCKS);
+		brick_slab = InnerRegistry.registerBlockAndItem(regName + "_brick_slab", new BaseSlabBlock(bricks), CreativeTabs.BLOCKS);
 
 		// Recipes //
 		RecipeManagerHelper.registerDynamicRecipes(handler -> {
@@ -83,14 +83,32 @@ public class StoneMaterial extends ComplexMaterial {
 							.ingredient('#', stone)
 							.output(new ItemStack(slab, 6))
 							.build(id, "slabs"));
+			handler.register(new Identifier(RAAMaterials.MOD_ID, "polished_" + regName),
+					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"##", "##"})
+							.ingredient('#', bricks)
+							.output(new ItemStack(polished, 4))
+							.build(id, "polished"));
+			handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_tiles"),
+					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"##", "##"})
+							.ingredient('#', polished)
+							.output(new ItemStack(tiles, 4))
+							.build(id, "tiles"));
+			handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_bricks"),
+					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"##", "##"})
+							.ingredient('#', stone)
+							.output(new ItemStack(bricks, 4))
+							.build(id, "bricks"));
+			handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_brick_stairs"),
+					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"#  ", "## ", "###"})
+							.ingredient('#', bricks)
+							.output(new ItemStack(brick_stairs, 4))
+							.build(id, "stairs"));
+			handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_brick_slab"),
+					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"###"})
+							.ingredient('#', bricks)
+							.output(new ItemStack(brick_slab, 6))
+							.build(id, "slabs"));
 		});
-
-		GridRecipe.make(regName + "_polished", polished).setOutputCount(4).setShape("##", "##").addMaterial('#', bricks).setGroup("polished").build();
-		GridRecipe.make(regName + "_tiles", tiles).setOutputCount(4).setShape("##", "##").addMaterial('#', polished).setGroup("tiles").build();
-
-		GridRecipe.make(regName + "_bricks", bricks).setOutputCount(4).setShape("##", "##").addMaterial('#', stone).setGroup("bricks").build();
-		GridRecipe.make(regName + "_bricks_stairs", brick_stairs).setOutputCount(4).setShape("#  ", "## ", "###").addMaterial('#', bricks).setGroup("bricks_stairs").build();
-		GridRecipe.make(regName + "_bricks_slab", brick_slab).setOutputCount(6).setShape("###").addMaterial('#', bricks).setGroup("brick_slabs").build();
 
 		// Item Tags //
 		TagHelper.addTag(ItemTags.SLABS, slab, brick_slab);

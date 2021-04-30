@@ -2,9 +2,11 @@ package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
 import com.swordglowsblue.artifice.api.Artifice;
+import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.CustomCrystalBlock;
 import io.github.vampirestudios.raa_materials.blocks.CustomCrystalClusterBlock;
+import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
@@ -29,7 +31,6 @@ import net.minecraft.world.gen.decorator.CountExtraDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
-import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -91,80 +92,57 @@ public class CrystalMaterial extends ComplexMaterial {
 		BufferTexture texture = ProceduralTextures.randomColored(crystalBlockTexture, gradient, random);
 		InnerRegistry.registerTexture(textureID, texture);
 
+		InnerRegistry.registerItemModel(this.block.asItem(), ModelHelper.makeCube(textureID));
+		InnerRegistry.registerBlockModel(this.block, ModelHelper.makeCube(textureID));
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(regName + "_block"), this.name + " Block");
+
 		textureID = TextureHelper.makeBlockTextureID(regName + "_crystal");
 		texture = ProceduralTextures.randomColored(crystalTexture, gradient, random);
 		InnerRegistry.registerTexture(textureID, texture);
+
+		InnerRegistry.registerItemModel(this.crystal.asItem(), ModelHelper.makeCross(textureID));
+		InnerRegistry.registerBlockModel(this.crystal, ModelHelper.makeCross(textureID));
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(regName + "_crystal"), this.name + " Crystal");
 
 		textureID = TextureHelper.makeItemTextureID(regName + "_shard");
 		texture = ProceduralTextures.randomColored(shardTexture, gradient, random);
 		InnerRegistry.registerTexture(textureID, texture);
 
+		InnerRegistry.registerItemModel(this.crystal.asItem(), ModelHelper.makeCube(textureID));
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName + "_shard"), this.name + " Shard");
+
 		Artifice.registerAssetPack(id(regName + "_crystal_assets" + Rands.getRandom().nextInt()), clientResourcePackBuilder -> {
-				Identifier crystalBlock = id(regName + "_block");
-				clientResourcePackBuilder.addBlockState(crystalBlock, blockStateBuilder ->
-						blockStateBuilder.variant("", variant ->
-								variant.model(id("block/" + crystalBlock.getPath()))));
-				clientResourcePackBuilder.addBlockModel(crystalBlock, modelBuilder -> {
-					modelBuilder.parent(new Identifier("block/cube_all"));
-					modelBuilder.texture("all", id("block/" + crystalBlock.getPath()));
+			Identifier cluster = id(regName + "_crystal");
+			clientResourcePackBuilder.addBlockState(cluster, blockStateBuilder -> {
+				blockStateBuilder.variant("facing=down", variant -> {
+					variant.model(id("block/" + cluster.getPath()));
+					variant.rotationX(180);
 				});
-				clientResourcePackBuilder.addItemModel(crystalBlock, modelBuilder ->
-						modelBuilder.parent(id("block/" + crystalBlock.getPath())));
-
-				Identifier cluster = id(regName + "_crystal");
-				clientResourcePackBuilder.addBlockState(cluster, blockStateBuilder -> {
-					blockStateBuilder.variant("facing=down", variant -> {
-						variant.model(id("block/" + cluster.getPath()));
-						variant.rotationX(180);
-					});
-					blockStateBuilder.variant("facing=east", variant -> {
-						variant.model(id("block/" + cluster.getPath()));
-						variant.rotationX(90);
-						variant.rotationY(90);
-					});
-					blockStateBuilder.variant("facing=north", variant -> {
-						variant.model(id("block/" + cluster.getPath()));
-						variant.rotationX(90);
-					});
-					blockStateBuilder.variant("facing=south", variant -> {
-						variant.model(id("block/" + cluster.getPath()));
-						variant.rotationX(90);
-						variant.rotationY(180);
-					});
-					blockStateBuilder.variant("facing=down", variant -> {
-						variant.model(id("block/" + cluster.getPath()));
-						variant.rotationX(180);
-					});
-					blockStateBuilder.variant("facing=up", variant -> variant.model(id("block/" + cluster.getPath())));
-					blockStateBuilder.variant("facing=west", variant -> {
-						variant.model(id("block/" + cluster.getPath()));
-						variant.rotationX(90);
-						variant.rotationY(270);
-					});
+				blockStateBuilder.variant("facing=east", variant -> {
+					variant.model(id("block/" + cluster.getPath()));
+					variant.rotationX(90);
+					variant.rotationY(90);
 				});
-				clientResourcePackBuilder.addBlockModel(cluster, modelBuilder -> {
-					modelBuilder.parent(new Identifier("block/cross"));
-					modelBuilder.texture("cross", id("block/" + cluster.getPath()));
+				blockStateBuilder.variant("facing=north", variant -> {
+					variant.model(id("block/" + cluster.getPath()));
+					variant.rotationX(90);
 				});
-				clientResourcePackBuilder.addItemModel(cluster, modelBuilder -> {
-					modelBuilder.parent(new Identifier("item/generated"));
-					modelBuilder.texture("layer0", id("block/" + cluster.getPath()));
+				blockStateBuilder.variant("facing=south", variant -> {
+					variant.model(id("block/" + cluster.getPath()));
+					variant.rotationX(90);
+					variant.rotationY(180);
 				});
-
-				Identifier shard = id(regName + "_shard");
-				clientResourcePackBuilder.addItemModel(shard, modelBuilder -> {
-					modelBuilder.parent(new Identifier("item/generated"));
-					modelBuilder.texture("layer0", id("item/" + shard.getPath()));
+				blockStateBuilder.variant("facing=down", variant -> {
+					variant.model(id("block/" + cluster.getPath()));
+					variant.rotationX(180);
 				});
-
-				clientResourcePackBuilder.addTranslations(id("en_us"), translationBuilder -> {
-					translationBuilder.entry(String.format("block.raa_materials.%s", crystalBlock.getPath()),
-							WordUtils.capitalizeFully(crystalBlock.getPath().replace("_", " ")));
-					translationBuilder.entry(String.format("block.raa_materials.%s", cluster.getPath()),
-							WordUtils.capitalizeFully(cluster.getPath().replace("_", " ")));
-					translationBuilder.entry(String.format("item.raa_materials.%s", shard.getPath()),
-							WordUtils.capitalizeFully(shard.getPath().replace("_", " ")));
+				blockStateBuilder.variant("facing=up", variant -> variant.model(id("block/" + cluster.getPath())));
+				blockStateBuilder.variant("facing=west", variant -> {
+					variant.model(id("block/" + cluster.getPath()));
+					variant.rotationX(90);
+					variant.rotationY(270);
 				});
+			});
 		});
 	}
 

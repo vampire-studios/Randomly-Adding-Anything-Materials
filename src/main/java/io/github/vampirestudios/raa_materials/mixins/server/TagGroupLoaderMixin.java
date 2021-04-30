@@ -20,8 +20,8 @@ public class TagGroupLoaderMixin {
 
 	@Inject(method = "loadTags", at = @At("RETURN"), cancellable = true)
 	public void prepareReload(ResourceManager manager, CallbackInfoReturnable<Map<Identifier, Tag.Builder>> cir) {
-		Map<Identifier, Tag.Builder> future = cir.getReturnValue();
-		TagHelper.apply(dataType, future);
-		cir.setReturnValue(future);
+		Map<Identifier, Tag.Builder> map = cir.getReturnValue();
+		TagHelper.apply(dataType, map);
+		cir.setReturnValue(map);
 	}
 }

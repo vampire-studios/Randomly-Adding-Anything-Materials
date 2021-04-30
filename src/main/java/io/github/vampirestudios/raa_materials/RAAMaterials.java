@@ -13,8 +13,6 @@ import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -80,8 +78,8 @@ public class RAAMaterials implements RAAAddon {
 
 //		ServerLifecycleEvents.SERVER_STARTED.register(server -> server.reloadResources(server.getDataPackManager().getEnabledNames()));
 
-        ServerWorldEvents.LOAD.register((server, world) -> onServerStart(world));
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> onServerStop());
+//        ServerWorldEvents.LOAD.register((server, world) -> onServerStart(world));
+//        ServerLifecycleEvents.SERVER_STOPPED.register(server -> onServerStop());
     }
 
     public static Identifier id(String name) {
@@ -92,7 +90,7 @@ public class RAAMaterials implements RAAAddon {
         return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
     }
 
-    public void onServerStart(ServerWorld world) {
+    public static void onServerStart(ServerWorld world) {
         synchronized(world) {
             if (register && seed != world.getSeed()) {
                 System.out.println("Start new generator!");
@@ -103,6 +101,9 @@ public class RAAMaterials implements RAAAddon {
                 InnerRegistry.clearRegistries();
                 TagHelper.clearTags();
                 StoneMaterial.resetMaterials();
+                MetalOreMaterial.resetMaterials();
+                CrystalMaterial.resetMaterials();
+                GemOreMaterial.resetMaterials();
                 NameGenerator.clearNames();
 
                 if (isClient()) {
@@ -111,9 +112,10 @@ public class RAAMaterials implements RAAAddon {
 
                 RANDOM.setSeed(seed);
                 List<ComplexMaterial> materials = Lists.newArrayList();
+
                 if (CONFIG.stoneTypeAmount != 0) {
                     for (int i = 0; i < CONFIG.stoneTypeAmount; i++) {
-                        StoneMaterial material = new StoneMaterial(RANDOM);
+                        StoneMaterial material = new StoneMaterial();
                         materials.add(material);
                     }
                 }
@@ -146,6 +148,8 @@ public class RAAMaterials implements RAAAddon {
                     }
                 });
 
+                world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
+
                 System.out.println("Make Client update!");
                 RANDOM.setSeed(seed);
                 if (isClient()) {
@@ -153,14 +157,13 @@ public class RAAMaterials implements RAAAddon {
 
                     SilentWorldReloader.setSilent();
                     MinecraftClient.getInstance().reloadResources();
-                    MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels();
+					MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels();
                 }
             }
         }
-        world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
     }
 
-    public void onServerStop() {
+    public static void onServerStop() {
         System.out.println("Stop! You violated the law");
         register = true;
     }
