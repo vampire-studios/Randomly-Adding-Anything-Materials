@@ -4,13 +4,11 @@ import com.google.common.collect.Lists;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
-import io.github.vampirestudios.raa_materials.blocks.BaseSlabBlock;
-import io.github.vampirestudios.raa_materials.blocks.BaseStairsBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
 import io.github.vampirestudios.raa_materials.utils.*;
 import io.github.vampirestudios.vampirelib.utils.Rands;
-import io.github.vampirestudios.vampirelib.utils.Utils;
+import net.devtech.arrp.api.RuntimeResourcePack;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.recipe.v1.RecipeManagerHelper;
 import net.fabricmc.fabric.api.recipe.v1.VanillaRecipeBuilders;
@@ -18,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
@@ -53,61 +52,45 @@ public class StoneMaterial extends ComplexMaterial {
 //	public final Block brick_stairs;
 //	public final Block brick_slab;
 
-	public final String name;
+	public CustomColor mainColor;
 
-	public StoneMaterial() {
-		this.name = TestNameGenerator.generateStoneName();
-		String regName = this.name.toLowerCase(Locale.ROOT);
+	public StoneMaterial(CustomColor mainColor, Random random) {
+		this(TestNameGenerator.generateOreName(), mainColor, ProceduralTextures.makeStonePalette(mainColor, random));
+	}
+
+	public StoneMaterial(String name, CustomColor mainColor, ColorGradient colorGradient) {
+		super(name, colorGradient);
+		this.mainColor = mainColor;
 		FabricBlockSettings material = FabricBlockSettings.copyOf(Blocks.STONE).mapColor(MapColor.GRAY);
 
-		stone = InnerRegistry.registerBlockAndItem(regName, new BaseBlock(material), CreativeTabs.BLOCKS);
-//		stairs = InnerRegistry.registerBlockAndItem(regName + "_stairs", new BaseStairsBlock(stone), CreativeTabs.BLOCKS);
-//		slab = InnerRegistry.registerBlockAndItem(regName + "_slab", new BaseSlabBlock(stone), CreativeTabs.BLOCKS);
+		stone = InnerRegistry.registerBlockAndItem(this.registryName, new BaseBlock(material), CreativeTabs.BLOCKS);
+//		stairs = InnerRegistry.registerBlockAndItem(this.registryName + "_stairs", new BaseStairsBlock(stone), CreativeTabs.BLOCKS);
+//		slab = InnerRegistry.registerBlockAndItem(this.registryName + "_slab", new BaseSlabBlock(stone), CreativeTabs.BLOCKS);
 
-		polished = InnerRegistry.registerBlockAndItem("polished_" + regName, new BaseBlock(material), CreativeTabs.BLOCKS);
-		tiles = InnerRegistry.registerBlockAndItem(regName + "_tiles", new BaseBlock(material), CreativeTabs.BLOCKS);
+		polished = InnerRegistry.registerBlockAndItem("polished_" + this.registryName, new BaseBlock(material), CreativeTabs.BLOCKS);
+		tiles = InnerRegistry.registerBlockAndItem(this.registryName + "_tiles", new BaseBlock(material), CreativeTabs.BLOCKS);
 
-		bricks = InnerRegistry.registerBlockAndItem(regName + "_bricks", new BaseBlock(material), CreativeTabs.BLOCKS);
-//		brick_stairs = InnerRegistry.registerBlockAndItem(regName + "_brick_stairs", new BaseStairsBlock(bricks), CreativeTabs.BLOCKS);
-//		brick_slab = InnerRegistry.registerBlockAndItem(regName + "_brick_slab", new BaseSlabBlock(bricks), CreativeTabs.BLOCKS);
+		bricks = InnerRegistry.registerBlockAndItem(this.registryName + "_bricks", new BaseBlock(material), CreativeTabs.BLOCKS);
+//		brick_stairs = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_stairs", new BaseStairsBlock(bricks), CreativeTabs.BLOCKS);
+//		brick_slab = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_slab", new BaseSlabBlock(bricks), CreativeTabs.BLOCKS);
 
 		// Recipes //
 		RecipeManagerHelper.registerDynamicRecipes(handler -> {
-			/*handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_stairs"),
-					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"#  ", "## ", "###"})
-							.ingredient('#', stone)
-							.output(new ItemStack(stairs, 4))
-							.build(id, "stairs"));
-			handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_slab"),
-					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"###"})
-							.ingredient('#', stone)
-							.output(new ItemStack(slab, 6))
-							.build(id, "slabs"));*/
-			handler.register(new Identifier(RAAMaterials.MOD_ID, "polished_" + regName),
+			handler.register(new Identifier(RAAMaterials.MOD_ID, "polished_" + this.registryName),
 					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"##", "##"})
 							.ingredient('#', bricks)
 							.output(new ItemStack(polished, 4))
-							.build(id, "polished"));
-			handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_tiles"),
+							.build(RAAMaterials.id("polished_" + this.registryName), "polished"));
+			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_tiles"),
 					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"##", "##"})
 							.ingredient('#', polished)
 							.output(new ItemStack(tiles, 4))
-							.build(id, "tiles"));
-			handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_bricks"),
+							.build(RAAMaterials.id(this.registryName + "_tiles"), "tiles"));
+			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_bricks"),
 					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"##", "##"})
 							.ingredient('#', stone)
 							.output(new ItemStack(bricks, 4))
-							.build(id, "bricks"));
-			/*handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_brick_stairs"),
-					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"#  ", "## ", "###"})
-							.ingredient('#', bricks)
-							.output(new ItemStack(brick_stairs, 4))
-							.build(id, "stairs"));
-			handler.register(new Identifier(RAAMaterials.MOD_ID, regName + "_brick_slab"),
-					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"###"})
-							.ingredient('#', bricks)
-							.output(new ItemStack(brick_slab, 6))
-							.build(id, "slabs"));*/
+							.build(RAAMaterials.id(this.registryName + "_bricks"), "bricks"));
 		});
 
 		// Item Tags //
@@ -120,6 +103,21 @@ public class StoneMaterial extends ComplexMaterial {
 		TagHelper.addTag(BlockTags.BASE_STONE_OVERWORLD, stone);
 		TagHelper.addTag(BlockTags.STONE_BRICKS, bricks);
 //		TagHelper.addTag(BlockTags.SLABS, slab, brick_slab);
+	}
+
+	@Override
+	public NbtCompound writeToNbt() {
+		NbtCompound materialCompound = new NbtCompound();
+		materialCompound.putString("name", this.name);
+		materialCompound.putString("registryName", this.registryName);
+		materialCompound.putString("materialType", "stone");
+
+		NbtCompound colorGradientCompound = new NbtCompound();
+		colorGradientCompound.putInt("startColor", this.mainColor.getAsInt());
+		colorGradientCompound.putInt("endColor", this.gradient.getColor(1.0F).getAsInt());
+		materialCompound.put("colorGradient", colorGradientCompound);
+
+		return materialCompound;
 	}
 
 	private static void addFeature(GenerationStep.Feature featureStep, ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
@@ -136,20 +134,19 @@ public class StoneMaterial extends ComplexMaterial {
 
 	@Override
 	public void generate(ServerWorld world) {
-		String regName = this.name.toLowerCase(Locale.ROOT);
-		ConfiguredFeature<?, ?> configuredFeature = BiomeUtils.newConfiguredFeature(regName + "_stone_cf", Feature.ORE
+		ConfiguredFeature<?, ?> configuredFeature = BiomeUtils.newConfiguredFeature(this.registryName + "_stone_cf", Feature.ORE
 				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 64))
 				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
 				.spreadHorizontally()
 				.repeatRandomly(2));
 
-		ConfiguredFeature<?, ?> configuredFeature2 = BiomeUtils.newConfiguredFeature(regName + "_stone_cf2", Feature.ORE
+		ConfiguredFeature<?, ?> configuredFeature2 = BiomeUtils.newConfiguredFeature(this.registryName + "_stone_cf2", Feature.ORE
 				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 32))
 				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
 				.spreadHorizontally()
 				.repeatRandomly(4));
 
-		ConfiguredFeature<?, ?> configuredFeature3 = BiomeUtils.newConfiguredFeature(regName + "_stone_cf3", Feature.ORE
+		ConfiguredFeature<?, ?> configuredFeature3 = BiomeUtils.newConfiguredFeature(this.registryName + "_stone_cf3", Feature.ORE
 				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 16))
 				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
 				.spreadHorizontally()
@@ -168,15 +165,14 @@ public class StoneMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public void initClient(Random random) {
+	public void initClient(RuntimeResourcePack resourcePack, Random random) {
 		loadStaticImages();
 
 		String textureBaseName = name.toLowerCase(Locale.ROOT);
 		String mainName = RAAMaterials.MOD_ID + "." + textureBaseName;
 
 		// Texture Genearation
-		CustomColor mainColor = new CustomColor(random.nextFloat(), random.nextFloat(), random.nextFloat());
-		ColorGradient palette = ProceduralTextures.makeStonePalette(mainColor, random);
+		ColorGradient palette = this.gradient;
 
 		Identifier stoneTexID = TextureHelper.makeBlockTextureID(textureBaseName);
 		BufferTexture texture = ProceduralTextures.makeStoneTexture(palette, random);

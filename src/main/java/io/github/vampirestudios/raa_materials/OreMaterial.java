@@ -1,14 +1,11 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
-import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseDropBlock;
 import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
-import io.github.vampirestudios.raa_materials.utils.BiomeUtils;
-import io.github.vampirestudios.raa_materials.utils.BufferTexture;
-import io.github.vampirestudios.raa_materials.utils.CustomColor;
-import io.github.vampirestudios.raa_materials.utils.TextureHelper;
+import io.github.vampirestudios.raa_materials.utils.*;
 import io.github.vampirestudios.vampirelib.utils.Rands;
+import net.devtech.arrp.api.RuntimeResourcePack;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -28,30 +25,28 @@ import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 import java.util.function.Supplier;
 
 public abstract class OreMaterial extends ComplexMaterial {
 	protected BufferTexture stone;
 
-	public final Block ore;
+	public Block ore;
 	protected Item drop;
-	public final Block storageBlock;
+	public Block storageBlock;
+	public boolean discardOnAirChance = Rands.chance(60);
 
-	public final String name;
-	protected Target target;
+	public Target target;
 
-	public OreMaterial(Target targetIn) {
-		this.name = TestNameGenerator.generateOreName();
-		String regName = this.name.toLowerCase(Locale.ROOT);
+	public OreMaterial(String name, ColorGradient gradient, Target targetIn) {
+		super(name, gradient);
 		target = targetIn;
 
 		FabricBlockSettings material = FabricBlockSettings.copyOf(target.getBlock()).mapColor(MapColor.GRAY);
-		ore = InnerRegistry.registerBlockAndItem(regName + "_ore", new BaseDropBlock(material, () -> drop), RAAMaterials.RAA_ORES);
+		ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new BaseDropBlock(material, () -> drop), RAAMaterials.RAA_ORES);
 		drop = ore.asItem();
 
-		storageBlock = InnerRegistry.registerBlockAndItem(regName + "_block", new BaseDropBlock(material), RAAMaterials.RAA_ORES);
+		storageBlock = InnerRegistry.registerBlockAndItem(this.registryName + "_block", new BaseDropBlock(material), RAAMaterials.RAA_ORES);
 	}
 
 	static void addFeature(GenerationStep.Feature featureStep, ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
@@ -68,19 +63,18 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 	@Override
 	public void generate(ServerWorld world) {
-		String regName = this.name.toLowerCase(Locale.ROOT);
-		ConfiguredFeature<?, ?> configuredFeatureMiddleRare = BiomeUtils.newConfiguredFeature(regName + "_ore_cf", Feature.ORE
-				.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.getBlock()), ore.getDefaultState(), 9, Rands.chance(60) ? 0.5F : 0F))
+		ConfiguredFeature<?, ?> configuredFeatureMiddleRare = BiomeUtils.newConfiguredFeature(this.registryName + "_ore_cf", Feature.ORE
+				.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.getBlock()), ore.getDefaultState(), 9, discardOnAirChance ? 0.7F : 0F))
 				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
 				.spreadHorizontally()
 				.repeatRandomly(6));
-		ConfiguredFeature<?, ?> configuredFeatureCommon = BiomeUtils.newConfiguredFeature(regName + "_ore_cf3", Feature.ORE
-				.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.getBlock()), ore.getDefaultState(), 9, Rands.chance(60) ? 0.7F : 0F))
+		ConfiguredFeature<?, ?> configuredFeatureCommon = BiomeUtils.newConfiguredFeature(this.registryName + "_ore_cf3", Feature.ORE
+				.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.getBlock()), ore.getDefaultState(), 9, discardOnAirChance ? 0.7F : 0F))
 				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
 				.spreadHorizontally()
 				.repeatRandomly(40));
-		ConfiguredFeature<?, ?> configuredFeatureHugeRare = BiomeUtils.newConfiguredFeature(regName + "_ore_cf2", Feature.ORE
-				.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.getBlock()), ore.getDefaultState(), 12, Rands.chance(60) ? 0.7F : 0F))
+		ConfiguredFeature<?, ?> configuredFeatureHugeRare = BiomeUtils.newConfiguredFeature(this.registryName + "_ore_cf2", Feature.ORE
+				.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.getBlock()), ore.getDefaultState(), 12, discardOnAirChance ? 0.7F : 0F))
 				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
 				.spreadHorizontally()
 				.repeatRandomly(9));
@@ -95,7 +89,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public void initClient(Random random) {
+	public void initClient(RuntimeResourcePack resourcePack, Random random) {
 		loadStaticImages();
 	}
 

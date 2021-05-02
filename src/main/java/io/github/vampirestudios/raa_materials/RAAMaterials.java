@@ -4,27 +4,32 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Lifecycle;
 import io.github.vampirestudios.raa_core.api.RAAAddon;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
-import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
-import io.github.vampirestudios.raa_materials.utils.SilentWorldReloader;
+import io.github.vampirestudios.raa_materials.utils.CustomColor;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
+import net.devtech.arrp.api.RuntimeResourcePack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -37,14 +42,13 @@ public class RAAMaterials implements RAAAddon {
     public static final ItemGroup RAA_ORES = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "ores"), () -> new ItemStack(Blocks.IRON_ORE));
     public static final ItemGroup RAA_RESOURCES = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "resources"), () -> new ItemStack(Items.IRON_INGOT));
     public static final ItemGroup RAA_TOOLS = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "tools"), () -> new ItemStack(Items.IRON_PICKAXE));
-    public static final ItemGroup RAA_ARMOR = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "armor"), () -> new ItemStack(Items.IRON_HELMET));
+//    public static final ItemGroup RAA_ARMOR = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "armor"), () -> new ItemStack(Items.IRON_HELMET));
     public static final ItemGroup RAA_WEAPONS = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "weapons"), () -> new ItemStack(Items.IRON_SWORD));
-    public static final ItemGroup RAA_FOOD = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "food"), () -> new ItemStack(Items.GOLDEN_APPLE));
+//    public static final ItemGroup RAA_FOOD = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "food"), () -> new ItemStack(Items.GOLDEN_APPLE));
 
-    private static boolean register = true;
-    private static final Random RANDOM = new Random();
-    private static long seed = Long.MIN_VALUE;
     public static final Registry<OreMaterial.Target> TARGETS = new SimpleRegistry<>(RegistryKey.ofRegistry(id("ore_targets")), Lifecycle.stable());
+
+    public static RuntimeResourcePack RESOURCE_PACK;
 
     @Override
     public String[] shouldLoadAfter() {
@@ -61,6 +65,8 @@ public class RAAMaterials implements RAAAddon {
         NameGenerator.init();
         AutoConfig.register(GeneralConfig.class, JanksonConfigSerializer::new);
         CONFIG = AutoConfig.getConfigHolder(GeneralConfig.class).getConfig();
+
+        RESOURCE_PACK = RuntimeResourcePack.create("raa_materials:assets");
 
         Registry.register(TARGETS, id("stone"), OreMaterial.Target.STONE);
         Registry.register(TARGETS, id("diorite"), OreMaterial.Target.DIORITE);
@@ -91,76 +97,98 @@ public class RAAMaterials implements RAAAddon {
     }
 
     public static void onServerStart(ServerWorld world) {
-        synchronized(world) {
-            if (register && seed != world.getSeed()) {
-                System.out.println("Start new generator!");
+        long seed = world.getSeed();
+        Random random = Rands.getRandom();
+        random.setSeed(seed);
 
-                register = false;
-                seed = world.getSeed();
+        List<OreMaterial.Target> targets = new ArrayList<>();
+        TARGETS.forEach(targets::add);
+
+        synchronized(world) {
+            List<ComplexMaterial> materials = Lists.newArrayList();
+
+            if (!world.getServer().getSavePath(WorldSavePath.ROOT).resolve("data/raa_materials.dat").toFile().exists()) {
+                System.out.println("Start new generator!");
 
                 InnerRegistry.clearRegistries();
                 TagHelper.clearTags();
 
-                if (isClient()) {
-                    ModelHelper.clearModels();
-                }
-
-                RANDOM.setSeed(seed);
-                List<ComplexMaterial> materials = Lists.newArrayList();
-
                 if (CONFIG.stoneTypeAmount != 0) {
                     for (int i = 0; i < CONFIG.stoneTypeAmount; i++) {
-                        StoneMaterial material = new StoneMaterial();
+                        CustomColor mainColor = new CustomColor(random.nextFloat(), random.nextFloat(), random.nextFloat());
+                        StoneMaterial material = new StoneMaterial(mainColor, random);
                         materials.add(material);
                     }
                 }
 
-                List<OreMaterial.Target> targets = new ArrayList<>();
-                TARGETS.forEach(targets::add);
-
                 if (CONFIG.metalMaterialAmount != 0) {
                     for (int i = 0; i < CONFIG.metalMaterialAmount; i++) {
-                        OreMaterial material = new MetalOreMaterial(Rands.list(targets), RANDOM);
+                        OreMaterial material = new MetalOreMaterial(Rands.list(targets), random);
                         materials.add(material);
                     }
                 }
                 if (CONFIG.gemMaterialAmount != 0) {
                     for (int i = 0; i < CONFIG.gemMaterialAmount; i++) {
-                        OreMaterial material = new GemOreMaterial(Rands.list(targets));
+                        OreMaterial material = new GemOreMaterial(Rands.list(targets), random);
                         materials.add(material);
                     }
                 }
                 if (CONFIG.crystalTypeAmount != 0) {
                     for (int i = 0; i < CONFIG.crystalTypeAmount; i++) {
-                        ComplexMaterial material = new CrystalMaterial();
+                        ComplexMaterial material = new CrystalMaterial(random);
                         materials.add(material);
                     }
                 }
 
-                materials.forEach((material) -> {
-                    if(material instanceof OreMaterial) {
-                        material.generate(world);
-                    }
-                });
+                NbtCompound compound = new NbtCompound();
 
-                world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
+                NbtList materialsList = new NbtList();
+                materials.forEach(material -> materialsList.add(material.writeToNbt()));
+                compound.put("materials", materialsList);
 
-                System.out.println("Make Client update!");
-                RANDOM.setSeed(seed);
-                if (isClient()) {
-                    ComplexMaterial.initMaterialsClient(RANDOM);
-
-                    SilentWorldReloader.setSilent();
-                    MinecraftClient.getInstance().reloadResources();
-					MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels();
+                try {
+                    NbtIo.writeCompressed(compound, world.getServer().getSavePath(WorldSavePath.ROOT).resolve("data/raa_materials.dat").toFile());
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+            } else {
+                System.out.println("Loading generated materials!");
+                NbtCompound compound;
+
+                try {
+                    compound = NbtIo.readCompressed( world.getServer().getSavePath(WorldSavePath.ROOT).resolve("data/raa_materials.dat").toFile());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    compound = new NbtCompound();
+                }
+
+                if (compound.contains("materials")) {
+                    NbtList list = compound.getList("materials", NbtElement.COMPOUND_TYPE);
+                    list.forEach(nbtElement -> materials.add(ComplexMaterial.readFromNbt(targets, random, (NbtCompound) nbtElement)));
+                }
+            }
+
+            materials.forEach((material) -> {
+                if(material instanceof OreMaterial) {
+                    material.generate(world);
+                }
+            });
+
+            world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
+
+            System.out.println("Make Client update!");
+            if (isClient()) {
+                materials.forEach(material -> material.initClient(RESOURCE_PACK, random));
+
+//                SilentWorldReloader.setSilent();
+//                MinecraftClient.getInstance().reloadResources();
+//                MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels();
             }
         }
     }
 
     public static void onServerStop() {
         System.out.println("Stop! You violated the law");
-        register = true;
     }
 
 }

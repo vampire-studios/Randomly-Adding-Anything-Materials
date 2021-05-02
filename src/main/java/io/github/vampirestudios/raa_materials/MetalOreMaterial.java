@@ -2,23 +2,25 @@ package io.github.vampirestudios.raa_materials;
 
 import com.swordglowsblue.artifice.api.Artifice;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
-import io.github.vampirestudios.raa_materials.client.ModelHelper;
+import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.items.CustomAxeItem;
 import io.github.vampirestudios.raa_materials.items.CustomHoeItem;
 import io.github.vampirestudios.raa_materials.items.CustomPickaxeItem;
-import io.github.vampirestudios.raa_materials.utils.*;
-import io.github.vampirestudios.vampirelib.utils.Rands;
+import io.github.vampirestudios.raa_materials.utils.BufferTexture;
+import io.github.vampirestudios.raa_materials.utils.ColorGradient;
+import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
+import io.github.vampirestudios.raa_materials.utils.TextureHelper;
+import net.devtech.arrp.api.RuntimeResourcePack;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
 import net.minecraft.item.Item.Settings;
+import net.minecraft.item.ShovelItem;
+import net.minecraft.item.SwordItem;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 
-import java.io.IOException;
-import java.util.Locale;
 import java.util.Random;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
@@ -65,10 +67,10 @@ public class MetalOreMaterial extends OreMaterial {
 	public final Item small_dust;
 	public final Item plate;
 
-	public final Item helmet;
-	public final Item chestplate;
-	public final Item legging;
-	public final Item boot;
+//	public final Item helmet;
+//	public final Item chestplate;
+//	public final Item legging;
+//	public final Item boot;
 
 	public final Item sword;
 	public final Item pickaxe;
@@ -76,328 +78,348 @@ public class MetalOreMaterial extends OreMaterial {
 	public final Item hoe;
 	public final Item shovel;
 
-	public MetalOreMaterial(Target targetIn, Random random) {
-		super(targetIn);
-		String regName = this.name.toLowerCase(Locale.ROOT);
-		rawMaterialBlock = InnerRegistry.registerBlockAndItem("raw_" + regName + "_block", new Block(AbstractBlock.Settings.copy(Blocks.RAW_IRON_BLOCK)), RAAMaterials.RAA_ORES);
+	public MetalOreMaterial(Target target, Random random) {
+		this(TestNameGenerator.generateOreName(), ProceduralTextures.makeMetalPalette(random), target, random);
+	}
 
-		rawMaterial = InnerRegistry.registerItem("raw_" + regName, new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
-		ingot = InnerRegistry.registerItem(regName + "_ingot", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
+	public MetalOreMaterial(String name, ColorGradient gradient, Target targetIn, Random random) {
+		super(name, gradient, targetIn);
+		rawMaterialBlock = InnerRegistry.registerBlockAndItem("raw_" + this.registryName + "_block", new Block(AbstractBlock.Settings.copy(Blocks.RAW_IRON_BLOCK)), RAAMaterials.RAA_ORES);
 
-		nugget = InnerRegistry.registerItem(regName + "_nugget", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
+		rawMaterial = InnerRegistry.registerItem("raw_" + this.registryName, new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
+		ingot = InnerRegistry.registerItem(this.registryName + "_ingot", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
 
-		gear = InnerRegistry.registerItem(regName + "_gear", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
+		nugget = InnerRegistry.registerItem(this.registryName + "_nugget", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
 
-		dust = InnerRegistry.registerItem(regName + "_dust", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
-		small_dust = InnerRegistry.registerItem("small_" + regName + "_dust", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
-		plate = InnerRegistry.registerItem(regName + "_plate", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
+		gear = InnerRegistry.registerItem(this.registryName + "_gear", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
 
-		ArmorMaterial armorMaterial = new CustomArmorMaterial(id(regName));
+		dust = InnerRegistry.registerItem(this.registryName + "_dust", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
+		small_dust = InnerRegistry.registerItem("small_" + this.registryName + "_dust", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
+		plate = InnerRegistry.registerItem(this.registryName + "_plate", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
 
-		helmet = InnerRegistry.registerItem(regName + "_helmet",
+//		ArmorMaterial armorMaterial = new CustomArmorMaterial(id(this.registryName));
+
+		/*helmet = InnerRegistry.registerItem(this.registryName + "_helmet",
 				new ArmorItem(armorMaterial, EquipmentSlot.HEAD, new Item.Settings().group(RAAMaterials.RAA_ARMOR).maxCount(1)));
 
-		chestplate = InnerRegistry.registerItem(regName + "_chestplate",
+		chestplate = InnerRegistry.registerItem(this.registryName + "_chestplate",
 				new ArmorItem(armorMaterial, EquipmentSlot.CHEST, new Item.Settings().group(RAAMaterials.RAA_ARMOR).maxCount(1)));
 
-		legging = InnerRegistry.registerItem(regName + "_leggings",
+		legging = InnerRegistry.registerItem(this.registryName + "_leggings",
 				new ArmorItem(armorMaterial, EquipmentSlot.LEGS, new Item.Settings().group(RAAMaterials.RAA_ARMOR).maxCount(1)));
 
-		boot = InnerRegistry.registerItem(regName + "_boots",
-				new ArmorItem(armorMaterial, EquipmentSlot.FEET, new Item.Settings().group(RAAMaterials.RAA_ARMOR).maxCount(1)));
+		boot = InnerRegistry.registerItem(this.registryName + "_boots",
+				new ArmorItem(armorMaterial, EquipmentSlot.FEET, new Item.Settings().group(RAAMaterials.RAA_ARMOR).maxCount(1)));*/
 
-		CustomToolMaterial toolMaterial = new CustomToolMaterial(id(regName));
+		CustomToolMaterial toolMaterial = new CustomToolMaterial(id(this.registryName));
 
-		sword = InnerRegistry.registerItem(regName + "_sword",
+		sword = InnerRegistry.registerItem(this.registryName + "_sword",
 				new SwordItem(toolMaterial, toolMaterial.getSwordAttackDamage(), toolMaterial.getSwordAttackSpeed(),
 						new Item.Settings().group(RAAMaterials.RAA_WEAPONS).maxCount(1)));
 
-		pickaxe = InnerRegistry.registerItem(regName + "_pickaxe",
+		pickaxe = InnerRegistry.registerItem(this.registryName + "_pickaxe",
 				new CustomPickaxeItem(toolMaterial, toolMaterial.getPickaxeAttackDamage(), toolMaterial.getPickaxeAttackSpeed(), new Item.Settings().group(RAAMaterials.RAA_TOOLS).maxCount(1)));
 
-		axe = InnerRegistry.registerItem(regName + "_axe",
+		axe = InnerRegistry.registerItem(this.registryName + "_axe",
 				new CustomAxeItem(toolMaterial, toolMaterial.getAxeAttackDamage(), toolMaterial.getAxeAttackSpeed(), new Item.Settings().group(RAAMaterials.RAA_TOOLS).maxCount(1)));
 
-		hoe = InnerRegistry.registerItem(regName + "_hoe",
+		hoe = InnerRegistry.registerItem(this.registryName + "_hoe",
 				new CustomHoeItem(toolMaterial, toolMaterial.getHoeAttackDamage(), toolMaterial.getHoeAttackSpeed(), new Item.Settings().group(RAAMaterials.RAA_TOOLS).maxCount(1)));
 
-		shovel = InnerRegistry.registerItem(regName + "_shovel",
+		shovel = InnerRegistry.registerItem(this.registryName + "_shovel",
 				new ShovelItem(toolMaterial, toolMaterial.getShovelAttackDamage(), toolMaterial.getShovelAttackSpeed(), new Item.Settings().group(RAAMaterials.RAA_TOOLS).maxCount(1)));
 
-		Artifice.registerDataPack(id(regName + "_metal_ore_recipes" + Rands.getRandom().nextInt()), dataPackBuilder -> {
-			dataPackBuilder.addSmeltingRecipe(id(regName + "_raw_block_to_storage_furnace"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("raw_blocks_to_storage"));
-				shapedRecipeBuilder.ingredientItem(id("raw_" + regName + "_block"));
-				shapedRecipeBuilder.experience(MathHelper.floor(random.nextFloat() * 10) / 10F);
-				shapedRecipeBuilder.cookingTime(200);
-				shapedRecipeBuilder.result(id(regName + "_block"));
-			});
-			dataPackBuilder.addBlastingRecipe(id(regName + "_raw_block_to_storage_blasting"), cookingRecipeBuilder -> {
-				cookingRecipeBuilder.cookingTime(200);
-				cookingRecipeBuilder.ingredientItem(id("raw_" + regName + "_block"));
-				cookingRecipeBuilder.experience(MathHelper.floor(random.nextFloat() * 10) / 10F);
-				cookingRecipeBuilder.result(id(regName + "_block"));
-			});
-
-			dataPackBuilder.addSmeltingRecipe(id(regName + "_raw_item_to_ingot_furnace"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("raw_items_to_ingots"));
-				shapedRecipeBuilder.ingredientItem(id("raw_" + regName));
-				shapedRecipeBuilder.experience(MathHelper.floor(random.nextFloat() * 10) / 10F);
-				shapedRecipeBuilder.cookingTime(50);
-				shapedRecipeBuilder.result(id(regName + "_ingot"));
-			});
-			dataPackBuilder.addBlastingRecipe(id(regName + "_raw_item_to_ingot_blasting"), cookingRecipeBuilder -> {
-				cookingRecipeBuilder.group(id("raw_items_to_ingots"));
-				cookingRecipeBuilder.ingredientItem(id("raw_" + regName));
-				cookingRecipeBuilder.experience(MathHelper.floor(random.nextFloat() * 10) / 10F);
-				cookingRecipeBuilder.cookingTime(50);
-				cookingRecipeBuilder.result(id(regName + "_ingot"));
-			});
-
-			dataPackBuilder.addSmeltingRecipe(id(regName + "_ore_to_ingot_furnace"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("ores_to_ingots"));
-				shapedRecipeBuilder.ingredientItem(id(regName + "_ore"));
-				shapedRecipeBuilder.experience(MathHelper.floor(random.nextFloat() * 10) / 10F);
-				shapedRecipeBuilder.cookingTime(100);
-				shapedRecipeBuilder.result(id(regName + "_ingot"));
-			});
-			dataPackBuilder.addBlastingRecipe(id(regName + "_ore_to_ingot_blasting"), cookingRecipeBuilder -> {
-				cookingRecipeBuilder.group(id("ores_to_ingots"));
-				cookingRecipeBuilder.ingredientItem(id(regName + "_ore"));
-				cookingRecipeBuilder.experience(MathHelper.floor(random.nextFloat() * 10) / 10F);
-				cookingRecipeBuilder.cookingTime(100);
-				cookingRecipeBuilder.result(id(regName + "_ingot"));
-			});
-
-			dataPackBuilder.addShapedRecipe(id(regName + "_helmet"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("helmets"));
-				shapedRecipeBuilder.ingredientItem('i', id(regName + "_ingot"));
-				shapedRecipeBuilder.pattern("iii", "i i");
-				shapedRecipeBuilder.result(id(regName + "_helmet"), 1);
-			});
-
-			dataPackBuilder.addShapedRecipe(id(regName + "_chestplate"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("chestplates"));
-				shapedRecipeBuilder.ingredientItem('i', id(regName + "_ingot"));
-				shapedRecipeBuilder.pattern("i i", "iii", "iii");
-				shapedRecipeBuilder.result(id(regName + "_chestplate"), 1);
-			});
-
-			dataPackBuilder.addShapedRecipe(id(regName + "_leggings"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("leggings"));
-				shapedRecipeBuilder.ingredientItem('i', id(regName + "_ingot"));
-				shapedRecipeBuilder.pattern("iii", "i i", "i i");
-				shapedRecipeBuilder.result(id(regName + "_leggings"), 1);
-			});
-
-			dataPackBuilder.addShapedRecipe(id(regName + "_boots"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("boots"));
-				shapedRecipeBuilder.ingredientItem('i', id(regName + "_ingot"));
-				shapedRecipeBuilder.pattern("i i", "i i");
-				shapedRecipeBuilder.result(id(regName + "_boots"), 1);
-			});
-
-			dataPackBuilder.addShapedRecipe(id(regName + "_sword"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("swords"));
-				shapedRecipeBuilder.ingredientItem('i', id(regName + "_ingot"));
-				shapedRecipeBuilder.ingredientItem('s', new Identifier("stick"));
-				shapedRecipeBuilder.pattern("i", "i", "s");
-				shapedRecipeBuilder.result(id(regName + "_sword"), 1);
-			});
-
-			dataPackBuilder.addShapedRecipe(id(regName + "_pickaxe"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("pickaxes"));
-				shapedRecipeBuilder.ingredientItem('i', id(regName + "_ingot"));
-				shapedRecipeBuilder.ingredientItem('s', new Identifier("stick"));
-				shapedRecipeBuilder.pattern("iii", " s ", " s ");
-				shapedRecipeBuilder.result(id(regName + "_pickaxe"), 1);
-			});
-
-			dataPackBuilder.addShapedRecipe(id(regName + "_axe"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("axes"));
-				shapedRecipeBuilder.ingredientItem('i', id(regName + "_ingot"));
-				shapedRecipeBuilder.ingredientItem('s', new Identifier("stick"));
-				shapedRecipeBuilder.pattern("ii ", "is ", " s ");
-				shapedRecipeBuilder.result(id(regName + "_axe"), 1);
-			});
-
-			dataPackBuilder.addShapedRecipe(id(regName + "_hoe"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("hoes"));
-				shapedRecipeBuilder.ingredientItem('i', id(regName + "_ingot"));
-				shapedRecipeBuilder.ingredientItem('s', new Identifier("stick"));
-				shapedRecipeBuilder.pattern("ii ", " s ", " s ");
-				shapedRecipeBuilder.result(id(regName + "_boots"), 1);
-			});
-
-			dataPackBuilder.addShapedRecipe(id(regName + "_shovel"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("shovels"));
-				shapedRecipeBuilder.ingredientItem('i', id(regName + "_ingot"));
-				shapedRecipeBuilder.ingredientItem('s', new Identifier("stick"));
-				shapedRecipeBuilder.pattern("i", "s", "s");
-				shapedRecipeBuilder.result(id(regName + "_shovel"), 1);
-			});
-
-			dataPackBuilder.addShapedRecipe(id(regName + "_block_from_ingot"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("storage_blocks"));
-				shapedRecipeBuilder.ingredientItem('i', id(regName + "_ingot"));
-				shapedRecipeBuilder.pattern("iii", "iii", "iii");
-				shapedRecipeBuilder.result(id(regName + "_block"), 1);
-			});
-
-			dataPackBuilder.addShapedRecipe(id("raw_" + regName + "_block_from_raw_material"), shapedRecipeBuilder -> {
-				shapedRecipeBuilder.group(id("raw_blocks"));
-				shapedRecipeBuilder.ingredientItem('i', id("raw_" + regName));
-				shapedRecipeBuilder.pattern("iii", "iii", "iii");
-				shapedRecipeBuilder.result(id("raw_" + regName + "_block"), 1);
-			});
-
-			dataPackBuilder.addShapelessRecipe(id(regName + "_dust"), shapelessRecipeBuilder -> {
-				shapelessRecipeBuilder.group(id("dusts"));
-				shapelessRecipeBuilder.ingredientItem(id("small_" + regName + "_dust"));
-				shapelessRecipeBuilder.ingredientItem(id("small_" + regName + "_dust"));
-				shapelessRecipeBuilder.ingredientItem(id("small_" + regName + "_dust"));
-				shapelessRecipeBuilder.ingredientItem(id("small_" + regName + "_dust"));
-				shapelessRecipeBuilder.result(id(regName + "_dust"), 1);
-			});
-
-			dataPackBuilder.addShapelessRecipe(id(regName + "_nugget_from_ingot"), shapelessRecipeBuilder -> {
-				shapelessRecipeBuilder.group(id("nuggets"));
-				shapelessRecipeBuilder.ingredientItem(id(regName + "_ingot"));
-				shapelessRecipeBuilder.result(id(regName + "_nugget"), 9);
-			});
-
-			dataPackBuilder.addShapelessRecipe(id(regName + "_ingot_from_block"), shapelessRecipeBuilder -> {
-				shapelessRecipeBuilder.group(id("ingots"));
-				shapelessRecipeBuilder.ingredientItem(id(regName + "_block"));
-				shapelessRecipeBuilder.result(id(regName + "_ingot"), 9);
-			});
-
-			dataPackBuilder.addShapelessRecipe(id(regName + "_raw_material_from_raw_block"), shapelessRecipeBuilder -> {
-				shapelessRecipeBuilder.group(id("raw_material"));
-				shapelessRecipeBuilder.ingredientItem(id("raw_" + regName + "_block"));
-				shapelessRecipeBuilder.result(id("raw_" + regName), 9);
-			});
-
-			dataPackBuilder.addShapedRecipe(id(regName + "_ingot_from_nugget"), shapelessRecipeBuilder -> {
-				shapelessRecipeBuilder.group(id("ingots"));
-				shapelessRecipeBuilder.ingredientItem('i', id(regName + "_nugget"));
-				shapelessRecipeBuilder.pattern("iii", "iii", "iii");
-				shapelessRecipeBuilder.result(id(regName + "_ingot"), 1);
-			});
-
-			dataPackBuilder.addShapedRecipe(id(regName + "_gear"), shapelessRecipeBuilder -> {
-				shapelessRecipeBuilder.group(id("gears"));
-				shapelessRecipeBuilder.ingredientItem('i', id(regName + "_ingot"));
-				shapelessRecipeBuilder.pattern(" i ", "i i", " i ");
-				shapelessRecipeBuilder.result(id(regName + "_gear"), 1);
-			});
-
-			dataPackBuilder.addShapelessRecipe(id("small_" + regName + "_dust"), shapelessRecipeBuilder -> {
-				shapelessRecipeBuilder.group(id("small_dusts"));
-				shapelessRecipeBuilder.ingredientItem(id(regName + "_dust"));
-				shapelessRecipeBuilder.result(id("small_" + regName + "_dust"), 4);
-			});
-
-			new Thread(() -> {
-				try {
-					dataPackBuilder.dumpResources("testing", "data");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}).start();
-		});
+//		RecipeManagerHelper.registerDynamicRecipes(handler -> {
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_raw_block_to_storage_furnace"),
+//					id -> VanillaRecipeBuilders.smeltingRecipe(
+//							id(this.registryName + "_raw_block_to_storage_furnace"),
+//							"raw_blocks_to_storage_blocks",
+//							Ingredient.ofItems(rawMaterialBlock),
+//							new ItemStack(this.storageBlock, 1),
+//							MathHelper.floor(random.nextFloat() * 10) / 10F,
+//							200
+//					)
+//			);
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_raw_block_to_storage_blasting"),
+//					id -> VanillaRecipeBuilders.blastingRecipe(
+//							id(this.registryName + "_raw_block_to_storage_blasting"),
+//							"raw_blocks_to_storage_blocks",
+//							Ingredient.ofItems(rawMaterialBlock),
+//							new ItemStack(this.storageBlock, 1),
+//							MathHelper.floor(random.nextFloat() * 10) / 10F,
+//							150
+//					)
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_raw_material_to_ingot_furnace"),
+//					id -> VanillaRecipeBuilders.smeltingRecipe(
+//							id(this.registryName + "_raw_material_to_ingot_furnace"),
+//							"raw_materials_to_ingots",
+//							Ingredient.ofItems(rawMaterial),
+//							new ItemStack(this.ingot, 1),
+//							MathHelper.floor(random.nextFloat() * 10) / 10F,
+//							200
+//					)
+//			);
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_raw_material_to_ingot_blasting"),
+//					id -> VanillaRecipeBuilders.blastingRecipe(
+//							id(this.registryName + "_raw_material_to_ingot_blasting"),
+//							"raw_materials_to_ingots",
+//							Ingredient.ofItems(rawMaterial),
+//							new ItemStack(this.ingot, 1),
+//							MathHelper.floor(random.nextFloat() * 10) / 10F,
+//							200
+//					)
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_ore_to_ingot_furnace"),
+//					id -> VanillaRecipeBuilders.smeltingRecipe(
+//							id(this.registryName + "_ore_to_ingot_furnace"),
+//							"ores_to_ingots",
+//							Ingredient.ofItems(ore),
+//							new ItemStack(this.ingot, 1),
+//							MathHelper.floor(random.nextFloat() * 10) / 10F,
+//							100
+//					)
+//			);
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_ore_to_ingot_blasting"),
+//					id -> VanillaRecipeBuilders.blastingRecipe(
+//							id(this.registryName + "_ore_to_ingot_blasting"),
+//							"ores_to_ingots",
+//							Ingredient.ofItems(ore),
+//							new ItemStack(this.ingot, 1),
+//							MathHelper.floor(random.nextFloat() * 10) / 10F,
+//							50
+//					)
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_ingot_to_block"),
+//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"###", "###", "###"})
+//						.ingredient('#', ingot)
+//						.output(new ItemStack(storageBlock))
+//						.build(id(this.registryName + "_ingot_to_block"), "ingots_to_blocks")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_block_to_ingot"),
+//					id -> VanillaRecipeBuilders.shapelessRecipe(new ItemStack(ingot, 9))
+//						.ingredient(storageBlock)
+//						.build(id(this.registryName + "_block_to_ingot"), "blocks_to_ingots")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, "raw_" + this.registryName + "_material_to_raw_block"),
+//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"###", "###", "###"})
+//							.ingredient('#', rawMaterial)
+//							.output(new ItemStack(rawMaterialBlock))
+//							.build(id("raw_" + this.registryName + "_material_to_raw_block"), "raw_materials_to_raw_blocks")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, "raw_" + this.registryName + "_block_to_raw_material"),
+//					id -> VanillaRecipeBuilders.shapelessRecipe(new ItemStack(rawMaterial, 9))
+//							.ingredient(rawMaterialBlock)
+//							.build(id("raw_" + this.registryName + "_block_to_raw_material"), "raw_blocks_to_raw_materials")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_ingot_from_nugget"),
+//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"###", "###", "###"})
+//							.ingredient('#', nugget)
+//							.output(new ItemStack(ingot))
+//							.build(id(this.registryName + "_ingot_from_nugget"), "ingots_from_nuggets")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, "raw_" + this.registryName + "_block_to_raw_material"),
+//					id -> VanillaRecipeBuilders.shapelessRecipe(new ItemStack(nugget, 9))
+//							.ingredient(ingot)
+//							.build(id(this.registryName + "_nugget_from_ingot"), "nuggets_from_ingots")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_gear"),
+//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{" # ", "# #", " # "})
+//							.ingredient('#', ingot)
+//							.output(new ItemStack(gear))
+//							.build(id(this.registryName + "_gear"), "gears")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_dust_from_small_dust"),
+//					id -> VanillaRecipeBuilders.shapelessRecipe(new ItemStack(dust, 1))
+//							.ingredient(small_dust, small_dust, small_dust, small_dust)
+//							.build(id(this.registryName + "_dust_from_small_dust"), "dusts_from_small_dusts")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, "small_" + this.registryName + "_dusts_from_dust"),
+//					id -> VanillaRecipeBuilders.shapelessRecipe(new ItemStack(small_dust, 4))
+//							.ingredient(dust)
+//							.build(id("small_" + this.registryName + "_dusts_from_dust"), "small_dusts_from_dusts")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_plate_from_ingot"),
+//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"##", "##"})
+//							.ingredient('#', ingot)
+//							.output(new ItemStack(plate))
+//							.build(id(this.registryName + "_plate_from_ingot"), "plates_from_ingots")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_pickaxe"),
+//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"###", " S ", " S "})
+//							.ingredient('#', ingot)
+//							.ingredient('S', Items.STICK)
+//							.output(new ItemStack(pickaxe))
+//							.build(id(this.registryName + "_pickaxe"), "pickaxes")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_axe"),
+//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"## ", "#S ", " S "})
+//							.ingredient('#', ingot)
+//							.ingredient('S', Items.STICK)
+//							.output(new ItemStack(axe))
+//							.build(id(this.registryName + "_axe"), "axes")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_shovel"),
+//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"#", "S", "S"})
+//							.ingredient('#', ingot)
+//							.ingredient('S', Items.STICK)
+//							.output(new ItemStack(shovel))
+//							.build(id(this.registryName + "_shovel"), "shovels")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_sword"),
+//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"#", "#", "S"})
+//							.ingredient('#', ingot)
+//							.ingredient('S', Items.STICK)
+//							.output(new ItemStack(sword))
+//							.build(id(this.registryName + "_sword"), "swords")
+//			);
+//
+//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_hoe"),
+//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"## ", " S ", " S "})
+//							.ingredient('#', ingot)
+//							.ingredient('S', Items.STICK)
+//							.output(new ItemStack(hoe))
+//							.build(id(this.registryName + "_hoe"), "hoes")
+//			);
+//		});
 	}
 
 	@Override
-	public void initClient(Random random) {
-		super.initClient(random);
-		String regName = this.name.toLowerCase(Locale.ROOT);
+	public NbtCompound writeToNbt() {
+		NbtCompound materialCompound = new NbtCompound();
+		materialCompound.putString("name", this.name);
+		materialCompound.putString("registryName", this.registryName);
+		materialCompound.putString("materialType", "metal");
+
+		NbtCompound colorGradientCompound = new NbtCompound();
+		colorGradientCompound.putInt("startColor", this.gradient.getColor(0.0F).getAsInt());
+		colorGradientCompound.putInt("endColor", this.gradient.getColor(1.0F).getAsInt());
+		materialCompound.put("colorGradient", colorGradientCompound);
+
+		return materialCompound;
+	}
+
+	@Override
+	public void initClient(RuntimeResourcePack resourcePack, Random random) {
+		super.initClient(resourcePack, random);
 
 		ColorGradient gradient = ProceduralTextures.makeMetalPalette(random);
 
-		Identifier textureID = TextureHelper.makeItemTextureID(regName + "_ore");
+		Identifier textureID = TextureHelper.makeItemTextureID(this.registryName + "_ore");
 		BufferTexture texture = ProceduralTextures.randomColored(oreVeins, gradient, random);
 		BufferTexture outline = TextureHelper.outline(texture, target.getDarkOutline(), target.getLightOutline(), 0, 1);
 		texture = TextureHelper.cover(stone, texture);
 		texture = TextureHelper.cover(texture, outline);
 		InnerRegistry.registerTexture(textureID, texture);
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_ore"), this.name + " Ore");
 
-		InnerRegistry.registerItemModel(this.ore.asItem(), ModelHelper.makeCube(textureID));
-		InnerRegistry.registerBlockModel(this.ore, ModelHelper.makeCube(textureID));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(regName + "_ore"), this.name + " Ore");
-
-		textureID = TextureHelper.makeItemTextureID(regName + "_block");
+		textureID = TextureHelper.makeItemTextureID(this.registryName + "_block");
 		texture = ProceduralTextures.randomColored(storageBlocks, gradient, random);
 		InnerRegistry.registerTexture(textureID, texture);
-		InnerRegistry.registerItemModel(this.storageBlock.asItem(), ModelHelper.makeCube(textureID));
-		InnerRegistry.registerBlockModel(this.storageBlock, ModelHelper.makeCube(textureID));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(regName + "_block"), this.name + " Block");
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), this.name + " Block");
 
-		textureID = TextureHelper.makeItemTextureID("raw_" + regName + "_block");
+		textureID = TextureHelper.makeItemTextureID("raw_" + this.registryName + "_block");
 		texture = ProceduralTextures.randomColored(rawBlocks, gradient, random);
 		InnerRegistry.registerTexture(textureID, texture);
-		InnerRegistry.registerItemModel(this.rawMaterialBlock.asItem(), ModelHelper.makeCube(textureID));
-		InnerRegistry.registerBlockModel(this.rawMaterialBlock, ModelHelper.makeCube(textureID));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock("raw_" + regName + "_block"), "Raw " + this.name + " Block");
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock("raw_" + this.registryName + "_block"), "Raw " + this.name + " Block");
 
-		makeColoredItemAssets(rawItems, rawMaterial, gradient, random, "raw_" + regName, "Raw %s");
-		makeColoredItemAssets(ingots, ingot, gradient, random, regName + "_ingot", "%s Ingot");
-		makeColoredItemAssets(nuggets, nugget, gradient, random, regName + "_nugget", "%s Nugget");
+		makeColoredItemAssets(rawItems, rawMaterial, gradient, random, "raw_" + this.registryName, "Raw %s");
+		makeColoredItemAssets(ingots, ingot, gradient, random, this.registryName + "_ingot", "%s Ingot");
+		makeColoredItemAssets(nuggets, nugget, gradient, random, this.registryName + "_nugget", "%s Nugget");
 
-		makeColoredItemAssets(plates, plate, gradient, random, regName + "_plate", "%s Plate");
-		makeColoredItemAssets(small_dusts, small_dust, gradient, random, "small_" + regName + "_dust", "Small %s Dust");
-		makeColoredItemAssets(gears, gear, gradient, random, regName + "_gear", "%s Gear");
-		makeColoredItemAssets(dusts, dust, gradient, random, regName + "_dust", "%s Dust");
+		makeColoredItemAssets(plates, plate, gradient, random, this.registryName + "_plate", "%s Plate");
+		makeColoredItemAssets(small_dusts, small_dust, gradient, random, "small_" + this.registryName + "_dust", "Small %s Dust");
+		makeColoredItemAssets(gears, gear, gradient, random, this.registryName + "_gear", "%s Gear");
+		makeColoredItemAssets(dusts, dust, gradient, random, this.registryName + "_dust", "%s Dust");
 
-		makeColoredItemAssets(helmets, helmet, gradient, random, regName + "_helmet", "%s Helmet");
-		makeColoredItemAssets(chestplates, chestplate, gradient, random, regName + "_chestplate", "%s Chestplate");
-		makeColoredItemAssets(leggings, legging, gradient, random, regName + "_leggings", "%s Leggings");
-		makeColoredItemAssets(boots, boot, gradient, random, regName + "_boots", "%s Boots");
+//		makeColoredItemAssets(helmets, helmet, gradient, random, this.registryName + "_helmet", "%s Helmet");
+//		makeColoredItemAssets(chestplates, chestplate, gradient, random, this.registryName + "_chestplate", "%s Chestplate");
+//		makeColoredItemAssets(leggings, legging, gradient, random, this.registryName + "_leggings", "%s Leggings");
+//		makeColoredItemAssets(boots, boot, gradient, random, this.registryName + "_boots", "%s Boots");
 
 		texture = ProceduralTextures.randomColored(swordBlades, gradient, random);
-		textureID = TextureHelper.makeItemTextureID(regName + "_sword_blade");
+		textureID = TextureHelper.makeItemTextureID(this.registryName + "_sword_blade");
 		InnerRegistry.registerTexture(textureID, texture);
 		texture = ProceduralTextures.nonColored(swordHandles, random);
-		Identifier texture2ID = TextureHelper.makeItemTextureID(regName + "_sword_handle");
+		Identifier texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_sword_handle");
 		InnerRegistry.registerTexture(texture2ID, texture);
-		InnerRegistry.registerItemModel(this.sword, ModelHelper.makeThreeLayerTool(textureID, texture2ID, TextureHelper.makeItemTextureID("tools/sword/stick")));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName + "_sword"), this.name + " Sword");
+//		InnerRegistry.registerItemModel(this.sword, ModelHelper.makeThreeLayerTool(textureID, texture2ID, TextureHelper.makeItemTextureID("tools/sword/stick")));
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_sword"), this.name + " Sword");
 
 		texture = ProceduralTextures.randomColored(pickaxeHeads, gradient, random);
-		textureID = TextureHelper.makeItemTextureID(regName + "_pickaxe_head");
+		textureID = TextureHelper.makeItemTextureID(this.registryName + "_pickaxe_head");
 		InnerRegistry.registerTexture(textureID, texture);
 		texture = ProceduralTextures.nonColored(pickaxeSticks, random);
-		texture2ID = TextureHelper.makeItemTextureID(regName + "_pickaxe_stick");
+		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_pickaxe_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
-		InnerRegistry.registerItemModel(this.pickaxe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName + "_pickaxe"), this.name + " Pickaxe");
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_pickaxe"), this.name + " Pickaxe");
 
 		texture = ProceduralTextures.randomColored(axeHeads, gradient, random);
-		textureID = TextureHelper.makeItemTextureID(regName + "_axe_head");
+		textureID = TextureHelper.makeItemTextureID(this.registryName + "_axe_head");
 		InnerRegistry.registerTexture(textureID, texture);
 		texture = ProceduralTextures.nonColored(axeSticks, random);
-		texture2ID = TextureHelper.makeItemTextureID(regName + "_axe_stick");
+		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_axe_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
-		InnerRegistry.registerItemModel(this.axe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName + "_axe"), this.name + " Axe");
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_axe"), this.name + " Axe");
 
 		texture = ProceduralTextures.randomColored(hoeHeads, gradient, random);
-		textureID = TextureHelper.makeItemTextureID(regName + "_hoe_head");
+		textureID = TextureHelper.makeItemTextureID(this.registryName + "_hoe_head");
 		InnerRegistry.registerTexture(textureID, texture);
 		texture = ProceduralTextures.nonColored(hoeSticks, random);
-		texture2ID = TextureHelper.makeItemTextureID(regName + "_hoe_stick");
+		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_hoe_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
-		InnerRegistry.registerItemModel(this.hoe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName + "_hoe"), this.name + " Hoe");
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_hoe"), this.name + " Hoe");
 
 		texture = ProceduralTextures.randomColored(shovelHeads, gradient, random);
-		textureID = TextureHelper.makeItemTextureID(regName + "_shovel_head");
+		textureID = TextureHelper.makeItemTextureID(this.registryName + "_shovel_head");
 		InnerRegistry.registerTexture(textureID, texture);
 		texture = ProceduralTextures.nonColored(shovelSticks, random);
-		texture2ID = TextureHelper.makeItemTextureID(regName + "_shovel_stick");
+		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_shovel_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
-		InnerRegistry.registerItemModel(this.shovel, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName + "_shovel"), this.name + " Shovel");
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shovel"), this.name + " Shovel");
+
+		Artifice.registerAssetPack(this.registryName, clientResourcePackBuilder -> {
+			clientResourcePackBuilder.addItemModel(id("raw_" + this.registryName), modelBuilder -> {
+				modelBuilder.parent(new Identifier("item/generated"));
+				modelBuilder.texture("layer0", id("item/raw_" + this.registryName));
+			});
+			clientResourcePackBuilder.addItemModel(id(this.registryName + "_ingot"), modelBuilder -> {
+				modelBuilder.parent(new Identifier("item/generated"));
+				modelBuilder.texture("layer0", id("item/" + this.registryName + "_ingot"));
+			});
+			clientResourcePackBuilder.addItemModel(id(this.registryName + "_nugget"), modelBuilder -> {
+				modelBuilder.parent(new Identifier("item/generated"));
+				modelBuilder.texture("layer0", id("item/" + this.registryName + "_nugget"));
+			});
+			clientResourcePackBuilder.addItemModel(id(this.registryName + "_plate"), modelBuilder -> {
+				modelBuilder.parent(new Identifier("item/generated"));
+				modelBuilder.texture("layer0", id("item/" + this.registryName + "_plate"));
+			});
+			clientResourcePackBuilder.addItemModel(id(this.registryName + "_gear"), modelBuilder -> {
+				modelBuilder.parent(new Identifier("item/generated"));
+				modelBuilder.texture("layer0", id("item/" + this.registryName + "_gear"));
+			});
+			clientResourcePackBuilder.addItemModel(id(this.registryName + "_nugget"), modelBuilder -> {
+				modelBuilder.parent(new Identifier("item/generated"));
+				modelBuilder.texture("layer0", id("item/" + this.registryName + "_dust"));
+			});
+		});
 	}
 
 	@Override
@@ -420,7 +442,7 @@ public class MetalOreMaterial extends OreMaterial {
 				TextureHelper.normalize(rawBlocks[i], 0.2F, 1F);
 			}
 
-			rawItems = new BufferTexture[5];
+			rawItems = new BufferTexture[13];
 			for (int i = 0; i < rawItems.length; i++) {
 				rawItems[i] = TextureHelper.loadTexture("textures/item/raw/raw_" + (i+1) + ".png");
 				TextureHelper.normalize(rawItems[i]);
@@ -543,7 +565,6 @@ public class MetalOreMaterial extends OreMaterial {
 		BufferTexture texture = ProceduralTextures.randomColored(textureArray, gradient, random);
 		Identifier textureID = TextureHelper.makeItemTextureID(regName);
 		InnerRegistry.registerTexture(textureID, texture);
-		InnerRegistry.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName), String.format(name, this.name));
 	}
 
@@ -551,7 +572,6 @@ public class MetalOreMaterial extends OreMaterial {
 		BufferTexture texture = ProceduralTextures.randomColored(bufferTexture, gradient, random);
 		Identifier textureID = TextureHelper.makeItemTextureID(regName);
 		InnerRegistry.registerTexture(textureID, texture);
-		InnerRegistry.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName), String.format(name, this.name));
 	}
 
@@ -559,7 +579,6 @@ public class MetalOreMaterial extends OreMaterial {
 		BufferTexture texture = ProceduralTextures.randomColored(textureArray, gradient, random);
 		Identifier textureID = TextureHelper.makeItemTextureID(regName);
 		InnerRegistry.registerTexture(textureID, texture);
-		InnerRegistry.registerItemModel(item, ModelHelper.makeFlatTool(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName),  String.format(name, this.name));
 	}
 

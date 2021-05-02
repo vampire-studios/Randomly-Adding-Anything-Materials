@@ -4,9 +4,7 @@
   "package": "io.github.vampirestudios.raa_materials.mixins.client",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ItemModelsMixin",
     "MinecraftClientMixin",
-    "ModelLoaderMixin",
     "SpriteAtlasTextureMixin",
     "TranslationStorageMixin"
   ],

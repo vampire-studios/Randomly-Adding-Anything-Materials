@@ -18,6 +18,7 @@ package net.fabricmc.fabric.mixin.recipe;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
+import net.fabricmc.fabric.impl.recipe.ImmutableMapBuilderUtil;
 import net.fabricmc.fabric.impl.recipe.RecipeManagerImpl;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
@@ -27,6 +28,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -57,11 +59,11 @@ public class RecipeManagerMixin {
 	 * @author Fabric API
 	 * @reason Replaces immutable maps for mutable maps instead.
 	 */
-	/*@Overwrite
+	@Overwrite
 	private static Map<Identifier, Recipe<?>> method_20703(Map.Entry<RecipeType<?>, ImmutableMap.Builder<Identifier, Recipe<?>>> entry) {
 		// This is cursed. Do not look.
 		return ImmutableMapBuilderUtil.specialBuild(entry.getValue());
-	}*/
+	}
 
 	@Inject(
 			method = "apply",

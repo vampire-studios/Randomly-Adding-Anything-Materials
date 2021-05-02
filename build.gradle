@@ -25,6 +25,9 @@ repositories {
 	}
 	maven { url "https://maven.shedaniel.me/" }
 	maven { url "https://maven.terraformersmc.com/" }
+	maven {
+		url = 'https://raw.githubusercontent.com/Devan-Kerman/Devan-Repo/master/'
+	}
 }
 
 minecraft { }
@@ -42,6 +45,7 @@ dependencies {
 
 	modImplementation "com.terraformersmc:modmenu:2.0.0-beta.4"
 
+	modImplementation 'net.devtech:arrp:0.3.9'
 	/*modCompileOnly ("me.shedaniel:RoughlyEnoughItems-api:ABC") {
 		exclude group: "io.github.prospector.modmenu"
 		exclude group :"net.fabricmc.fabric-api"

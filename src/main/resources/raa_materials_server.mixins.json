@@ -6,11 +6,11 @@
   "mixins": [
     "GenerationSettingsAccessor",
     "MinecraftServerMixin",
-    "RecipeManagerAccessor",
-    "RecipeManagerMixin",
+//    "RecipeManagerAccessor",
+//    "RecipeManagerMixin",
     "ServerWorldMixin",
-    "SimpleRegistryMixin",
-    "TagGroupLoaderMixin"
+    "SimpleRegistryMixin"
+//    "TagGroupLoaderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

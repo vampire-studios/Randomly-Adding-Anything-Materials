@@ -17,7 +17,6 @@
 package net.fabricmc.fabric.impl.recipe;
 
 import com.google.common.collect.ImmutableMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
@@ -25,6 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Map;
 
 @ApiStatus.Internal
@@ -61,11 +61,11 @@ public final class ImmutableMapBuilderUtil {
 	 * @return a mutable map
 	 */
 	@SuppressWarnings("unchecked")
-	public static <K, V> Map<K, V> specialBuild(ImmutableMap.Builder<K, V> builder) {
+	public static <K, V> HashMap<K, V> specialBuild(ImmutableMap.Builder<K, V> builder) {
 		try {
 			Map.Entry<K, V>[] entries = (Map.Entry<K, V>[]) ENTRIES_GETTER.invoke(builder);
 			int size = (int) SIZE_GETTER.invoke(builder);
-			Map<K, V> map = new Object2ObjectOpenHashMap<>(size);
+			HashMap<K, V> map = new HashMap<>(size);
 
 			for (Map.Entry<K, V> entry : entries) {
 				if (entry == null) {
