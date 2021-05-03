@@ -6,10 +6,7 @@ import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerat
 import io.github.vampirestudios.raa_materials.items.CustomAxeItem;
 import io.github.vampirestudios.raa_materials.items.CustomHoeItem;
 import io.github.vampirestudios.raa_materials.items.CustomPickaxeItem;
-import io.github.vampirestudios.raa_materials.utils.BufferTexture;
-import io.github.vampirestudios.raa_materials.utils.ColorGradient;
-import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
-import io.github.vampirestudios.raa_materials.utils.TextureHelper;
+import io.github.vampirestudios.raa_materials.utils.*;
 import net.devtech.arrp.api.RuntimeResourcePack;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -393,6 +390,13 @@ public class MetalOreMaterial extends OreMaterial {
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_shovel_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shovel"), this.name + " Shovel");
+
+		ResourceGenerateable.Item DEFAULT_ITEM = new ResourceGenerateable.Item() {};
+		ResourceGenerateable.Block DEFAULT_BLOCK = new ResourceGenerateable.Block() {};
+
+		DEFAULT_BLOCK.client(resourcePack, id(this.registryName + "_ore"));
+		DEFAULT_BLOCK.client(resourcePack, id(this.registryName + "_block"));
+		DEFAULT_ITEM.client(resourcePack, id(this.registryName + "_gem"));
 
 		Artifice.registerAssetPack(this.registryName, clientResourcePackBuilder -> {
 			clientResourcePackBuilder.addItemModel(id("raw_" + this.registryName), modelBuilder -> {
