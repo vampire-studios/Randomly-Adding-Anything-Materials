@@ -1,5 +1,6 @@
 package io.github.vampirestudios.raa_materials;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.swordglowsblue.artifice.api.Artifice;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
@@ -26,15 +27,13 @@ import net.minecraft.item.Item.Settings;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.decorator.CountExtraDecoratorConfig;
-import net.minecraft.world.gen.decorator.Decorator;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
+import net.minecraft.world.gen.YOffset;
+import net.minecraft.world.gen.feature.*;
+import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -194,8 +193,44 @@ public class CrystalMaterial extends ComplexMaterial {
 	@Override
 	public void generate(ServerWorld world) {
 		Feature<SingleStateFeatureConfig> CRYSTAL_SPIKE = new CrystalSpikeFeature(SingleStateFeatureConfig.CODEC, this.crystal, this.block);
-		ConfiguredFeature<?, ?> CRYSTAL_SPIKE_CF = Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id(this.registryName + "_crystal_spike"), CRYSTAL_SPIKE.configure(new SingleStateFeatureConfig(this.block.getDefaultState()))
-				.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.002F, 1))).spreadHorizontally());
+		ConfiguredFeature<?, ?> GEODE_CF = Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id(this.registryName + "_geode"),
+				Feature.GEODE.configure(
+						new GeodeFeatureConfig(
+								new GeodeLayerConfig(
+										new SimpleBlockStateProvider(Blocks.AIR.getDefaultState()),
+										new SimpleBlockStateProvider(Registry.BLOCK.get(RAAMaterials.id(this.registryName + "_block")).getDefaultState()),
+										new SimpleBlockStateProvider(Registry.BLOCK.get(RAAMaterials.id(this.registryName + "_block")).getDefaultState()),
+										new SimpleBlockStateProvider(Blocks.CALCITE.getDefaultState()),
+										new SimpleBlockStateProvider(Blocks.SMOOTH_BASALT.getDefaultState()),
+										ImmutableList.of(
+												Registry.BLOCK.get(RAAMaterials.id(this.registryName + "_cluster")).getDefaultState()
+										)
+								),
+								new GeodeLayerThicknessConfig(
+										1.7D,
+										2.2D,
+										3.2D,
+										4.2D
+								),
+								new GeodeCrackConfig(
+										0.95D,
+										2.0D,
+										2
+								),
+								0.35D,
+								0.083D,
+								true,
+								UniformIntProvider.create(4, 6),
+								UniformIntProvider.create(3, 4),
+								UniformIntProvider.create(1, 2),
+								-16,
+								16,
+								0.05D,
+								1
+						)
+				).method_36296(YOffset.getBottom(), YOffset.getTop()).spreadHorizontally().applyChance(10));
+//		ConfiguredFeature<?, ?> CRYSTAL_SPIKE_CF = Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id(this.registryName + "_crystal_spike"), CRYSTAL_SPIKE.configure(new SingleStateFeatureConfig(this.block.getDefaultState()))
+//				.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.002F, 1))).spreadHorizontally());
 		world.getRegistryManager().get(Registry.BIOME_KEY).forEach(biome -> {
 			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
 			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
@@ -203,7 +238,7 @@ public class CrystalMaterial extends ComplexMaterial {
 			preFeatures.forEach((list) -> {
 				features.add(Lists.newArrayList(list));
 			});
-			addFeature(GenerationStep.Feature.LOCAL_MODIFICATIONS, CRYSTAL_SPIKE_CF, features);
+			addFeature(GenerationStep.Feature.UNDERGROUND_STRUCTURES, GEODE_CF, features);
 			accessor.raaSetFeatures(features);
 		});
 	}

@@ -126,175 +126,173 @@ public class MetalOreMaterial extends OreMaterial {
 		shovel = InnerRegistry.registerItem(this.registryName + "_shovel",
 				new ShovelItem(toolMaterial, toolMaterial.getShovelAttackDamage(), toolMaterial.getShovelAttackSpeed(), new Item.Settings().group(RAAMaterials.RAA_TOOLS).maxCount(1)));
 
-//		RecipeManagerHelper.registerDynamicRecipes(handler -> {
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_raw_block_to_storage_furnace"),
-//					id -> VanillaRecipeBuilders.smeltingRecipe(
-//							id(this.registryName + "_raw_block_to_storage_furnace"),
-//							"raw_blocks_to_storage_blocks",
-//							Ingredient.ofItems(rawMaterialBlock),
-//							new ItemStack(this.storageBlock, 1),
-//							MathHelper.floor(random.nextFloat() * 10) / 10F,
-//							200
-//					)
-//			);
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_raw_block_to_storage_blasting"),
-//					id -> VanillaRecipeBuilders.blastingRecipe(
-//							id(this.registryName + "_raw_block_to_storage_blasting"),
-//							"raw_blocks_to_storage_blocks",
-//							Ingredient.ofItems(rawMaterialBlock),
-//							new ItemStack(this.storageBlock, 1),
-//							MathHelper.floor(random.nextFloat() * 10) / 10F,
-//							150
-//					)
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_raw_material_to_ingot_furnace"),
-//					id -> VanillaRecipeBuilders.smeltingRecipe(
-//							id(this.registryName + "_raw_material_to_ingot_furnace"),
-//							"raw_materials_to_ingots",
-//							Ingredient.ofItems(rawMaterial),
-//							new ItemStack(this.ingot, 1),
-//							MathHelper.floor(random.nextFloat() * 10) / 10F,
-//							200
-//					)
-//			);
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_raw_material_to_ingot_blasting"),
-//					id -> VanillaRecipeBuilders.blastingRecipe(
-//							id(this.registryName + "_raw_material_to_ingot_blasting"),
-//							"raw_materials_to_ingots",
-//							Ingredient.ofItems(rawMaterial),
-//							new ItemStack(this.ingot, 1),
-//							MathHelper.floor(random.nextFloat() * 10) / 10F,
-//							200
-//					)
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_ore_to_ingot_furnace"),
-//					id -> VanillaRecipeBuilders.smeltingRecipe(
-//							id(this.registryName + "_ore_to_ingot_furnace"),
-//							"ores_to_ingots",
-//							Ingredient.ofItems(ore),
-//							new ItemStack(this.ingot, 1),
-//							MathHelper.floor(random.nextFloat() * 10) / 10F,
-//							100
-//					)
-//			);
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_ore_to_ingot_blasting"),
-//					id -> VanillaRecipeBuilders.blastingRecipe(
-//							id(this.registryName + "_ore_to_ingot_blasting"),
-//							"ores_to_ingots",
-//							Ingredient.ofItems(ore),
-//							new ItemStack(this.ingot, 1),
-//							MathHelper.floor(random.nextFloat() * 10) / 10F,
-//							50
-//					)
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_ingot_to_block"),
-//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"###", "###", "###"})
-//						.ingredient('#', ingot)
-//						.output(new ItemStack(storageBlock))
-//						.build(id(this.registryName + "_ingot_to_block"), "ingots_to_blocks")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_block_to_ingot"),
-//					id -> VanillaRecipeBuilders.shapelessRecipe(new ItemStack(ingot, 9))
-//						.ingredient(storageBlock)
-//						.build(id(this.registryName + "_block_to_ingot"), "blocks_to_ingots")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, "raw_" + this.registryName + "_material_to_raw_block"),
-//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"###", "###", "###"})
-//							.ingredient('#', rawMaterial)
-//							.output(new ItemStack(rawMaterialBlock))
-//							.build(id("raw_" + this.registryName + "_material_to_raw_block"), "raw_materials_to_raw_blocks")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, "raw_" + this.registryName + "_block_to_raw_material"),
-//					id -> VanillaRecipeBuilders.shapelessRecipe(new ItemStack(rawMaterial, 9))
-//							.ingredient(rawMaterialBlock)
-//							.build(id("raw_" + this.registryName + "_block_to_raw_material"), "raw_blocks_to_raw_materials")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_ingot_from_nugget"),
-//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"###", "###", "###"})
-//							.ingredient('#', nugget)
-//							.output(new ItemStack(ingot))
-//							.build(id(this.registryName + "_ingot_from_nugget"), "ingots_from_nuggets")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, "raw_" + this.registryName + "_block_to_raw_material"),
-//					id -> VanillaRecipeBuilders.shapelessRecipe(new ItemStack(nugget, 9))
-//							.ingredient(ingot)
-//							.build(id(this.registryName + "_nugget_from_ingot"), "nuggets_from_ingots")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_gear"),
-//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{" # ", "# #", " # "})
-//							.ingredient('#', ingot)
-//							.output(new ItemStack(gear))
-//							.build(id(this.registryName + "_gear"), "gears")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_dust_from_small_dust"),
-//					id -> VanillaRecipeBuilders.shapelessRecipe(new ItemStack(dust, 1))
-//							.ingredient(small_dust, small_dust, small_dust, small_dust)
-//							.build(id(this.registryName + "_dust_from_small_dust"), "dusts_from_small_dusts")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, "small_" + this.registryName + "_dusts_from_dust"),
-//					id -> VanillaRecipeBuilders.shapelessRecipe(new ItemStack(small_dust, 4))
-//							.ingredient(dust)
-//							.build(id("small_" + this.registryName + "_dusts_from_dust"), "small_dusts_from_dusts")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_plate_from_ingot"),
-//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"##", "##"})
-//							.ingredient('#', ingot)
-//							.output(new ItemStack(plate))
-//							.build(id(this.registryName + "_plate_from_ingot"), "plates_from_ingots")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_pickaxe"),
-//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"###", " S ", " S "})
-//							.ingredient('#', ingot)
-//							.ingredient('S', Items.STICK)
-//							.output(new ItemStack(pickaxe))
-//							.build(id(this.registryName + "_pickaxe"), "pickaxes")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_axe"),
-//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"## ", "#S ", " S "})
-//							.ingredient('#', ingot)
-//							.ingredient('S', Items.STICK)
-//							.output(new ItemStack(axe))
-//							.build(id(this.registryName + "_axe"), "axes")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_shovel"),
-//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"#", "S", "S"})
-//							.ingredient('#', ingot)
-//							.ingredient('S', Items.STICK)
-//							.output(new ItemStack(shovel))
-//							.build(id(this.registryName + "_shovel"), "shovels")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_sword"),
-//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"#", "#", "S"})
-//							.ingredient('#', ingot)
-//							.ingredient('S', Items.STICK)
-//							.output(new ItemStack(sword))
-//							.build(id(this.registryName + "_sword"), "swords")
-//			);
-//
-//			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_hoe"),
-//					id -> VanillaRecipeBuilders.shapedRecipe(new String[]{"## ", " S ", " S "})
-//							.ingredient('#', ingot)
-//							.ingredient('S', Items.STICK)
-//							.output(new ItemStack(hoe))
-//							.build(id(this.registryName + "_hoe"), "hoes")
-//			);
-//		});
+		/*RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.smeltingRecipe(
+				id(this.registryName + "_raw_block_to_storage_furnace"),
+				"raw_blocks_to_storage_blocks",
+				Ingredient.ofItems(rawMaterialBlock),
+				new ItemStack(this.storageBlock, 1),
+				MathHelper.floor(random.nextFloat() * 10) / 10F,
+				200
+			)
+		);
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.blastingRecipe(
+				id(this.registryName + "_raw_block_to_storage_blasting"),
+				"raw_blocks_to_storage_blocks",
+				Ingredient.ofItems(rawMaterialBlock),
+				new ItemStack(this.storageBlock, 1),
+				MathHelper.floor(random.nextFloat() * 10) / 10F,
+				150
+			)
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.smeltingRecipe(
+				id(this.registryName + "_raw_material_to_ingot_furnace"),
+				"raw_materials_to_ingots",
+				Ingredient.ofItems(rawMaterial),
+				new ItemStack(this.ingot, 1),
+				MathHelper.floor(random.nextFloat() * 10) / 10F,
+				200
+			)
+		);
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.blastingRecipe(
+				id(this.registryName + "_raw_material_to_ingot_blasting"),
+				"raw_materials_to_ingots",
+				Ingredient.ofItems(rawMaterial),
+				new ItemStack(this.ingot, 1),
+				MathHelper.floor(random.nextFloat() * 10) / 10F,
+				200
+			)
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.smeltingRecipe(
+				id(this.registryName + "_ore_to_ingot_furnace"),
+				"ores_to_ingots",
+				Ingredient.ofItems(ore),
+				new ItemStack(this.ingot, 1),
+				MathHelper.floor(random.nextFloat() * 10) / 10F,
+				100
+			)
+		);
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.blastingRecipe(
+				id(this.registryName + "_ore_to_ingot_blasting"),
+				"ores_to_ingots",
+				Ingredient.ofItems(ore),
+				new ItemStack(this.ingot, 1),
+				MathHelper.floor(random.nextFloat() * 10) / 10F,
+				50
+			)
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapedRecipe(new String[]{"###", "###", "###"})
+				.ingredient('#', ingot)
+				.output(new ItemStack(storageBlock))
+				.build(id(this.registryName + "_ingot_to_block"), "ingots_to_blocks")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapelessRecipe(new ItemStack(ingot, 9))
+				.ingredient(storageBlock)
+				.build(id(this.registryName + "_block_to_ingot"), "blocks_to_ingots")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapedRecipe(new String[]{"###", "###", "###"})
+				.ingredient('#', rawMaterial)
+				.output(new ItemStack(rawMaterialBlock))
+				.build(id("raw_" + this.registryName + "_material_to_raw_block"), "raw_materials_to_raw_blocks")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapelessRecipe(new ItemStack(rawMaterial, 9))
+				.ingredient(rawMaterialBlock)
+				.build(id("raw_" + this.registryName + "_block_to_raw_material"), "raw_blocks_to_raw_materials")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapedRecipe(new String[]{"###", "###", "###"})
+				.ingredient('#', nugget)
+				.output(new ItemStack(ingot))
+				.build(id(this.registryName + "_ingot_from_nugget"), "ingots_from_nuggets")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapelessRecipe(new ItemStack(nugget, 9))
+				.ingredient(ingot)
+				.build(id(this.registryName + "_nugget_from_ingot"), "nuggets_from_ingots")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapedRecipe(new String[]{" # ", "# #", " # "})
+				.ingredient('#', ingot)
+				.output(new ItemStack(gear))
+				.build(id(this.registryName + "_gear"), "gears")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapelessRecipe(new ItemStack(dust, 1))
+				.ingredient(small_dust, small_dust, small_dust, small_dust)
+				.build(id(this.registryName + "_dust_from_small_dust"), "dusts_from_small_dusts")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapelessRecipe(new ItemStack(small_dust, 4))
+				.ingredient(dust)
+				.build(id("small_" + this.registryName + "_dusts_from_dust"), "small_dusts_from_dusts")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapedRecipe(new String[]{"##", "##"})
+				.ingredient('#', ingot)
+				.output(new ItemStack(plate))
+				.build(id(this.registryName + "_plate_from_ingot"), "plates_from_ingots")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapedRecipe(new String[]{"###", " S ", " S "})
+				.ingredient('#', ingot)
+				.ingredient('S', Items.STICK)
+				.output(new ItemStack(pickaxe))
+				.build(id(this.registryName + "_pickaxe"), "pickaxes")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapedRecipe(new String[]{"## ", "#S ", " S "})
+				.ingredient('#', ingot)
+				.ingredient('S', Items.STICK)
+				.output(new ItemStack(axe))
+				.build(id(this.registryName + "_axe"), "axes")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapedRecipe(new String[]{"#", "S", "S"})
+				.ingredient('#', ingot)
+				.ingredient('S', Items.STICK)
+				.output(new ItemStack(shovel))
+				.build(id(this.registryName + "_shovel"), "shovels")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapedRecipe(new String[]{"#", "#", "S"})
+				.ingredient('#', ingot)
+				.ingredient('S', Items.STICK)
+				.output(new ItemStack(sword))
+				.build(id(this.registryName + "_sword"), "swords")
+		);
+
+		RecipeManagerHelper.registerStaticRecipe(
+			VanillaRecipeBuilders.shapedRecipe(new String[]{"## ", " S ", " S "})
+				.ingredient('#', ingot)
+				.ingredient('S', Items.STICK)
+				.output(new ItemStack(hoe))
+				.build(id(this.registryName + "_hoe"), "hoes")
+		);*/
 	}
 
 	@Override
