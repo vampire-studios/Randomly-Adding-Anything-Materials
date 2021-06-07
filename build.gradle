@@ -1,10 +1,10 @@
 plugins {
-	id 'fabric-loom' version '0.7-SNAPSHOT'
+	id 'fabric-loom' version '0.8-SNAPSHOT'
 	id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -17,17 +17,9 @@ repositories {
 		name = "Cotton"
 		url = "https://server.bbkr.space/artifactory/libs-release"
 	}
-	maven {
-		url = "https://dl.bintray.com/vampirestudios/Minecraft-Libs"
-	}
-	maven {
-		url  "https://dl.bintray.com/natanfudge/libs"
-	}
-	maven { url "https://maven.shedaniel.me/" }
+	maven { url "https://maven.shedaniel.me" }
 	maven { url "https://maven.terraformersmc.com/" }
-	maven {
-		url = 'https://raw.githubusercontent.com/Devan-Kerman/Devan-Repo/master/'
-	}
+	maven { url "https://raw.githubusercontent.com/vampire-studios/VampireStudiosMaven/main/" }
 }
 
 minecraft { }
@@ -41,58 +33,50 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "io.github.vampirestudios:raa-core:${project.core_version}"
+	modImplementation "io.github.vampirestudios:Randomly-Adding-Anything-Core:${project.core_version}"
 
-	modImplementation "com.terraformersmc:modmenu:2.0.0-beta.4"
+	modImplementation "com.terraformersmc:modmenu:2.0.0-beta.7"
 
-	modImplementation 'net.devtech:arrp:0.3.11'
-	/*modCompileOnly ("me.shedaniel:RoughlyEnoughItems-api:ABC") {
+	modRuntime ("me.shedaniel:RoughlyEnoughItems-api:6.0.249-alpha") {
 		exclude group: "io.github.prospector.modmenu"
 		exclude group :"net.fabricmc.fabric-api"
 	}
-	modRuntime ("me.shedaniel:RoughlyEnoughItems:ABC") {
+	modRuntime ("me.shedaniel:RoughlyEnoughItems-default-plugin:6.0.249-alpha") {
 		exclude group: "io.github.prospector.modmenu"
 		exclude group :"net.fabricmc.fabric-api"
-	}*/
+	}
+	modRuntime ("me.shedaniel:RoughlyEnoughItems-runtime:6.0.249-alpha") {
+		exclude group: "io.github.prospector.modmenu"
+		exclude group :"net.fabricmc.fabric-api"
+	}
 }
 
 processResources {
 	inputs.property "version", project.version
 
-	from(sourceSets.main.resources.srcDirs) {
-		include "fabric.mod.json"
+	filesMatching("fabric.mod.json") {
 		expand "version": project.version
 	}
-
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "fabric.mod.json"
-	}
 }
 
-// ensure that the encoding is set to UTF-8, no matter what the system default is
-// this fixes some edge cases with special characters not displaying correctly
-// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-tasks.withType(JavaCompile) {
-	options.encoding = "UTF-8"
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	it.options.release = 16
 }
 
-// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-// if it is present.
-// If you remove this task, sources will not be generated.
-task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = "sources"
-	from sourceSets.main.allSource
+java {
+	withSourcesJar()
 }
 
 jar {
-	from "LICENSE"
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}"}
+	}
 }
 
-// configure the maven publication
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
 			artifact(remapJar) {
 				builtBy remapJar
 			}
@@ -101,10 +85,9 @@ publishing {
 			}
 		}
 	}
-
-	// select the repositories you want to publish to
 	repositories {
-		// uncomment to publish to the local maven
-		// mavenLocal()
+		maven {
+			url file("D:\\Development\\Work\\VampireStudiosMaven\\")
+		}
 	}
 }

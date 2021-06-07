@@ -1,5 +1,6 @@
 package io.github.vampirestudios.raa_materials;
 
+import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
@@ -7,7 +8,6 @@ import io.github.vampirestudios.raa_materials.items.CustomAxeItem;
 import io.github.vampirestudios.raa_materials.items.CustomHoeItem;
 import io.github.vampirestudios.raa_materials.items.CustomPickaxeItem;
 import io.github.vampirestudios.raa_materials.utils.*;
-import net.devtech.arrp.api.RuntimeResourcePack;
 import net.fabricmc.fabric.api.recipe.v1.RecipeManagerHelper;
 import net.fabricmc.fabric.api.recipe.v1.VanillaRecipeBuilders;
 import net.minecraft.item.*;
@@ -149,7 +149,7 @@ public class GemOreMaterial extends OreMaterial {
 	}
 
 	@Override
-	public void initClient(RuntimeResourcePack resourcePack, Random random) {
+	public void initClient(ArtificeResourcePack.ClientResourcePackBuilder resourcePack, Random random) {
 		super.initClient(resourcePack, random);
 
 		Identifier textureID = TextureHelper.makeItemTextureID(this.registryName + "_ore");
@@ -221,13 +221,6 @@ public class GemOreMaterial extends OreMaterial {
 		InnerRegistry.registerTexture(texture2ID, texture);
 		InnerRegistry.registerItemModel(this.shovel, ModelHelper.makeTwoLayerItem(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shovel"), this.name + " Shovel");
-
-		ResourceGenerateable.Item DEFAULT_ITEM = new ResourceGenerateable.Item() {};
-		ResourceGenerateable.Block DEFAULT_BLOCK = new ResourceGenerateable.Block() {};
-
-		DEFAULT_BLOCK.client(resourcePack, id(this.registryName + "_ore"));
-		DEFAULT_BLOCK.client(resourcePack, id(this.registryName + "_block"));
-		DEFAULT_ITEM.client(resourcePack, id(this.registryName + "_gem"));
 	}
 
 	@Override

@@ -1,10 +1,10 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
+import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
 import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
-import net.devtech.arrp.api.RuntimeResourcePack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 
@@ -58,7 +58,7 @@ public abstract class ComplexMaterial {
 		return material;
 	}
 
-	public abstract void initClient(RuntimeResourcePack resourcePack, Random random);
+	public abstract void initClient(ArtificeResourcePack.ClientResourcePackBuilder resourcePack, Random random);
 
 	public static void resetMaterials() {
 		MATERIALS.clear();

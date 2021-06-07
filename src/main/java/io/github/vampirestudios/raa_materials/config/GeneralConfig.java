@@ -1,9 +1,9 @@
 package io.github.vampirestudios.raa_materials.config;
 
 import io.github.vampirestudios.raa_materials.RAAMaterials;
-import me.sargunvohra.mcmods.autoconfig1u.ConfigData;
-import me.sargunvohra.mcmods.autoconfig1u.annotation.Config;
-import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.Comment;
+import me.shedaniel.autoconfig.ConfigData;
+import me.shedaniel.autoconfig.annotation.Config;
+import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 
 @Config(name = RAAMaterials.MOD_ID)
 public class GeneralConfig implements ConfigData {

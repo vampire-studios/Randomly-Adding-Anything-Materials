@@ -1,11 +1,11 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
+import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.blocks.BaseDropBlock;
 import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
 import io.github.vampirestudios.raa_materials.utils.*;
 import io.github.vampirestudios.vampirelib.utils.Rands;
-import net.devtech.arrp.api.RuntimeResourcePack;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -89,7 +89,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public void initClient(RuntimeResourcePack resourcePack, Random random) {
+	public void initClient(ArtificeResourcePack.ClientResourcePackBuilder resourcePack, Random random) {
 		loadStaticImages();
 	}
 

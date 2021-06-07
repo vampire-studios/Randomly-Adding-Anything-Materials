@@ -1,17 +1,11 @@
 package io.github.vampirestudios.raa_materials.utils;
 
+import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
-import net.devtech.arrp.api.RuntimeResourcePack;
-import net.devtech.arrp.json.blockstate.JState;
-import net.devtech.arrp.json.loot.JLootTable;
-import net.devtech.arrp.json.models.JModel;
+import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.minecraft.util.Identifier;
 
 import static io.github.vampirestudios.raa_materials.utils.ResourceGen.prefixPath;
-import static net.devtech.arrp.json.blockstate.JState.state;
-import static net.devtech.arrp.json.blockstate.JState.variant;
-import static net.devtech.arrp.json.models.JModel.model;
-import static net.devtech.arrp.json.models.JModel.textures;
 
 public interface ResourceGenerateable {
 	interface Item extends ResourceGenerateable {
@@ -21,13 +15,13 @@ public interface ResourceGenerateable {
 		default void init(net.minecraft.item.Item item) {}
 
 		@Override
-		default void client(RuntimeResourcePack pack, Identifier id) {
+		default void client(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
 			Identifier path = prefixPath(id, "item");
-			pack.addModel(model("item/generated").textures(textures().layer0(path.toString())), path);
+			pack.addItemModel(path, modelBuilder -> modelBuilder.parent(new Identifier("item/generated")).texture("all", path));
 		}
 
 		@Override
-		default void server(RuntimeResourcePack pack, Identifier id) {
+		default void server(ArtificeResourcePack.ServerResourcePackBuilder pack, Identifier id) {
 
 		}
 	}
@@ -39,50 +33,46 @@ public interface ResourceGenerateable {
 		default void init(net.minecraft.block.Block block) {}
 
 		@Override
-		default void client(RuntimeResourcePack pack, Identifier id) {
+		default void client(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
 			this.generateBlockModel(pack, id);
 			this.generateBlockState(pack, id);
 			this.generateItemModel(pack, id);
 		}
 
 		@Override
-		default void server(RuntimeResourcePack pack, Identifier id) {
+		default void server(ArtificeResourcePack.ServerResourcePackBuilder pack, Identifier id) {
 			this.generateLootTable(pack, id);
 		}
 
-		default void generateItemModel(RuntimeResourcePack pack, Identifier id) {
-			pack.addModel(JModel.model(prefixPath(id, "block").toString()), prefixPath(id, "item"));
+		default void generateItemModel(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
+			pack.addItemModel(id, modelBuilder -> modelBuilder.parent(prefixPath(id, "block")));
 		}
 
-		default void generateBlockState(RuntimeResourcePack pack, Identifier id) {
-			pack.addBlockState(state(variant(JState.model(prefixPath(id, "block").toString()))), id);
+		default void generateBlockState(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
+			pack.addBlockState(id, blockStateBuilder -> blockStateBuilder.variant("", variant ->
+					variant.model(prefixPath(id, "block"))));
 		}
 
-		default void generateBlockModel(RuntimeResourcePack pack, Identifier id) {
-			Identifier prefix = prefixPath(id, "block");
-			pack.addModel(model("block/cube_all").textures(textures().var("all", prefix.toString())), prefix);
+		default void generateBlockModel(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
+			pack.addBlockModel(id, modelBuilder -> modelBuilder.parent(new Identifier("block/cube_all"))
+					.texture("all", prefixPath(id, "block")));
 		}
 
-		default void generateLootTable(RuntimeResourcePack pack, Identifier id) {
-			pack.addLootTable(id,
-			                  JLootTable.loot("minecraft:block")
-			                            .pool(JLootTable.pool()
-			                                            .rolls(1)
-			                                            .entry(JLootTable.entry()
-			                                                             .type("minecraft:item")
-			                                                             .name(id.toString()))
-			                                            .condition(JLootTable.condition("minecraft:survives_explosion"))));
+		default void generateLootTable(ArtificeResourcePack.ServerResourcePackBuilder pack, Identifier id) {
+			pack.addLootTable(id, lootTableBuilder -> lootTableBuilder.pool(pool -> pool.rolls(1).entry(entry ->
+					entry.type(new Identifier("item")).name(id)).condition(new Identifier("survives_explosion"), jsonObjectBuilder -> {
+					})));
 		}
 	}
 
 	class Facing implements Block {
-		private final String top, front, side, bottom;
+		private final Identifier top, front, side, bottom;
 
 		public Facing(String top, String front, String side, String bottom) {
-			this.top = RAAMaterials.MOD_ID + ":block/" + top;
-			this.front = RAAMaterials.MOD_ID + ":block/" + front;
-			this.side = RAAMaterials.MOD_ID + ":block/" + side;
-			this.bottom = RAAMaterials.MOD_ID + ":block/" + bottom;
+			this.top = new Identifier(RAAMaterials.MOD_ID, "block/" + top);
+			this.front = new Identifier(RAAMaterials.MOD_ID, "block/" + front);
+			this.side = new Identifier(RAAMaterials.MOD_ID, "block/" + side);
+			this.bottom = new Identifier(RAAMaterials.MOD_ID, "block/" + bottom);
 		}
 
 		public static Facing of(String top, String front, String side, String bottom) {
@@ -90,85 +80,63 @@ public interface ResourceGenerateable {
 		}
 
 		@Override
-		public void generateBlockState(RuntimeResourcePack pack, Identifier id) {
-			String model = prefixPath(id, "block")
-			                          .toString();
-			pack.addBlockState(state(variant().put("facing",
-			                                       "east",
-			                                       JState.model(model)
-			                                             .y(90))
-			                                  .put("facing",
-			                                       "west",
-			                                       JState.model(model)
-			                                             .y(270))
-			                                  .put("facing", "north", JState.model(model))
-			                                  .put("facing",
-			                                       "south",
-			                                       JState.model(model)
-			                                             .y(180))), id);
+		public void generateBlockState(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
+			Identifier model = prefixPath(id, "block");
+			pack.addBlockState(id, blockStateBuilder -> {
+				blockStateBuilder.variant("facing=east", variant -> variant.model(model).rotationY(90));
+				blockStateBuilder.variant("facing=west", variant -> variant.model(model).rotationY(270));
+				blockStateBuilder.variant("facing=north", variant -> variant.model(model));
+				blockStateBuilder.variant("facing=south", variant -> variant.model(model).rotationY(180));
+			});
 		}
 
 		@Override
-		public void generateBlockModel(RuntimeResourcePack pack, Identifier id) {
-			pack.addModel(model("minecraft:block/orientable").textures(textures().var("top", this.top)
-			                                                                     .var("front", this.front)
-			                                                                     .var("side", this.side)
-			                                                                     .var("bottom", this.bottom)), prefixPath(id, "block"));
+		public void generateBlockModel(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
+			pack.addBlockModel(id, modelBuilder -> modelBuilder.parent(new Identifier("block/orientable"))
+					.texture("top", top).texture("front", front)
+					.texture("side", side).texture("bottom", bottom));
 		}
 	}
 
 	class FurnaceLike extends Facing {
-		private final String top_on, front_on, side_on, bottom_on;
+		private final Identifier top_on, front_on, side_on, bottom_on;
 
 		public FurnaceLike(String top, String front, String side, String bottom, String top_on, String front_on, String side_on, String bottom_on) {
 			super(top, front, side, bottom);
-			this.top_on = RAAMaterials.MOD_ID + ":block/" + top_on;
-			this.front_on = RAAMaterials.MOD_ID + ":block/" + front_on;
-			this.side_on = RAAMaterials.MOD_ID + ":block/" + side_on;
-			this.bottom_on = RAAMaterials.MOD_ID + ":block/" + bottom_on;
+			this.top_on = new Identifier(RAAMaterials.MOD_ID, "block/" + top_on);
+			this.front_on = new Identifier(RAAMaterials.MOD_ID, "block/" + front_on);
+			this.side_on = new Identifier(RAAMaterials.MOD_ID, "block/" + side_on);
+			this.bottom_on = new Identifier(RAAMaterials.MOD_ID, "block/" + bottom_on);
 		}
 
 
 		@Override
-		public void generateBlockState(RuntimeResourcePack pack, Identifier id) {
-			String model = prefixPath(id, "block")
-			                          .toString();
-			String on = model + "_on";
-			pack.addBlockState(state(variant().put("facing=east,lit=false",
-			                                       JState.model(model)
-			                                             .y(90))
-			                                  .put("facing=west,lit=false",
-			                                       JState.model(model)
-			                                             .y(270))
-			                                  .put("facing=north,lit=false", JState.model(model))
-			                                  .put("facing=south,lit=false",
-			                                       JState.model(model)
-			                                             .y(180))
-			                                  .put("facing=east,lit=true",
-			                                       JState.model(on)
-			                                             .y(90))
-			                                  .put("facing=west,lit=true",
-			                                       JState.model(on)
-			                                             .y(270))
-			                                  .put("facing=north,lit=true", JState.model(on))
-			                                  .put("facing=south,lit=true",
-			                                       JState.model(on)
-			                                             .y(180))), id);
+		public void generateBlockState(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
+			Identifier model = prefixPath(id, "block");
+			Identifier on = Utils.appendToPath(model, "_on");
+			pack.addBlockState(id, blockStateBuilder -> {
+				blockStateBuilder.variant("facing=east,lit=false", variant -> variant.model(model).rotationY(90));
+				blockStateBuilder.variant("facing=west,lit=false", variant -> variant.model(model).rotationY(270));
+				blockStateBuilder.variant("facing=north,lit=false", variant -> variant.model(model));
+				blockStateBuilder.variant("facing=south,lit=false", variant -> variant.model(model).rotationY(180));
+				blockStateBuilder.variant("facing=east,lit=true", variant -> variant.model(on).rotationY(90));
+				blockStateBuilder.variant("facing=west,lit=true", variant -> variant.model(on).rotationY(270));
+				blockStateBuilder.variant("facing=north,lit=true", variant -> variant.model(on));
+				blockStateBuilder.variant("facing=south,lit=true", variant -> variant.model(on).rotationY(180));
+			});
 		}
 
 		@Override
-		public void generateBlockModel(RuntimeResourcePack pack, Identifier id) {
+		public void generateBlockModel(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
 			super.generateBlockModel(pack, id);
-			pack.addModel(model("minecraft:block/orientable").textures(textures().var("top", this.top_on)
-			                                                                     .var("front", this.front_on)
-			                                                                     .var("side", this.side_on)
-			                                                                     .var("bottom", this.bottom_on)),
-			              new Identifier(id.getNamespace(), "block/" + id.getPath() + "_on"));
+			pack.addBlockModel(Utils.appendToPath(id, "_on"), modelBuilder -> modelBuilder.parent(new Identifier("block/orientable"))
+					.texture("top", top_on).texture("front", front_on)
+					.texture("side", side_on).texture("bottom", bottom_on));
 		}
 	}
 
 
-	void client(RuntimeResourcePack pack, Identifier id);
+	void client(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id);
 
-	void server(RuntimeResourcePack pack, Identifier id);
+	void server(ArtificeResourcePack.ServerResourcePackBuilder pack, Identifier id);
 }

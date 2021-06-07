@@ -1,6 +1,7 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
+import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
@@ -8,7 +9,6 @@ import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
 import io.github.vampirestudios.raa_materials.utils.*;
 import io.github.vampirestudios.vampirelib.utils.Rands;
-import net.devtech.arrp.api.RuntimeResourcePack;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.recipe.v1.RecipeManagerHelper;
 import net.fabricmc.fabric.api.recipe.v1.VanillaRecipeBuilders;
@@ -165,7 +165,7 @@ public class StoneMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public void initClient(RuntimeResourcePack resourcePack, Random random) {
+	public void initClient(ArtificeResourcePack.ClientResourcePackBuilder resourcePack, Random random) {
 		loadStaticImages();
 
 		String textureBaseName = name.toLowerCase(Locale.ROOT);

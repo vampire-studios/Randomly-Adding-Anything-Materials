@@ -33,7 +33,7 @@ public class MinecraftClientMixin {
 	@Shadow
 	private static CompletableFuture<Unit> COMPLETED_UNIT_FUTURE;
 	
-	@Inject(method = "reloadResources", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "reloadResources()Ljava/util/concurrent/CompletableFuture;", at = @At("HEAD"), cancellable = true)
 	private void reloadResources(CallbackInfoReturnable<CompletableFuture<Void>> info) {
 		if (SilentWorldReloader.isSilent()) {
 			MinecraftClient client = (MinecraftClient) (Object) this;

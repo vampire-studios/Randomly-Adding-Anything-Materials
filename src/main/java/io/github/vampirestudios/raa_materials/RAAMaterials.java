@@ -2,19 +2,21 @@ package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Lifecycle;
+import com.swordglowsblue.artifice.api.Artifice;
 import io.github.vampirestudios.raa_core.api.RAAAddon;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
+import io.github.vampirestudios.raa_materials.utils.SilentWorldReloader;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
 import io.github.vampirestudios.vampirelib.utils.Rands;
-import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
-import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
-import net.devtech.arrp.api.RuntimeResourcePack;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -48,8 +50,6 @@ public class RAAMaterials implements RAAAddon {
 
     public static final Registry<OreMaterial.Target> TARGETS = new SimpleRegistry<>(RegistryKey.ofRegistry(id("ore_targets")), Lifecycle.stable());
 
-    public static RuntimeResourcePack RESOURCE_PACK;
-
     @Override
     public String[] shouldLoadAfter() {
         return new String[]{};
@@ -65,8 +65,6 @@ public class RAAMaterials implements RAAAddon {
         NameGenerator.init();
         AutoConfig.register(GeneralConfig.class, JanksonConfigSerializer::new);
         CONFIG = AutoConfig.getConfigHolder(GeneralConfig.class).getConfig();
-
-        RESOURCE_PACK = RuntimeResourcePack.create("raa_materials:assets");
 
         Registry.register(TARGETS, id("stone"), OreMaterial.Target.STONE);
         Registry.register(TARGETS, id("diorite"), OreMaterial.Target.DIORITE);
@@ -178,11 +176,20 @@ public class RAAMaterials implements RAAAddon {
 
             System.out.println("Make Client update!");
             if (isClient()) {
-                materials.forEach(material -> material.initClient(RESOURCE_PACK, random));
+                Artifice.registerAssetPack(id("raa_materials" + random.nextInt()), clientResourcePackBuilder -> {
+                    materials.forEach(material -> material.initClient(clientResourcePackBuilder, random));
+                    new Thread(() -> {
+                        try {
+                            clientResourcePackBuilder.dumpResources("test", "assets");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                });
 
-//                SilentWorldReloader.setSilent();
-//                MinecraftClient.getInstance().reloadResources();
-//                MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels();
+                SilentWorldReloader.setSilent();
+                MinecraftClient.getInstance().reloadResources();
+                MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels();
             }
         }
     }

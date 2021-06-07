@@ -1,13 +1,13 @@
 package io.github.vampirestudios.raa_materials;
 
-import com.swordglowsblue.artifice.api.Artifice;
+import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
+import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.items.CustomAxeItem;
 import io.github.vampirestudios.raa_materials.items.CustomHoeItem;
 import io.github.vampirestudios.raa_materials.items.CustomPickaxeItem;
 import io.github.vampirestudios.raa_materials.utils.*;
-import net.devtech.arrp.api.RuntimeResourcePack;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -311,7 +311,7 @@ public class MetalOreMaterial extends OreMaterial {
 	}
 
 	@Override
-	public void initClient(RuntimeResourcePack resourcePack, Random random) {
+	public void initClient(ArtificeResourcePack.ClientResourcePackBuilder resourcePack, Random random) {
 		super.initClient(resourcePack, random);
 
 		ColorGradient gradient = ProceduralTextures.makeMetalPalette(random);
@@ -322,16 +322,22 @@ public class MetalOreMaterial extends OreMaterial {
 		texture = TextureHelper.cover(stone, texture);
 		texture = TextureHelper.cover(texture, outline);
 		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistry.registerItemModel(this.ore.asItem(), ModelHelper.makeCube(textureID));
+		InnerRegistry.registerBlockModel(this.ore, ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_ore"), this.name + " Ore");
 
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_block");
 		texture = ProceduralTextures.randomColored(storageBlocks, gradient, random);
 		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistry.registerItemModel(this.storageBlock.asItem(), ModelHelper.makeCube(textureID));
+		InnerRegistry.registerBlockModel(this.storageBlock, ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), this.name + " Block");
 
 		textureID = TextureHelper.makeItemTextureID("raw_" + this.registryName + "_block");
 		texture = ProceduralTextures.randomColored(rawBlocks, gradient, random);
 		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistry.registerItemModel(this.rawMaterialBlock.asItem(), ModelHelper.makeCube(textureID));
+		InnerRegistry.registerBlockModel(this.rawMaterialBlock, ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock("raw_" + this.registryName + "_block"), "Raw " + this.name + " Block");
 
 		makeColoredItemAssets(rawItems, rawMaterial, gradient, random, "raw_" + this.registryName, "Raw %s");
@@ -354,7 +360,7 @@ public class MetalOreMaterial extends OreMaterial {
 		texture = ProceduralTextures.nonColored(swordHandles, random);
 		Identifier texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_sword_handle");
 		InnerRegistry.registerTexture(texture2ID, texture);
-//		InnerRegistry.registerItemModel(this.sword, ModelHelper.makeThreeLayerTool(textureID, texture2ID, TextureHelper.makeItemTextureID("tools/sword/stick")));
+		InnerRegistry.registerItemModel(this.sword, ModelHelper.makeThreeLayerTool(textureID, texture2ID, TextureHelper.makeItemTextureID("tools/sword/stick")));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_sword"), this.name + " Sword");
 
 		texture = ProceduralTextures.randomColored(pickaxeHeads, gradient, random);
@@ -388,40 +394,6 @@ public class MetalOreMaterial extends OreMaterial {
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_shovel_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shovel"), this.name + " Shovel");
-
-		ResourceGenerateable.Item DEFAULT_ITEM = new ResourceGenerateable.Item() {};
-		ResourceGenerateable.Block DEFAULT_BLOCK = new ResourceGenerateable.Block() {};
-
-		DEFAULT_BLOCK.client(resourcePack, id(this.registryName + "_ore"));
-		DEFAULT_BLOCK.client(resourcePack, id(this.registryName + "_block"));
-		DEFAULT_ITEM.client(resourcePack, id(this.registryName + "_gem"));
-
-		Artifice.registerAssetPack(this.registryName, clientResourcePackBuilder -> {
-			clientResourcePackBuilder.addItemModel(id("raw_" + this.registryName), modelBuilder -> {
-				modelBuilder.parent(new Identifier("item/generated"));
-				modelBuilder.texture("layer0", id("item/raw_" + this.registryName));
-			});
-			clientResourcePackBuilder.addItemModel(id(this.registryName + "_ingot"), modelBuilder -> {
-				modelBuilder.parent(new Identifier("item/generated"));
-				modelBuilder.texture("layer0", id("item/" + this.registryName + "_ingot"));
-			});
-			clientResourcePackBuilder.addItemModel(id(this.registryName + "_nugget"), modelBuilder -> {
-				modelBuilder.parent(new Identifier("item/generated"));
-				modelBuilder.texture("layer0", id("item/" + this.registryName + "_nugget"));
-			});
-			clientResourcePackBuilder.addItemModel(id(this.registryName + "_plate"), modelBuilder -> {
-				modelBuilder.parent(new Identifier("item/generated"));
-				modelBuilder.texture("layer0", id("item/" + this.registryName + "_plate"));
-			});
-			clientResourcePackBuilder.addItemModel(id(this.registryName + "_gear"), modelBuilder -> {
-				modelBuilder.parent(new Identifier("item/generated"));
-				modelBuilder.texture("layer0", id("item/" + this.registryName + "_gear"));
-			});
-			clientResourcePackBuilder.addItemModel(id(this.registryName + "_nugget"), modelBuilder -> {
-				modelBuilder.parent(new Identifier("item/generated"));
-				modelBuilder.texture("layer0", id("item/" + this.registryName + "_dust"));
-			});
-		});
 	}
 
 	@Override
