@@ -19,6 +19,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
@@ -32,6 +33,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.function.Supplier;
+
+import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 
 public class StoneMaterial extends ComplexMaterial {
 	private static BufferTexture[] stoneFrame;
@@ -139,19 +142,22 @@ public class StoneMaterial extends ComplexMaterial {
 
 	@Override
 	public void generate(ServerWorld world) {
-		ConfiguredFeature<?, ?> configuredFeature = BiomeUtils.newConfiguredFeature(this.registryName + "_stone_cf", Feature.ORE
+		RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureRegistryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, id(this.registryName + "_stone_cf"));
+		ConfiguredFeature<?, ?> configuredFeature = BiomeUtils.newConfiguredFeature(configuredFeatureRegistryKey, Feature.ORE
 				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 64))
 				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
 				.spreadHorizontally()
 				.repeatRandomly(2));
 
-		ConfiguredFeature<?, ?> configuredFeature2 = BiomeUtils.newConfiguredFeature(this.registryName + "_stone_cf2", Feature.ORE
+		RegistryKey<ConfiguredFeature<?, ?>> configuredFeature2RegistryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, id(this.registryName + "_stone_cf2"));
+		ConfiguredFeature<?, ?> configuredFeature2 = BiomeUtils.newConfiguredFeature(configuredFeature2RegistryKey, Feature.ORE
 				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 32))
 				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
 				.spreadHorizontally()
 				.repeatRandomly(4));
 
-		ConfiguredFeature<?, ?> configuredFeature3 = BiomeUtils.newConfiguredFeature(this.registryName + "_stone_cf3", Feature.ORE
+		RegistryKey<ConfiguredFeature<?, ?>> configuredFeature3RegistryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, id(this.registryName + "_stone_cf3"));
+		ConfiguredFeature<?, ?> configuredFeature3 = BiomeUtils.newConfiguredFeature(configuredFeature3RegistryKey, Feature.ORE
 				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 16))
 				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
 				.spreadHorizontally()

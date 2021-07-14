@@ -1,6 +1,7 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
@@ -8,10 +9,9 @@ import io.github.vampirestudios.raa_materials.blocks.CustomCrystalBlock;
 import io.github.vampirestudios.raa_materials.blocks.CustomCrystalClusterBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
+import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
 import io.github.vampirestudios.raa_materials.utils.*;
 import io.github.vampirestudios.raa_materials.world.gen.feature.CrystalSpikeFeature;
-import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
-import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
@@ -33,7 +33,10 @@ import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.RAA_ORES;
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
@@ -160,6 +163,18 @@ public class CrystalMaterial extends ComplexMaterial {
 		BlockRenderLayerMap.INSTANCE.putBlock(this.crystal, RenderLayer.getCutout());
 	}
 
+	private static void addFeature(GenerationStep.Feature featureStep, ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
+		int index = featureStep.ordinal();
+		if (features.size() > index) {
+			features.get(index).add(() -> feature);
+		}
+		else {
+			List<Supplier<ConfiguredFeature<?, ?>>> newFeature = Lists.newArrayList();
+			newFeature.add(() -> feature);
+			features.add(newFeature);
+		}
+	}
+
 	@Override
 	public void generate(ServerWorld world) {
 		Feature<SingleStateFeatureConfig> CRYSTAL_SPIKE = new CrystalSpikeFeature(SingleStateFeatureConfig.CODEC, this.crystal, this.block);
@@ -203,10 +218,17 @@ public class CrystalMaterial extends ComplexMaterial {
 				).uniformRange(YOffset.getBottom(), YOffset.getTop()).spreadHorizontally().applyChance(10));
 //		ConfiguredFeature<?, ?> CRYSTAL_SPIKE_CF = Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id(this.registryName + "_crystal_spike"), CRYSTAL_SPIKE.configure(new SingleStateFeatureConfig(this.block.getDefaultState()))
 //				.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.002F, 1))).spreadHorizontally());
-		if (BuiltinRegistries.CONFIGURED_FEATURE.getKey(GEODE_CF).isPresent())
-			BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(),
-					GenerationStep.Feature.LOCAL_MODIFICATIONS,
-					BuiltinRegistries.CONFIGURED_FEATURE.getKey(GEODE_CF).get());
+
+		world.getRegistryManager().get(Registry.BIOME_KEY).forEach(biome -> {
+			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
+			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
+			List<List<Supplier<ConfiguredFeature<?, ?>>>> features = new ArrayList<>(preFeatures.size());
+			preFeatures.forEach((list) -> {
+				features.add(Lists.newArrayList(list));
+			});
+			addFeature(GenerationStep.Feature.LOCAL_MODIFICATIONS, GEODE_CF, features);
+			accessor.raaSetFeatures(features);
+		});
 	}
 
 }

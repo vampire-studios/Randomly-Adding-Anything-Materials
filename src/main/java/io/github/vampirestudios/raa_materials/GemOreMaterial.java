@@ -7,10 +7,6 @@ import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.items.CustomAxeItem;
 import io.github.vampirestudios.raa_materials.items.CustomHoeItem;
 import io.github.vampirestudios.raa_materials.items.CustomPickaxeItem;
-import io.github.vampirestudios.raa_materials.utils.*;
-import net.fabricmc.fabric.api.recipe.v1.RecipeManagerHelper;
-import net.fabricmc.fabric.api.recipe.v1.VanillaRecipeBuilders;
-import net.minecraft.item.*;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
@@ -161,7 +157,7 @@ public class GemOreMaterial extends OreMaterial {
 		Identifier textureID = TextureHelper.makeItemTextureID(this.registryName + "_ore");
 		BufferTexture texture = ProceduralTextures.randomColored(oreVeins, gradient, random);
 		BufferTexture outline = TextureHelper.outline(texture, target.darkOutline(), target.lightOutline(), 0, 1);
-		texture = TextureHelper.cover(stone, texture);
+		texture = TextureHelper.cover(baseTexture, texture);
 		texture = TextureHelper.cover(texture, outline);
 		InnerRegistry.registerTexture(textureID, texture);
 

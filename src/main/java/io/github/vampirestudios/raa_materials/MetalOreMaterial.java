@@ -318,21 +318,27 @@ public class MetalOreMaterial extends OreMaterial {
 
 		ColorGradient gradient = ProceduralTextures.makeMetalPalette(random);
 
+		// Ore
 		Identifier textureID = TextureHelper.makeItemTextureID(this.registryName + "_ore");
 		BufferTexture texture = ProceduralTextures.randomColored(oreVeins, gradient, random);
 		BufferTexture outline = TextureHelper.outline(texture, target.darkOutline(), target.lightOutline(), 0, 1);
-		texture = TextureHelper.cover(stone, texture);
+		texture = TextureHelper.cover(baseTexture, texture);
 		texture = TextureHelper.cover(texture, outline);
 		InnerRegistry.registerTexture(textureID, texture);
+
 		InnerRegistry.registerItemModel(this.ore.asItem(), ModelHelper.makeCube(textureID));
 		InnerRegistry.registerBlockModel(this.ore, ModelHelper.makeCube(textureID));
+
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_ore"), this.name + " Ore");
 
+		// Storage Block
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_block");
 		texture = ProceduralTextures.randomColored(storageBlocks, gradient, random);
 		InnerRegistry.registerTexture(textureID, texture);
+
 		InnerRegistry.registerItemModel(this.storageBlock.asItem(), ModelHelper.makeCube(textureID));
 		InnerRegistry.registerBlockModel(this.storageBlock, ModelHelper.makeCube(textureID));
+
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), this.name + " Block");
 
 		textureID = TextureHelper.makeItemTextureID("raw_" + this.registryName + "_block");
@@ -342,6 +348,7 @@ public class MetalOreMaterial extends OreMaterial {
 		InnerRegistry.registerBlockModel(this.rawMaterialBlock, ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock("raw_" + this.registryName + "_block"), "Raw " + this.name + " Block");
 
+		// Items
 		makeColoredItemAssets(rawItems, rawMaterial, gradient, random, "raw_" + this.registryName, "Raw %s");
 		makeColoredItemAssets(ingots, ingot, gradient, random, this.registryName + "_ingot", "%s Ingot");
 		makeColoredItemAssets(nuggets, nugget, gradient, random, this.registryName + "_nugget", "%s Nugget");
@@ -351,6 +358,8 @@ public class MetalOreMaterial extends OreMaterial {
 		makeColoredItemAssets(gears, gear, gradient, random, this.registryName + "_gear", "%s Gear");
 		makeColoredItemAssets(dusts, dust, gradient, random, this.registryName + "_dust", "%s Dust");
 
+
+		// Swords
 		texture = ProceduralTextures.randomColored(swordBlades, gradient, random);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_sword_blade");
 		InnerRegistry.registerTexture(textureID, texture);
@@ -360,6 +369,7 @@ public class MetalOreMaterial extends OreMaterial {
 		InnerRegistry.registerItemModel(this.sword, ModelHelper.makeThreeLayerTool(textureID, texture2ID, TextureHelper.makeItemTextureID("tools/sword/stick")));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_sword"), this.name + " Sword");
 
+		// Pickaxes
 		texture = ProceduralTextures.randomColored(pickaxeHeads, gradient, random);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_pickaxe_head");
 		InnerRegistry.registerTexture(textureID, texture);
@@ -369,6 +379,7 @@ public class MetalOreMaterial extends OreMaterial {
 		InnerRegistry.registerItemModel(this.pickaxe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_pickaxe"), this.name + " Pickaxe");
 
+		// Axes
 		texture = ProceduralTextures.randomColored(axeHeads, gradient, random);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_axe_head");
 		InnerRegistry.registerTexture(textureID, texture);
@@ -378,6 +389,7 @@ public class MetalOreMaterial extends OreMaterial {
 		InnerRegistry.registerItemModel(this.axe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_axe"), this.name + " Axe");
 
+		// Hoes
 		texture = ProceduralTextures.randomColored(hoeHeads, gradient, random);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_hoe_head");
 		InnerRegistry.registerTexture(textureID, texture);

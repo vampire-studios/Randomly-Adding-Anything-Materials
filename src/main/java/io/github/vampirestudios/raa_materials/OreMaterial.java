@@ -1,12 +1,12 @@
 package io.github.vampirestudios.raa_materials;
 
+import com.google.common.collect.Lists;
 import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.blocks.BaseDropBlock;
+import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
 import io.github.vampirestudios.raa_materials.utils.*;
 import io.github.vampirestudios.vampirelib.utils.Rands;
-import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
-import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -16,17 +16,23 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.rule.BlockMatchRuleTest;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
+
+import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 
 public abstract class OreMaterial extends ComplexMaterial {
-	protected BufferTexture stone;
+	protected BufferTexture baseTexture;
 
 	public BaseDropBlock ore;
 	public Item drop;
@@ -39,7 +45,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		super(name, gradient);
 		target = targetIn;
 
-		FabricBlockSettings material = FabricBlockSettings.copyOf(target.block()).mapColor(MapColor.GRAY);
+		FabricBlockSettings material = FabricBlockSettings.copyOf(target.block()).requiresTool().mapColor(MapColor.GRAY);
 		ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new BaseDropBlock(material, rawItem), RAAMaterials.RAA_ORES);
 		drop = ore.getDrop();
 		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, ore);
@@ -50,28 +56,50 @@ public abstract class OreMaterial extends ComplexMaterial {
 		TagHelper.addTag(BlockTags.NEEDS_IRON_TOOL, ore);
 	}
 
+	private static void addFeature(GenerationStep.Feature featureStep, ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
+		int index = featureStep.ordinal();
+		if (features.size() > index) {
+			features.get(index).add(() -> feature);
+		}
+		else {
+			List<Supplier<ConfiguredFeature<?, ?>>> newFeature = Lists.newArrayList();
+			newFeature.add(() -> feature);
+			features.add(newFeature);
+		}
+	}
+
 	@Override
 	public void generate(ServerWorld world) {
-		/*ConfiguredFeature<?, ?> configuredFeatureMiddleRare = BiomeUtils.newConfiguredFeature(this.registryName + "_ore_cf", Feature.ORE
+		RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureCommonRegistryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, id(this.registryName + "_ore_cf2"));
+		ConfiguredFeature<?, ?> configuredFeatureCommon = BiomeUtils.newConfiguredFeature(configuredFeatureCommonRegistryKey, Feature.ORE
+				.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.block()), ore.getDefaultState(), 9/*, discardOnAirChance ? 0.7F : 0F*/))
+				.uniformRange(YOffset.getBottom(), YOffset.getTop())
+				.spreadHorizontally()
+				.repeatRandomly(20));
+		RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureMiddleRareRegistryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, id(this.registryName + "_ore_cf3"));
+		ConfiguredFeature<?, ?> configuredFeatureMiddleRare = BiomeUtils.newConfiguredFeature(this.registryName + "_ore_cf", Feature.ORE
 				.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.block()), ore.getDefaultState(), 9, discardOnAirChance ? 0.7F : 0F))
 				.uniformRange(YOffset.getBottom(), YOffset.getTop())
 				.spreadHorizontally()
-				.repeatRandomly(6));*/
-		ConfiguredFeature<?, ?> configuredFeatureCommon = BiomeUtils.newConfiguredFeature(this.registryName + "_ore_cf3", Feature.ORE
-				.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.block()), ore.getDefaultState(), 9, discardOnAirChance ? 0.7F : 0F))
-				.uniformRange(YOffset.getBottom(), YOffset.getTop())
-				.spreadHorizontally()
-				.repeatRandomly(40));
-		/*ConfiguredFeature<?, ?> configuredFeatureHugeRare = BiomeUtils.newConfiguredFeature(this.registryName + "_ore_cf2", Feature.ORE
+				.repeatRandomly(6));
+		RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureHugeRareRegistryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, id(this.registryName + "_ore_cf3"));
+		ConfiguredFeature<?, ?> configuredFeatureHugeRare = BiomeUtils.newConfiguredFeature(configuredFeatureHugeRareRegistryKey, Feature.ORE
 				.configure(new OreFeatureConfig(new BlockMatchRuleTest(target.block()), ore.getDefaultState(), 12, discardOnAirChance ? 0.7F : 0F))
 				.uniformRange(YOffset.getBottom(), YOffset.getTop())
 				.spreadHorizontally()
-				.repeatRandomly(9));*/
-//		ConfiguredFeature<?, ?> selected = Rands.values(new ConfiguredFeature[]{ configuredFeatureCommon, configuredFeatureMiddleRare, configuredFeatureHugeRare });
-		if (BuiltinRegistries.CONFIGURED_FEATURE.getKey(configuredFeatureCommon).isPresent())
-			BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(),
-					GenerationStep.Feature.UNDERGROUND_ORES,
-					BuiltinRegistries.CONFIGURED_FEATURE.getKey(configuredFeatureCommon).get());
+				.repeatRandomly(9));
+		ConfiguredFeature<?, ?> selected = Rands.values(new ConfiguredFeature[]{ configuredFeatureCommon, configuredFeatureMiddleRare, configuredFeatureHugeRare });
+
+		world.getRegistryManager().get(Registry.BIOME_KEY).forEach(biome -> {
+			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
+			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
+			List<List<Supplier<ConfiguredFeature<?, ?>>>> features = new ArrayList<>(preFeatures.size());
+			preFeatures.forEach((list) -> {
+				features.add(Lists.newArrayList(list));
+			});
+			addFeature(GenerationStep.Feature.UNDERGROUND_ORES, selected, features);
+			accessor.raaSetFeatures(features);
+		});
 	}
 
 	@Override
@@ -80,9 +108,9 @@ public abstract class OreMaterial extends ComplexMaterial {
 	}
 
 	public void loadStaticImages() {
-		if (stone == null) {
+		if (baseTexture == null) {
 			Identifier identifier = target.texture();
-			stone = TextureHelper.loadTexture(identifier.getNamespace(), identifier.getPath());
+			baseTexture = TextureHelper.loadTexture(identifier.getNamespace(), identifier.getPath());
 		}
 	}
 

@@ -179,9 +179,8 @@ public class RAAMaterials implements RAAAddon {
 
             world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
 
-            System.out.println("Make Client update!");
-            if (isClient()) {
-                Artifice.registerAssetPack(id("assets" + Rands.getRandom().nextInt()), clientResourcePackBuilder -> {
+            if(isClient()) {
+                Artifice.registerAssetPack(id("assets" + random.nextInt()), clientResourcePackBuilder -> {
                     materials.forEach(material -> material.initClient(clientResourcePackBuilder, random));
                     new Thread(() -> {
                         try {
@@ -191,10 +190,12 @@ public class RAAMaterials implements RAAAddon {
                         }
                     }).start();
                 });
-//                SilentWorldReloader.setSilent();
                 MinecraftClient.getInstance().reloadResources();
                 MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels();
+
+                System.out.println("Make Client update!");
             }
+
         }
     }
 
