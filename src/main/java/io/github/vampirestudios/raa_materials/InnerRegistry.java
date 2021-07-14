@@ -6,6 +6,7 @@ import com.mojang.serialization.Lifecycle;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.ChangeableRegistry;
+import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.block.BlockModels;
@@ -62,14 +63,14 @@ public class InnerRegistry {
 		registry.replace(OptionalInt.of(rawId), key, replacement, lifecycle);
 	}
 
-	public static Block registerBlockAndItem(String name, Block block, ItemGroup group) {
+	public static <T extends Block> T registerBlockAndItem(String name, T block, ItemGroup group) {
 		Identifier id = RAAMaterials.id(name);
 		if (!Registry.BLOCK.containsId(id)) {
 			registerBlock(id, block);
 			registerItem(id, new BlockItem(block, new Item.Settings().group(group)));
 			return block;
 		} else {
-			return Registry.BLOCK.get(id);
+			return (T) Registry.BLOCK.get(id);
 		}
 	}
 
@@ -97,6 +98,8 @@ public class InnerRegistry {
 	}
 	
 	public static void registerTexture(Identifier id, BufferTexture image) {
+		Identifier correctIdentifier = Utils.appendToPath(id, ".png");
+		System.out.println(correctIdentifier.toString());
 		TEXTURES.put(id, image);
 	}
 

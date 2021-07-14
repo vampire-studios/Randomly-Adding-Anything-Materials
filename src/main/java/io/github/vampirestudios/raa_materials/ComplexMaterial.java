@@ -39,20 +39,14 @@ public abstract class ComplexMaterial {
 		OreMaterial.Target target = targets.get(random.nextInt(targets.size()));
 
 		switch (type) {
-			case "gem":
-				material = new GemOreMaterial(name, gradient, target);
-				break;
-			case "crystal":
-				material = new CrystalMaterial(name, gradient);
-				break;
-			case "metal":
-				material = new MetalOreMaterial(target, random);
-				break;
-			default:
+			case "gem" -> material = new GemOreMaterial(name, gradient, target);
+			case "crystal" -> material = new CrystalMaterial(name, gradient);
+			case "metal" -> material = new MetalOreMaterial(target, random);
+			default -> {
 				CustomColor mainColor = new CustomColor(colorGradientCompound.getInt("startColor"));
 				gradient = ProceduralTextures.makeStonePalette(mainColor, random);
 				material = new StoneMaterial(name, mainColor, gradient);
-				break;
+			}
 		}
 
 		return material;

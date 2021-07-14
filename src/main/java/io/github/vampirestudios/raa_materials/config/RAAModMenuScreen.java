@@ -1,3 +1,4 @@
+/*
 package io.github.vampirestudios.raa_materials.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
@@ -12,3 +13,4 @@ public class RAAModMenuScreen implements ModMenuApi {
 	}
 
 }
+*/

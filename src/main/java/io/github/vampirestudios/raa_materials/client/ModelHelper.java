@@ -74,48 +74,52 @@ public class ModelHelper {
 	}
 
 	public static String makeTwoLayerItem(Identifier texture1, Identifier texture2) {
-		String template = "{\n" +
-				"  \"parent\": \"minecraft:item/generated\",\n" +
-				"  \"textures\": {\n" +
-				"    \"layer0\": \"%s:%s\",\n" +
-				"    \"layer1\": \"%s:%s\"\n" +
-				"  }\n" +
-				"}";
+		String template = """
+				{
+				  "parent": "minecraft:item/generated",
+				  "textures": {
+				    "layer0": "%s:%s",
+				    "layer1": "%s:%s"
+				  }
+				}""";
 		return String.format(template, texture1.getNamespace(), texture1.getPath(), texture2.getNamespace(), texture2.getPath());
 	}
 
 	public static String makeTwoLayerTool(Identifier texture1, Identifier texture2) {
-		String template = "{\n" +
-				"  \"parent\": \"minecraft:item/handheld\",\n" +
-				"  \"textures\": {\n" +
-				"    \"layer0\": \"%s:%s\",\n" +
-				"    \"layer1\": \"%s:%s\"\n" +
-				"  }\n" +
-				"}";
+		String template = """
+				{
+				  "parent": "minecraft:item/handheld",
+				  "textures": {
+				    "layer0": "%s:%s",
+				    "layer1": "%s:%s"
+				  }
+				}""";
 		return String.format(template, texture1.getNamespace(), texture1.getPath(), texture2.getNamespace(), texture2.getPath());
 	}
 
 	public static String makeThreeLayerItem(Identifier texture1, Identifier texture2, Identifier texture3) {
-		String template = "{\n" +
-				"  \"parent\": \"minecraft:item/generated\",\n" +
-				"  \"textures\": {\n" +
-				"    \"layer0\": \"%s:%s\",\n" +
-				"    \"layer1\": \"%s:%s\",\n" +
-				"    \"layer2\": \"%s:%s\"\n" +
-				"  }\n" +
-				"}";
+		String template = """
+				{
+				  "parent": "minecraft:item/generated",
+				  "textures": {
+				    "layer0": "%s:%s",
+				    "layer1": "%s:%s",
+				    "layer2": "%s:%s"
+				  }
+				}""";
 		return String.format(template, texture1.getNamespace(), texture1.getPath(), texture2.getNamespace(), texture2.getPath(), texture3.getNamespace(), texture3.getPath());
 	}
 
 	public static String makeThreeLayerTool(Identifier texture1, Identifier texture2, Identifier texture3) {
-		String template = "{\n" +
-				"  \"parent\": \"minecraft:item/handheld\",\n" +
-				"  \"textures\": {\n" +
-				"    \"layer0\": \"%s:%s\",\n" +
-				"    \"layer1\": \"%s:%s\",\n" +
-				"    \"layer2\": \"%s:%s\"\n" +
-				"  }\n" +
-				"}";
+		String template = """
+				{
+				  "parent": "minecraft:item/handheld",
+				  "textures": {
+				    "layer0": "%s:%s",
+				    "layer1": "%s:%s",
+				    "layer2": "%s:%s"
+				  }
+				}""";
 		return String.format(template, texture1.getNamespace(), texture1.getPath(), texture2.getNamespace(), texture2.getPath(), texture3.getNamespace(), texture3.getPath());
 	}
 
@@ -234,4 +238,5 @@ public class ModelHelper {
 		InnerRegistry.registerTexture(texture2ID, texture2);
 		InnerRegistry.registerTexture(texture3ID, texture3);
 	}
+
 }

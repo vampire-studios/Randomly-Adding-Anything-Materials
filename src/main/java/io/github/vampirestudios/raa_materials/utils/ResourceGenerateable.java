@@ -5,8 +5,6 @@ import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.minecraft.util.Identifier;
 
-import static io.github.vampirestudios.raa_materials.utils.ResourceGen.prefixPath;
-
 public interface ResourceGenerateable {
 	interface Item extends ResourceGenerateable {
 		/**
@@ -16,8 +14,9 @@ public interface ResourceGenerateable {
 
 		@Override
 		default void client(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
-			Identifier path = prefixPath(id, "item");
-			pack.addItemModel(path, modelBuilder -> modelBuilder.parent(new Identifier("item/generated")).texture("all", path));
+			Identifier path = Utils.prependToPath(id, "item/");
+			pack.addBlockModel(id, modelBuilder -> modelBuilder.parent(new Identifier("item/generated"))
+					.texture("layer0", path));
 		}
 
 		@Override
@@ -45,23 +44,33 @@ public interface ResourceGenerateable {
 		}
 
 		default void generateItemModel(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
-			pack.addItemModel(id, modelBuilder -> modelBuilder.parent(prefixPath(id, "block")));
+			pack.addItemModel(id, modelBuilder -> modelBuilder.parent(Utils.prependToPath(id, "block/")));
 		}
 
 		default void generateBlockState(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
-			pack.addBlockState(id, blockStateBuilder -> blockStateBuilder.variant("", variant ->
-					variant.model(prefixPath(id, "block"))));
+			pack.addBlockState(id, blockStateBuilder ->
+				blockStateBuilder.variant("", variant ->
+						variant.model(Utils.prependToPath(id, "block/"))
+				)
+			);
 		}
 
 		default void generateBlockModel(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
+			Identifier prefix = Utils.prependToPath(id, "block/");
 			pack.addBlockModel(id, modelBuilder -> modelBuilder.parent(new Identifier("block/cube_all"))
-					.texture("all", prefixPath(id, "block")));
+					.texture("all", prefix));
 		}
 
 		default void generateLootTable(ArtificeResourcePack.ServerResourcePackBuilder pack, Identifier id) {
-			pack.addLootTable(id, lootTableBuilder -> lootTableBuilder.pool(pool -> pool.rolls(1).entry(entry ->
-					entry.type(new Identifier("item")).name(id)).condition(new Identifier("survives_explosion"), jsonObjectBuilder -> {
-					})));
+			pack.addLootTable(id, lootTableBuilder -> lootTableBuilder.type(new Identifier("block"))
+					.pool(pool -> pool
+							.rolls(1)
+							.entry(entry -> entry
+									.type(new Identifier("item"))
+									.name(id)
+							)
+							.condition(new Identifier("survives_explosion"), jsonObjectBuilder -> {})
+					));
 		}
 	}
 
@@ -81,20 +90,23 @@ public interface ResourceGenerateable {
 
 		@Override
 		public void generateBlockState(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
-			Identifier model = prefixPath(id, "block");
-			pack.addBlockState(id, blockStateBuilder -> {
-				blockStateBuilder.variant("facing=east", variant -> variant.model(model).rotationY(90));
-				blockStateBuilder.variant("facing=west", variant -> variant.model(model).rotationY(270));
-				blockStateBuilder.variant("facing=north", variant -> variant.model(model));
-				blockStateBuilder.variant("facing=south", variant -> variant.model(model).rotationY(180));
-			});
+			Identifier name = Utils.prependToPath(id, "block");
+			pack.addBlockState(id, blockStateBuilder -> blockStateBuilder
+				.variant("facing=east", variant -> variant.model(name).rotationY(90))
+				.variant("facing=west", variant -> variant.model(name).rotationY(270))
+				.variant("facing=north", variant -> variant.model(name))
+				.variant("facing=south", variant -> variant.model(name).rotationY(180))
+			);
 		}
 
 		@Override
 		public void generateBlockModel(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
 			pack.addBlockModel(id, modelBuilder -> modelBuilder.parent(new Identifier("block/orientable"))
-					.texture("top", top).texture("front", front)
-					.texture("side", side).texture("bottom", bottom));
+					.texture("top", this.top)
+					.texture("front", this.front)
+					.texture("side", this.side)
+					.texture("bottom", this.bottom)
+			);
 		}
 	}
 
@@ -112,26 +124,29 @@ public interface ResourceGenerateable {
 
 		@Override
 		public void generateBlockState(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
-			Identifier model = prefixPath(id, "block");
+			Identifier model = Utils.prependToPath(id, "block/");
 			Identifier on = Utils.appendToPath(model, "_on");
-			pack.addBlockState(id, blockStateBuilder -> {
-				blockStateBuilder.variant("facing=east,lit=false", variant -> variant.model(model).rotationY(90));
-				blockStateBuilder.variant("facing=west,lit=false", variant -> variant.model(model).rotationY(270));
-				blockStateBuilder.variant("facing=north,lit=false", variant -> variant.model(model));
-				blockStateBuilder.variant("facing=south,lit=false", variant -> variant.model(model).rotationY(180));
-				blockStateBuilder.variant("facing=east,lit=true", variant -> variant.model(on).rotationY(90));
-				blockStateBuilder.variant("facing=west,lit=true", variant -> variant.model(on).rotationY(270));
-				blockStateBuilder.variant("facing=north,lit=true", variant -> variant.model(on));
-				blockStateBuilder.variant("facing=south,lit=true", variant -> variant.model(on).rotationY(180));
-			});
+			pack.addBlockState(id, blockStateBuilder -> blockStateBuilder
+				.variant("facing=east,lit=false", variant -> variant.model(model).rotationY(90))
+				.variant("facing=west,lit=false", variant -> variant.model(model).rotationY(270))
+				.variant("facing=north,lit=false", variant -> variant.model(model))
+				.variant("facing=south,lit=false", variant -> variant.model(model).rotationY(180))
+				.variant("facing=east,lit=true", variant -> variant.model(on).rotationY(90))
+				.variant("facing=west,lit=true", variant -> variant.model(on).rotationY(270))
+				.variant("facing=north,lit=true", variant -> variant.model(on))
+				.variant("facing=south,lit=true", variant -> variant.model(on).rotationY(180))
+			);
 		}
 
 		@Override
 		public void generateBlockModel(ArtificeResourcePack.ClientResourcePackBuilder pack, Identifier id) {
 			super.generateBlockModel(pack, id);
-			pack.addBlockModel(Utils.appendToPath(id, "_on"), modelBuilder -> modelBuilder.parent(new Identifier("block/orientable"))
-					.texture("top", top_on).texture("front", front_on)
-					.texture("side", side_on).texture("bottom", bottom_on));
+			pack.addBlockModel(Utils.appendAndPrependToPath(id, "block/", "_on"), modelBuilder -> modelBuilder.parent(new Identifier("block/orientable"))
+					.texture("top", this.top_on)
+					.texture("front", this.front_on)
+					.texture("side", this.side_on)
+					.texture("bottom", this.bottom_on)
+			);
 		}
 	}
 

@@ -9,8 +9,8 @@ import org.apache.commons.lang3.text.WordUtils;
 import java.util.Locale;
 
 public class RAASimpleItem extends Item implements GeneratedItemName {
-    private String name;
-    private SimpleItemType itemType;
+    private final String name;
+    private final SimpleItemType itemType;
 
     public RAASimpleItem(String name, Settings item$Settings_1, SimpleItemType itemType) {
         super(item$Settings_1);
@@ -29,6 +29,6 @@ public class RAASimpleItem extends Item implements GeneratedItemName {
     }
 
     public enum SimpleItemType {
-        GEM, INGOT, NUGGET, CRYSTAL
+        GEM, INGOT, NUGGET, SHARD, RAW, GEAR, DUST, SMALL_DUST, PLATE
     }
 }

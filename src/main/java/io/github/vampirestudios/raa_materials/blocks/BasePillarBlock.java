@@ -17,4 +17,5 @@ public class BasePillarBlock extends PillarBlock {
 	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
 		return Collections.singletonList(new ItemStack(this));
 	}
+
 }

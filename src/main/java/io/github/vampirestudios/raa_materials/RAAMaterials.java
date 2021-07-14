@@ -11,7 +11,7 @@ import io.github.vampirestudios.raa_materials.utils.SilentWorldReloader;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.loader.api.FabricLoader;
@@ -63,7 +63,7 @@ public class RAAMaterials implements RAAAddon {
     @Override
     public void onInitialize() {
         NameGenerator.init();
-        AutoConfig.register(GeneralConfig.class, JanksonConfigSerializer::new);
+        AutoConfig.register(GeneralConfig.class, GsonConfigSerializer::new);
         CONFIG = AutoConfig.getConfigHolder(GeneralConfig.class).getConfig();
 
         Registry.register(TARGETS, id("stone"), OreMaterial.Target.STONE);
@@ -121,13 +121,15 @@ public class RAAMaterials implements RAAAddon {
 
                 if (CONFIG.metalMaterialAmount != 0) {
                     for (int i = 0; i < CONFIG.metalMaterialAmount; i++) {
-                        OreMaterial material = new MetalOreMaterial(Rands.list(targets), random);
+                        OreMaterial.Target target = Rands.list(targets);
+                        OreMaterial material = new MetalOreMaterial(target, random);
                         materials.add(material);
                     }
                 }
                 if (CONFIG.gemMaterialAmount != 0) {
                     for (int i = 0; i < CONFIG.gemMaterialAmount; i++) {
-                        OreMaterial material = new GemOreMaterial(Rands.list(targets), random);
+                        OreMaterial.Target target = Rands.list(targets);
+                        OreMaterial material = new GemOreMaterial(target, random);
                         materials.add(material);
                     }
                 }
@@ -176,7 +178,7 @@ public class RAAMaterials implements RAAAddon {
 
             System.out.println("Make Client update!");
             if (isClient()) {
-                Artifice.registerAssetPack(id("raa_materials" + random.nextInt()), clientResourcePackBuilder -> {
+                Artifice.registerAssetPack(id("assets" + Rands.getRandom().nextInt()), clientResourcePackBuilder -> {
                     materials.forEach(material -> material.initClient(clientResourcePackBuilder, random));
                     new Thread(() -> {
                         try {
@@ -186,8 +188,7 @@ public class RAAMaterials implements RAAAddon {
                         }
                     }).start();
                 });
-
-                SilentWorldReloader.setSilent();
+//                SilentWorldReloader.setSilent();
                 MinecraftClient.getInstance().reloadResources();
                 MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels();
             }

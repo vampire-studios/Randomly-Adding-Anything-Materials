@@ -37,13 +37,8 @@ import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.function.Supplier;
 
-import static io.github.vampirestudios.raa_materials.OreMaterial.addFeature;
 import static io.github.vampirestudios.raa_materials.RAAMaterials.RAA_ORES;
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 
@@ -60,10 +55,14 @@ public class CrystalMaterial extends ComplexMaterial {
 	public CrystalMaterial(String name, ColorGradient gradient) {
 		super(name, gradient);
 		block = InnerRegistry.registerBlockAndItem(this.registryName + "_block", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.AMETHYST_BLOCK).mapColor(MapColor.GRAY)), RAA_ORES);
-		shard = InnerRegistry.registerItem(this.registryName + "_shard", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
-		crystal = InnerRegistry.registerBlockAndItem(this.registryName + "_crystal", new CustomCrystalClusterBlock(7, 3, AbstractBlock.Settings.copy(Blocks.AMETHYST_CLUSTER), () -> shard), RAA_ORES);
+		shard = InnerRegistry.registerItem(this.registryName + "_shard", new RAASimpleItem(this.registryName, new Settings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHARD));
+		crystal = InnerRegistry.registerBlockAndItem(this.registryName + "_crystal", new CustomCrystalClusterBlock(7, 3, AbstractBlock.Settings.copy(Blocks.AMETHYST_CLUSTER), shard), RAA_ORES);
 
-		Artifice.registerDataPack(id(this.registryName + "_ore_recipes" + Rands.getRandom().nextInt()), dataPackBuilder -> {
+		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, block);
+		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, block);
+		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, crystal);
+		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, crystal);
+		/*Artifice.registerDataPack(id(this.registryName + "_ore_recipes" + Rands.getRandom().nextInt()), dataPackBuilder -> {
 			dataPackBuilder.addShapedRecipe(id(this.registryName + "_block_from_shard"), shapedRecipeBuilder -> {
 				shapedRecipeBuilder.group(id("crystal_blocks"));
 				shapedRecipeBuilder.ingredientItem('i', id(this.registryName + "_shard"));
@@ -78,7 +77,7 @@ public class CrystalMaterial extends ComplexMaterial {
 					e.printStackTrace();
 				}
 			}).start();
-		});
+		});*/
 	}
 
 	@Override
@@ -108,6 +107,8 @@ public class CrystalMaterial extends ComplexMaterial {
 		InnerRegistry.registerItemModel(this.block.asItem(), ModelHelper.makeCube(textureID));
 		InnerRegistry.registerBlockModel(this.block, ModelHelper.makeCube(textureID));
 
+		InnerRegistry.registerBlockModel(this.block, ModelHelper.makeCube(textureID));
+		InnerRegistry.registerItemModel(this.block.asItem(), ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), this.name + " Block");
 
 		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_crystal");
@@ -116,6 +117,8 @@ public class CrystalMaterial extends ComplexMaterial {
 		InnerRegistry.registerItemModel(this.crystal.asItem(), ModelHelper.makeCube(textureID));
 		InnerRegistry.registerBlockModel(this.crystal, ModelHelper.makeCube(textureID));
 
+		InnerRegistry.registerBlockModel(this.crystal, ModelHelper.makeCross(textureID));
+		InnerRegistry.registerItemModel(this.crystal.asItem(), ModelHelper.makeFlatItem(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_crystal"), this.name + " Crystal");
 
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_shard");
@@ -123,6 +126,7 @@ public class CrystalMaterial extends ComplexMaterial {
 		InnerRegistry.registerTexture(textureID, texture);
 		InnerRegistry.registerItemModel(this.shard, ModelHelper.makeFlatItem(textureID));
 
+		InnerRegistry.registerItemModel(this.shard, ModelHelper.makeFlatItem(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shard"), this.name + " Shard");
 
 		Identifier cluster = id(this.registryName + "_crystal");
@@ -156,6 +160,7 @@ public class CrystalMaterial extends ComplexMaterial {
 				variant.rotationY(270);
 			});
 		});
+
 		BlockRenderLayerMap.INSTANCE.putBlock(this.crystal, RenderLayer.getCutout());
 	}
 
@@ -199,19 +204,13 @@ public class CrystalMaterial extends ComplexMaterial {
 								0.05D,
 								1
 						)
-				).uniformRange(YOffset.getBottom(), YOffset.getTop()).spreadHorizontally().applyChance(3));
+				).uniformRange(YOffset.getBottom(), YOffset.getTop()).spreadHorizontally().applyChance(10));
 //		ConfiguredFeature<?, ?> CRYSTAL_SPIKE_CF = Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id(this.registryName + "_crystal_spike"), CRYSTAL_SPIKE.configure(new SingleStateFeatureConfig(this.block.getDefaultState()))
 //				.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.002F, 1))).spreadHorizontally());
-		world.getRegistryManager().get(Registry.BIOME_KEY).forEach(biome -> {
-			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
-			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
-			List<List<Supplier<ConfiguredFeature<?, ?>>>> features = new ArrayList<>(preFeatures.size());
-			preFeatures.forEach((list) -> {
-				features.add(Lists.newArrayList(list));
-			});
-			addFeature(GenerationStep.Feature.UNDERGROUND_STRUCTURES, GEODE_CF, features);
-			accessor.raaSetFeatures(features);
-		});
+		if (BuiltinRegistries.CONFIGURED_FEATURE.getKey(GEODE_CF).isPresent())
+			BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(),
+					GenerationStep.Feature.LOCAL_MODIFICATIONS,
+					BuiltinRegistries.CONFIGURED_FEATURE.getKey(GEODE_CF).get());
 	}
 
 }

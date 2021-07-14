@@ -7,6 +7,7 @@ import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.items.CustomAxeItem;
 import io.github.vampirestudios.raa_materials.items.CustomHoeItem;
 import io.github.vampirestudios.raa_materials.items.CustomPickaxeItem;
+import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -18,6 +19,7 @@ import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 
+import java.util.Locale;
 import java.util.Random;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
@@ -80,19 +82,19 @@ public class MetalOreMaterial extends OreMaterial {
 	}
 
 	public MetalOreMaterial(String name, ColorGradient gradient, Target targetIn, Random random) {
-		super(name, gradient, targetIn);
+		super(name, gradient, targetIn, InnerRegistry.registerItem("raw_" + name.toLowerCase(Locale.ROOT), new RAASimpleItem(name.toLowerCase(Locale.ROOT), new Settings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.RAW)));
 		rawMaterialBlock = InnerRegistry.registerBlockAndItem("raw_" + this.registryName + "_block", new Block(AbstractBlock.Settings.copy(Blocks.RAW_IRON_BLOCK)), RAAMaterials.RAA_ORES);
 
-		rawMaterial = InnerRegistry.registerItem("raw_" + this.registryName, new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
-		ingot = InnerRegistry.registerItem(this.registryName + "_ingot", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
+		rawMaterial = this.drop;
+		ingot = InnerRegistry.registerItem(this.registryName + "_ingot", new RAASimpleItem(this.registryName, new Settings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.INGOT));
 
-		nugget = InnerRegistry.registerItem(this.registryName + "_nugget", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
+		nugget = InnerRegistry.registerItem(this.registryName + "_nugget", new RAASimpleItem(this.registryName, new Settings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.NUGGET));
 
-		gear = InnerRegistry.registerItem(this.registryName + "_gear", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
+		gear = InnerRegistry.registerItem(this.registryName + "_gear", new RAASimpleItem(this.registryName, new Settings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEAR));
 
-		dust = InnerRegistry.registerItem(this.registryName + "_dust", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
-		small_dust = InnerRegistry.registerItem("small_" + this.registryName + "_dust", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
-		plate = InnerRegistry.registerItem(this.registryName + "_plate", new Item(new Settings().group(RAAMaterials.RAA_RESOURCES)));
+		dust = InnerRegistry.registerItem(this.registryName + "_dust", new RAASimpleItem(this.registryName, new Settings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.DUST));
+		small_dust = InnerRegistry.registerItem("small_" + this.registryName + "_dust", new RAASimpleItem(this.registryName, new Settings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SMALL_DUST));
+		plate = InnerRegistry.registerItem(this.registryName + "_plate", new RAASimpleItem(this.registryName, new Settings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.PLATE));
 
 //		ArmorMaterial armorMaterial = new CustomArmorMaterial(id(this.registryName));
 
@@ -318,7 +320,7 @@ public class MetalOreMaterial extends OreMaterial {
 
 		Identifier textureID = TextureHelper.makeItemTextureID(this.registryName + "_ore");
 		BufferTexture texture = ProceduralTextures.randomColored(oreVeins, gradient, random);
-		BufferTexture outline = TextureHelper.outline(texture, target.getDarkOutline(), target.getLightOutline(), 0, 1);
+		BufferTexture outline = TextureHelper.outline(texture, target.darkOutline(), target.lightOutline(), 0, 1);
 		texture = TextureHelper.cover(stone, texture);
 		texture = TextureHelper.cover(texture, outline);
 		InnerRegistry.registerTexture(textureID, texture);
@@ -349,11 +351,6 @@ public class MetalOreMaterial extends OreMaterial {
 		makeColoredItemAssets(gears, gear, gradient, random, this.registryName + "_gear", "%s Gear");
 		makeColoredItemAssets(dusts, dust, gradient, random, this.registryName + "_dust", "%s Dust");
 
-//		makeColoredItemAssets(helmets, helmet, gradient, random, this.registryName + "_helmet", "%s Helmet");
-//		makeColoredItemAssets(chestplates, chestplate, gradient, random, this.registryName + "_chestplate", "%s Chestplate");
-//		makeColoredItemAssets(leggings, legging, gradient, random, this.registryName + "_leggings", "%s Leggings");
-//		makeColoredItemAssets(boots, boot, gradient, random, this.registryName + "_boots", "%s Boots");
-
 		texture = ProceduralTextures.randomColored(swordBlades, gradient, random);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_sword_blade");
 		InnerRegistry.registerTexture(textureID, texture);
@@ -369,6 +366,7 @@ public class MetalOreMaterial extends OreMaterial {
 		texture = ProceduralTextures.nonColored(pickaxeSticks, random);
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_pickaxe_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
+		InnerRegistry.registerItemModel(this.pickaxe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_pickaxe"), this.name + " Pickaxe");
 
 		texture = ProceduralTextures.randomColored(axeHeads, gradient, random);
@@ -377,6 +375,7 @@ public class MetalOreMaterial extends OreMaterial {
 		texture = ProceduralTextures.nonColored(axeSticks, random);
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_axe_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
+		InnerRegistry.registerItemModel(this.axe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_axe"), this.name + " Axe");
 
 		texture = ProceduralTextures.randomColored(hoeHeads, gradient, random);
@@ -385,6 +384,7 @@ public class MetalOreMaterial extends OreMaterial {
 		texture = ProceduralTextures.nonColored(hoeSticks, random);
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_hoe_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
+		InnerRegistry.registerItemModel(this.hoe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_hoe"), this.name + " Hoe");
 
 		texture = ProceduralTextures.randomColored(shovelHeads, gradient, random);
@@ -393,6 +393,7 @@ public class MetalOreMaterial extends OreMaterial {
 		texture = ProceduralTextures.nonColored(shovelSticks, random);
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_shovel_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
+		InnerRegistry.registerItemModel(this.shovel, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shovel"), this.name + " Shovel");
 	}
 
@@ -539,6 +540,7 @@ public class MetalOreMaterial extends OreMaterial {
 		BufferTexture texture = ProceduralTextures.randomColored(textureArray, gradient, random);
 		Identifier textureID = TextureHelper.makeItemTextureID(regName);
 		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistry.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName), String.format(name, this.name));
 	}
 
@@ -546,6 +548,7 @@ public class MetalOreMaterial extends OreMaterial {
 		BufferTexture texture = ProceduralTextures.randomColored(bufferTexture, gradient, random);
 		Identifier textureID = TextureHelper.makeItemTextureID(regName);
 		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistry.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName), String.format(name, this.name));
 	}
 
@@ -553,6 +556,7 @@ public class MetalOreMaterial extends OreMaterial {
 		BufferTexture texture = ProceduralTextures.randomColored(textureArray, gradient, random);
 		Identifier textureID = TextureHelper.makeItemTextureID(regName);
 		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistry.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName),  String.format(name, this.name));
 	}
 

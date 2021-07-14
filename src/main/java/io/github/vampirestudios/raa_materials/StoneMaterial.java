@@ -10,12 +10,9 @@ import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAc
 import io.github.vampirestudios.raa_materials.utils.*;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.fabricmc.fabric.api.recipe.v1.RecipeManagerHelper;
-import net.fabricmc.fabric.api.recipe.v1.VanillaRecipeBuilders;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
@@ -75,7 +72,7 @@ public class StoneMaterial extends ComplexMaterial {
 //		brick_slab = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_slab", new BaseSlabBlock(bricks), CreativeTabs.BLOCKS);
 
 		// Recipes //
-		RecipeManagerHelper.registerDynamicRecipes(handler -> {
+		/*RecipeManagerHelper.registerDynamicRecipes(handler -> {
 			handler.register(new Identifier(RAAMaterials.MOD_ID, "polished_" + this.registryName),
 					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"##", "##"})
 							.ingredient('#', bricks)
@@ -91,7 +88,7 @@ public class StoneMaterial extends ComplexMaterial {
 							.ingredient('#', stone)
 							.output(new ItemStack(bricks, 4))
 							.build(RAAMaterials.id(this.registryName + "_bricks"), "bricks"));
-		});
+		});*/
 
 		// Item Tags //
 //		TagHelper.addTag(ItemTags.SLABS, slab, brick_slab);
@@ -101,7 +98,15 @@ public class StoneMaterial extends ComplexMaterial {
 
 		// Block Tags //
 		TagHelper.addTag(BlockTags.BASE_STONE_OVERWORLD, stone);
+		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, stone);
+		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, stone);
 		TagHelper.addTag(BlockTags.STONE_BRICKS, bricks);
+		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, bricks);
+		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, bricks);
+		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, polished);
+		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, polished);
+		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, tiles);
+		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, tiles);
 //		TagHelper.addTag(BlockTags.SLABS, slab, brick_slab);
 	}
 
@@ -193,6 +198,7 @@ public class StoneMaterial extends ComplexMaterial {
 		InnerRegistry.registerTexture(tilesTexID, variant);
 
 		// Registering models
+		ModelHelper.registerRandMirrorBlockModel(stone, stoneTexID);
 		ModelHelper.registerRandMirrorBlockModel(stone, stoneTexID);
 //		ModelHelper.registerSimpleBlockModel(bricks, Utils.appendToPath(stoneTexID, "_slab"));
 //		ModelHelper.registerSimpleBlockModel(bricks, Utils.appendToPath(stoneTexID, "_stairs"));

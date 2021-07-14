@@ -20,9 +20,6 @@
   "entrypoints": {
     "raa:addon": [
       "io.github.vampirestudios.raa_materials.RAAMaterials"
-    ],
-    "modmenu": [
-      "io.github.vampirestudios.raa_materials.config.RAAModMenuScreen"
     ]
   },
   "mixins": [

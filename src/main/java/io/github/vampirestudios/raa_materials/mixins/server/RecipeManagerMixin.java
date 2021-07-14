@@ -49,7 +49,7 @@ public class RecipeManagerMixin {
 		});
 
 		return list.stream().flatMap((recipe) -> {
-			return Util.stream(type.get(recipe, world, inventory));
+			return Util.stream(type.match(recipe, world, inventory));
 		}).findFirst();
 	}
 } 

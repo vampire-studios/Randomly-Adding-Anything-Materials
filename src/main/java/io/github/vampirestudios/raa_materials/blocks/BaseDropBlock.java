@@ -7,23 +7,25 @@ import net.minecraft.loot.context.LootContext;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class BaseDropBlock extends BaseBlock {
-	private final Supplier<Item> drop;
+	private final Item drop;
 
-	public BaseDropBlock(Settings settings, Supplier<Item> drop) {
+	public BaseDropBlock(Settings settings, Item drop) {
 		super(settings);
-		this.drop = drop;
+		this.drop = drop == null ? this.asItem() : drop;
 	}
 
 	public BaseDropBlock(Settings settings) {
-		super(settings);
-		this.drop = this::asItem;
+		this(settings, null);
+	}
+
+	public Item getDrop() {
+		return drop;
 	}
 
 	@Override
 	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
-		return Collections.singletonList(new ItemStack(drop.get()));
+		return Collections.singletonList(new ItemStack(drop));
 	}
 }
