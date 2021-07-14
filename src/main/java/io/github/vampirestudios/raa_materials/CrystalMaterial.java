@@ -1,21 +1,17 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.swordglowsblue.artifice.api.Artifice;
 import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.CustomCrystalBlock;
 import io.github.vampirestudios.raa_materials.blocks.CustomCrystalClusterBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
-import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
-import io.github.vampirestudios.raa_materials.utils.BufferTexture;
-import io.github.vampirestudios.raa_materials.utils.ColorGradient;
-import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
-import io.github.vampirestudios.raa_materials.utils.TextureHelper;
+import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
+import io.github.vampirestudios.raa_materials.utils.*;
 import io.github.vampirestudios.raa_materials.world.gen.feature.CrystalSpikeFeature;
-import io.github.vampirestudios.vampirelib.utils.Rands;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
