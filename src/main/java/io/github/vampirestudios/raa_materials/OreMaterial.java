@@ -1,6 +1,5 @@
 package io.github.vampirestudios.raa_materials;
 
-import com.google.common.collect.Lists;
 import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.blocks.BaseDropBlock;
@@ -24,9 +23,7 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 
-import java.util.List;
 import java.util.Random;
-import java.util.function.Supplier;
 
 public abstract class OreMaterial extends ComplexMaterial {
 	protected BufferTexture stone;
@@ -51,18 +48,6 @@ public abstract class OreMaterial extends ComplexMaterial {
 		storageBlock = InnerRegistry.registerBlockAndItem(this.registryName + "_block", new BaseBlock(material), RAAMaterials.RAA_ORES);
 		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, ore);
 		TagHelper.addTag(BlockTags.NEEDS_IRON_TOOL, ore);
-	}
-
-	static void addFeature(GenerationStep.Feature featureStep, ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
-		int index = featureStep.ordinal();
-		if (features.size() > index) {
-			features.get(index).add(() -> feature);
-		}
-		else {
-			List<Supplier<ConfiguredFeature<?, ?>>> newFeature = Lists.newArrayList();
-			newFeature.add(() -> feature);
-			features.add(newFeature);
-		}
 	}
 
 	@Override

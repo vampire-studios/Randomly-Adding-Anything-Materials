@@ -7,7 +7,6 @@ import io.github.vampirestudios.raa_core.api.RAAAddon;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
-import io.github.vampirestudios.raa_materials.utils.SilentWorldReloader;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -25,6 +24,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.Registry;
@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class RAAMaterials implements RAAAddon {
     public static final String MOD_ID = "raa_materials";
@@ -151,6 +152,8 @@ public class RAAMaterials implements RAAAddon {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                world.getServer().sendSystemMessage(new LiteralText("Test"), UUID.randomUUID());
             } else {
                 System.out.println("Loading generated materials!");
                 NbtCompound compound;
@@ -166,13 +169,13 @@ public class RAAMaterials implements RAAAddon {
                     NbtList list = compound.getList("materials", NbtElement.COMPOUND_TYPE);
                     list.forEach(nbtElement -> materials.add(ComplexMaterial.readFromNbt(targets, random, (NbtCompound) nbtElement)));
                 }
-            }
 
-            materials.forEach((material) -> {
-                if(material instanceof OreMaterial) {
-                    material.generate(world);
-                }
-            });
+                materials.forEach((material) -> {
+                    if(material instanceof OreMaterial) {
+                        material.generate(world);
+                    }
+                });
+            }
 
             world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
 
