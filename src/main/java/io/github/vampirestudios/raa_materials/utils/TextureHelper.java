@@ -1,7 +1,6 @@
 package io.github.vampirestudios.raa_materials.utils;
 
 import io.github.vampirestudios.raa_materials.RAAMaterials;
-import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.Resource;
@@ -110,7 +109,7 @@ public class TextureHelper {
 
 	public static NativeImage loadImage(Identifier name) {
 		try {
-			Resource input = MinecraftClient.getInstance().getResourceManager().getResource(Utils.appendAndPrependToPath(name, "textures/", ".png"));
+			Resource input = MinecraftClient.getInstance().getResourceManager().getResource(name);
 			return NativeImage.read(input.getInputStream());
 		}
 		catch (IOException e) {
@@ -144,6 +143,10 @@ public class TextureHelper {
 	}
 
 	public static BufferTexture loadTexture(String name) {
+		return new BufferTexture(Objects.requireNonNull(loadImage(name)));
+	}
+
+	public static BufferTexture loadTexture(Identifier name) {
 		return new BufferTexture(Objects.requireNonNull(loadImage(name)));
 	}
 
@@ -269,11 +272,10 @@ public class TextureHelper {
 				int pixelA = a.getPixel(x, y);
 				int pixelB = b.getPixel(x, y);
 				COLOR.set(pixelA);
+				COLOR2.set(pixelB);
 				if (COLOR.getAlpha() < 0.01F) {
 					result.setPixel(x, y, COLOR);
-				}
-				else {
-					COLOR2.set(pixelB);
+				} else {
 					COLOR.set(pixelA).mixWith(COLOR2.set(pixelB), COLOR2.getAlpha());
 				}
 				result.setPixel(x, y, COLOR);
@@ -317,7 +319,8 @@ public class TextureHelper {
 				float r = (float) MathHelper.floor(COLOR.getRed() * levels) / levels;
 				float g = (float) MathHelper.floor(COLOR.getGreen() * levels) / levels;
 				float b = (float) MathHelper.floor(COLOR.getBlue() * levels) / levels;
-				COLOR.set(r, g, b);
+				float a = (float) MathHelper.floor(COLOR.getAlpha() * levels) / levels;
+				COLOR.set(r, g, b, a);
 				texture.setPixel(x, y, COLOR);
 			}
 		}
@@ -334,9 +337,9 @@ public class TextureHelper {
 				COLOR.set(distortion.getPixel(x, y));
 				float h1 = COLOR.getRed();
 				COLOR.set(distortion.getPixel((x + 1) % distortion.getWidth(), y));
-				float h2 = COLOR.getRed();
+				float h2 = COLOR.getGreen();
 				COLOR.set(distortion.getPixel(x, (y + 1) % distortion.getHeight()));
-				float h3 = COLOR.getRed();
+				float h3 = COLOR.getBlue();
 				dirX.set(1, h2 - h1, 1);
 				dirY.set(1, h3 - h1, 1);
 				dirX.normalize();
@@ -459,7 +462,8 @@ public class TextureHelper {
 				float cr = COLOR.getRed() + COLOR2.getRed();
 				float cg = COLOR.getGreen() + COLOR2.getGreen();
 				float cb = COLOR.getBlue() + COLOR2.getBlue();
-				result.setPixel(x, y, COLOR.set(cr, cg, cb));
+				float ca = COLOR.getAlpha() + COLOR2.getAlpha();
+				result.setPixel(x, y, COLOR.set(cr, cg, cb, ca));
 			}
 		}
 		return result;

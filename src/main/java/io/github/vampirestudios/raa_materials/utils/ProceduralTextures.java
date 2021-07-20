@@ -1,5 +1,6 @@
 package io.github.vampirestudios.raa_materials.utils;
 
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Random;
@@ -119,11 +120,38 @@ public class ProceduralTextures {
 		return TextureHelper.applyGradient(textures[random.nextInt(textures.length)].clone(), gradient);
 	}
 
-	public static BufferTexture randomColored(BufferTexture textures, ColorGradient gradient, Random random) {
+	public static BufferTexture randomColored(Identifier texture, ColorGradient gradient) {
+		BufferTexture textures = TextureHelper.loadTexture(texture);
+		TextureHelper.normalize(textures, 0.35F, 1F);
+		return TextureHelper.applyGradient(textures.clone(), gradient);
+	}
+
+	public static BufferTexture randomColored(Identifier texture, ColorGradient gradient, float min, float max) {
+		BufferTexture textures = TextureHelper.loadTexture(texture);
+		TextureHelper.normalize(textures, min, max);
+		return TextureHelper.applyGradient(textures.clone(), gradient);
+	}
+
+	public static BufferTexture randomColoredNoNormalize(Identifier texture, ColorGradient gradient) {
+		BufferTexture textures = TextureHelper.loadTexture(texture);
+		return TextureHelper.applyGradient(textures.clone(), gradient);
+	}
+
+	public static BufferTexture randomColored(BufferTexture textures, ColorGradient gradient) {
 		return TextureHelper.applyGradient(textures.clone(), gradient);
 	}
 
 	public static BufferTexture nonColored(BufferTexture[] textures, Random random) {
 		return textures[random.nextInt(textures.length)];
+	}
+
+	public static BufferTexture nonColored(BufferTexture texture) {
+		return texture;
+	}
+
+	public static BufferTexture nonColored(Identifier texture) {
+		BufferTexture textures = TextureHelper.loadTexture(texture);
+		TextureHelper.normalize(textures, 0.35F, 1F);
+		return textures;
 	}
 }

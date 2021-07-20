@@ -7,6 +7,7 @@ import io.github.vampirestudios.raa_materials.utils.CustomColor;
 import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 
 import java.util.List;
 import java.util.Locale;
@@ -27,21 +28,22 @@ public abstract class ComplexMaterial {
 
 	public abstract NbtCompound writeToNbt();
 
-	public static ComplexMaterial readFromNbt(List<OreMaterial.Target> targets, Random random, NbtCompound compound) {
+	public static ComplexMaterial readFromNbt(Random random, NbtCompound compound) {
 		String type = compound.getString("materialType");
 		String name = compound.getString("name");
+		Identifier targetName = RAAMaterials.id(compound.getString("target"));
 		ComplexMaterial material;
 
 		NbtCompound colorGradientCompound = compound.getCompound("colorGradient");
 		ColorGradient gradient = new ColorGradient(new CustomColor(colorGradientCompound.getInt("startColor")),
 				new CustomColor(colorGradientCompound.getInt("endColor")));
 
-		OreMaterial.Target target = targets.get(random.nextInt(targets.size()));
+		OreMaterial.Target target = RAAMaterials.TARGETS.get(targetName);
 
 		switch (type) {
-			case "gem" -> material = new GemOreMaterial(name, gradient, target);
+			case "gem" -> material = new GemOreMaterial(name, gradient, target, random);
 			case "crystal" -> material = new CrystalMaterial(name, gradient);
-			case "metal" -> material = new MetalOreMaterial(target, random);
+			case "metal" -> material = new MetalOreMaterial(name, gradient, target, random);
 			default -> {
 				CustomColor mainColor = new CustomColor(colorGradientCompound.getInt("startColor"));
 				gradient = ProceduralTextures.makeStonePalette(mainColor, random);
@@ -53,6 +55,8 @@ public abstract class ComplexMaterial {
 	}
 
 	public abstract void initClient(ArtificeResourcePack.ClientResourcePackBuilder resourcePack, Random random);
+
+	public abstract void initServer(ArtificeResourcePack.ServerResourcePackBuilder dataPack, Random random);
 
 	public static void resetMaterials() {
 		MATERIALS.clear();

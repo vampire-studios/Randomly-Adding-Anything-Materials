@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Maps;
-import io.github.vampirestudios.raa_materials.utils.RecipeHelper;
+import io.github.vampirestudios.raa_core.RAACore;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -16,21 +16,21 @@ import java.util.Map;
 public class GridRecipe {
 	private static final GridRecipe INSTANCE = new GridRecipe();
 
-	private String name;
+	private Identifier id;
 	private ItemConvertible output;
 
 	private String group;
 	private RecipeType<?> type;
 	private boolean shaped;
 	private String[] shape;
-	private Map<Character, Ingredient> materialKeys = Maps.newHashMap();
+	private final Map<Character, Ingredient> materialKeys = Maps.newHashMap();
 	private int count;
 	private boolean exist = true;
 
 	private GridRecipe() {}
 
-	public static GridRecipe make(String name, ItemConvertible output) {
-		INSTANCE.name = name;
+	public static GridRecipe make(String modID, String name, ItemConvertible output) {
+		INSTANCE.id = new Identifier(modID, name);
 		INSTANCE.output = output;
 
 		INSTANCE.group = "";
@@ -40,10 +40,15 @@ public class GridRecipe {
 		INSTANCE.materialKeys.clear();
 		INSTANCE.count = 1;
 
-		INSTANCE.exist = RecipeHelper.exists(output);
+		INSTANCE.exist = CustomRecipeManager.exists(output);
 
 		return INSTANCE;
 	}
+
+//	public GridRecipe checkConfig(PathConfig config) {
+//		exist |= config.getBoolean("grid", id.getPath(), true);
+//		return this;
+//	}
 
 	public GridRecipe setGroup(String group) {
 		this.group = group;
@@ -71,7 +76,7 @@ public class GridRecipe {
 
 	public GridRecipe addMaterial(char key, ItemConvertible... values) {
 		for (ItemConvertible item: values) {
-			exist &= RecipeHelper.exists(item);
+			exist &= CustomRecipeManager.exists(item);
 		}
 		return addMaterial(key, Ingredient.ofItems(values));
 	}
@@ -104,11 +109,12 @@ public class GridRecipe {
 			int height = shape.length;
 			int width = shape[0].length();
 			ItemStack result = new ItemStack(output, count);
-			Identifier id = RAAMaterials.id(name);
 			DefaultedList<Ingredient> materials = this.getMaterials(width, height);
 
 			CraftingRecipe recipe = shaped ? new ShapedRecipe(id, group, width, height, materials, result) : new ShapelessRecipe(id, group, result, materials);
 			CustomRecipeManager.addRecipe(type, recipe);
+		} else {
+			RAACore.LOGGER.debug("Recipe {} couldn't be added", id);
 		}
 	}
 }

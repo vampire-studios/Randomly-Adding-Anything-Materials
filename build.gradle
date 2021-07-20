@@ -12,12 +12,6 @@ group = project.maven_group
 
 repositories {
 	mavenLocal()
-	maven { url = "https://jitpack.io"}
-	maven {
-		name = "Cotton"
-		url = "https://server.bbkr.space/artifactory/libs-release"
-	}
-	maven { url "https://maven.terraformersmc.com/" }
 	maven { url = "https://raw.githubusercontent.com/vampire-studios/VampireStudiosMaven/main/" }
 	maven { url = "https://maven.shedaniel.me/" }
 }
@@ -32,8 +26,6 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	modImplementation "io.github.vampirestudios:Randomly-Adding-Anything-Core:${project.core_version}"
-
-	modImplementation "com.terraformersmc:modmenu:2.0.0-beta.7"
 
 	modRuntime ("me.shedaniel:RoughlyEnoughItems-api:6.0.249-alpha") {
 		exclude group: "io.github.prospector.modmenu"

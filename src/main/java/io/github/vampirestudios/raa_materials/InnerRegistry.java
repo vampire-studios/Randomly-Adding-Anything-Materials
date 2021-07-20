@@ -3,10 +3,9 @@ package io.github.vampirestudios.raa_materials;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Lifecycle;
+import io.github.vampirestudios.raa_materials.api.RegistryRemover;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
-import io.github.vampirestudios.raa_materials.utils.ChangeableRegistry;
-import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.block.BlockModels;
@@ -20,7 +19,10 @@ import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.OptionalInt;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 public class InnerRegistry {
@@ -50,9 +52,7 @@ public class InnerRegistry {
 	}
 	
 	private static <T> void clearRegistry(DefaultedRegistry<T> registry, Set<Identifier> ids) {
-		ChangeableRegistry reg = (ChangeableRegistry) registry;
-		ids.forEach(reg::remove);
-		reg.recalculateLastID();
+		ids.forEach(((RegistryRemover) registry)::remove);
 	}
 
 	private static <T> void replace(DefaultedRegistry<T> registry, Identifier id, T replacement) {
@@ -98,8 +98,6 @@ public class InnerRegistry {
 	}
 	
 	public static void registerTexture(Identifier id, BufferTexture image) {
-		Identifier correctIdentifier = Utils.appendToPath(id, ".png");
-		System.out.println(correctIdentifier.toString());
 		TEXTURES.put(id, image);
 	}
 

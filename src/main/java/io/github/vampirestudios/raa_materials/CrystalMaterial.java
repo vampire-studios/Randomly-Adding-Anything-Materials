@@ -33,6 +33,7 @@ import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -61,7 +62,7 @@ public class CrystalMaterial extends ComplexMaterial {
 		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, block);
 		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, crystal);
 		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, crystal);
-		/*Artifice.registerDataPack(id(this.registryName + "_ore_recipes" + Rands.getRandom().nextInt()), dataPackBuilder -> {
+		RAAMaterials.registerDataPack(id(this.registryName + "_ore_recipes" + Rands.getRandom().nextInt()), dataPackBuilder -> {
 			dataPackBuilder.addShapedRecipe(id(this.registryName + "_block_from_shard"), shapedRecipeBuilder -> {
 				shapedRecipeBuilder.group(id("crystal_blocks"));
 				shapedRecipeBuilder.ingredientItem('i', id(this.registryName + "_shard"));
@@ -76,7 +77,12 @@ public class CrystalMaterial extends ComplexMaterial {
 					e.printStackTrace();
 				}
 			}).start();
-		});*/
+		});
+	}
+
+	@Override
+	public void initServer(ArtificeResourcePack.ServerResourcePackBuilder dataPack, Random random) {
+
 	}
 
 	@Override
@@ -101,27 +107,23 @@ public class CrystalMaterial extends ComplexMaterial {
 		BufferTexture shardTexture = TextureHelper.loadTexture("textures/item/shard.png");
 
 		Identifier textureID = TextureHelper.makeBlockTextureID(this.registryName + "_block");
-		BufferTexture texture = ProceduralTextures.randomColored(crystalBlockTexture, gradient, random);
+		BufferTexture texture = ProceduralTextures.randomColored(crystalBlockTexture, gradient);
 		InnerRegistry.registerTexture(textureID, texture);
-		InnerRegistry.registerItemModel(this.block.asItem(), ModelHelper.makeCube(textureID));
-		InnerRegistry.registerBlockModel(this.block, ModelHelper.makeCube(textureID));
 
 		InnerRegistry.registerBlockModel(this.block, ModelHelper.makeCube(textureID));
 		InnerRegistry.registerItemModel(this.block.asItem(), ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), this.name + " Block");
 
 		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_crystal");
-		texture = ProceduralTextures.randomColored(crystalTexture, gradient, random);
+		texture = ProceduralTextures.randomColored(crystalTexture, gradient);
 		InnerRegistry.registerTexture(textureID, texture);
-		InnerRegistry.registerItemModel(this.crystal.asItem(), ModelHelper.makeCube(textureID));
-		InnerRegistry.registerBlockModel(this.crystal, ModelHelper.makeCube(textureID));
 
 		InnerRegistry.registerBlockModel(this.crystal, ModelHelper.makeCross(textureID));
 		InnerRegistry.registerItemModel(this.crystal.asItem(), ModelHelper.makeFlatItem(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_crystal"), this.name + " Crystal");
 
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_shard");
-		texture = ProceduralTextures.randomColored(shardTexture, gradient, random);
+		texture = ProceduralTextures.randomColored(shardTexture, gradient);
 		InnerRegistry.registerTexture(textureID, texture);
 		InnerRegistry.registerItemModel(this.shard, ModelHelper.makeFlatItem(textureID));
 

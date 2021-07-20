@@ -40,7 +40,7 @@ public class RecipeManagerMixin {
 	 */
 	@Overwrite
 	public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> type, C inventory, World world) {
-		Collection<Recipe<C>> values = getAllOfType(type).values();
+		Collection<Recipe<C>> values = Objects.requireNonNull(getAllOfType(type)).values();
 		List<Recipe<C>> list = new ArrayList<Recipe<C>>(values);
 		list.sort((v1, v2) -> {
 			boolean b1 = v1.getId().getNamespace().equals("minecraft");

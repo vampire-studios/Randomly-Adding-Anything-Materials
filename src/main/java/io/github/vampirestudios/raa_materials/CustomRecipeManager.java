@@ -1,6 +1,8 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Maps;
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Identifier;
@@ -13,11 +15,7 @@ public class CustomRecipeManager {
 	private static final Map<RecipeType<?>, Map<Identifier, Recipe<?>>> RECIPES = Maps.newHashMap();
 
 	public static void addRecipe(RecipeType<?> type, Recipe<?> recipe) {
-		Map<Identifier, Recipe<?>> list = RECIPES.get(type);
-		if (list == null) {
-			list = Maps.newHashMap();
-			RECIPES.put(type, list);
-		}
+		Map<Identifier, Recipe<?>> list = RECIPES.computeIfAbsent(type, k -> Maps.newHashMap());
 		list.put(recipe.getId(), recipe);
 	}
 
@@ -41,11 +39,7 @@ public class CustomRecipeManager {
 		for (RecipeType<?> type : RECIPES.keySet()) {
 			Map<Identifier, Recipe<?>> list = RECIPES.get(type);
 			if (list != null) {
-				Map<Identifier, Recipe<?>> typeList = result.get(type);
-				if (typeList == null) {
-					typeList = Maps.newHashMap();
-					result.put(type, typeList);
-				}
+				Map<Identifier, Recipe<?>> typeList = result.computeIfAbsent(type, k -> Maps.newHashMap());
 				for (Entry<Identifier, Recipe<?>> entry : list.entrySet()) {
 					Identifier id = entry.getKey();
 					if (!typeList.containsKey(id))
@@ -64,5 +58,23 @@ public class CustomRecipeManager {
 				return type;
 			}
 	    });
+	}
+
+	public static boolean exists(ItemConvertible item) {
+		if (item instanceof Block) {
+			return Registry.BLOCK.getId((Block) item) != Registry.BLOCK.getDefaultId();
+		}
+		else {
+			return Registry.ITEM.getId(item.asItem()) != Registry.ITEM.getDefaultId();
+		}
+	}
+
+	public static boolean exists(ItemConvertible... items) {
+		for (ItemConvertible item : items) {
+			if (!exists(item)) {
+				return false;
+			}
+		}
+		return true;
 	}
 } 

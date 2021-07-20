@@ -63,14 +63,14 @@ public class StoneMaterial extends ComplexMaterial {
 		this.mainColor = mainColor;
 		FabricBlockSettings material = FabricBlockSettings.copyOf(Blocks.STONE).mapColor(MapColor.GRAY);
 
-		stone = InnerRegistry.registerBlockAndItem(this.registryName, new BaseBlock(material), CreativeTabs.BLOCKS);
+		stone = InnerRegistry.registerBlockAndItem(this.registryName, new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
 //		stairs = InnerRegistry.registerBlockAndItem(this.registryName + "_stairs", new BaseStairsBlock(stone), CreativeTabs.BLOCKS);
 //		slab = InnerRegistry.registerBlockAndItem(this.registryName + "_slab", new BaseSlabBlock(stone), CreativeTabs.BLOCKS);
 
-		polished = InnerRegistry.registerBlockAndItem("polished_" + this.registryName, new BaseBlock(material), CreativeTabs.BLOCKS);
-		tiles = InnerRegistry.registerBlockAndItem(this.registryName + "_tiles", new BaseBlock(material), CreativeTabs.BLOCKS);
+		polished = InnerRegistry.registerBlockAndItem("polished_" + this.registryName, new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
+		tiles = InnerRegistry.registerBlockAndItem(this.registryName + "_tiles", new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
 
-		bricks = InnerRegistry.registerBlockAndItem(this.registryName + "_bricks", new BaseBlock(material), CreativeTabs.BLOCKS);
+		bricks = InnerRegistry.registerBlockAndItem(this.registryName + "_bricks", new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
 //		brick_stairs = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_stairs", new BaseStairsBlock(bricks), CreativeTabs.BLOCKS);
 //		brick_slab = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_slab", new BaseSlabBlock(bricks), CreativeTabs.BLOCKS);
 
@@ -128,12 +128,11 @@ public class StoneMaterial extends ComplexMaterial {
 		return materialCompound;
 	}
 
-	private static void addFeature(GenerationStep.Feature featureStep, ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
-		int index = featureStep.ordinal();
+	private static void addFeature(ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
+		int index = GenerationStep.Feature.UNDERGROUND_ORES.ordinal();
 		if (features.size() > index) {
 			features.get(index).add(() -> feature);
-		}
-		else {
+		} else {
 			List<Supplier<ConfiguredFeature<?, ?>>> newFeature = Lists.newArrayList();
 			newFeature.add(() -> feature);
 			features.add(newFeature);
@@ -167,10 +166,8 @@ public class StoneMaterial extends ComplexMaterial {
 			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
 			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
 			List<List<Supplier<ConfiguredFeature<?, ?>>>> features = new ArrayList<>(preFeatures.size());
-			preFeatures.forEach((list) -> {
-				features.add(Lists.newArrayList(list));
-			});
-			addFeature(GenerationStep.Feature.UNDERGROUND_ORES, Rands.values(new ConfiguredFeature[]{ configuredFeature, configuredFeature2, configuredFeature3 }), features);
+			preFeatures.forEach((list) -> { features.add(Lists.newArrayList(list)); });
+			addFeature(Rands.values(new ConfiguredFeature[]{ configuredFeature, configuredFeature2, configuredFeature3 }), features);
 			accessor.raaSetFeatures(features);
 		});
 	}
@@ -224,6 +221,11 @@ public class StoneMaterial extends ComplexMaterial {
 
 		ModelHelper.registerSimpleBlockModel(tiles, tilesTexID);
 		NameGenerator.addTranslation("block." + mainName + "_tiles", name + " Tiles");
+	}
+
+	@Override
+	public void initServer(ArtificeResourcePack.ServerResourcePackBuilder dataPack, Random random) {
+
 	}
 
 	private void loadStaticImages() {

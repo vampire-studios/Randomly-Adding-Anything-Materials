@@ -3,8 +3,12 @@ package io.github.vampirestudios.raa_materials.client;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
+import io.github.vampirestudios.raa_materials.OreMaterial;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
+import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
+import io.github.vampirestudios.raa_materials.utils.ColorGradient;
+import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
 import io.github.vampirestudios.raa_materials.utils.TextureHelper;
 import net.minecraft.block.AmethystClusterBlock;
 import net.minecraft.block.Block;
@@ -32,6 +36,14 @@ public class ModelHelper {
 
 	public static String makeCube(Identifier texture) {
 		return String.format("{\"parent\": \"minecraft:block/cube_all\", \"textures\": {\"all\": \"%s:%s\"}}", texture.getNamespace(), texture.getPath());
+	}
+
+	public static String makeCubeTopBottom(Identifier side, Identifier top, Identifier bottom) {
+		return String.format("{\"parent\": \"minecraft:block/cube_bottom_top\", \"textures\": {\"top\": \"%s:%s\", \"bottom\": \"%s:%s\", \"side\": \"%s:%s\"}}", top.getNamespace(), top.getPath(), bottom.getNamespace(), bottom.getPath(), side.getNamespace(), side.getPath());
+	}
+
+	public static String makeLayeredCube(Identifier base, Identifier overlay) {
+		return String.format("{\"parent\": \"raa_materials:block/cube_with_overlay\", \"textures\": {\"base\": \"%s:%s\", \"overlay\": \"%s:%s\"}}", base.getNamespace(), base.getPath(), overlay.getNamespace(), overlay.getPath());
 	}
 
 	public static String makeCross(Identifier texture) {
@@ -239,4 +251,40 @@ public class ModelHelper {
 		InnerRegistry.registerTexture(texture3ID, texture3);
 	}
 
+    public static void generateOreAssets(Block ore, Identifier oreVeinTexture, String registryName, String name, ColorGradient gradient, OreMaterial.Target target) {
+		OreMaterial.TargetTextureInformation textureInformation = target.textureInformation();
+
+		if (target == OreMaterial.Target.BASALT || target == OreMaterial.Target.BLACKSTONE
+				|| target == OreMaterial.Target.GRASS_BLOCK || target == OreMaterial.Target.CRIMSON_NYLIUM
+				|| target == OreMaterial.Target.WARPED_NYLIUM) {
+			BufferTexture topTexture = TextureHelper.loadTexture(textureInformation.top());
+
+			Identifier textureID = TextureHelper.makeBlockTextureID(registryName + "_ore");
+			BufferTexture texture = ProceduralTextures.randomColored(oreVeinTexture, gradient);
+			BufferTexture outline = TextureHelper.outline(texture, target.darkOutline(), target.lightOutline(), 0, 1);
+			texture = TextureHelper.cover(topTexture, texture);
+			texture = TextureHelper.cover(texture, outline);
+			InnerRegistry.registerTexture(textureID, texture);
+			Identifier bottom;
+			if (textureInformation.bottom() == null) bottom = textureInformation.top();
+			else bottom = textureInformation.bottom();
+
+			InnerRegistry.registerBlockModel(ore, ModelHelper.makeCubeTopBottom(textureInformation.side(), textureID, bottom));
+			InnerRegistry.registerItemModel(ore.asItem(), ModelHelper.makeCubeTopBottom(textureInformation.side(), textureID, bottom));
+			NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), name + " Ore");
+		} else {
+			BufferTexture baseTexture = TextureHelper.loadTexture(textureInformation.all());
+
+			Identifier textureID = TextureHelper.makeItemTextureID(registryName + "_ore");
+			BufferTexture texture = ProceduralTextures.randomColored(oreVeinTexture, gradient);
+			BufferTexture outline = TextureHelper.outline(texture, target.darkOutline(), target.lightOutline(), 0, 1);
+			texture = TextureHelper.cover(baseTexture, texture);
+			texture = TextureHelper.cover(texture, outline);
+			InnerRegistry.registerTexture(textureID, texture);
+
+			InnerRegistry.registerBlockModel(ore, ModelHelper.makeCube(textureID));
+			InnerRegistry.registerItemModel(ore.asItem(), ModelHelper.makeCube(textureID));
+			NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), name + " Ore");
+		}
+    }
 }

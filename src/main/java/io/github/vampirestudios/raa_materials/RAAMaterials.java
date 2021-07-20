@@ -2,7 +2,13 @@ package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Lifecycle;
-import com.swordglowsblue.artifice.api.Artifice;
+import com.swordglowsblue.artifice.api.ArtificeResourcePack;
+import com.swordglowsblue.artifice.api.util.Processor;
+import com.swordglowsblue.artifice.common.ArtificeRegistry;
+import com.swordglowsblue.artifice.common.ClientResourcePackProfileLike;
+import com.swordglowsblue.artifice.common.ServerResourcePackProfileLike;
+import com.swordglowsblue.artifice.impl.ArtificeImpl;
+import com.swordglowsblue.artifice.impl.DynamicResourcePackFactory;
 import io.github.vampirestudios.raa_core.api.RAAAddon;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
@@ -12,6 +18,7 @@ import io.github.vampirestudios.vampirelib.utils.Rands;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Blocks;
@@ -23,6 +30,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
@@ -48,6 +56,7 @@ public class RAAMaterials implements RAAAddon {
 //    public static final ItemGroup RAA_ARMOR = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "armor"), () -> new ItemStack(Items.IRON_HELMET));
     public static final ItemGroup RAA_WEAPONS = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "weapons"), () -> new ItemStack(Items.IRON_SWORD));
 //    public static final ItemGroup RAA_FOOD = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "food"), () -> new ItemStack(Items.GOLDEN_APPLE));
+    public static final ItemGroup RAA_STONE_TYPES = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "stone_types"), () -> new ItemStack(Items.STONE));
 
     public static final Registry<OreMaterial.Target> TARGETS = new SimpleRegistry<>(RegistryKey.ofRegistry(id("ore_targets")), Lifecycle.stable());
 
@@ -80,6 +89,11 @@ public class RAAMaterials implements RAAAddon {
         Registry.register(TARGETS, id("tuff"), OreMaterial.Target.TUFF);
         Registry.register(TARGETS, id("soul_sand"), OreMaterial.Target.SOUL_SAND);
         Registry.register(TARGETS, id("soul_soil"), OreMaterial.Target.SOUL_SOIL);
+        Registry.register(TARGETS, id("crimson_nylium"), OreMaterial.Target.CRIMSON_NYLIUM);
+        Registry.register(TARGETS, id("warped_nylium"), OreMaterial.Target.WARPED_NYLIUM);
+        Registry.register(TARGETS, id("grass_block"), OreMaterial.Target.GRASS_BLOCK);
+        Registry.register(TARGETS, id("blackstone"), OreMaterial.Target.BLACKSTONE);
+        Registry.register(TARGETS, id("basalt"), OreMaterial.Target.BASALT);
 
 //		ServerLifecycleEvents.SERVER_STARTED.register(server -> server.reloadResources(server.getDataPackManager().getEnabledNames()));
 
@@ -167,7 +181,7 @@ public class RAAMaterials implements RAAAddon {
 
                 if (compound.contains("materials")) {
                     NbtList list = compound.getList("materials", NbtElement.COMPOUND_TYPE);
-                    list.forEach(nbtElement -> materials.add(ComplexMaterial.readFromNbt(targets, random, (NbtCompound) nbtElement)));
+                    list.forEach(nbtElement -> materials.add(ComplexMaterial.readFromNbt(random, (NbtCompound) nbtElement)));
                 }
 
                 materials.forEach((material) -> {
@@ -177,10 +191,21 @@ public class RAAMaterials implements RAAAddon {
                 });
             }
 
+            /*RAAMaterials.registerDataPack(id("data" + Rands.getRandom().nextInt()), dataPackBuilder -> {
+                materials.forEach(material -> material.initServer(dataPackBuilder, random));
+                new Thread(() -> {
+                    try {
+                        dataPackBuilder.dumpResources("test", "data");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+            });*/
+
             world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
 
             if(isClient()) {
-                Artifice.registerAssetPack(id("assets" + random.nextInt()), clientResourcePackBuilder -> {
+                registerAssetPack(id("assets" + Rands.getRandom().nextInt()), clientResourcePackBuilder -> {
                     materials.forEach(material -> material.initClient(clientResourcePackBuilder, random));
                     new Thread(() -> {
                         try {
@@ -197,6 +222,17 @@ public class RAAMaterials implements RAAAddon {
             }
 
         }
+    }
+
+    public static ServerResourcePackProfileLike registerDataPack(Identifier id, Processor<ArtificeResourcePack.ServerResourcePackBuilder> register) {
+        if (ArtificeRegistry.DATA_PACKS.containsId(id)) return ArtificeRegistry.DATA_PACKS.get(id);
+        else return ArtificeImpl.registerSafely(ArtificeRegistry.DATA_PACKS, id, new DynamicResourcePackFactory<>(ResourceType.SERVER_DATA, id, register));
+    }
+
+    @Environment(EnvType.CLIENT)
+    public static ClientResourcePackProfileLike registerAssetPack(Identifier id, Processor<ArtificeResourcePack.ClientResourcePackBuilder> register) {
+        if (ArtificeRegistry.RESOURCE_PACKS.containsId(id)) return ArtificeRegistry.RESOURCE_PACKS.get(id);
+        else return Registry.register(ArtificeRegistry.RESOURCE_PACKS, id, new DynamicResourcePackFactory<>(ResourceType.CLIENT_RESOURCES, id, register));
     }
 
     public static void onServerStop() {

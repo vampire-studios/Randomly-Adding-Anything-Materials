@@ -10,7 +10,6 @@ import net.minecraft.world.gen.feature.Feature;
 public class BiomeUtils {
 
     public static Feature<?> newFeature(Identifier registryName, Feature<?> feature) {
-        System.out.println(registryName);
         if (Registry.FEATURE.containsId(registryName)) {
             return feature;
         } else {
