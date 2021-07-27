@@ -1,8 +1,10 @@
 package io.github.vampirestudios.raa_materials.mixins.client;
 
+import io.github.vampirestudios.raa_core.RAACore;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.UnbakedModel;
@@ -20,7 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Mixin(ModelLoader.class)
 public class ModelLoaderMixin {
@@ -56,8 +60,7 @@ public class ModelLoaderMixin {
 
 	@Inject(method = "loadModel", at = @At("HEAD"), cancellable = true)
 	private void loadModel(Identifier id, CallbackInfo info) {
-		if (id instanceof ModelIdentifier) {
-			ModelIdentifier modelID = (ModelIdentifier) id;
+		if (id instanceof ModelIdentifier modelID) {
 			Identifier cleanID = new Identifier(id.getNamespace(), id.getPath());
 			if (InnerRegistry.hasCustomModel(cleanID)) {
 				if (modelID.getVariant().equals("inventory")) {
@@ -71,11 +74,11 @@ public class ModelLoaderMixin {
 						unbakedModels.put(identifier2, model);
 						info.cancel();
 					} else {
-						System.out.printf("Missing item model for %s%n", cleanID);
+						RAACore.LOGGER.warn("Missing item model for {}", cleanID);
 					}
 				} else {
 					Block block = Registry.BLOCK.get(cleanID);
-					block.getStateManager().getStates().forEach((state) -> {
+					/*block.getStateManager().getStates().forEach((state) -> {
 						UnbakedModel model = InnerRegistry.getModel(state);
 						if (model != null) {
 							ModelIdentifier stateID = BlockModels.getModelId(cleanID, state);
@@ -84,8 +87,36 @@ public class ModelLoaderMixin {
 						else {
 							System.out.printf("Missing block model for %s for state %s%n", cleanID, state);
 						}
-					});
-					info.cancel();
+					});*/
+					List<BlockState> possibleStates = block.getStateManager().getStates();
+					Optional<BlockState> possibleState = possibleStates
+							.stream()
+							.filter(state -> modelID.equals(BlockModels.getModelId(cleanID, state)))
+							.findFirst();
+					if (possibleState.isPresent()) {
+						UnbakedModel model = InnerRegistry.getModel(possibleState.get());
+						if (model != null) {
+							/*if (model instanceof MultiPart) {
+								possibleStates.forEach(state -> {
+									Identifier stateId = BlockModels.getModelId(
+											cleanID,
+											state
+									);
+									putModel(stateId, model);
+								});
+							}
+							else {
+								putModel(modelID, model);
+							}*/
+							possibleStates.forEach(state -> {
+								Identifier stateId = BlockModels.getModelId(cleanID, state);
+								putModel(stateId, model);
+							});
+						} else {
+							RAACore.LOGGER.warn("Error loading variant: {}", modelID);
+						}
+						info.cancel();
+					}
 				}
 			}
 		}

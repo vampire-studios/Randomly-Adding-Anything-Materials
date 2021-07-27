@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
-import com.swordglowsblue.artifice.api.ArtificeResourcePack;
+import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
 import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
@@ -40,10 +40,42 @@ public abstract class ComplexMaterial {
 
 		OreMaterial.Target target = RAAMaterials.TARGETS.get(targetName);
 
+		NbtCompound texturesCompound = compound.getCompound("textures");
+		TextureInformation.Builder textureInformationBuilder = TextureInformation.builder();
+
+		//Blocks
+		textureInformationBuilder.oreOverlay(Identifier.tryParse(texturesCompound.getString("oreTexture")));
+		textureInformationBuilder.storageBlock(Identifier.tryParse(texturesCompound.getString("storageBlockTexture")));
+		textureInformationBuilder.rawMaterialBlock(Identifier.tryParse(texturesCompound.getString("rawMaterialBlockTexture")));
+
+		//Items
+		textureInformationBuilder.ingot(Identifier.tryParse(texturesCompound.getString("ingotTexture")));
+		textureInformationBuilder.gem(Identifier.tryParse(texturesCompound.getString("gemTexture")));
+		textureInformationBuilder.rawItem(Identifier.tryParse(texturesCompound.getString("rawItemTexture")));
+		textureInformationBuilder.plate(Identifier.tryParse(texturesCompound.getString("plateTexture")));
+		textureInformationBuilder.gear(Identifier.tryParse(texturesCompound.getString("gearTexture")));
+		textureInformationBuilder.nugget(Identifier.tryParse(texturesCompound.getString("nuggetTexture")));
+		textureInformationBuilder.dust(Identifier.tryParse(texturesCompound.getString("dustTexture")));
+		textureInformationBuilder.smallDust(Identifier.tryParse(texturesCompound.getString("smallDustTexture")));
+
+		//Tools
+		textureInformationBuilder.swordBlade(Identifier.tryParse(texturesCompound.getString("swordBladeTexture")));
+		textureInformationBuilder.swordHandle(Identifier.tryParse(texturesCompound.getString("swordHandleTexture")));
+		textureInformationBuilder.pickaxeHead(Identifier.tryParse(texturesCompound.getString("pickaxeHeadTexture")));
+		textureInformationBuilder.pickaxeStick(Identifier.tryParse(texturesCompound.getString("pickaxeStickTexture")));
+		textureInformationBuilder.axeHead(Identifier.tryParse(texturesCompound.getString("axeHeadTexture")));
+		textureInformationBuilder.axeStick(Identifier.tryParse(texturesCompound.getString("axeStickTexture")));
+		textureInformationBuilder.hoeHead(Identifier.tryParse(texturesCompound.getString("hoeHeadTexture")));
+		textureInformationBuilder.hoeStick(Identifier.tryParse(texturesCompound.getString("hoeStickTexture")));
+		textureInformationBuilder.shovelHead(Identifier.tryParse(texturesCompound.getString("shovelHeadTexture")));
+		textureInformationBuilder.shovelStick(Identifier.tryParse(texturesCompound.getString("shovelStickTexture")));
+
+		TextureInformation textureInformation = textureInformationBuilder.build();
+
 		switch (type) {
-			case "gem" -> material = new GemOreMaterial(name, gradient, target, random);
+			case "gem" -> material = new GemOreMaterial(name, gradient, textureInformation, target, random);
 			case "crystal" -> material = new CrystalMaterial(name, gradient);
-			case "metal" -> material = new MetalOreMaterial(name, gradient, target, random);
+			case "metal" -> material = new MetalOreMaterial(name, gradient, textureInformation, target, random);
 			default -> {
 				CustomColor mainColor = new CustomColor(colorGradientCompound.getInt("startColor"));
 				gradient = ProceduralTextures.makeStonePalette(mainColor, random);
@@ -54,9 +86,7 @@ public abstract class ComplexMaterial {
 		return material;
 	}
 
-	public abstract void initClient(ArtificeResourcePack.ClientResourcePackBuilder resourcePack, Random random);
-
-	public abstract void initServer(ArtificeResourcePack.ServerResourcePackBuilder dataPack, Random random);
+	public abstract void initClient(Random random);
 
 	public static void resetMaterials() {
 		MATERIALS.clear();

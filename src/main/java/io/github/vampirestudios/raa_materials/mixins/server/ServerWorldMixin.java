@@ -4,6 +4,7 @@ import io.github.vampirestudios.raa_materials.RAAMaterials;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -23,6 +24,9 @@ import java.util.concurrent.Executor;
 public class ServerWorldMixin {
 	@Inject(method = "<init>*", at = @At("TAIL"))
 	private void procmcInit(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> registryKey, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long l, List<Spawner> list, boolean bl, CallbackInfo info) {
-		RAAMaterials.onServerStart((ServerWorld) (Object) this);
+		Registry<DimensionType> DIMENSION_TYPE_REGISTRY = server.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY);
+		if (dimensionType.equals(DIMENSION_TYPE_REGISTRY.get(DimensionType.OVERWORLD_REGISTRY_KEY))) {
+			RAAMaterials.onServerStart((ServerWorld) (Object) this);
+		}
 	}
 }

@@ -71,7 +71,7 @@ public class ProceduralTextures {
 		BufferTexture pass = TextureHelper.heightPass(result, -1, -1);
 
 		pass = TextureHelper.normalize(pass);
-		result = TextureHelper.clamp(result, 5);
+		result = TextureHelper.clamp(result, 8);
 		result = TextureHelper.normalize(result);
 		result = TextureHelper.blend(result, pass, 0.3F);
 		result = TextureHelper.add(result, pass);
@@ -109,6 +109,10 @@ public class ProceduralTextures {
 	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture overlay, ColorGradient gradient) {
 		BufferTexture over = TextureHelper.applyGradient(overlay.clone(), gradient);
 		return TextureHelper.blend(texture, over, 0.5F);
+	}
+
+	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture overlay) {
+		return TextureHelper.blend(texture, overlay.clone(), 0.5F);
 	}
 
 	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture[] overlay, Random random, ColorGradient gradient) {

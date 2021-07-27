@@ -13,16 +13,19 @@ import io.github.vampirestudios.raa_core.api.RAAAddon;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
-import io.github.vampirestudios.raa_materials.utils.TagHelper;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -38,12 +41,12 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 public class RAAMaterials implements RAAAddon {
     public static final String MOD_ID = "raa_materials";
@@ -53,9 +56,8 @@ public class RAAMaterials implements RAAAddon {
     public static final ItemGroup RAA_ORES = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "ores"), () -> new ItemStack(Blocks.IRON_ORE));
     public static final ItemGroup RAA_RESOURCES = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "resources"), () -> new ItemStack(Items.IRON_INGOT));
     public static final ItemGroup RAA_TOOLS = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "tools"), () -> new ItemStack(Items.IRON_PICKAXE));
-//    public static final ItemGroup RAA_ARMOR = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "armor"), () -> new ItemStack(Items.IRON_HELMET));
     public static final ItemGroup RAA_WEAPONS = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "weapons"), () -> new ItemStack(Items.IRON_SWORD));
-//    public static final ItemGroup RAA_FOOD = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "food"), () -> new ItemStack(Items.GOLDEN_APPLE));
+    public static final ItemGroup RAA_FOOD = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "food"), () -> new ItemStack(Items.GOLDEN_APPLE));
     public static final ItemGroup RAA_STONE_TYPES = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "stone_types"), () -> new ItemStack(Items.STONE));
 
     public static final Registry<OreMaterial.Target> TARGETS = new SimpleRegistry<>(RegistryKey.ofRegistry(id("ore_targets")), Lifecycle.stable());
@@ -69,6 +71,8 @@ public class RAAMaterials implements RAAAddon {
     public String getId() {
         return MOD_ID;
     }
+
+    private static KeyBinding keyBinding;
 
     @Override
     public void onInitialize() {
@@ -91,14 +95,26 @@ public class RAAMaterials implements RAAAddon {
         Registry.register(TARGETS, id("soul_soil"), OreMaterial.Target.SOUL_SOIL);
         Registry.register(TARGETS, id("crimson_nylium"), OreMaterial.Target.CRIMSON_NYLIUM);
         Registry.register(TARGETS, id("warped_nylium"), OreMaterial.Target.WARPED_NYLIUM);
-        Registry.register(TARGETS, id("grass_block"), OreMaterial.Target.GRASS_BLOCK);
+//        Registry.register(TARGETS, id("grass_block"), OreMaterial.Target.GRASS_BLOCK);
         Registry.register(TARGETS, id("blackstone"), OreMaterial.Target.BLACKSTONE);
         Registry.register(TARGETS, id("basalt"), OreMaterial.Target.BASALT);
+        Registry.register(TARGETS, id("mycelium"), OreMaterial.Target.MYCELIUM);
+        Registry.register(TARGETS, id("podzol"), OreMaterial.Target.PODZOL);
 
-//		ServerLifecycleEvents.SERVER_STARTED.register(server -> server.reloadResources(server.getDataPackManager().getEnabledNames()));
+        keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.raa_materials.fully_reload_assets", // The translation key of the keybinding's name
+                InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
+                GLFW.GLFW_KEY_R, // The keycode of the key
+                "category.raa_materials" // The translation key of the keybinding's category.
+        ));
 
-//        ServerWorldEvents.LOAD.register((server, world) -> onServerStart(world));
-//        ServerLifecycleEvents.SERVER_STOPPED.register(server -> onServerStop());
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (keyBinding.wasPressed()) {
+                client.player.sendMessage(new LiteralText("Reloading assets fully!"), false);
+                MinecraftClient.getInstance().reloadResourcesConcurrently().thenRun(() ->
+                        MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels());
+            }
+        });
     }
 
     public static Identifier id(String name) {
@@ -121,10 +137,10 @@ public class RAAMaterials implements RAAAddon {
             List<ComplexMaterial> materials = Lists.newArrayList();
 
             if (!world.getServer().getSavePath(WorldSavePath.ROOT).resolve("data/raa_materials.dat").toFile().exists()) {
-                System.out.println("Start new generator!");
+                System.out.println("Starting new generator!");
 
-                InnerRegistry.clearRegistries();
-                TagHelper.clearTags();
+                materials.clear();
+                InnerRegistry.clear();
 
                 if (CONFIG.stoneTypeAmount != 0) {
                     for (int i = 0; i < CONFIG.stoneTypeAmount; i++) {
@@ -166,8 +182,6 @@ public class RAAMaterials implements RAAAddon {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                world.getServer().sendSystemMessage(new LiteralText("Test"), UUID.randomUUID());
             } else {
                 System.out.println("Loading generated materials!");
                 NbtCompound compound;
@@ -184,41 +198,16 @@ public class RAAMaterials implements RAAAddon {
                     list.forEach(nbtElement -> materials.add(ComplexMaterial.readFromNbt(random, (NbtCompound) nbtElement)));
                 }
 
-                materials.forEach((material) -> {
-                    if(material instanceof OreMaterial) {
-                        material.generate(world);
-                    }
-                });
+                materials.forEach((material) -> material.generate(world));
             }
-
-            /*RAAMaterials.registerDataPack(id("data" + Rands.getRandom().nextInt()), dataPackBuilder -> {
-                materials.forEach(material -> material.initServer(dataPackBuilder, random));
-                new Thread(() -> {
-                    try {
-                        dataPackBuilder.dumpResources("test", "data");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-            });*/
 
             world.getServer().reloadResources(world.getServer().getDataPackManager().getEnabledNames());
 
+            System.out.println("Make Client update!");
             if(isClient()) {
-                registerAssetPack(id("assets" + Rands.getRandom().nextInt()), clientResourcePackBuilder -> {
-                    materials.forEach(material -> material.initClient(clientResourcePackBuilder, random));
-                    new Thread(() -> {
-                        try {
-                            clientResourcePackBuilder.dumpResources("test", "assets");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }).start();
-                });
-                MinecraftClient.getInstance().reloadResources();
-                MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels();
-
-                System.out.println("Make Client update!");
+                materials.forEach(material -> material.initClient(random));
+                MinecraftClient.getInstance().reloadResourcesConcurrently().thenRun(() ->
+                        MinecraftClient.getInstance().getItemRenderer().getModels().reloadModels());
             }
 
         }
@@ -236,7 +225,7 @@ public class RAAMaterials implements RAAAddon {
     }
 
     public static void onServerStop() {
-        System.out.println("Stop! You violated the law");
+        System.out.println("Server stopped!");
     }
 
 }

@@ -20,6 +20,7 @@ import java.io.IOException;
 
 @Mixin(SpriteAtlasTexture.class)
 public class TextureAtlasMixin {
+	private static final int EMISSIVE_ALPHA = 253 << 24;
 	@Shadow @Final private Identifier id;
 
 	@Inject(method = "loadSprite", at = @At("HEAD"), cancellable = true)
@@ -36,7 +37,7 @@ public class TextureAtlasMixin {
 					Resource resource = resourceManager.getResource(spriteLocation);
 					sprite = NativeImage.read(resource.getInputStream());
 					resource.close();
-					
+
 					resource = resourceManager.getResource(emissiveLocation);
 					emission = NativeImage.read(resource.getInputStream());
 					resource.close();

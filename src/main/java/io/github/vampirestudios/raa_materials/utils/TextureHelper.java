@@ -111,8 +111,7 @@ public class TextureHelper {
 		try {
 			Resource input = MinecraftClient.getInstance().getResourceManager().getResource(name);
 			return NativeImage.read(input.getInputStream());
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}

@@ -1,7 +1,6 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
-import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.blocks.BaseDropBlock;
 import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
@@ -48,7 +47,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		super(name, gradient);
 		target = targetIn;
 
-		FabricBlockSettings material = FabricBlockSettings.copyOf(target.block()).requiresTool().mapColor(MapColor.GRAY);
+		FabricBlockSettings material = FabricBlockSettings.copyOf(target.block()).mapColor(MapColor.GRAY);
 		ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new BaseDropBlock(material, rawItem), RAAMaterials.RAA_ORES);
 		drop = ore.getDrop();
 		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, ore);
@@ -105,7 +104,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public void initClient(ArtificeResourcePack.ClientResourcePackBuilder resourcePack, Random random) {
+	public void initClient(Random random) {
 		loadStaticImages();
 	}
 
@@ -115,7 +114,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		}
 	}
 
-	public record TargetTextureInformation(Identifier all, Identifier side, Identifier top, Identifier bottom, Identifier side_overlay) {
+	public record TargetTextureInformation(Identifier all, Identifier side, Identifier top, Identifier bottom, Identifier sideOverlay) {
 
 		public static Builder builder() {
 			return new Builder();
@@ -175,11 +174,13 @@ public abstract class OreMaterial extends ComplexMaterial {
 		public static final Target TUFF = new Target(Blocks.TUFF, "tuff", TargetTextureInformation.builder().all(new Identifier("textures/block/tuff.png")).build(), new CustomColor(77, 80, 70), new CustomColor(160, 162, 151));
 		public static final Target SOUL_SAND = new Target(Blocks.SOUL_SAND, "soul_sand", TargetTextureInformation.builder().all(new Identifier("textures/block/soul_sand.png")).build(), new CustomColor(0x352922), new CustomColor(0x796152));
 		public static final Target SOUL_SOIL = new Target(Blocks.SOUL_SOIL, "soul_soil", TargetTextureInformation.builder().all(new Identifier("textures/block/soul_soil.png")).build(), new CustomColor(0x352922), new CustomColor(0x6a5244));
-		public static final Target CRIMSON_NYLIUM = new Target(Blocks.CRIMSON_NYLIUM, "crimson_nylium", TargetTextureInformation.builder().top(new Identifier("textures/block/crimson_nylium.png")).bottom(new Identifier("textures/block/netherrack.png")).side(new Identifier("textures/block/crimson_nylium_side.png")).build(), new CustomColor(0x352922), new CustomColor(0x6a5244));
-		public static final Target WARPED_NYLIUM = new Target(Blocks.WARPED_NYLIUM, "warped_nylium", TargetTextureInformation.builder().top(new Identifier("textures/block/warped_nylium.png")).bottom(new Identifier("textures/block/netherrack.png")).side(new Identifier("textures/block/warped_nylium_side.png")).build(), new CustomColor(0x352922), new CustomColor(0x6a5244));
-		public static final Target GRASS_BLOCK = new Target(Blocks.GRASS_BLOCK, "grass_block", TargetTextureInformation.builder().top(new Identifier("textures/block/grass_block_top.png")).bottom(new Identifier("textures/block/dirt.png")).side(new Identifier("textures/block/grass_block_side.png")).sideOverlay(new Identifier("textures/block/grass_block_side_overlay.png")).build(), new CustomColor(0x352922), new CustomColor(0x6a5244));
-		public static final Target BLACKSTONE = new Target(Blocks.BLACKSTONE, "blackstone", TargetTextureInformation.builder().top(new Identifier("textures/block/blackstone_top.png")).side(new Identifier("textures/block/blackstone.png")).build(), new CustomColor(0x352922), new CustomColor(0x6a5244));
-		public static final Target BASALT = new Target(Blocks.BASALT, "basalt", TargetTextureInformation.builder().top(new Identifier("textures/block/basalt_side.png")).side(new Identifier("textures/block/basalt_top.png")).build(), new CustomColor(0x352922), new CustomColor(0x6a5244));
+		public static final Target CRIMSON_NYLIUM = new Target(Blocks.CRIMSON_NYLIUM, "crimson_nylium", TargetTextureInformation.builder().top(new Identifier("textures/block/crimson_nylium.png")).bottom(new Identifier("block/netherrack")).side(new Identifier("block/crimson_nylium_side")).build(), new CustomColor(0x352922), new CustomColor(0x6a5244));
+		public static final Target WARPED_NYLIUM = new Target(Blocks.WARPED_NYLIUM, "warped_nylium", TargetTextureInformation.builder().top(new Identifier("textures/block/warped_nylium.png")).bottom(new Identifier("block/netherrack")).side(new Identifier("block/warped_nylium_side")).build(), new CustomColor(0x352922), new CustomColor(0x6a5244));
+//		public static final Target GRASS_BLOCK = new Target(Blocks.GRASS_BLOCK, "grass_block", TargetTextureInformation.builder().top(new Identifier("textures/block/grass_block_top.png")).bottom(new Identifier("block/dirt")).side(new Identifier("textures/block/grass_block_side.png")).sideOverlay(new Identifier("textures/block/grass_block_side_overlay.png")).build(), new CustomColor(0x352922), new CustomColor(0x6a5244));
+		public static final Target BLACKSTONE = new Target(Blocks.BLACKSTONE, "blackstone", TargetTextureInformation.builder().top(new Identifier("textures/block/blackstone_top.png")).side(new Identifier("block/blackstone")).build(), new CustomColor(0x20131c), new CustomColor(0x4e4b54));
+		public static final Target BASALT = new Target(Blocks.BASALT, "basalt", TargetTextureInformation.builder().top(new Identifier("textures/block/basalt_top.png")).side(new Identifier("block/basalt_side")).build(), new CustomColor(0x353641), new CustomColor(0x898989));
+		public static final Target MYCELIUM = new Target(Blocks.MYCELIUM, "mycelium", TargetTextureInformation.builder().top(new Identifier("textures/block/mycelium_top.png")).bottom(new Identifier("block/dirt")).side(new Identifier("block/mycelium_side")).build(), new CustomColor(0x5a5952), new CustomColor(0x8b7173));
+		public static final Target PODZOL = new Target(Blocks.PODZOL, "podzol", TargetTextureInformation.builder().top(new Identifier("textures/block/podzol_top.png")).bottom(new Identifier("block/dirt")).side(new Identifier("block/podzol_side")).build(), new CustomColor(0x4a3018), new CustomColor(0xac6520));
 	}
 
 }

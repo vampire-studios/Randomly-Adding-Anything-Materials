@@ -1,7 +1,6 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
-import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
@@ -173,7 +172,7 @@ public class StoneMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public void initClient(ArtificeResourcePack.ClientResourcePackBuilder resourcePack, Random random) {
+	public void initClient(Random random) {
 		loadStaticImages();
 
 		String textureBaseName = name.toLowerCase(Locale.ROOT);
@@ -221,11 +220,6 @@ public class StoneMaterial extends ComplexMaterial {
 
 		ModelHelper.registerSimpleBlockModel(tiles, tilesTexID);
 		NameGenerator.addTranslation("block." + mainName + "_tiles", name + " Tiles");
-	}
-
-	@Override
-	public void initServer(ArtificeResourcePack.ServerResourcePackBuilder dataPack, Random random) {
-
 	}
 
 	private void loadStaticImages() {

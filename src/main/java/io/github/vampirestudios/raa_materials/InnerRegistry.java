@@ -4,8 +4,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Lifecycle;
 import io.github.vampirestudios.raa_materials.api.RegistryRemover;
-import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
+import io.github.vampirestudios.raa_materials.utils.TagHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.block.BlockModels;
@@ -34,7 +34,7 @@ public class InnerRegistry {
 	private static final Map<Identifier, Item> ITEMS = Maps.newHashMap();
 	private static final Set<Identifier> MODELED = Sets.newHashSet();
 	
-	public static void clearRegistries() {
+	public static void clear() {
 		clearRegistry(Registry.BLOCK, BLOCKS.keySet());
 		clearRegistry(Registry.ITEM, ITEMS.keySet());
 
@@ -44,11 +44,16 @@ public class InnerRegistry {
 		BLOCKS.clear();
 		MODELED.clear();
 
-		ModelHelper.MODELS.clear();
+//		if (isClient()) {
+//			ModelHelper.clearModels();
+//		}
+
 		StoneMaterial.resetMaterials();
 		MetalOreMaterial.resetMaterials();
 		GemOreMaterial.resetMaterials();
 		CrystalMaterial.resetMaterials();
+
+		TagHelper.clearTags();
 	}
 	
 	private static <T> void clearRegistry(DefaultedRegistry<T> registry, Set<Identifier> ids) {
@@ -161,6 +166,11 @@ public class InnerRegistry {
 	
 	public static boolean hasCustomModel(Identifier id) {
 		return MODELED.contains(id);
+	}
+
+	public static <T> T register(Registry<T> registry, Identifier name, T idk) {
+		if (registry.containsId(name)) return registry.get(name);
+		else return Registry.register(registry, name, idk);
 	}
 
 }

@@ -8,9 +8,6 @@ import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 @Config(name = RAAMaterials.MOD_ID)
 public class GeneralConfig implements ConfigData {
 
-    @Deprecated
-    @Comment("Amount of metal materials to generate")
-    public int legacyMaterialGenAmount = 100;
     @Comment("Amount of metal materials to generate")
     public int metalMaterialAmount = 40;
     @Comment("Amount of gem materials to generate")
@@ -19,8 +16,9 @@ public class GeneralConfig implements ConfigData {
     public int crystalTypeAmount = 40;
     @Comment("Amount of stone types to generate")
     public int stoneTypeAmount = 40;
-
-    public boolean useOnlyVanillaPotionEffects = true;
-    public String[] blacklistedPotionEffects = new String[] {"immersive_portals:longer_reach"};
+    @Comment("Should download and apply caves and cliffs preview pack")
+    public boolean applyCavesAndCliffsPreviewPack = true;
+    @Comment("Chance for an ore to glow")
+    public int oreGlowChance = 10;
 
 }

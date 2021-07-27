@@ -1,9 +1,9 @@
 package io.github.vampirestudios.raa_materials;
 
-import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
+import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.CustomAxeItem;
 import io.github.vampirestudios.raa_materials.items.CustomHoeItem;
 import io.github.vampirestudios.raa_materials.items.CustomPickaxeItem;
@@ -12,7 +12,6 @@ import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
 import io.github.vampirestudios.raa_materials.utils.TextureHelper;
-import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -23,7 +22,6 @@ import net.minecraft.item.ShovelItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.Locale;
 import java.util.Random;
@@ -31,29 +29,27 @@ import java.util.Random;
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 
 public class MetalOreMaterial extends OreMaterial {
-	private static Identifier[] oreVeinTextures;
-	private static Identifier[] rawMaterialTextures;
-	private static Identifier[] rawMaterialBlockTextures;
-	private static Identifier[] ingotTextures;
-	private static Identifier[] nuggetTextures;
-	private static Identifier[] gearTextures;
-	private static Identifier[] plateTextures;
-	private static Identifier[] dustTextures;
-	private static Identifier[] smallDustTextures;
-	private static Identifier[] storageBlockTextures;
-	private static Identifier[] swordBladeTextures;
-	private static Identifier[] swordHandleTextures;
-	private static Identifier[] pickaxeHeadTextures;
-	private static Identifier[] pickaxeStickTextures;
-	private static Identifier[] axeHeadTextures;
-	private static Identifier[] axeStickTextures;
-	private static Identifier[] hoeHeadTextures;
-	private static Identifier[] hoeStickTextures;
-	private static Identifier[] shovelHeadTextures;
-	private static Identifier[] shovelStickTextures;
+	private static final Identifier[] oreVeinTextures;
+	private static final Identifier[] rawMaterialTextures;
+	private static final Identifier[] rawMaterialBlockTextures;
+	private static final Identifier[] ingotTextures;
+	private static final Identifier[] nuggetTextures;
+	private static final Identifier[] plateTextures;
+	private static final Identifier[] dustTextures;
+	private static final Identifier[] storageBlockTextures;
+	private static final Identifier[] swordBladeTextures;
+	private static final Identifier[] swordHandleTextures;
+	private static final Identifier[] pickaxeHeadTextures;
+	private static final Identifier[] pickaxeStickTextures;
+	private static final Identifier[] axeHeadTextures;
+	private static final Identifier[] axeStickTextures;
+	private static final Identifier[] hoeHeadTextures;
+	private static final Identifier[] hoeStickTextures;
+	private static final Identifier[] shovelHeadTextures;
+	private static final Identifier[] shovelStickTextures;
 
 	private final Identifier oreVeinTexture;
-	private final Identifier rawMaterialTexture;
+	private final Identifier rawItemTexture;
 	private final Identifier rawMaterialBlockTexture;
 	private final Identifier ingotTexture;
 	private final Identifier nuggetTexture;
@@ -75,7 +71,7 @@ public class MetalOreMaterial extends OreMaterial {
 
 	public final Block rawMaterialBlock;
 
-	public final Item rawMaterial;
+	public final Item rawItem;
 	public final Item ingot;
 
 	public final Item nugget;
@@ -92,36 +88,63 @@ public class MetalOreMaterial extends OreMaterial {
 	public final Item shovel;
 
 	public MetalOreMaterial(Target target, Random random) {
-		this(TestNameGenerator.generateOreName(), ProceduralTextures.makeMetalPalette(random), target, random);
+		this(
+				TestNameGenerator.generateOreName(),
+				ProceduralTextures.makeMetalPalette(random),
+				TextureInformation.builder()
+					.oreOverlay(oreVeinTextures[random.nextInt(oreVeinTextures.length)])
+					.storageBlock(storageBlockTextures[random.nextInt(storageBlockTextures.length)])
+					.rawMaterialBlock(rawMaterialBlockTextures[random.nextInt(rawMaterialBlockTextures.length)])
+					.ingot(ingotTextures[random.nextInt(ingotTextures.length)])
+					.rawItem(rawMaterialTextures[random.nextInt(rawMaterialTextures.length)])
+					.plate(plateTextures[random.nextInt(plateTextures.length)])
+					.gear(RAAMaterials.id("textures/item/small_dusts/small_dust_1.png"))
+					.nugget(nuggetTextures[random.nextInt(nuggetTextures.length)])
+					.dust(dustTextures[random.nextInt(dustTextures.length)])
+					.smallDust(RAAMaterials.id("textures/item/small_dusts/small_dust_1.png"))
+					.swordBlade(swordBladeTextures[random.nextInt(swordBladeTextures.length)])
+					.swordHandle(swordHandleTextures[random.nextInt(swordHandleTextures.length)])
+					.pickaxeHead(pickaxeHeadTextures[random.nextInt(pickaxeHeadTextures.length)])
+					.pickaxeStick(pickaxeStickTextures[random.nextInt(pickaxeStickTextures.length)])
+					.axeHead(axeHeadTextures[random.nextInt(axeHeadTextures.length)])
+					.axeStick(axeStickTextures[random.nextInt(axeStickTextures.length)])
+					.hoeHead(hoeHeadTextures[random.nextInt(hoeHeadTextures.length)])
+					.hoeStick(hoeStickTextures[random.nextInt(hoeStickTextures.length)])
+					.shovelHead(shovelHeadTextures[random.nextInt(shovelHeadTextures.length)])
+					.shovelStick(shovelStickTextures[random.nextInt(shovelStickTextures.length)])
+					.build(),
+				target,
+				random
+		);
 	}
 
-	public MetalOreMaterial(String name, ColorGradient gradient, Target targetIn, Random random) {
+	public MetalOreMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, Random random) {
 		super(name, gradient, targetIn, InnerRegistry.registerItem("raw_" + name.toLowerCase(Locale.ROOT), new RAASimpleItem(name.toLowerCase(Locale.ROOT), new Settings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.RAW)));
 
-		this.oreVeinTexture = oreVeinTextures[random.nextInt(oreVeinTextures.length)];
-		this.storageBlockTexture = storageBlockTextures[random.nextInt(storageBlockTextures.length)];
-		this.rawMaterialTexture = rawMaterialTextures[random.nextInt(rawMaterialTextures.length)];
-		this.rawMaterialBlockTexture = rawMaterialBlockTextures[random.nextInt(rawMaterialBlockTextures.length)];
-		this.ingotTexture = ingotTextures[random.nextInt(ingotTextures.length)];
-		this.nuggetTexture = nuggetTextures[random.nextInt(nuggetTextures.length)];
-		this.gearTexture = RAAMaterials.id("textures/item/gears/gear_1.png");
-		this.plateTexture = plateTextures[random.nextInt(plateTextures.length)];
-		this.dustTexture = dustTextures[random.nextInt(dustTextures.length)];
-		this.smallDustTexture = RAAMaterials.id("textures/item/small_dusts/small_dust_1.png");
-		this.swordBladeTexture = swordBladeTextures[random.nextInt(swordBladeTextures.length)];
-		this.swordHandleTexture = swordHandleTextures[random.nextInt(swordHandleTextures.length)];
-		this.pickaxeHeadTexture = pickaxeHeadTextures[random.nextInt(pickaxeHeadTextures.length)];
-		this.pickaxeStickTexture = pickaxeStickTextures[random.nextInt(pickaxeStickTextures.length)];
-		this.axeHeadTexture = axeHeadTextures[random.nextInt(axeHeadTextures.length)];
-		this.axeStickTexture = axeStickTextures[random.nextInt(axeStickTextures.length)];
-		this.hoeHeadTexture = hoeHeadTextures[random.nextInt(hoeHeadTextures.length)];
-		this.hoeStickTexture = hoeStickTextures[random.nextInt(hoeStickTextures.length)];
-		this.shovelHeadTexture = shovelHeadTextures[random.nextInt(shovelHeadTextures.length)];
-		this.shovelStickTexture = shovelStickTextures[random.nextInt(shovelStickTextures.length)];
+		this.oreVeinTexture = textureInformation.getOreOverlay();
+		this.storageBlockTexture = textureInformation.getStorageBlock();
+		this.rawItemTexture = textureInformation.getRawItem();
+		this.rawMaterialBlockTexture = textureInformation.getRawMaterialBlock();
+		this.ingotTexture = textureInformation.getIngot();
+		this.nuggetTexture = textureInformation.getNugget();
+		this.gearTexture = textureInformation.getGear();
+		this.plateTexture = textureInformation.getPlate();
+		this.dustTexture = textureInformation.getDust();
+		this.smallDustTexture = textureInformation.getSmallDust();
+		this.swordBladeTexture = textureInformation.getSwordBlade();
+		this.swordHandleTexture = textureInformation.getSwordHandle();
+		this.pickaxeHeadTexture = textureInformation.getPickaxeHead();
+		this.pickaxeStickTexture = textureInformation.getPickaxeStick();
+		this.axeHeadTexture = textureInformation.getAxeHead();
+		this.axeStickTexture = textureInformation.getAxeStick();
+		this.hoeHeadTexture = textureInformation.getHoeHead();
+		this.hoeStickTexture = textureInformation.getHoeStick();
+		this.shovelHeadTexture = textureInformation.getShovelHead();
+		this.shovelStickTexture = textureInformation.getShovelStick();
 
 		rawMaterialBlock = InnerRegistry.registerBlockAndItem("raw_" + this.registryName + "_block", new Block(AbstractBlock.Settings.copy(Blocks.RAW_IRON_BLOCK)), RAAMaterials.RAA_ORES);
 
-		rawMaterial = this.drop;
+		rawItem = this.drop;
 		ingot = InnerRegistry.registerItem(this.registryName + "_ingot", new RAASimpleItem(this.registryName, new Settings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.INGOT));
 
 		nugget = InnerRegistry.registerItem(this.registryName + "_nugget", new RAASimpleItem(this.registryName, new Settings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.NUGGET));
@@ -151,7 +174,7 @@ public class MetalOreMaterial extends OreMaterial {
 				new ShovelItem(toolMaterial, toolMaterial.getShovelAttackDamage(), toolMaterial.getShovelAttackSpeed(), new Item.Settings().group(RAAMaterials.RAA_TOOLS).maxCount(1)));
 
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_raw_block_recipe", this.rawMaterialBlock)
-				.addMaterial('r', rawMaterial)
+				.addMaterial('r', rawItem)
 				.setShape("rrr", "rrr", "rrr")
 				.setGroup("raw_storage_blocks")
 				.setOutputCount(1)
@@ -164,7 +187,7 @@ public class MetalOreMaterial extends OreMaterial {
 				.setOutputCount(1)
 				.build();
 
-		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_raw_block_recipe", this.rawMaterial)
+		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_raw_block_recipe", this.rawItem)
 				.setShape()
 				.addMaterial('r', rawMaterialBlock)
 				.setShape("rrr", "rrr", "rrr")
@@ -215,13 +238,15 @@ public class MetalOreMaterial extends OreMaterial {
 				.setOutputCount(1)
 				.build();
 
-		FurnaceRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_ingot_from_raw_material", rawMaterial, ingot)
+		FurnaceRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_ingot_from_raw_material", rawItem, ingot)
 				.setCookTime(20)
+				.setXP(5)
 				.setGroup("raw_materials_to_cooked")
 				.setOutputCount(1)
 				.buildWithBlasting();
 		FurnaceRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_block_from_raw_material_block", rawMaterialBlock, storageBlock)
-				.setCookTime(60)
+				.setCookTime(10)
+				.setXP(5)
 				.setGroup("raw_materials_to_cooked")
 				.setOutputCount(1)
 				.buildWithBlasting();
@@ -238,13 +263,24 @@ public class MetalOreMaterial extends OreMaterial {
 		NbtCompound texturesCompound = new NbtCompound();
 		texturesCompound.putString("oreTexture", oreVeinTexture.toString());
 		texturesCompound.putString("storageBlockTexture", storageBlockTexture.toString());
-		texturesCompound.putString("rawMaterialTexture", rawMaterialTexture.toString());
+		texturesCompound.putString("rawItemTexture", rawItemTexture.toString());
 		texturesCompound.putString("rawMaterialBlockTexture", rawMaterialBlockTexture.toString());
 		texturesCompound.putString("ingotTexture", ingotTexture.toString());
 		texturesCompound.putString("nuggetTexture", nuggetTexture.toString());
 		texturesCompound.putString("plateTexture", plateTexture.toString());
+		texturesCompound.putString("gearTexture", gearTexture.toString());
 		texturesCompound.putString("dustTexture", dustTexture.toString());
 		texturesCompound.putString("smallDustTexture", smallDustTexture.toString());
+		texturesCompound.putString("swordBladeTexture", swordBladeTexture.toString());
+		texturesCompound.putString("swordHandleTexture", swordHandleTexture.toString());
+		texturesCompound.putString("pickaxeHeadTexture", pickaxeHeadTexture.toString());
+		texturesCompound.putString("pickaxeStickTexture", pickaxeStickTexture.toString());
+		texturesCompound.putString("axeHeadTexture", axeHeadTexture.toString());
+		texturesCompound.putString("axeStickTexture", axeStickTexture.toString());
+		texturesCompound.putString("hoeHeadTexture", hoeHeadTexture.toString());
+		texturesCompound.putString("hoeStickTexture", hoeStickTexture.toString());
+		texturesCompound.putString("shovelHeadTexture", shovelHeadTexture.toString());
+		texturesCompound.putString("shovelStickTexture", shovelStickTexture.toString());
 		materialCompound.put("textures", texturesCompound);
 
 		NbtCompound colorGradientCompound = new NbtCompound();
@@ -256,8 +292,8 @@ public class MetalOreMaterial extends OreMaterial {
 	}
 
 	@Override
-	public void initClient(ArtificeResourcePack.ClientResourcePackBuilder resourcePack, Random random) {
-		super.initClient(resourcePack, random);
+	public void initClient(Random random) {
+		super.initClient(random);
 
 		ModelHelper.generateOreAssets(this.ore, oreVeinTexture, registryName, name, gradient, target);
 
@@ -279,7 +315,7 @@ public class MetalOreMaterial extends OreMaterial {
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock("raw_" + this.registryName + "_block"), "Raw " + this.name + " Block");
 
 		// Items
-		makeColoredItemAssets(rawMaterialTexture, rawMaterial, gradient, "raw_" + this.registryName, "Raw %s");
+		makeColoredItemAssets(rawItemTexture, rawItem, gradient, "raw_" + this.registryName, "Raw %s");
 		makeColoredItemAssets(ingotTexture, ingot, gradient, this.registryName + "_ingot", "%s Ingot");
 		makeColoredItemAssets(nuggetTexture, nugget, gradient, this.registryName + "_nugget", "%s Nugget");
 
@@ -427,70 +463,6 @@ public class MetalOreMaterial extends OreMaterial {
 		for (int i = 0; i < shovelStickTextures.length; i++) {
 			shovelStickTextures[i] = RAAMaterials.id("textures/item/tools/shovel/shovel_stick_" + (i+1) + ".png");
 		}
-	}
-
-	@Override
-	public void initServer(ArtificeResourcePack.ServerResourcePackBuilder dataPack, Random random) {
-		dataPack.addShapedRecipe(Registry.BLOCK.getId(storageBlock), shapedRecipeBuilder -> {
-			shapedRecipeBuilder.group(id("storage_blocks"));
-			shapedRecipeBuilder.ingredientItem('i', Registry.ITEM.getId(this.ingot));
-			shapedRecipeBuilder.pattern("iii", "iii", "iii");
-			shapedRecipeBuilder.result(Registry.BLOCK.getId(storageBlock), 1);
-		});
-		dataPack.addShapedRecipe(Registry.BLOCK.getId(rawMaterialBlock), shapedRecipeBuilder -> {
-			shapedRecipeBuilder.group(id("raw_blocks"));
-			shapedRecipeBuilder.ingredientItem('i', Registry.ITEM.getId(this.rawMaterial));
-			shapedRecipeBuilder.pattern("iii", "iii", "iii");
-			shapedRecipeBuilder.result(Registry.BLOCK.getId(rawMaterialBlock), 1);
-		});
-		dataPack.addSmeltingRecipe(Utils.appendToPath(Registry.BLOCK.getId(this.storageBlock), "_from_smelting"), cookingRecipeBuilder -> {
-			cookingRecipeBuilder.ingredientItem(Registry.BLOCK.getId(this.rawMaterialBlock));
-			cookingRecipeBuilder.cookingTime(30);
-			cookingRecipeBuilder.result(Registry.BLOCK.getId(this.storageBlock));
-		});
-		dataPack.addSmeltingRecipe(Utils.appendToPath(Registry.ITEM.getId(this.rawMaterial), "_from_smelting"), cookingRecipeBuilder -> {
-			cookingRecipeBuilder.ingredientItem(Registry.ITEM.getId(this.rawMaterial));
-			cookingRecipeBuilder.cookingTime(10);
-			cookingRecipeBuilder.result(Registry.ITEM.getId(this.ingot));
-		});
-
-		dataPack.addShapedRecipe(Registry.ITEM.getId(this.pickaxe), shapedRecipeBuilder -> {
-			shapedRecipeBuilder.group(id("pickaxes"));
-			shapedRecipeBuilder.ingredientItem('i', Registry.ITEM.getId(this.ingot));
-			shapedRecipeBuilder.ingredientItem('s', new Identifier("stick"));
-			shapedRecipeBuilder.pattern("iii", " s ", " s ");
-			shapedRecipeBuilder.result(Registry.ITEM.getId(this.pickaxe), 1);
-		});
-
-		dataPack.addShapedRecipe(Registry.ITEM.getId(this.hoe), shapedRecipeBuilder -> {
-			shapedRecipeBuilder.group(id("hoes"));
-			shapedRecipeBuilder.ingredientItem('i', Registry.ITEM.getId(this.ingot));
-			shapedRecipeBuilder.ingredientItem('s', new Identifier("stick"));
-			shapedRecipeBuilder.pattern("ii ", " s ", " s ");
-			shapedRecipeBuilder.result(Registry.ITEM.getId(this.hoe), 1);
-		});
-
-		dataPack.addShapedRecipe(Registry.ITEM.getId(this.shovel), shapedRecipeBuilder -> {
-			shapedRecipeBuilder.group(id("shovels"));
-			shapedRecipeBuilder.ingredientItem('i', Registry.ITEM.getId(this.ingot));
-			shapedRecipeBuilder.ingredientItem('s', new Identifier("stick"));
-			shapedRecipeBuilder.pattern("i", "s", "s");
-			shapedRecipeBuilder.result(Registry.ITEM.getId(this.shovel), 1);
-		});
-
-		dataPack.addShapedRecipe(Registry.ITEM.getId(this.sword), shapedRecipeBuilder -> {
-			shapedRecipeBuilder.group(id("swords"));
-			shapedRecipeBuilder.ingredientItem('i', Registry.ITEM.getId(this.ingot));
-			shapedRecipeBuilder.ingredientItem('s', new Identifier("stick"));
-			shapedRecipeBuilder.pattern("i", "i", "s");
-			shapedRecipeBuilder.result(Registry.ITEM.getId(this.sword), 1);
-		});
-
-		dataPack.addShapelessRecipe(Utils.appendToPath(Registry.ITEM.getId(this.ingot), "_ingots_from_block"), shapedRecipeBuilder -> {
-			shapedRecipeBuilder.group(id("gems"));
-			shapedRecipeBuilder.ingredientItem(Registry.BLOCK.getId(this.storageBlock));
-			shapedRecipeBuilder.result(Registry.ITEM.getId(this.ingot), 9);
-		});
 	}
 
 	public void makeColoredItemAssets(Identifier bufferTexture, Item item, ColorGradient gradient, String regName, String name) {
