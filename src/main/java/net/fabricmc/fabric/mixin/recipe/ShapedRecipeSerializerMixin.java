@@ -20,25 +20,23 @@ import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.Object2CharMap;
 import it.unimi.dsi.fastutil.objects.Object2CharOpenHashMap;
 import org.spongepowered.asm.mixin.Mixin;
-
-import net.minecraft.data.server.recipe.ShapedRecipeJsonFactory;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.ShapedRecipe;
-import net.minecraft.util.collection.DefaultedList;
-
 import net.fabricmc.fabric.api.recipe.v1.serializer.FabricRecipeSerializer;
+import net.minecraft.core.NonNullList;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 
 @Mixin(ShapedRecipe.Serializer.class)
 public abstract class ShapedRecipeSerializerMixin implements FabricRecipeSerializer<ShapedRecipe> {
 	@Override
 	public JsonObject toJson(ShapedRecipe recipe) {
-		ShapedRecipeJsonFactory factory = new ShapedRecipeJsonFactory(recipe.getOutput().getItem(), recipe.getOutput().getCount());
+		ShapedRecipeBuilder factory = new ShapedRecipeBuilder(recipe.getResultItem().getItem(), recipe.getResultItem().getCount());
 
-		factory.criterion("dummy", null);
+		factory.unlockedBy("dummy", null);
 
 		factory.group(recipe.getGroup());
 
-		DefaultedList<Ingredient> recipeIngredients = recipe.getIngredients();
+		NonNullList<Ingredient> recipeIngredients = recipe.getIngredients();
 		Object2CharMap<Ingredient> ingredients = new Object2CharOpenHashMap<>();
 		ingredients.defaultReturnValue(' ');
 		char currentChar = 'A';
@@ -64,10 +62,10 @@ public abstract class ShapedRecipeSerializerMixin implements FabricRecipeSeriali
 
 		factory.pattern(patternLine.toString());
 
-		ingredients.forEach(((ingredient, keyName) -> factory.input(keyName, ingredient)));
+		ingredients.forEach(((ingredient, keyName) -> factory.define(keyName, ingredient)));
 
 		JsonObject[] root = new JsonObject[1];
-		factory.offerTo(provider -> root[0] = provider.toJson());
+		factory.save(provider -> root[0] = provider.serializeRecipe());
 		return root[0];
 	}
 }

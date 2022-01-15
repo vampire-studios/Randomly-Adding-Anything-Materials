@@ -2,13 +2,13 @@ package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Maps;
 import io.github.vampirestudios.raa_core.RAACore;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.*;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.ItemLike;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -16,8 +16,8 @@ import java.util.Map;
 public class GridRecipe {
 	private static final GridRecipe INSTANCE = new GridRecipe();
 
-	private Identifier id;
-	private ItemConvertible output;
+	private ResourceLocation id;
+	private ItemLike output;
 
 	private String group;
 	private RecipeType<?> type;
@@ -29,8 +29,8 @@ public class GridRecipe {
 
 	private GridRecipe() {}
 
-	public static GridRecipe make(String modID, String name, ItemConvertible output) {
-		INSTANCE.id = new Identifier(modID, name);
+	public static GridRecipe make(String modID, String name, ItemLike output) {
+		INSTANCE.id = new ResourceLocation(modID, name);
 		INSTANCE.output = output;
 
 		INSTANCE.group = "";
@@ -67,18 +67,18 @@ public class GridRecipe {
 	}
 
 	public GridRecipe addMaterial(char key, Tag<Item> value) {
-		return addMaterial(key, Ingredient.fromTag(value));
+		return addMaterial(key, Ingredient.of(value));
 	}
 
 	public GridRecipe addMaterial(char key, ItemStack... value) {
-		return addMaterial(key, Ingredient.ofStacks(Arrays.stream(value)));
+		return addMaterial(key, Ingredient.of(Arrays.stream(value)));
 	}
 
-	public GridRecipe addMaterial(char key, ItemConvertible... values) {
-		for (ItemConvertible item: values) {
+	public GridRecipe addMaterial(char key, ItemLike... values) {
+		for (ItemLike item: values) {
 			exist &= CustomRecipeManager.exists(item);
 		}
-		return addMaterial(key, Ingredient.ofItems(values));
+		return addMaterial(key, Ingredient.of(values));
 	}
 
 	private GridRecipe addMaterial(char key, Ingredient value) {
@@ -91,8 +91,8 @@ public class GridRecipe {
 		return this;
 	}
 
-	private DefaultedList<Ingredient> getMaterials(int width, int height) {
-		DefaultedList<Ingredient> materials = DefaultedList.ofSize(width * height, Ingredient.EMPTY);
+	private NonNullList<Ingredient> getMaterials(int width, int height) {
+		NonNullList<Ingredient> materials = NonNullList.withSize(width * height, Ingredient.EMPTY);
 		int pos = 0;
 		for (String line: shape) {
 			for (int i = 0; i < width; i++) {
@@ -109,7 +109,7 @@ public class GridRecipe {
 			int height = shape.length;
 			int width = shape[0].length();
 			ItemStack result = new ItemStack(output, count);
-			DefaultedList<Ingredient> materials = this.getMaterials(width, height);
+			NonNullList<Ingredient> materials = this.getMaterials(width, height);
 
 			CraftingRecipe recipe = shaped ? new ShapedRecipe(id, group, width, height, materials, result) : new ShapelessRecipe(id, group, result, materials);
 			CustomRecipeManager.addRecipe(type, recipe);

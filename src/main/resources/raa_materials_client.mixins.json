@@ -8,7 +8,6 @@
     "MinecraftClientMixin",
     "ModelLoaderMixin",
     "SpriteAtlasTextureMixin",
-    "TextureAtlasMixin",
     "TranslationStorageMixin"
   ],
   "injectors": {

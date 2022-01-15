@@ -16,12 +16,11 @@
 
 package net.fabricmc.fabric.api.recipe.v1;
 
-import net.minecraft.recipe.Recipe;
-
 import net.fabricmc.fabric.impl.recipe.RecipeManagerImpl;
+import net.minecraft.world.item.crafting.Recipe;
 
 /**
- * Represents a helper for the {@link net.minecraft.recipe.RecipeManager}.
+ * Represents a helper for the {@link net.minecraft.world.item.crafting.RecipeManager}.
  *
  * @version 1.0.0
  * @since 1.0.0
@@ -35,7 +34,7 @@ public final class RecipeManagerHelper {
 	 * Registers a static recipe.
 	 * <p>A static recipe is a recipe that is registered at mod startup (or later) and is kept during the whole lifecycle
 	 * of the game.</p>
-	 * <p>Static recipes are automatically added to the {@linkplain net.minecraft.recipe.RecipeManager recipe manager}
+	 * <p>Static recipes are automatically added to the {@linkplain net.minecraft.world.item.crafting.RecipeManager recipe manager}
 	 * when recipes are loaded, and only is added if no other recipe with the same identifier is already registered.</p>
 	 *
 	 * @param recipe the recipe to register
@@ -58,7 +57,7 @@ public final class RecipeManagerHelper {
 	}
 
 	/**
-	 * Modifies recipes in the {@link net.minecraft.recipe.RecipeManager}.
+	 * Modifies recipes in the {@link net.minecraft.world.item.crafting.RecipeManager}.
 	 *
 	 * @param callback the recipe modifier
 	 */

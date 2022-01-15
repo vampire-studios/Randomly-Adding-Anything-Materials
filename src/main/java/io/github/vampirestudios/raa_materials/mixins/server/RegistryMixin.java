@@ -5,55 +5,55 @@ import com.mojang.serialization.Lifecycle;
 import io.github.vampirestudios.raa_materials.api.RegistryRemover;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectList;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.SimpleRegistry;
+import net.minecraft.core.MappedRegistry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Map;
 
-@Mixin(SimpleRegistry.class)
+@Mixin(MappedRegistry.class)
 public class RegistryMixin<T> implements RegistryRemover {
 	@Final
 	@Shadow
-	private ObjectList<T> rawIdToEntry;
+	private ObjectList<T> byId;
 	@Final
 	@Shadow
-	private Object2IntMap<T> entryToRawId;
+	private Object2IntMap<T> toId;
 	@Final
 	@Shadow
-	private BiMap<Identifier, T> idToEntry;
+	private BiMap<ResourceLocation, T> storage;
 	@Final
 	@Shadow
-	private BiMap<RegistryKey<T>, T> keyToEntry;
+	private BiMap<ResourceKey<T>, T> keyStorage;
 	@Final
 	@Shadow
-	private Map<T, Lifecycle> entryToLifecycle;
+	private Map<T, Lifecycle> lifecycles;
 	@Shadow
 	private int nextId;
 	
 	@Override
-	public void remove(Identifier key) {
-		if (!idToEntry.containsKey(key)) {
+	public void remove(ResourceLocation key) {
+		if (!storage.containsKey(key)) {
 			return;
 		}
 		
-		T object = idToEntry.get(key);
-		idToEntry.remove(key);
-		rawIdToEntry.remove(object);
-		entryToRawId.removeInt(object);
-		entryToLifecycle.remove(object);
-		RegistryKey<T> storageKey = null;
-		for (RegistryKey<T> searchKey: keyToEntry.keySet()) {
-			if (keyToEntry.get(searchKey) == object) {
+		T object = storage.get(key);
+		storage.remove(key);
+		byId.remove(object);
+		toId.removeInt(object);
+		lifecycles.remove(object);
+		ResourceKey<T> storageKey = null;
+		for (ResourceKey<T> searchKey: keyStorage.keySet()) {
+			if (keyStorage.get(searchKey) == object) {
 				storageKey = searchKey;
 				break;
 			}
 		}
 		if (storageKey != null) {
-			keyToEntry.remove(storageKey);
+			keyStorage.remove(storageKey);
 		}
 	}
 }

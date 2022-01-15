@@ -1,48 +1,48 @@
 package io.github.vampirestudios.raa_materials;
 
 import io.github.vampirestudios.vampirelib.utils.Utils;
-import net.minecraft.item.ToolMaterial;
-import net.minecraft.item.ToolMaterials;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.crafting.Ingredient;
 
-public class CustomToolMaterial implements ToolMaterial {
+public class CustomToolMaterial implements Tier {
 
-    private final transient Identifier materialId;
+    private final transient ResourceLocation materialId;
 
-    public CustomToolMaterial(Identifier materialId) {
+    public CustomToolMaterial(ResourceLocation materialId) {
         this.materialId = materialId;
     }
 
     @Override
-    public int getDurability() {
-        return ToolMaterials.IRON.getDurability();
+    public int getUses() {
+        return Tiers.IRON.getUses();
     }
 
     @Override
-    public float getMiningSpeedMultiplier() {
-        return ToolMaterials.IRON.getMiningSpeedMultiplier();
+    public float getSpeed() {
+        return Tiers.IRON.getSpeed();
     }
 
     @Override
-    public float getAttackDamage() {
-        return ToolMaterials.IRON.getAttackDamage();
+    public float getAttackDamageBonus() {
+        return Tiers.IRON.getAttackDamageBonus();
     }
 
     @Override
-    public int getMiningLevel() {
-        return ToolMaterials.IRON.getMiningLevel();
+    public int getLevel() {
+        return Tiers.IRON.getLevel();
     }
 
     @Override
-    public int getEnchantability() {
-        return ToolMaterials.IRON.getEnchantability();
+    public int getEnchantmentValue() {
+        return Tiers.IRON.getEnchantmentValue();
     }
 
     @Override
     public Ingredient getRepairIngredient() {
-        return Ingredient.ofItems(Registry.ITEM.get(Utils.appendToPath(materialId, "_ingot")));
+        return Ingredient.of(Registry.ITEM.get(Utils.appendToPath(materialId, "_ingot")));
     }
 
     public int getSwordAttackDamage() {

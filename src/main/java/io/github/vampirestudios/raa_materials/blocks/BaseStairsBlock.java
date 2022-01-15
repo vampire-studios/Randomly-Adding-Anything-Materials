@@ -1,25 +1,24 @@
 package io.github.vampirestudios.raa_materials.blocks;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.StairsBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
-
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootContext;
 import java.util.Collections;
 import java.util.List;
 
-public class BaseStairsBlock extends StairsBlock {
+public class BaseStairsBlock extends StairBlock {
 	private final Block source;
 
 	public BaseStairsBlock(Block source) {
-		super(source.getDefaultState(), FabricBlockSettings.copyOf(source));
+		super(source.defaultBlockState(), FabricBlockSettings.copyOf(source));
 		this.source = source;
 	}
 
 	@Override
-	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
+	public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
 		return Collections.singletonList(new ItemStack(this));
 	}
 

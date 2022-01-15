@@ -12,47 +12,46 @@ import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
 import io.github.vampirestudios.raa_materials.utils.TextureHelper;
-import net.minecraft.item.Item;
-import net.minecraft.item.Item.Settings;
-import net.minecraft.item.Items;
-import net.minecraft.item.ShovelItem;
-import net.minecraft.item.SwordItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Identifier;
-
 import java.util.Locale;
 import java.util.Random;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Item.Properties;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.item.SwordItem;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 
 public class GemOreMaterial extends OreMaterial {
-	private static final Identifier[] oreVeinTextures;
-	private static final Identifier[] gemTextures;
-	private static final Identifier[] storageBlockTextures;
-	private static final Identifier[] swordBladeTextures;
-	private static final Identifier[] swordHandleTextures;
-	private static final Identifier[] pickaxeHeadTextures;
-	private static final Identifier[] pickaxeStickTextures;
-	private static final Identifier[] axeHeadTextures;
-	private static final Identifier[] axeStickTextures;
-	private static final Identifier[] hoeHeadTextures;
-	private static final Identifier[] hoeStickTextures;
-	private static final Identifier[] shovelHeadTextures;
-	private static final Identifier[] shovelStickTextures;
+	private static final ResourceLocation[] oreVeinTextures;
+	private static final ResourceLocation[] gemTextures;
+	private static final ResourceLocation[] storageBlockTextures;
+	private static final ResourceLocation[] swordBladeTextures;
+	private static final ResourceLocation[] swordHandleTextures;
+	private static final ResourceLocation[] pickaxeHeadTextures;
+	private static final ResourceLocation[] pickaxeStickTextures;
+	private static final ResourceLocation[] axeHeadTextures;
+	private static final ResourceLocation[] axeStickTextures;
+	private static final ResourceLocation[] hoeHeadTextures;
+	private static final ResourceLocation[] hoeStickTextures;
+	private static final ResourceLocation[] shovelHeadTextures;
+	private static final ResourceLocation[] shovelStickTextures;
 
-	private final Identifier oreVeinTexture;
-	private final Identifier gemTexture;
-	private final Identifier storageBlockTexture;
-	private final Identifier swordBladeTexture;
-	private final Identifier swordHandleTexture;
-	private final Identifier pickaxeHeadTexture;
-	private final Identifier pickaxeStickTexture;
-	private final Identifier axeHeadTexture;
-	private final Identifier axeStickTexture;
-	private final Identifier hoeHeadTexture;
-	private final Identifier hoeStickTexture;
-	private final Identifier shovelHeadTexture;
-	private final Identifier shovelStickTexture;
+	private final ResourceLocation oreVeinTexture;
+	private final ResourceLocation gemTexture;
+	private final ResourceLocation storageBlockTexture;
+	private final ResourceLocation swordBladeTexture;
+	private final ResourceLocation swordHandleTexture;
+	private final ResourceLocation pickaxeHeadTexture;
+	private final ResourceLocation pickaxeStickTexture;
+	private final ResourceLocation axeHeadTexture;
+	private final ResourceLocation axeStickTexture;
+	private final ResourceLocation hoeHeadTexture;
+	private final ResourceLocation hoeStickTexture;
+	private final ResourceLocation shovelHeadTexture;
+	private final ResourceLocation shovelStickTexture;
 
 	public final Item gem;
 
@@ -87,7 +86,7 @@ public class GemOreMaterial extends OreMaterial {
 	}
 
 	public GemOreMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, Random random) {
-		super(name, gradient, targetIn, InnerRegistry.registerItem(name.toLowerCase(Locale.ROOT) + "_gem", new RAASimpleItem(name.toLowerCase(Locale.ROOT), new Settings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEM)));
+		super(name, gradient, targetIn, InnerRegistry.registerItem(name.toLowerCase(Locale.ROOT) + "_gem", new RAASimpleItem(name.toLowerCase(Locale.ROOT), new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEM)));
 		gem = this.drop;
 
 		this.oreVeinTexture = textureInformation.getOreOverlay();
@@ -108,19 +107,19 @@ public class GemOreMaterial extends OreMaterial {
 
 		sword = InnerRegistry.registerItem(this.registryName + "_sword",
 				new SwordItem(toolMaterial, toolMaterial.getSwordAttackDamage(), toolMaterial.getSwordAttackSpeed(),
-						new Item.Settings().group(RAAMaterials.RAA_WEAPONS).maxCount(1)));
+						new Item.Properties().tab(RAAMaterials.RAA_WEAPONS).stacksTo(1)));
 
 		pickaxe = InnerRegistry.registerItem(this.registryName + "_pickaxe",
-				new CustomPickaxeItem(toolMaterial, toolMaterial.getPickaxeAttackDamage(), toolMaterial.getPickaxeAttackSpeed(), new Item.Settings().group(RAAMaterials.RAA_TOOLS).maxCount(1)));
+				new CustomPickaxeItem(toolMaterial, toolMaterial.getPickaxeAttackDamage(), toolMaterial.getPickaxeAttackSpeed(), new Item.Properties().tab(RAAMaterials.RAA_TOOLS).stacksTo(1)));
 
 		axe = InnerRegistry.registerItem(this.registryName + "_axe",
-				new CustomAxeItem(toolMaterial, toolMaterial.getAxeAttackDamage(), toolMaterial.getAxeAttackSpeed(), new Item.Settings().group(RAAMaterials.RAA_TOOLS).maxCount(1)));
+				new CustomAxeItem(toolMaterial, toolMaterial.getAxeAttackDamage(), toolMaterial.getAxeAttackSpeed(), new Item.Properties().tab(RAAMaterials.RAA_TOOLS).stacksTo(1)));
 
 		hoe = InnerRegistry.registerItem(this.registryName + "_hoe",
-				new CustomHoeItem(toolMaterial, toolMaterial.getHoeAttackDamage(), toolMaterial.getHoeAttackSpeed(), new Item.Settings().group(RAAMaterials.RAA_TOOLS).maxCount(1)));
+				new CustomHoeItem(toolMaterial, toolMaterial.getHoeAttackDamage(), toolMaterial.getHoeAttackSpeed(), new Item.Properties().tab(RAAMaterials.RAA_TOOLS).stacksTo(1)));
 
 		shovel = InnerRegistry.registerItem(this.registryName + "_shovel",
-				new ShovelItem(toolMaterial, toolMaterial.getShovelAttackDamage(), toolMaterial.getShovelAttackSpeed(), new Item.Settings().group(RAAMaterials.RAA_TOOLS).maxCount(1)));
+				new ShovelItem(toolMaterial, toolMaterial.getShovelAttackDamage(), toolMaterial.getShovelAttackSpeed(), new Item.Properties().tab(RAAMaterials.RAA_TOOLS).stacksTo(1)));
 
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_block_recipe", this.storageBlock)
 				.addMaterial('r', gem)
@@ -172,7 +171,7 @@ public class GemOreMaterial extends OreMaterial {
 
 		ModelHelper.generateOreAssets(this.ore, oreVeinTexture, registryName, name, gradient, target);
 
-		Identifier textureID = TextureHelper.makeItemTextureID(this.registryName + "_block");
+		ResourceLocation textureID = TextureHelper.makeItemTextureID(this.registryName + "_block");
 		BufferTexture texture = ProceduralTextures.randomColored(storageBlockTexture, gradient);
 		InnerRegistry.registerTexture(textureID, texture);
 
@@ -186,7 +185,7 @@ public class GemOreMaterial extends OreMaterial {
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_sword_blade");
 		InnerRegistry.registerTexture(textureID, texture);
 		texture = ProceduralTextures.nonColored(swordHandleTexture);
-		Identifier texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_sword_handle");
+		ResourceLocation texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_sword_handle");
 		InnerRegistry.registerTexture(texture2ID, texture);
 		InnerRegistry.registerItemModel(this.sword, ModelHelper.makeThreeLayerItem(textureID, texture2ID, TextureHelper.makeItemTextureID("tools/sword/stick")));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_sword"), this.name + " Sword");
@@ -229,84 +228,84 @@ public class GemOreMaterial extends OreMaterial {
 	}
 
 	static {
-		oreVeinTextures = new Identifier[25];
+		oreVeinTextures = new ResourceLocation[25];
 		for (int i = 0; i < oreVeinTextures.length; i++) {
 			oreVeinTextures[i] = id("textures/block/ores/gems/ore_" + (i+1) + ".png");
 		}
 
-		storageBlockTextures = new Identifier[6];
+		storageBlockTextures = new ResourceLocation[6];
 		for (int i = 0; i < storageBlockTextures.length; i++) {
 			storageBlockTextures[i] = id("textures/block/storage_blocks/gems/gem_" + (i+1) + ".png");
 		}
 
-		gemTextures = new Identifier[30];
+		gemTextures = new ResourceLocation[30];
 		for (int i = 0; i < gemTextures.length; i++) {
 			gemTextures[i] = id("textures/item/gems/gem_" + (i+1) + ".png");
 		}
 
-		swordBladeTextures = new Identifier[13];
+		swordBladeTextures = new ResourceLocation[13];
 		for (int i = 0; i < swordBladeTextures.length; i++) {
 			swordBladeTextures[i] = id("textures/item/tools/sword/blade_" + i + ".png");
 		}
 
-		swordHandleTextures = new Identifier[11];
+		swordHandleTextures = new ResourceLocation[11];
 		for (int i = 0; i < swordHandleTextures.length; i++) {
 			swordHandleTextures[i] = id("textures/item/tools/sword/handle_" + i + ".png");
 		}
 
 
-		pickaxeHeadTextures = new Identifier[11];
+		pickaxeHeadTextures = new ResourceLocation[11];
 		for (int i = 0; i < pickaxeHeadTextures.length; i++) {
 			pickaxeHeadTextures[i] = id("textures/item/tools/pickaxe/pickaxe_" + i + ".png");
 		}
 
-		pickaxeStickTextures = new Identifier[10];
+		pickaxeStickTextures = new ResourceLocation[10];
 		for (int i = 0; i < pickaxeStickTextures.length; i++) {
 			pickaxeStickTextures[i] = id("textures/item/tools/pickaxe/stick_" + (i+1) + ".png");
 		}
 
 
-		axeHeadTextures = new Identifier[11];
+		axeHeadTextures = new ResourceLocation[11];
 		for (int i = 0; i < axeHeadTextures.length; i++) {
 			axeHeadTextures[i] = id("textures/item/tools/axe/axe_head_" + (i+1) + ".png");
 		}
 
-		axeStickTextures = new Identifier[8];
+		axeStickTextures = new ResourceLocation[8];
 		for (int i = 0; i < axeStickTextures.length; i++) {
 			axeStickTextures[i] = id("textures/item/tools/axe/axe_stick_" + (i+1) + ".png");
 		}
 
 
-		hoeHeadTextures = new Identifier[9];
+		hoeHeadTextures = new ResourceLocation[9];
 		for (int i = 0; i < hoeHeadTextures.length; i++) {
 			hoeHeadTextures[i] = id("textures/item/tools/hoe/hoe_head_" + (i+1) + ".png");
 		}
 
-		hoeStickTextures = new Identifier[9];
+		hoeStickTextures = new ResourceLocation[9];
 		for (int i = 0; i < hoeStickTextures.length; i++) {
 			hoeStickTextures[i] = id("textures/item/tools/hoe/hoe_stick_" + (i+1) + ".png");
 		}
 
-		shovelHeadTextures = new Identifier[11];
+		shovelHeadTextures = new ResourceLocation[11];
 		for (int i = 0; i < shovelHeadTextures.length; i++) {
 			shovelHeadTextures[i] = id("textures/item/tools/shovel/shovel_head_" + (i+1) + ".png");
 		}
 
-		shovelStickTextures = new Identifier[11];
+		shovelStickTextures = new ResourceLocation[11];
 		for (int i = 0; i < shovelStickTextures.length; i++) {
 			shovelStickTextures[i] = id("textures/item/tools/shovel/shovel_stick_" + (i+1) + ".png");
 		}
 	}
 
 	@Override
-	public NbtCompound writeToNbt() {
-		NbtCompound materialCompound = new NbtCompound();
+	public CompoundTag writeToNbt() {
+		CompoundTag materialCompound = new CompoundTag();
 		materialCompound.putString("name", this.name);
 		materialCompound.putString("registryName", this.registryName);
 		materialCompound.putString("materialType", "gem");
 		materialCompound.putString("target", this.target.name());
 
-		NbtCompound texturesCompound = new NbtCompound();
+		CompoundTag texturesCompound = new CompoundTag();
 		texturesCompound.putString("oreTexture", oreVeinTexture.toString());
 		texturesCompound.putString("storageBlockTexture", storageBlockTexture.toString());
 		texturesCompound.putString("gemTexture", gemTexture.toString());
@@ -322,7 +321,7 @@ public class GemOreMaterial extends OreMaterial {
 		texturesCompound.putString("shovelStickTexture", shovelStickTexture.toString());
 		materialCompound.put("textures", texturesCompound);
 
-		NbtCompound colorGradientCompound = new NbtCompound();
+		CompoundTag colorGradientCompound = new CompoundTag();
 		colorGradientCompound.putInt("startColor", this.gradient.getColor(0.0F).getAsInt());
 		colorGradientCompound.putInt("endColor", this.gradient.getColor(1.0F).getAsInt());
 		materialCompound.put("colorGradient", colorGradientCompound);
@@ -330,10 +329,10 @@ public class GemOreMaterial extends OreMaterial {
 		return materialCompound;
 	}
 
-	public void makeColoredItemAssets(Identifier textureId, Item item, ColorGradient gradient, Random random, String regName, String name) {
+	public void makeColoredItemAssets(ResourceLocation textureId, Item item, ColorGradient gradient, Random random, String regName, String name) {
 
 		BufferTexture texture = ProceduralTextures.randomColored(textureId, gradient);
-		Identifier textureID = TextureHelper.makeItemTextureID(regName);
+		ResourceLocation textureID = TextureHelper.makeItemTextureID(regName);
 		InnerRegistry.registerTexture(textureID, texture);
 
 		InnerRegistry.registerItemModel(item, ModelHelper.makeFlatItem(textureID));

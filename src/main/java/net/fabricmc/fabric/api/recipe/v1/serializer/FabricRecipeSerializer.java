@@ -17,9 +17,8 @@
 package net.fabricmc.fabric.api.recipe.v1.serializer;
 
 import com.google.gson.JsonObject;
-
-import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 
 /**
  * Represents a recipe serializer for mods to implement.

@@ -20,13 +20,13 @@ import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.chars.CharArraySet;
 import it.unimi.dsi.fastutil.chars.CharSet;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.*;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.ItemLike;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -53,8 +53,8 @@ public final class VanillaRecipeBuilders {
 	 * @return the ingredients
 	 * @throws IllegalStateException if a key has no assigned ingredient or if there is an ingredient but no assigned key
 	 */
-	public static DefaultedList<Ingredient> getIngredients(String[] pattern, Char2ObjectMap<Ingredient> keys, int width, int height) {
-		DefaultedList<Ingredient> ingredients = DefaultedList.ofSize(width * height, Ingredient.EMPTY);
+	public static NonNullList<Ingredient> getIngredients(String[] pattern, Char2ObjectMap<Ingredient> keys, int width, int height) {
+		NonNullList<Ingredient> ingredients = NonNullList.withSize(width * height, Ingredient.EMPTY);
 		CharSet patternSet = new CharArraySet(keys.keySet());
 		patternSet.remove(' ');
 
@@ -108,10 +108,10 @@ public final class VanillaRecipeBuilders {
 	 * @param output the output item stack
 	 * @return the stone cutting recipe
 	 */
-	public static StonecuttingRecipe stonecuttingRecipe(Identifier id, String group, Ingredient input, ItemStack output) {
+	public static StonecutterRecipe stonecuttingRecipe(ResourceLocation id, String group, Ingredient input, ItemStack output) {
 		if (input == Ingredient.EMPTY) throw new IllegalArgumentException("Input cannot be empty.");
 
-		return new StonecuttingRecipe(id, group, input, output);
+		return new StonecutterRecipe(id, group, input, output);
 	}
 
 	/**
@@ -125,7 +125,7 @@ public final class VanillaRecipeBuilders {
 	 * @param cookTime   the cook time in ticks
 	 * @return the smelting recipe
 	 */
-	public static SmeltingRecipe smeltingRecipe(Identifier id, String group, Ingredient input, ItemStack output, float experience, int cookTime) {
+	public static SmeltingRecipe smeltingRecipe(ResourceLocation id, String group, Ingredient input, ItemStack output, float experience, int cookTime) {
 		if (input == Ingredient.EMPTY) throw new IllegalArgumentException("Input cannot be empty.");
 		if (cookTime < 0) throw new IllegalArgumentException("Cook time must be equal or greater than 0");
 
@@ -143,7 +143,7 @@ public final class VanillaRecipeBuilders {
 	 * @param cookTime   the cook time in ticks
 	 * @return the blasting recipe
 	 */
-	public static BlastingRecipe blastingRecipe(Identifier id, String group, Ingredient input, ItemStack output, float experience, int cookTime) {
+	public static BlastingRecipe blastingRecipe(ResourceLocation id, String group, Ingredient input, ItemStack output, float experience, int cookTime) {
 		if (input == Ingredient.EMPTY) throw new IllegalArgumentException("Input cannot be empty.");
 		if (cookTime < 0) throw new IllegalArgumentException("Cook time must be equal or greater than 0");
 
@@ -161,7 +161,7 @@ public final class VanillaRecipeBuilders {
 	 * @param cookTime   the cook time in ticks
 	 * @return the smoking recipe
 	 */
-	public static SmokingRecipe smokingRecipe(Identifier id, String group, Ingredient input, ItemStack output, float experience, int cookTime) {
+	public static SmokingRecipe smokingRecipe(ResourceLocation id, String group, Ingredient input, ItemStack output, float experience, int cookTime) {
 		if (input == Ingredient.EMPTY) throw new IllegalArgumentException("Input cannot be empty.");
 		if (cookTime < 0) throw new IllegalArgumentException("Cook time must be equal or greater than 0");
 
@@ -179,7 +179,7 @@ public final class VanillaRecipeBuilders {
 	 * @param cookTime   the cook time in ticks
 	 * @return the campfire cooking recipe
 	 */
-	public static CampfireCookingRecipe campfireCookingRecipe(Identifier id, String group, Ingredient input,
+	public static CampfireCookingRecipe campfireCookingRecipe(ResourceLocation id, String group, Ingredient input,
 															ItemStack output, float experience, int cookTime) {
 		if (input == Ingredient.EMPTY) throw new IllegalArgumentException("Input cannot be empty.");
 		if (cookTime < 0) throw new IllegalArgumentException("Cook time must be equal or greater than 0");
@@ -245,8 +245,8 @@ public final class VanillaRecipeBuilders {
 		 * @return this builder
 		 * @see #ingredient(char, Ingredient)
 		 */
-		public ShapedRecipeBuilder ingredient(char key, ItemConvertible... items) {
-			return this.ingredient(key, Ingredient.ofItems(items));
+		public ShapedRecipeBuilder ingredient(char key, ItemLike... items) {
+			return this.ingredient(key, Ingredient.of(items));
 		}
 
 		/**
@@ -258,7 +258,7 @@ public final class VanillaRecipeBuilders {
 		 * @see #ingredient(char, Ingredient)
 		 */
 		public ShapedRecipeBuilder ingredient(char key, Tag<Item> tag) {
-			return this.ingredient(key, Ingredient.fromTag(tag));
+			return this.ingredient(key, Ingredient.of(tag));
 		}
 
 		/**
@@ -270,7 +270,7 @@ public final class VanillaRecipeBuilders {
 		 * @see #ingredient(char, Ingredient)
 		 */
 		public ShapedRecipeBuilder ingredient(char key, ItemStack... stacks) {
-			return this.ingredient(key, Ingredient.ofStacks(stacks));
+			return this.ingredient(key, Ingredient.of(stacks));
 		}
 
 		/**
@@ -291,9 +291,9 @@ public final class VanillaRecipeBuilders {
 		 * @param group the group of the recipe
 		 * @return the shaped recipe
 		 */
-		public ShapedRecipe build(Identifier id, String group) {
+		public ShapedRecipe build(ResourceLocation id, String group) {
 			Objects.requireNonNull(this.output, "The output stack cannot be null.");
-			DefaultedList<Ingredient> ingredients = getIngredients(this.pattern, this.ingredients, this.width, this.height);
+			NonNullList<Ingredient> ingredients = getIngredients(this.pattern, this.ingredients, this.width, this.height);
 			return new ShapedRecipe(id, group, this.width, this.height, ingredients, this.output);
 		}
 	}
@@ -324,8 +324,8 @@ public final class VanillaRecipeBuilders {
 		 * @return this builder
 		 * @see #ingredient(Ingredient)
 		 */
-		public ShapelessRecipeBuilder ingredient(ItemConvertible... items) {
-			return this.ingredient(Ingredient.ofItems(items));
+		public ShapelessRecipeBuilder ingredient(ItemLike... items) {
+			return this.ingredient(Ingredient.of(items));
 		}
 
 		/**
@@ -336,7 +336,7 @@ public final class VanillaRecipeBuilders {
 		 * @see #ingredient(Ingredient)
 		 */
 		public ShapelessRecipeBuilder ingredient(Tag<Item> tag) {
-			return this.ingredient(Ingredient.fromTag(tag));
+			return this.ingredient(Ingredient.of(tag));
 		}
 
 		/**
@@ -347,7 +347,7 @@ public final class VanillaRecipeBuilders {
 		 * @see #ingredient(Ingredient)
 		 */
 		public ShapelessRecipeBuilder ingredient(ItemStack... stacks) {
-			return this.ingredient(Ingredient.ofStacks(stacks));
+			return this.ingredient(Ingredient.of(stacks));
 		}
 
 		/**
@@ -368,12 +368,12 @@ public final class VanillaRecipeBuilders {
 		 * @param group the group of the recipe
 		 * @return the shapeless crafting recipe
 		 */
-		public ShapelessRecipe build(Identifier id, String group) {
+		public ShapelessRecipe build(ResourceLocation id, String group) {
 			Objects.requireNonNull(this.output, "The output stack cannot be null.");
 
 			if (ingredients.size() == 0) throw new IllegalStateException("Cannot build a recipe without ingredients.");
 
-			DefaultedList<Ingredient> ingredients = DefaultedList.ofSize(this.ingredients.size(), Ingredient.EMPTY);
+			NonNullList<Ingredient> ingredients = NonNullList.withSize(this.ingredients.size(), Ingredient.EMPTY);
 			int i = 0;
 
 			for (Ingredient ingredient : this.ingredients) {

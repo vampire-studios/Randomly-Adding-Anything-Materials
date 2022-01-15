@@ -5,13 +5,12 @@ import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
 import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 
 public abstract class ComplexMaterial {
 	private static final List<ComplexMaterial> MATERIALS = Lists.newArrayList();
@@ -26,49 +25,49 @@ public abstract class ComplexMaterial {
 		this.gradient = gradient;
 	}
 
-	public abstract NbtCompound writeToNbt();
+	public abstract CompoundTag writeToNbt();
 
-	public static ComplexMaterial readFromNbt(Random random, NbtCompound compound) {
+	public static ComplexMaterial readFromNbt(Random random, CompoundTag compound) {
 		String type = compound.getString("materialType");
 		String name = compound.getString("name");
-		Identifier targetName = RAAMaterials.id(compound.getString("target"));
+		ResourceLocation targetName = RAAMaterials.id(compound.getString("target"));
 		ComplexMaterial material;
 
-		NbtCompound colorGradientCompound = compound.getCompound("colorGradient");
+		CompoundTag colorGradientCompound = compound.getCompound("colorGradient");
 		ColorGradient gradient = new ColorGradient(new CustomColor(colorGradientCompound.getInt("startColor")),
 				new CustomColor(colorGradientCompound.getInt("endColor")));
 
 		OreMaterial.Target target = RAAMaterials.TARGETS.get(targetName);
 
-		NbtCompound texturesCompound = compound.getCompound("textures");
+		CompoundTag texturesCompound = compound.getCompound("textures");
 		TextureInformation.Builder textureInformationBuilder = TextureInformation.builder();
 
 		//Blocks
-		textureInformationBuilder.oreOverlay(Identifier.tryParse(texturesCompound.getString("oreTexture")));
-		textureInformationBuilder.storageBlock(Identifier.tryParse(texturesCompound.getString("storageBlockTexture")));
-		textureInformationBuilder.rawMaterialBlock(Identifier.tryParse(texturesCompound.getString("rawMaterialBlockTexture")));
+		textureInformationBuilder.oreOverlay(ResourceLocation.tryParse(texturesCompound.getString("oreTexture")));
+		textureInformationBuilder.storageBlock(ResourceLocation.tryParse(texturesCompound.getString("storageBlockTexture")));
+		textureInformationBuilder.rawMaterialBlock(ResourceLocation.tryParse(texturesCompound.getString("rawMaterialBlockTexture")));
 
 		//Items
-		textureInformationBuilder.ingot(Identifier.tryParse(texturesCompound.getString("ingotTexture")));
-		textureInformationBuilder.gem(Identifier.tryParse(texturesCompound.getString("gemTexture")));
-		textureInformationBuilder.rawItem(Identifier.tryParse(texturesCompound.getString("rawItemTexture")));
-		textureInformationBuilder.plate(Identifier.tryParse(texturesCompound.getString("plateTexture")));
-		textureInformationBuilder.gear(Identifier.tryParse(texturesCompound.getString("gearTexture")));
-		textureInformationBuilder.nugget(Identifier.tryParse(texturesCompound.getString("nuggetTexture")));
-		textureInformationBuilder.dust(Identifier.tryParse(texturesCompound.getString("dustTexture")));
-		textureInformationBuilder.smallDust(Identifier.tryParse(texturesCompound.getString("smallDustTexture")));
+		textureInformationBuilder.ingot(ResourceLocation.tryParse(texturesCompound.getString("ingotTexture")));
+		textureInformationBuilder.gem(ResourceLocation.tryParse(texturesCompound.getString("gemTexture")));
+		textureInformationBuilder.rawItem(ResourceLocation.tryParse(texturesCompound.getString("rawItemTexture")));
+		textureInformationBuilder.plate(ResourceLocation.tryParse(texturesCompound.getString("plateTexture")));
+		textureInformationBuilder.gear(ResourceLocation.tryParse(texturesCompound.getString("gearTexture")));
+		textureInformationBuilder.nugget(ResourceLocation.tryParse(texturesCompound.getString("nuggetTexture")));
+		textureInformationBuilder.dust(ResourceLocation.tryParse(texturesCompound.getString("dustTexture")));
+		textureInformationBuilder.smallDust(ResourceLocation.tryParse(texturesCompound.getString("smallDustTexture")));
 
 		//Tools
-		textureInformationBuilder.swordBlade(Identifier.tryParse(texturesCompound.getString("swordBladeTexture")));
-		textureInformationBuilder.swordHandle(Identifier.tryParse(texturesCompound.getString("swordHandleTexture")));
-		textureInformationBuilder.pickaxeHead(Identifier.tryParse(texturesCompound.getString("pickaxeHeadTexture")));
-		textureInformationBuilder.pickaxeStick(Identifier.tryParse(texturesCompound.getString("pickaxeStickTexture")));
-		textureInformationBuilder.axeHead(Identifier.tryParse(texturesCompound.getString("axeHeadTexture")));
-		textureInformationBuilder.axeStick(Identifier.tryParse(texturesCompound.getString("axeStickTexture")));
-		textureInformationBuilder.hoeHead(Identifier.tryParse(texturesCompound.getString("hoeHeadTexture")));
-		textureInformationBuilder.hoeStick(Identifier.tryParse(texturesCompound.getString("hoeStickTexture")));
-		textureInformationBuilder.shovelHead(Identifier.tryParse(texturesCompound.getString("shovelHeadTexture")));
-		textureInformationBuilder.shovelStick(Identifier.tryParse(texturesCompound.getString("shovelStickTexture")));
+		textureInformationBuilder.swordBlade(ResourceLocation.tryParse(texturesCompound.getString("swordBladeTexture")));
+		textureInformationBuilder.swordHandle(ResourceLocation.tryParse(texturesCompound.getString("swordHandleTexture")));
+		textureInformationBuilder.pickaxeHead(ResourceLocation.tryParse(texturesCompound.getString("pickaxeHeadTexture")));
+		textureInformationBuilder.pickaxeStick(ResourceLocation.tryParse(texturesCompound.getString("pickaxeStickTexture")));
+		textureInformationBuilder.axeHead(ResourceLocation.tryParse(texturesCompound.getString("axeHeadTexture")));
+		textureInformationBuilder.axeStick(ResourceLocation.tryParse(texturesCompound.getString("axeStickTexture")));
+		textureInformationBuilder.hoeHead(ResourceLocation.tryParse(texturesCompound.getString("hoeHeadTexture")));
+		textureInformationBuilder.hoeStick(ResourceLocation.tryParse(texturesCompound.getString("hoeStickTexture")));
+		textureInformationBuilder.shovelHead(ResourceLocation.tryParse(texturesCompound.getString("shovelHeadTexture")));
+		textureInformationBuilder.shovelStick(ResourceLocation.tryParse(texturesCompound.getString("shovelStickTexture")));
 
 		TextureInformation textureInformation = textureInformationBuilder.build();
 
@@ -92,6 +91,6 @@ public abstract class ComplexMaterial {
 		MATERIALS.clear();
 	}
 
-	public abstract void generate(ServerWorld world);
+	public abstract void generate(ServerLevel world);
 
 }

@@ -18,9 +18,9 @@ package net.fabricmc.fabric.api.recipe.v1;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,7 +63,7 @@ public final class RecipeLoadingEvents {
 	public interface RecipeLoadingCallback {
 		/**
 		 * Called when recipes are loaded.
-		 * <p>{@code handler} is used to add recipes into the {@linkplain net.minecraft.recipe.RecipeManager recipe manager}.</p>
+		 * <p>{@code handler} is used to add recipes into the {@linkplain net.minecraft.world.item.crafting.RecipeManager recipe manager}.</p>
 		 *
 		 * @param handler the recipe handler
 		 */
@@ -75,14 +75,14 @@ public final class RecipeLoadingEvents {
 		@ApiStatus.NonExtendable
 		interface RecipeHandler {
 			/**
-			 * Registers a recipe into the {@link net.minecraft.recipe.RecipeManager}.
+			 * Registers a recipe into the {@link net.minecraft.world.item.crafting.RecipeManager}.
 			 *
 			 * <p>The recipe factory is only called if the recipe can be registered.</p>
 			 *
 			 * @param id      identifier of the recipe
 			 * @param factory the recipe factory
 			 */
-			void register(Identifier id, Function<Identifier, Recipe<?>> factory);
+			void register(ResourceLocation id, Function<ResourceLocation, Recipe<?>> factory);
 		}
 	}
 
@@ -104,7 +104,7 @@ public final class RecipeLoadingEvents {
 		@ApiStatus.NonExtendable
 		interface RecipeHandler {
 			/**
-			 * Replaces a recipe in the {@link net.minecraft.recipe.RecipeManager}.
+			 * Replaces a recipe in the {@link net.minecraft.world.item.crafting.RecipeManager}.
 			 *
 			 * @param recipe the recipe
 			 */
@@ -116,48 +116,48 @@ public final class RecipeLoadingEvents {
 			 * @param id the identifier of the recipe
 			 * @return the recipe type if the recipe is present, else {@code null}
 			 */
-			@Nullable RecipeType<?> getTypeOf(Identifier id);
+			@Nullable RecipeType<?> getTypeOf(ResourceLocation id);
 
 			/**
-			 * Returns whether or not the {@link net.minecraft.recipe.RecipeManager} contains the specified recipe.
+			 * Returns whether or not the {@link net.minecraft.world.item.crafting.RecipeManager} contains the specified recipe.
 			 *
 			 * @param id the identifier of the recipe
-			 * @return {@code true} if the recipe is present in the {@link net.minecraft.recipe.RecipeManager}, else {@code false}
+			 * @return {@code true} if the recipe is present in the {@link net.minecraft.world.item.crafting.RecipeManager}, else {@code false}
 			 */
-			boolean contains(Identifier id);
+			boolean contains(ResourceLocation id);
 
 			/**
-			 * Returns whether or not the {@link net.minecraft.recipe.RecipeManager} contains the specified recipe of the specified recipe type.
+			 * Returns whether or not the {@link net.minecraft.world.item.crafting.RecipeManager} contains the specified recipe of the specified recipe type.
 			 *
 			 * @param id   the identifier of the recipe
 			 * @param type the type of the recipe
-			 * @return {@code true} if the recipe is present in the {@link net.minecraft.recipe.RecipeManager}, else {@code false}
+			 * @return {@code true} if the recipe is present in the {@link net.minecraft.world.item.crafting.RecipeManager}, else {@code false}
 			 */
-			boolean contains(Identifier id, RecipeType<?> type);
+			boolean contains(ResourceLocation id, RecipeType<?> type);
 
 			/**
-			 * Returns the recipe in {@link net.minecraft.recipe.RecipeManager} from its identifier.
+			 * Returns the recipe in {@link net.minecraft.world.item.crafting.RecipeManager} from its identifier.
 			 *
 			 * @param id the identifier of the recipe
 			 * @return the recipe if present, else {@code null}
 			 */
-			@Nullable Recipe<?> getRecipe(Identifier id);
+			@Nullable Recipe<?> getRecipe(ResourceLocation id);
 
 			/**
-			 * Returns the recipe of the specified recipe type in {@link net.minecraft.recipe.RecipeManager} from its identifier.
+			 * Returns the recipe of the specified recipe type in {@link net.minecraft.world.item.crafting.RecipeManager} from its identifier.
 			 *
 			 * @param id   the identifier of the recipe
 			 * @param type the type of the recipe
 			 * @return the recipe if present and of the correct type, else {@code null}
 			 */
-			@Nullable <T extends Recipe<?>> T getRecipe(Identifier id, RecipeType<T> type);
+			@Nullable <T extends Recipe<?>> T getRecipe(ResourceLocation id, RecipeType<T> type);
 
 			/**
 			 * Returns all registered recipes.
 			 *
 			 * @return the registered recipes
 			 */
-			Map<RecipeType<?>, Map<Identifier, Recipe<?>>> getRecipes();
+			Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> getRecipes();
 
 			/**
 			 * Returns all registered recipes of the specified type.

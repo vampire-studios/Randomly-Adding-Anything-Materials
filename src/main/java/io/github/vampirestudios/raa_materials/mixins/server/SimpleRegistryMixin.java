@@ -5,16 +5,16 @@ import com.mojang.serialization.Lifecycle;
 import io.github.vampirestudios.raa_materials.utils.ChangeableRegistry;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectList;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.SimpleRegistry;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Map;
+import net.minecraft.core.MappedRegistry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 
-@Mixin(SimpleRegistry.class)
+@Mixin(MappedRegistry.class)
 public class SimpleRegistryMixin<T> implements ChangeableRegistry {
 	@Final
 	@Shadow
@@ -24,10 +24,10 @@ public class SimpleRegistryMixin<T> implements ChangeableRegistry {
 	private Object2IntMap<T> entryToRawId;
 	@Final
 	@Shadow
-	private BiMap<Identifier, T> idToEntry;
+	private BiMap<ResourceLocation, T> idToEntry;
 	@Final
 	@Shadow
-	private BiMap<RegistryKey<T>, T> keyToEntry;
+	private BiMap<ResourceKey<T>, T> keyToEntry;
 	@Final
 	@Shadow
 	private Map<T, Lifecycle> entryToLifecycle;
@@ -35,7 +35,7 @@ public class SimpleRegistryMixin<T> implements ChangeableRegistry {
 	private int nextId;
 
 	@Override
-	public void remove(Identifier key) {
+	public void remove(ResourceLocation key) {
 		T entry = idToEntry.get(key);
 		if (entry != null) {
 			int rawID = entryToRawId.getInt(entry);

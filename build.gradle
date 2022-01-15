@@ -1,10 +1,11 @@
 plugins {
-	id 'fabric-loom' version '0.9-SNAPSHOT'
+	id 'fabric-loom' version '0.10-SNAPSHOT'
 	id 'maven-publish'
+	id "io.github.juuxel.loom-quiltflower-mini" version "1.2.0"
+	id 'org.quiltmc.quilt-mappings-on-loom' version '3.1.1'
 }
 
-sourceCompatibility = JavaVersion.VERSION_16
-targetCompatibility = JavaVersion.VERSION_16
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -14,6 +15,9 @@ repositories {
 	mavenLocal()
 	maven { url = "https://raw.githubusercontent.com/vampire-studios/VampireStudiosMaven/main/" }
 	maven { url = "https://maven.shedaniel.me/" }
+	maven { url = "https://maven.terraformersmc.com/" }
+	maven { url = "https://maven.quiltmc.org/repository/" }
+	maven { url = "https://maven.parchmentmc.org" }
 }
 
 minecraft { }
@@ -21,24 +25,20 @@ minecraft { }
 dependencies {
 	//to change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	mappings loom.layered {
+		it.addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:1.18.1+build.5:v2")) // https://maven.quiltmc.org/#browse/browse:release
+		it.parchment("org.parchmentmc.data:parchment-1.18.1:2021.12.19@zip") // https://ldtteam.jfrog.io/ui/natiave/parchmentmc-public/org/parchmentmc/data/parchment-1.18.1/BLEEDING-SNAPSHOT
+		it.officialMojangMappings {
+			setNameSyntheticMembers(false)
+		}
+	}
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	modImplementation "io.github.vampirestudios:Randomly-Adding-Anything-Core:${project.core_version}"
 
-	modRuntime ("me.shedaniel:RoughlyEnoughItems-api:6.0.249-alpha") {
-		exclude group: "io.github.prospector.modmenu"
-		exclude group :"net.fabricmc.fabric-api"
-	}
-	modRuntime ("me.shedaniel:RoughlyEnoughItems-default-plugin:6.0.249-alpha") {
-		exclude group: "io.github.prospector.modmenu"
-		exclude group :"net.fabricmc.fabric-api"
-	}
-	modRuntime ("me.shedaniel:RoughlyEnoughItems-runtime:6.0.249-alpha") {
-		exclude group: "io.github.prospector.modmenu"
-		exclude group :"net.fabricmc.fabric-api"
-	}
+	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:7.1.368"
+	modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:7.1.368"
 }
 
 processResources {

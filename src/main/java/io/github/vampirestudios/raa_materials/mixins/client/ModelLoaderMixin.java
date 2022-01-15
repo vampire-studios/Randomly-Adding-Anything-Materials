@@ -3,16 +3,16 @@ package io.github.vampirestudios.raa_materials.mixins.client;
 import io.github.vampirestudios.raa_core.RAACore;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.block.BlockModels;
-import net.minecraft.client.render.model.ModelLoader;
-import net.minecraft.client.render.model.UnbakedModel;
-import net.minecraft.client.render.model.json.JsonUnbakedModel;
-import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.item.Item;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,32 +26,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Mixin(ModelLoader.class)
+@Mixin(ModelBakery.class)
 public class ModelLoaderMixin {
 	@Final
 	@Shadow
-	private Map<Identifier, UnbakedModel> unbakedModels;
+	private Map<ResourceLocation, UnbakedModel> unbakedCache;
 	
 	@Shadow
-	private void putModel(Identifier id, UnbakedModel unbakedModel) {}
+	private void cacheAndQueueDependencies(ResourceLocation id, UnbakedModel unbakedModel) {}
 
-	@Inject(method = "loadModelFromJson", at = @At("HEAD"), cancellable = true)
-	private void procmcLoadModelFromJson(Identifier id, CallbackInfoReturnable<JsonUnbakedModel> info) throws IOException {
-		JsonUnbakedModel model = InnerRegistry.getModel(id);
+	@Inject(method = "loadBlockModel", at = @At("HEAD"), cancellable = true)
+	private void procmcLoadModelFromJson(ResourceLocation id, CallbackInfoReturnable<BlockModel> info) throws IOException {
+		BlockModel model = InnerRegistry.getModel(id);
 		if (model != null) {
 			info.setReturnValue(model);
 			info.cancel();
 		}
 	}
 
-	@Inject(method = "loadModelFromJson", at = @At("HEAD"), cancellable = true)
-	private void loadModelFromJson(Identifier id, CallbackInfoReturnable<JsonUnbakedModel> info) throws IOException {
+	@Inject(method = "loadBlockModel", at = @At("HEAD"), cancellable = true)
+	private void loadModelFromJson(ResourceLocation id, CallbackInfoReturnable<BlockModel> info) throws IOException {
 		String path = id.getPath();
 		if (path.startsWith("item/")) {
-			Item item = Registry.ITEM.get(new Identifier(id.getNamespace(), path.substring(path.lastIndexOf('/') + 1)));
-			JsonUnbakedModel model = InnerRegistry.getModel(item);
+			Item item = Registry.ITEM.get(new ResourceLocation(id.getNamespace(), path.substring(path.lastIndexOf('/') + 1)));
+			BlockModel model = InnerRegistry.getModel(item);
 			if (model != null) {
-				model.id = id.toString();
+				model.name = id.toString();
 				info.setReturnValue(model);
 				info.cancel();
 			}
@@ -59,19 +59,19 @@ public class ModelLoaderMixin {
 	}
 
 	@Inject(method = "loadModel", at = @At("HEAD"), cancellable = true)
-	private void loadModel(Identifier id, CallbackInfo info) {
-		if (id instanceof ModelIdentifier modelID) {
-			Identifier cleanID = new Identifier(id.getNamespace(), id.getPath());
+	private void loadModel(ResourceLocation id, CallbackInfo info) {
+		if (id instanceof ModelResourceLocation modelID) {
+			ResourceLocation cleanID = new ResourceLocation(id.getNamespace(), id.getPath());
 			if (InnerRegistry.hasCustomModel(cleanID)) {
 				if (modelID.getVariant().equals("inventory")) {
 					Item item = Registry.ITEM.get(cleanID);
-					JsonUnbakedModel model = InnerRegistry.getModel(item);
+					BlockModel model = InnerRegistry.getModel(item);
 					if (model != null) {
 						ModelHelper.MODELS.put(Registry.ITEM.get(cleanID), modelID);
-						Identifier identifier2 = new Identifier(id.getNamespace(), "item/" + id.getPath());
-						model.id = identifier2.toString();
-						putModel(modelID, model);
-						unbakedModels.put(identifier2, model);
+						ResourceLocation identifier2 = new ResourceLocation(id.getNamespace(), "item/" + id.getPath());
+						model.name = identifier2.toString();
+						cacheAndQueueDependencies(modelID, model);
+						unbakedCache.put(identifier2, model);
 						info.cancel();
 					} else {
 						RAACore.LOGGER.warn("Missing item model for {}", cleanID);
@@ -88,10 +88,10 @@ public class ModelLoaderMixin {
 							System.out.printf("Missing block model for %s for state %s%n", cleanID, state);
 						}
 					});*/
-					List<BlockState> possibleStates = block.getStateManager().getStates();
+					List<BlockState> possibleStates = block.getStateDefinition().getPossibleStates();
 					Optional<BlockState> possibleState = possibleStates
 							.stream()
-							.filter(state -> modelID.equals(BlockModels.getModelId(cleanID, state)))
+							.filter(state -> modelID.equals(BlockModelShaper.stateToModelLocation(cleanID, state)))
 							.findFirst();
 					if (possibleState.isPresent()) {
 						UnbakedModel model = InnerRegistry.getModel(possibleState.get());
@@ -109,8 +109,8 @@ public class ModelLoaderMixin {
 								putModel(modelID, model);
 							}*/
 							possibleStates.forEach(state -> {
-								Identifier stateId = BlockModels.getModelId(cleanID, state);
-								putModel(stateId, model);
+								ResourceLocation stateId = BlockModelShaper.stateToModelLocation(cleanID, state);
+								cacheAndQueueDependencies(stateId, model);
 							});
 						} else {
 							RAACore.LOGGER.warn("Error loading variant: {}", modelID);

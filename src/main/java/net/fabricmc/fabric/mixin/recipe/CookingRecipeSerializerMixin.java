@@ -18,20 +18,18 @@ package net.fabricmc.fabric.mixin.recipe;
 
 import com.google.gson.JsonObject;
 import org.spongepowered.asm.mixin.Mixin;
-
-import net.minecraft.data.server.recipe.CookingRecipeJsonFactory;
-import net.minecraft.recipe.AbstractCookingRecipe;
-import net.minecraft.recipe.CookingRecipeSerializer;
-
 import net.fabricmc.fabric.api.recipe.v1.serializer.FabricRecipeSerializer;
+import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.SimpleCookingSerializer;
 
-@Mixin(CookingRecipeSerializer.class)
+@Mixin(SimpleCookingSerializer.class)
 public abstract class CookingRecipeSerializerMixin<T extends AbstractCookingRecipe> implements FabricRecipeSerializer<T> {
 	@Override
 	public JsonObject toJson(T recipe) {
-		return new CookingRecipeJsonFactory.CookingRecipeJsonProvider(recipe.getId(), recipe.getGroup(),
-				recipe.getIngredients().get(0), recipe.getOutput().getItem(),
-				recipe.getExperience(), recipe.getCookTime(), null, null, this)
-				.toJson();
+		return new SimpleCookingRecipeBuilder.Result(recipe.getId(), recipe.getGroup(),
+				recipe.getIngredients().get(0), recipe.getResultItem().getItem(),
+				recipe.getExperience(), recipe.getCookingTime(), null, null, this)
+				.serializeRecipe();
 	}
 }

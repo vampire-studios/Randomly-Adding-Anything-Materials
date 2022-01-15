@@ -3,37 +3,37 @@ package io.github.vampirestudios.raa_materials;
 import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ArmorMaterials;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.ArmorMaterials;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public class CustomArmorMaterial implements ArmorMaterial {
 
-    private final Identifier materialId;
+    private final ResourceLocation materialId;
 
-    public CustomArmorMaterial(Identifier materialId) {
+    public CustomArmorMaterial(ResourceLocation materialId) {
         this.materialId = materialId;
     }
 
-    public int getDurability(EquipmentSlot equipmentSlot_1) {
-        return ArmorMaterials.IRON.getDurability(equipmentSlot_1);
+    public int getDurabilityForSlot(EquipmentSlot equipmentSlot_1) {
+        return ArmorMaterials.IRON.getDurabilityForSlot(equipmentSlot_1);
     }
 
-    public int getProtectionAmount(EquipmentSlot equipmentSlot_1) {
-        return ArmorMaterials.IRON.getProtectionAmount(equipmentSlot_1);
+    public int getDefenseForSlot(EquipmentSlot equipmentSlot_1) {
+        return ArmorMaterials.IRON.getDefenseForSlot(equipmentSlot_1);
     }
 
-    public int getEnchantability() {
-        return ArmorMaterials.IRON.getEnchantability();
+    public int getEnchantmentValue() {
+        return ArmorMaterials.IRON.getEnchantmentValue();
     }
 
     public SoundEvent getEquipSound() {
-        return SoundEvents.ITEM_ARMOR_EQUIP_IRON;
+        return SoundEvents.ARMOR_EQUIP_IRON;
     }
 
     @Environment(EnvType.CLIENT)
@@ -52,7 +52,7 @@ public class CustomArmorMaterial implements ArmorMaterial {
 
     @Override
     public Ingredient getRepairIngredient() {
-        return Ingredient.ofItems(Registry.ITEM.get(Utils.appendToPath(materialId, "_ingot")));
+        return Ingredient.of(Registry.ITEM.get(Utils.appendToPath(materialId, "_ingot")));
     }
 
 }

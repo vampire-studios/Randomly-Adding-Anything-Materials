@@ -6,33 +6,32 @@ import com.mojang.serialization.Lifecycle;
 import io.github.vampirestudios.raa_materials.api.RegistryRemover;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.block.BlockModels;
-import net.minecraft.client.render.model.UnbakedModel;
-import net.minecraft.client.render.model.json.JsonUnbakedModel;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.DefaultedRegistry;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.core.DefaultedRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class InnerRegistry {
 	private static final Map<BlockState, UnbakedModel> BLOCK_MODELS = Maps.newHashMap();
-	private static final Map<Item, JsonUnbakedModel> ITEM_MODELS = Maps.newHashMap();
-	private static final Map<Identifier, JsonUnbakedModel> FREE_MODELS = Maps.newHashMap();
-	private static final Map<Identifier, BufferTexture> TEXTURES = Maps.newHashMap();
-	private static final Map<Identifier, Block> BLOCKS = Maps.newHashMap();
-	private static final Map<Identifier, Item> ITEMS = Maps.newHashMap();
-	private static final Set<Identifier> MODELED = Sets.newHashSet();
+	private static final Map<Item, BlockModel> ITEM_MODELS = Maps.newHashMap();
+	private static final Map<ResourceLocation, BlockModel> FREE_MODELS = Maps.newHashMap();
+	private static final Map<ResourceLocation, BufferTexture> TEXTURES = Maps.newHashMap();
+	private static final Map<ResourceLocation, Block> BLOCKS = Maps.newHashMap();
+	private static final Map<ResourceLocation, Item> ITEMS = Maps.newHashMap();
+	private static final Set<ResourceLocation> MODELED = Sets.newHashSet();
 	
 	public static void clear() {
 		clearRegistry(Registry.BLOCK, BLOCKS.keySet());
@@ -56,31 +55,31 @@ public class InnerRegistry {
 		TagHelper.clearTags();
 	}
 	
-	private static <T> void clearRegistry(DefaultedRegistry<T> registry, Set<Identifier> ids) {
+	private static <T> void clearRegistry(DefaultedRegistry<T> registry, Set<ResourceLocation> ids) {
 		ids.forEach(((RegistryRemover) registry)::remove);
 	}
 
-	private static <T> void replace(DefaultedRegistry<T> registry, Identifier id, T replacement) {
+	private static <T> void replace(DefaultedRegistry<T> registry, ResourceLocation id, T replacement) {
 		T entry = registry.get(id);
-		int rawId = registry.getRawId(entry);
-		RegistryKey<T> key = registry.getKey(entry).get();
-		Lifecycle lifecycle = registry.getEntryLifecycle(entry);
-		registry.replace(OptionalInt.of(rawId), key, replacement, lifecycle);
+		int rawId = registry.getId(entry);
+		ResourceKey<T> key = registry.getResourceKey(entry).get();
+		Lifecycle lifecycle = registry.lifecycle(entry);
+		registry.registerOrOverride(OptionalInt.of(rawId), key, replacement, lifecycle);
 	}
 
-	public static <T extends Block> T registerBlockAndItem(String name, T block, ItemGroup group) {
-		Identifier id = RAAMaterials.id(name);
-		if (!Registry.BLOCK.containsId(id)) {
+	public static <T extends Block> T registerBlockAndItem(String name, T block, CreativeModeTab group) {
+		ResourceLocation id = RAAMaterials.id(name);
+		if (!Registry.BLOCK.containsKey(id)) {
 			registerBlock(id, block);
-			registerItem(id, new BlockItem(block, new Item.Settings().group(group)));
+			registerItem(id, new BlockItem(block, new Item.Properties().tab(group)));
 			return block;
 		} else {
 			return (T) Registry.BLOCK.get(id);
 		}
 	}
 
-	public static void registerBlock(Identifier id, Block block) {
-		if (Registry.BLOCK.containsId(id)) {
+	public static void registerBlock(ResourceLocation id, Block block) {
+		if (Registry.BLOCK.containsKey(id)) {
 			replace(Registry.BLOCK, id, block);
 		} else {
 			Registry.register(Registry.BLOCK, id, block);
@@ -88,8 +87,8 @@ public class InnerRegistry {
 		BLOCKS.put(id, block);
 	}
 	
-	public static Item registerItem(Identifier id, Item item) {
-		if (Registry.ITEM.containsId(id)) {
+	public static Item registerItem(ResourceLocation id, Item item) {
+		if (Registry.ITEM.containsKey(id)) {
 			replace(Registry.ITEM, id, item);
 		} else {
 			Registry.register(Registry.ITEM, id, item);
@@ -102,49 +101,49 @@ public class InnerRegistry {
 		return registerItem(RAAMaterials.id(name), block);
 	}
 	
-	public static void registerTexture(Identifier id, BufferTexture image) {
+	public static void registerTexture(ResourceLocation id, BufferTexture image) {
 		TEXTURES.put(id, image);
 	}
 
 	public static void registerBlockModel(BlockState state, String json) {
-		JsonUnbakedModel model = JsonUnbakedModel.deserialize(json);
+		BlockModel model = BlockModel.fromString(json);
 		registerBlockModel(state, model);
 	}
 
 	public static void registerBlockModel(BlockState state, UnbakedModel model) {
-		Identifier id = Registry.BLOCK.getId(state.getBlock());
-		if (model instanceof JsonUnbakedModel) {
-			((JsonUnbakedModel) model).id = BlockModels.getModelId(id, state).toString();
+		ResourceLocation id = Registry.BLOCK.getKey(state.getBlock());
+		if (model instanceof BlockModel) {
+			((BlockModel) model).name = BlockModelShaper.stateToModelLocation(id, state).toString();
 		}
 		BLOCK_MODELS.put(state, model);
 		MODELED.add(id);
 	}
 	
 	public static void registerBlockModel(Block block, String json) {
-		JsonUnbakedModel model = JsonUnbakedModel.deserialize(json);
-		BlockState state = block.getDefaultState();
+		BlockModel model = BlockModel.fromString(json);
+		BlockState state = block.defaultBlockState();
 		registerBlockModel(state, model);
 	}
 
-	public static void registerModel(Identifier id, String json) {
-		JsonUnbakedModel model = JsonUnbakedModel.deserialize(json);
-		model.id = id.toString();
+	public static void registerModel(ResourceLocation id, String json) {
+		BlockModel model = BlockModel.fromString(json);
+		model.name = id.toString();
 		FREE_MODELS.put(id, model);
 	}
 	
 	public static void registerItemModel(Item item, String json) {
-		JsonUnbakedModel model = JsonUnbakedModel.deserialize(json);
-		Identifier id = Registry.ITEM.getId(item);
-		model.id = id.getNamespace() + ":item/" + id.getPath();
+		BlockModel model = BlockModel.fromString(json);
+		ResourceLocation id = Registry.ITEM.getKey(item);
+		model.name = id.getNamespace() + ":item/" + id.getPath();
 		ITEM_MODELS.put(item, model);
 		MODELED.add(id);
 	}
 	
-	public static Collection<Identifier> getTextureIDs() {
+	public static Collection<ResourceLocation> getTextureIDs() {
 		return TEXTURES.keySet();
 	}
 	
-	public static BufferTexture getTexture(Identifier id) {
+	public static BufferTexture getTexture(ResourceLocation id) {
 		return TEXTURES.get(id);
 	}
 	
@@ -152,24 +151,24 @@ public class InnerRegistry {
 		return BLOCK_MODELS.get(state);
 	}
 
-	public static JsonUnbakedModel getModel(Identifier id) {
+	public static BlockModel getModel(ResourceLocation id) {
 		return FREE_MODELS.get(id);
 	}
 
-	public static JsonUnbakedModel getModel(Item item) {
+	public static BlockModel getModel(Item item) {
 		return ITEM_MODELS.get(item);
 	}
 	
-	public static void iterateTextures(BiConsumer<? super Identifier, ? super BufferTexture> consumer) {
+	public static void iterateTextures(BiConsumer<? super ResourceLocation, ? super BufferTexture> consumer) {
 		TEXTURES.forEach(consumer);
 	}
 	
-	public static boolean hasCustomModel(Identifier id) {
+	public static boolean hasCustomModel(ResourceLocation id) {
 		return MODELED.contains(id);
 	}
 
-	public static <T> T register(Registry<T> registry, Identifier name, T idk) {
-		if (registry.containsId(name)) return registry.get(name);
+	public static <T> T register(Registry<T> registry, ResourceLocation name, T idk) {
+		if (registry.containsKey(name)) return registry.get(name);
 		else return Registry.register(registry, name, idk);
 	}
 

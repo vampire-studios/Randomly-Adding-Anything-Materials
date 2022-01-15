@@ -1,6 +1,6 @@
 package io.github.vampirestudios.raa_materials.utils;
 
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 public class CustomColor {
 	private static final CustomColor INTERNAL = new CustomColor();
@@ -44,10 +44,10 @@ public class CustomColor {
 		if (this.hsvMode) {
 			return INTERNAL.set(this).switchToRGB().getAsInt();
 		}
-		int cr = (int) MathHelper.clamp(x * 255, 0, 255);
-		int cg = (int) MathHelper.clamp(y * 255, 0, 255);
-		int cb = (int) MathHelper.clamp(z * 255, 0, 255);
-		int ca = (int) MathHelper.clamp(a * 255, 0, 255);
+		int cr = (int) Mth.clamp(x * 255, 0, 255);
+		int cg = (int) Mth.clamp(y * 255, 0, 255);
+		int cb = (int) Mth.clamp(z * 255, 0, 255);
+		int ca = (int) Mth.clamp(a * 255, 0, 255);
 		return TextureHelper.color(cr, cg, cb, ca);
 	}
 	
@@ -102,18 +102,18 @@ public class CustomColor {
 				else {
 					x2 += 1;
 				}
-				this.x = MHelper.wrap(MathHelper.lerp(blend, x1, x2), 1);
+				this.x = MHelper.wrap(Mth.lerp(blend, x1, x2), 1);
 			}
 			else {
-				this.x = MathHelper.lerp(blend, color.x, this.x) % 1.0F;
+				this.x = Mth.lerp(blend, color.x, this.x) % 1.0F;
 			}
 		}
 		else {
-			this.x = MathHelper.lerp(blend, this.x, color.x);
+			this.x = Mth.lerp(blend, this.x, color.x);
 		}
-		this.y = MathHelper.lerp(blend, this.y, color.y);
-		this.z = MathHelper.lerp(blend, this.z, color.z);
-		this.a = MathHelper.lerp(blend, this.a, color.a);
+		this.y = Mth.lerp(blend, this.y, color.y);
+		this.z = Mth.lerp(blend, this.z, color.z);
+		this.a = Mth.lerp(blend, this.a, color.a);
 		return this;
 	}
 
@@ -266,7 +266,7 @@ public class CustomColor {
 	}
 
 	public CustomColor setSaturation(float sat) {
-		this.y = MathHelper.clamp(sat, 0F, 1F);
+		this.y = Mth.clamp(sat, 0F, 1F);
 		return this;
 	}
 
@@ -275,7 +275,7 @@ public class CustomColor {
 	}
 
 	public CustomColor setBrightness(float br) {
-		this.z = MathHelper.clamp(br, 0F, 1F);
+		this.z = Mth.clamp(br, 0F, 1F);
 		return this;
 	}
 

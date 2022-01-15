@@ -6,7 +6,6 @@
   "mixins": [
     "BiomeMixin",
     "GenerationSettingsAccessor",
-    "MinecraftServerMixin",
     "RecipeManagerAccessor",
     "RecipeManagerMixin",
     "RegistryMixin",

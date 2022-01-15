@@ -25,10 +25,10 @@ import com.google.gson.stream.JsonWriter;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.fabricmc.fabric.api.recipe.v1.RecipeLoadingEvents;
 import net.fabricmc.fabric.api.recipe.v1.serializer.FabricRecipeSerializer;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeManager;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
@@ -48,10 +48,10 @@ import java.util.function.Function;
 @ApiStatus.Internal
 public final class RecipeManagerImpl {
 	/**
-	 * Stores the static recipes which are added to the {@link net.minecraft.recipe.RecipeManager} when recipes are
+	 * Stores the static recipes which are added to the {@link net.minecraft.world.item.crafting.RecipeManager} when recipes are
 	 * loaded.
 	 */
-	private static final Map<Identifier, Recipe<?>> STATIC_RECIPES = new Object2ObjectOpenHashMap<>();
+	private static final Map<ResourceLocation, Recipe<?>> STATIC_RECIPES = new Object2ObjectOpenHashMap<>();
 	private static final boolean DEBUG_MODE = Boolean.getBoolean("fabric-recipe-api-v1--debug");
 	private static final boolean DUMP_MODE = Boolean.getBoolean("fabric-recipe-api-v1--dump");
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -67,15 +67,15 @@ public final class RecipeManagerImpl {
 		}
 	}
 
-	public static void apply(Map<Identifier, JsonElement> map,
-							Map<RecipeType<?>, ImmutableMap.Builder<Identifier, Recipe<?>>> builderMap) {
+	public static void apply(Map<ResourceLocation, JsonElement> map,
+							Map<RecipeType<?>, ImmutableMap.Builder<ResourceLocation, Recipe<?>>> builderMap) {
 		RegisterRecipeHandlerImpl handler = new RegisterRecipeHandlerImpl(map, builderMap);
 		RecipeLoadingEvents.REGISTER.invoker().onRecipeLoading(handler);
 		STATIC_RECIPES.values().forEach(handler::register);
 		LOGGER.info("Registered {} custom recipes.", handler.registered);
 	}
 
-	public static void applyModifications(RecipeManager recipeManager, Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipes) {
+	public static void applyModifications(RecipeManager recipeManager, Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes) {
 		ModifyRecipeHandlerImpl handler = new ModifyRecipeHandlerImpl(recipeManager, recipes);
 		RecipeLoadingEvents.MODIFY.invoker().onRecipeModify(handler);
 		LOGGER.info("Modified {} recipes.", handler.counter);
@@ -86,7 +86,7 @@ public final class RecipeManagerImpl {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void dump(Collection<Map<Identifier, Recipe<?>>> recipes) {
+	private static void dump(Collection<Map<ResourceLocation, Recipe<?>>> recipes) {
 		Path debugPath = Paths.get("debug", "fabric-recipe-api-v1").normalize();
 
 		if (!Files.exists(debugPath)) {
@@ -98,7 +98,7 @@ public final class RecipeManagerImpl {
 			}
 		}
 
-		for (Map<Identifier, Recipe<?>> map : recipes) {
+		for (Map<ResourceLocation, Recipe<?>> map : recipes) {
 			for (Recipe<?> recipe : map.values()) {
 				if (!(recipe.getSerializer() instanceof FabricRecipeSerializer)) break;
 
@@ -141,19 +141,19 @@ public final class RecipeManagerImpl {
 	}
 
 	private static class RegisterRecipeHandlerImpl implements RecipeLoadingEvents.RecipeLoadingCallback.RecipeHandler {
-		private final Map<Identifier, JsonElement> resourceMap;
-		private final Map<RecipeType<?>, ImmutableMap.Builder<Identifier, Recipe<?>>> builderMap;
+		private final Map<ResourceLocation, JsonElement> resourceMap;
+		private final Map<RecipeType<?>, ImmutableMap.Builder<ResourceLocation, Recipe<?>>> builderMap;
 		int registered = 0;
 
-		private RegisterRecipeHandlerImpl(Map<Identifier, JsonElement> resourceMap,
-										Map<RecipeType<?>, ImmutableMap.Builder<Identifier, Recipe<?>>> builderMap) {
+		private RegisterRecipeHandlerImpl(Map<ResourceLocation, JsonElement> resourceMap,
+										Map<RecipeType<?>, ImmutableMap.Builder<ResourceLocation, Recipe<?>>> builderMap) {
 			this.resourceMap = resourceMap;
 			this.builderMap = builderMap;
 		}
 
 		void register(Recipe<?> recipe) {
 			if (!this.resourceMap.containsKey(recipe.getId())) {
-				ImmutableMap.Builder<Identifier, Recipe<?>> recipeBuilder =
+				ImmutableMap.Builder<ResourceLocation, Recipe<?>> recipeBuilder =
 						this.builderMap.computeIfAbsent(recipe.getType(), o -> ImmutableMap.builder());
 				recipeBuilder.put(recipe.getId(), recipe);
 				this.registered++;
@@ -165,7 +165,7 @@ public final class RecipeManagerImpl {
 		}
 
 		@Override
-		public void register(Identifier id, Function<Identifier, Recipe<?>> factory) {
+		public void register(ResourceLocation id, Function<ResourceLocation, Recipe<?>> factory) {
 			// Add the recipe only if nothing already provides the recipe.
 			if (!this.resourceMap.containsKey(id)) {
 				Recipe<?> recipe = factory.apply(id);
@@ -174,7 +174,7 @@ public final class RecipeManagerImpl {
 					throw new IllegalStateException("The recipe " + recipe.getId() + " tried to be registered as " + id);
 				}
 
-				ImmutableMap.Builder<Identifier, Recipe<?>> recipeBuilder =
+				ImmutableMap.Builder<ResourceLocation, Recipe<?>> recipeBuilder =
 						this.builderMap.computeIfAbsent(recipe.getType(), o -> ImmutableMap.builder());
 				recipeBuilder.put(recipe.getId(), recipe);
 				this.registered++;
@@ -188,16 +188,16 @@ public final class RecipeManagerImpl {
 
 	private static class ModifyRecipeHandlerImpl implements RecipeLoadingEvents.RecipeModifyCallback.RecipeHandler {
 		final RecipeManager recipeManager;
-		final Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipes;
+		final Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes;
 		int counter = 0;
 
-		private ModifyRecipeHandlerImpl(RecipeManager recipeManager, Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipes) {
+		private ModifyRecipeHandlerImpl(RecipeManager recipeManager, Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes) {
 			this.recipeManager = recipeManager;
 			this.recipes = recipes;
 		}
 
 		private void add(Recipe<?> recipe) {
-			Map<Identifier, Recipe<?>> type = this.recipes.get(recipe.getType());
+			Map<ResourceLocation, Recipe<?>> type = this.recipes.get(recipe.getType());
 
 			if (type == null) {
 				throw new IllegalStateException("The given recipe " + recipe.getId()
@@ -237,7 +237,7 @@ public final class RecipeManagerImpl {
 		}
 
 		@Override
-		public @Nullable RecipeType<?> getTypeOf(Identifier id) {
+		public @Nullable RecipeType<?> getTypeOf(ResourceLocation id) {
 			return this.recipes.entrySet().stream()
 					.filter(entry -> entry.getValue().containsKey(id))
 					.findFirst()
@@ -246,8 +246,8 @@ public final class RecipeManagerImpl {
 		}
 
 		@Override
-		public boolean contains(Identifier id) {
-			for (Map<Identifier, Recipe<?>> recipes : this.recipes.values()) {
+		public boolean contains(ResourceLocation id) {
+			for (Map<ResourceLocation, Recipe<?>> recipes : this.recipes.values()) {
 				if (recipes.containsKey(id)) {
 					return true;
 				}
@@ -257,8 +257,8 @@ public final class RecipeManagerImpl {
 		}
 
 		@Override
-		public boolean contains(Identifier id, RecipeType<?> type) {
-			Map<Identifier, Recipe<?>> recipes = this.recipes.get(type);
+		public boolean contains(ResourceLocation id, RecipeType<?> type) {
+			Map<ResourceLocation, Recipe<?>> recipes = this.recipes.get(type);
 
 			if (recipes == null) return false;
 
@@ -266,8 +266,8 @@ public final class RecipeManagerImpl {
 		}
 
 		@Override
-		public @Nullable Recipe<?> getRecipe(Identifier id) {
-			for (Map<Identifier, Recipe<?>> recipes : this.recipes.values()) {
+		public @Nullable Recipe<?> getRecipe(ResourceLocation id) {
+			for (Map<ResourceLocation, Recipe<?>> recipes : this.recipes.values()) {
 				Recipe<?> recipe = recipes.get(id);
 
 				if (recipe != null) {
@@ -280,8 +280,8 @@ public final class RecipeManagerImpl {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T extends Recipe<?>> @Nullable T getRecipe(Identifier id, RecipeType<T> type) {
-			Map<Identifier, Recipe<?>> recipes = this.recipes.get(type);
+		public <T extends Recipe<?>> @Nullable T getRecipe(ResourceLocation id, RecipeType<T> type) {
+			Map<ResourceLocation, Recipe<?>> recipes = this.recipes.get(type);
 
 			if (recipes == null) return null;
 
@@ -289,13 +289,13 @@ public final class RecipeManagerImpl {
 		}
 
 		@Override
-		public Map<RecipeType<?>, Map<Identifier, Recipe<?>>> getRecipes() {
+		public Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> getRecipes() {
 			return this.recipes;
 		}
 
 		@Override
 		public Collection<Recipe<?>> getRecipesOfType(RecipeType<?> type) {
-			Map<Identifier, Recipe<?>> recipes = this.recipes.get(type);
+			Map<ResourceLocation, Recipe<?>> recipes = this.recipes.get(type);
 
 			if (recipes == null) {
 				return ImmutableList.of();

@@ -1,7 +1,6 @@
 package io.github.vampirestudios.raa_materials.utils;
 
-import net.minecraft.client.texture.NativeImage;
-
+import com.mojang.blaze3d.platform.NativeImage;
 import java.util.Arrays;
 
 public class BufferTexture {
@@ -22,7 +21,7 @@ public class BufferTexture {
 		for (int i = 0; i < buffer.length; i++) {
 			int x = i % width;
 			int y = i / width;
-			buffer[i] = image.getPixelColor(x, y);
+			buffer[i] = image.getPixelRGBA(x, y);
 		}
 	}
 
@@ -50,7 +49,7 @@ public class BufferTexture {
 		for (int i = 0; i < buffer.length; i++) {
 			int x = i % width;
 			int y = i / width;
-			img.setPixelColor(x, y, buffer[i]);
+			img.setPixelRGBA(x, y, buffer[i]);
 		}
 		return img;
 	}

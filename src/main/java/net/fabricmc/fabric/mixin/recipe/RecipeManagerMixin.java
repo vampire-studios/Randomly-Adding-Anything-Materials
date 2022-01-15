@@ -20,12 +20,12 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import net.fabricmc.fabric.impl.recipe.ImmutableMapBuilderUtil;
 import net.fabricmc.fabric.impl.recipe.RecipeManagerImpl;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeManager;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -41,26 +41,26 @@ import java.util.Map;
 @Mixin(RecipeManager.class)
 public class RecipeManagerMixin {
 	@Shadow
-	private Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipes;
+	private Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes;
 
 	@Inject(
 			method = "apply",
 			at = @At(value = "INVOKE", target = "Ljava/util/Map;entrySet()Ljava/util/Set;", ordinal = 1),
 			locals = LocalCapture.CAPTURE_FAILHARD
 	)
-	private void onReload(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler,
-						CallbackInfo ci, Map<RecipeType<?>, ImmutableMap.Builder<Identifier, Recipe<?>>> builderMap) {
+	private void onReload(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler,
+						CallbackInfo ci, Map<RecipeType<?>, ImmutableMap.Builder<ResourceLocation, Recipe<?>>> builderMap) {
 		RecipeManagerImpl.apply(map, builderMap);
 	}
 
 	/**
-	 * Synthetic method in {@link RecipeManager#apply(Map, ResourceManager, Profiler)} as an argument of {@code toImmutableMap}.
+	 * Synthetic method in {@link RecipeManager#apply(Map, ResourceManager, ProfilerFiller)} as an argument of {@code toImmutableMap}.
 	 *
 	 * @author Fabric API
 	 * @reason Replaces immutable maps for mutable maps instead.
 	 */
 	@Overwrite
-	private static Map<Identifier, Recipe<?>> method_20703(Map.Entry<RecipeType<?>, ImmutableMap.Builder<Identifier, Recipe<?>>> entry) {
+	private static Map<ResourceLocation, Recipe<?>> method_20703(Map.Entry<RecipeType<?>, ImmutableMap.Builder<ResourceLocation, Recipe<?>>> entry) {
 		// This is cursed. Do not look.
 		return ImmutableMapBuilderUtil.specialBuild(entry.getValue());
 	}
@@ -69,7 +69,7 @@ public class RecipeManagerMixin {
 			method = "apply",
 			at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;info(Ljava/lang/String;Ljava/lang/Object;)V", remap = false)
 	)
-	private void onReloadEnd(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler,
+	private void onReloadEnd(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler,
 							CallbackInfo ci) {
 		RecipeManagerImpl.applyModifications((RecipeManager) (Object) this, this.recipes);
 	}

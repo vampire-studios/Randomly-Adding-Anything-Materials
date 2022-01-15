@@ -1,17 +1,17 @@
 package io.github.vampirestudios.raa_materials;
 
 import io.github.vampirestudios.raa_core.RAACore;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.*;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.ItemLike;
 
 public class FurnaceRecipe {
 	private static final FurnaceRecipe INSTANCE = new FurnaceRecipe();
 
-	private Identifier id;
-	private ItemConvertible input;
-	private ItemConvertible output;
+	private ResourceLocation id;
+	private ItemLike input;
+	private ItemLike output;
 	private boolean exist;
 	private String group;
 	private int count;
@@ -20,8 +20,8 @@ public class FurnaceRecipe {
 
 	private FurnaceRecipe() {}
 
-	public static FurnaceRecipe make(String modID, String name, ItemConvertible input, ItemConvertible output) {
-		INSTANCE.id = new Identifier(modID, name);
+	public static FurnaceRecipe make(String modID, String name, ItemLike input, ItemLike output) {
+		INSTANCE.id = new ResourceLocation(modID, name);
 		INSTANCE.group = "";
 		INSTANCE.input = input;
 		INSTANCE.output = output;
@@ -74,7 +74,7 @@ public class FurnaceRecipe {
 			SmeltingRecipe recipe = new SmeltingRecipe(
 					id,
 					group,
-					Ingredient.ofItems(input),
+					Ingredient.of(input),
 					new ItemStack(output, count),
 					xp,
 					time
@@ -85,7 +85,7 @@ public class FurnaceRecipe {
 				BlastingRecipe recipe2 = new BlastingRecipe(
 						id,
 						group,
-						Ingredient.ofItems(input),
+						Ingredient.of(input),
 						new ItemStack(output, count),
 						xp,
 						time / 2
@@ -97,7 +97,7 @@ public class FurnaceRecipe {
 				CampfireCookingRecipe recipe2 = new CampfireCookingRecipe(
 						id,
 						group,
-						Ingredient.ofItems(input),
+						Ingredient.of(input),
 						new ItemStack(output, count),
 						xp,
 						time * 3
@@ -109,7 +109,7 @@ public class FurnaceRecipe {
 				SmokingRecipe recipe2 = new SmokingRecipe(
 						id,
 						group,
-						Ingredient.ofItems(input),
+						Ingredient.of(input),
 						new ItemStack(output, count),
 						xp,
 						time / 2

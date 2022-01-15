@@ -2,7 +2,7 @@ package io.github.vampirestudios.raa_materials.utils.recipes;
 
 import com.google.gson.JsonArray;
 import com.swordglowsblue.artifice.api.builder.JsonObjectBuilder;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public class RAAMultiResultBuilder {
     private final JsonArray results = new JsonArray();
@@ -10,22 +10,22 @@ public class RAAMultiResultBuilder {
     RAAMultiResultBuilder() {
     }
 
-    public RAAMultiResultBuilder item(Identifier id) {
+    public RAAMultiResultBuilder item(ResourceLocation id) {
         this.results.add((new JsonObjectBuilder()).add("item", id.toString()).build());
         return this;
     }
 
-    public RAAMultiResultBuilder item(Identifier id, int count) {
+    public RAAMultiResultBuilder item(ResourceLocation id, int count) {
         this.results.add((new JsonObjectBuilder()).add("item", id.toString()).add("count", count).build());
         return this;
     }
 
-    public RAAMultiResultBuilder tag(Identifier id) {
+    public RAAMultiResultBuilder tag(ResourceLocation id) {
         this.results.add((new JsonObjectBuilder()).add("tag", id.toString()).build());
         return this;
     }
 
-    public RAAMultiResultBuilder tag(Identifier id, int count) {
+    public RAAMultiResultBuilder tag(ResourceLocation id, int count) {
         this.results.add((new JsonObjectBuilder()).add("tag", id.toString()).add("count", count).build());
         return this;
     }

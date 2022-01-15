@@ -1,9 +1,8 @@
 package io.github.vampirestudios.raa_materials.utils;
 
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-
 import java.util.Random;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 public class ProceduralTextures {
 	public static ColorGradient makeStonePalette(CustomColor color, Random random) {
@@ -23,7 +22,7 @@ public class ProceduralTextures {
 					.setHue(random.nextFloat())
 					.setSaturation(MHelper.randRange(0.3F, 1F, random))
 					.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
-			float cos = MathHelper.cos(color.getHue() * MHelper.PI2);
+			float cos = Mth.cos(color.getHue() * MHelper.PI2);
 			float hue = cos * 0.1F;
 			float sat = cos * 0.15F;
 			return TextureHelper.makeDistortedPalette(color, hue, sat, 0.5F);
@@ -46,7 +45,7 @@ public class ProceduralTextures {
 				.setHue(random.nextFloat())
 				.setSaturation(MHelper.randRange(0.6F, 1, random))
 				.setBrightness(MHelper.randRange(0.6F, 1, random));
-		float cos = MathHelper.cos(color.getHue() * MHelper.PI2);
+		float cos = Mth.cos(color.getHue() * MHelper.PI2);
 		float hue = cos * 0.15F;
 		float sat = cos * 0.15F;
 		return TextureHelper.makeDistortedPalette(color, hue, sat, 1F);
@@ -57,7 +56,7 @@ public class ProceduralTextures {
 				.setHue(random.nextFloat())
 				.setSaturation(MHelper.randRange(0.4F, 1F, random))
 				.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
-		float cos = MathHelper.cos(color.getHue() * MHelper.PI2);
+		float cos = Mth.cos(color.getHue() * MHelper.PI2);
 		float hue = cos * 0.07F;
 		float sat = cos * 0.12F;
 		return TextureHelper.makeDistortedPalette(color, hue, sat, 0.5F);
@@ -124,19 +123,19 @@ public class ProceduralTextures {
 		return TextureHelper.applyGradient(textures[random.nextInt(textures.length)].clone(), gradient);
 	}
 
-	public static BufferTexture randomColored(Identifier texture, ColorGradient gradient) {
+	public static BufferTexture randomColored(ResourceLocation texture, ColorGradient gradient) {
 		BufferTexture textures = TextureHelper.loadTexture(texture);
 		TextureHelper.normalize(textures, 0.35F, 1F);
 		return TextureHelper.applyGradient(textures.clone(), gradient);
 	}
 
-	public static BufferTexture randomColored(Identifier texture, ColorGradient gradient, float min, float max) {
+	public static BufferTexture randomColored(ResourceLocation texture, ColorGradient gradient, float min, float max) {
 		BufferTexture textures = TextureHelper.loadTexture(texture);
 		TextureHelper.normalize(textures, min, max);
 		return TextureHelper.applyGradient(textures.clone(), gradient);
 	}
 
-	public static BufferTexture randomColoredNoNormalize(Identifier texture, ColorGradient gradient) {
+	public static BufferTexture randomColoredNoNormalize(ResourceLocation texture, ColorGradient gradient) {
 		BufferTexture textures = TextureHelper.loadTexture(texture);
 		return TextureHelper.applyGradient(textures.clone(), gradient);
 	}
@@ -153,7 +152,7 @@ public class ProceduralTextures {
 		return texture;
 	}
 
-	public static BufferTexture nonColored(Identifier texture) {
+	public static BufferTexture nonColored(ResourceLocation texture) {
 		BufferTexture textures = TextureHelper.loadTexture(texture);
 		TextureHelper.normalize(textures, 0.35F, 1F);
 		return textures;

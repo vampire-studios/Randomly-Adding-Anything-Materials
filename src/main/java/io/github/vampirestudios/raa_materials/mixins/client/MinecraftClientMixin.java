@@ -1,10 +1,10 @@
 package io.github.vampirestudios.raa_materials.mixins.client;
 
 import io.github.vampirestudios.raa_materials.utils.SilentWorldReloader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.resource.ReloadableResourceManager;
-import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.Unit;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,15 +15,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.concurrent.CompletableFuture;
 
-@Mixin(MinecraftClient.class)
+@Mixin(Minecraft.class)
 public class MinecraftClientMixin {
 	@Final
 	@Shadow
-	private ResourcePackManager resourcePackManager;
+	private PackRepository resourcePackRepository;
 	
 	@Final
 	@Shadow
-	public WorldRenderer worldRenderer;
+	public LevelRenderer levelRenderer;
 	
 	@Final
 	@Shadow
@@ -31,13 +31,13 @@ public class MinecraftClientMixin {
 	
 	@Final
 	@Shadow
-	private static CompletableFuture<Unit> COMPLETED_UNIT_FUTURE;
+	private static CompletableFuture<Unit> RESOURCE_RELOAD_INITIAL_TASK;
 	
-	@Inject(method = "reloadResources()Ljava/util/concurrent/CompletableFuture;", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "reloadResourcePacks()Ljava/util/concurrent/CompletableFuture;", at = @At("HEAD"), cancellable = true)
 	private void reloadResources(CallbackInfoReturnable<CompletableFuture<Void>> info) {
 		if (SilentWorldReloader.isSilent()) {
-			MinecraftClient client = (MinecraftClient) (Object) this;
-			new SilentWorldReloader(client, resourcePackManager, worldRenderer, resourceManager, COMPLETED_UNIT_FUTURE).start();
+			Minecraft client = (Minecraft) (Object) this;
+			new SilentWorldReloader(client, resourcePackRepository, levelRenderer, resourceManager, RESOURCE_RELOAD_INITIAL_TASK).start();
 			info.cancel();
 		}
 	}

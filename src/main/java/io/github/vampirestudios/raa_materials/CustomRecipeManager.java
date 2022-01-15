@@ -1,47 +1,46 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Maps;
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-
 import java.util.Map;
 import java.util.Map.Entry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
 
 public class CustomRecipeManager {
-	private static final Map<RecipeType<?>, Map<Identifier, Recipe<?>>> RECIPES = Maps.newHashMap();
+	private static final Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> RECIPES = Maps.newHashMap();
 
 	public static void addRecipe(RecipeType<?> type, Recipe<?> recipe) {
-		Map<Identifier, Recipe<?>> list = RECIPES.computeIfAbsent(type, k -> Maps.newHashMap());
+		Map<ResourceLocation, Recipe<?>> list = RECIPES.computeIfAbsent(type, k -> Maps.newHashMap());
 		list.put(recipe.getId(), recipe);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Recipe<?>> T getRecipe(RecipeType<T> type, Identifier id) {
+	public static <T extends Recipe<?>> T getRecipe(RecipeType<T> type, ResourceLocation id) {
 		if (RECIPES.containsKey(type)) {
 			return (T) RECIPES.get(type).get(id);
 		}
 		return null;
 	}
 
-	public static Map<RecipeType<?>, Map<Identifier, Recipe<?>>> getMap(Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipes) {
-		Map<RecipeType<?>, Map<Identifier, Recipe<?>>> result = Maps.newHashMap();
+	public static Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> getMap(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes) {
+		Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> result = Maps.newHashMap();
 
 		for (RecipeType<?> type : recipes.keySet()) {
-			Map<Identifier, Recipe<?>> typeList = Maps.newHashMap();
+			Map<ResourceLocation, Recipe<?>> typeList = Maps.newHashMap();
 			typeList.putAll(recipes.get(type));
 			result.put(type, typeList);
 		}
 
 		for (RecipeType<?> type : RECIPES.keySet()) {
-			Map<Identifier, Recipe<?>> list = RECIPES.get(type);
+			Map<ResourceLocation, Recipe<?>> list = RECIPES.get(type);
 			if (list != null) {
-				Map<Identifier, Recipe<?>> typeList = result.computeIfAbsent(type, k -> Maps.newHashMap());
-				for (Entry<Identifier, Recipe<?>> entry : list.entrySet()) {
-					Identifier id = entry.getKey();
+				Map<ResourceLocation, Recipe<?>> typeList = result.computeIfAbsent(type, k -> Maps.newHashMap());
+				for (Entry<ResourceLocation, Recipe<?>> entry : list.entrySet()) {
+					ResourceLocation id = entry.getKey();
 					if (!typeList.containsKey(id))
 						typeList.put(id, entry.getValue());
 				}
@@ -52,7 +51,7 @@ public class CustomRecipeManager {
 	}
 
 	public static <T extends Recipe<?>> RecipeType<T> registerType(String type) {
-		Identifier recipeTypeId = RAAMaterials.id(type);
+		ResourceLocation recipeTypeId = RAAMaterials.id(type);
 		return Registry.register(Registry.RECIPE_TYPE, recipeTypeId, new RecipeType<T>() {
 			public String toString() {
 				return type;
@@ -60,17 +59,17 @@ public class CustomRecipeManager {
 	    });
 	}
 
-	public static boolean exists(ItemConvertible item) {
+	public static boolean exists(ItemLike item) {
 		if (item instanceof Block) {
-			return Registry.BLOCK.getId((Block) item) != Registry.BLOCK.getDefaultId();
+			return Registry.BLOCK.getKey((Block) item) != Registry.BLOCK.getDefaultKey();
 		}
 		else {
-			return Registry.ITEM.getId(item.asItem()) != Registry.ITEM.getDefaultId();
+			return Registry.ITEM.getKey(item.asItem()) != Registry.ITEM.getDefaultKey();
 		}
 	}
 
-	public static boolean exists(ItemConvertible... items) {
-		for (ItemConvertible item : items) {
+	public static boolean exists(ItemLike... items) {
+		for (ItemLike item : items) {
 			if (!exists(item)) {
 				return false;
 			}

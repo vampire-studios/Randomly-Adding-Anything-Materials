@@ -2,17 +2,16 @@ package io.github.vampirestudios.raa_materials;
 
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
 import java.util.Locale;
 
 public class CreativeTabs {
-	public static final ItemGroup BLOCKS = makeGroup("Random Blocks", Blocks.STONE);
+	public static final CreativeModeTab BLOCKS = makeGroup("Random Blocks", Blocks.STONE);
 
-	private static ItemGroup makeGroup(String name, ItemConvertible icon) {
+	private static CreativeModeTab makeGroup(String name, ItemLike icon) {
 		String idString = name.toLowerCase(Locale.ROOT).replace(" ", "_");
 		if (RAAMaterials.isClient()) {
 			NameGenerator.addTranslation("itemGroup." + RAAMaterials.MOD_ID + "." + idString, name);

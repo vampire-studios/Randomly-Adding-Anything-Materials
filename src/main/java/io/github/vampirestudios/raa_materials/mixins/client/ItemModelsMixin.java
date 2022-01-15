@@ -1,24 +1,24 @@
 package io.github.vampirestudios.raa_materials.mixins.client;
 
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
-import net.minecraft.client.render.item.ItemModels;
-import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.item.Item;
+import net.minecraft.client.renderer.ItemModelShaper;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.world.item.Item;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ItemModels.class)
+@Mixin(ItemModelShaper.class)
 public class ItemModelsMixin {
 
 	@Shadow
-	public void putModel(Item item, ModelIdentifier modelId) {}
+	public void register(Item item, ModelResourceLocation modelId) {}
 
-	@Inject(method = "reloadModels", at = @At("TAIL"))
+	@Inject(method = "rebuildCache", at = @At("TAIL"))
 	public void reloadModels(CallbackInfo info) {
-		ModelHelper.MODELS.forEach(this::putModel);
+		ModelHelper.MODELS.forEach(this::register);
 	}
 
 }

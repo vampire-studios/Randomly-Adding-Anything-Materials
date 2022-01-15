@@ -2,10 +2,10 @@ package io.github.vampirestudios.raa_materials.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
-public class CrystalSpikeFeatureConfig implements FeatureConfig {
+public class CrystalSpikeFeatureConfig implements FeatureConfiguration {
 
     public static final Codec<CrystalSpikeFeatureConfig> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
             BlockState.CODEC.fieldOf("crystal").forGetter((oreFeatureConfig) -> oreFeatureConfig.crystal),

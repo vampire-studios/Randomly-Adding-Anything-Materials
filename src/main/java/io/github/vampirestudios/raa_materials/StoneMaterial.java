@@ -5,35 +5,24 @@ import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
-import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
 import io.github.vampirestudios.raa_materials.utils.*;
-import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.MapColor;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.YOffset;
-import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.OreFeatureConfig;
-import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.material.MaterialColor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.function.Supplier;
-
-import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 
 public class StoneMaterial extends ComplexMaterial {
 	private static BufferTexture[] stoneFrame;
@@ -60,7 +49,7 @@ public class StoneMaterial extends ComplexMaterial {
 	public StoneMaterial(String name, CustomColor mainColor, ColorGradient colorGradient) {
 		super(name, colorGradient);
 		this.mainColor = mainColor;
-		FabricBlockSettings material = FabricBlockSettings.copyOf(Blocks.STONE).mapColor(MapColor.GRAY);
+		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(Blocks.STONE).color(MaterialColor.COLOR_GRAY);
 
 		stone = InnerRegistry.registerBlockAndItem(this.registryName, new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
 //		stairs = InnerRegistry.registerBlockAndItem(this.registryName + "_stairs", new BaseStairsBlock(stone), CreativeTabs.BLOCKS);
@@ -100,26 +89,26 @@ public class StoneMaterial extends ComplexMaterial {
 
 		// Block Tags //
 		TagHelper.addTag(BlockTags.BASE_STONE_OVERWORLD, stone);
-		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, stone);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, stone);
 		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, stone);
 		TagHelper.addTag(BlockTags.STONE_BRICKS, bricks);
-		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, bricks);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, bricks);
 		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, bricks);
-		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, polished);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, polished);
 		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, polished);
-		TagHelper.addTag(BlockTags.PICKAXE_MINEABLE, tiles);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, tiles);
 		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, tiles);
 //		TagHelper.addTag(BlockTags.SLABS, slab, brick_slab);
 	}
 
 	@Override
-	public NbtCompound writeToNbt() {
-		NbtCompound materialCompound = new NbtCompound();
+	public CompoundTag writeToNbt() {
+		CompoundTag materialCompound = new CompoundTag();
 		materialCompound.putString("name", this.name);
 		materialCompound.putString("registryName", this.registryName);
 		materialCompound.putString("materialType", "stone");
 
-		NbtCompound colorGradientCompound = new NbtCompound();
+		CompoundTag colorGradientCompound = new CompoundTag();
 		colorGradientCompound.putInt("startColor", this.mainColor.getAsInt());
 		colorGradientCompound.putInt("endColor", this.gradient.getColor(1.0F).getAsInt());
 		materialCompound.put("colorGradient", colorGradientCompound);
@@ -128,7 +117,7 @@ public class StoneMaterial extends ComplexMaterial {
 	}
 
 	private static void addFeature(ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
-		int index = GenerationStep.Feature.UNDERGROUND_ORES.ordinal();
+		int index = GenerationStep.Decoration.UNDERGROUND_ORES.ordinal();
 		if (features.size() > index) {
 			features.get(index).add(() -> feature);
 		} else {
@@ -139,36 +128,36 @@ public class StoneMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public void generate(ServerWorld world) {
-		RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureRegistryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, id(this.registryName + "_stone_cf"));
+	public void generate(ServerLevel world) {
+		/*ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_stone_cf"));
 		ConfiguredFeature<?, ?> configuredFeature = BiomeUtils.newConfiguredFeature(configuredFeatureRegistryKey, Feature.ORE
-				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 64))
-				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
+				.configured(new OreConfiguration(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.defaultBlockState(), 64))
+				.range(new RangeConfiguration(UniformHeight.of(VerticalAnchor.bottom(), VerticalAnchor.top())))
 				.spreadHorizontally()
 				.repeatRandomly(2));
 
-		RegistryKey<ConfiguredFeature<?, ?>> configuredFeature2RegistryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, id(this.registryName + "_stone_cf2"));
+		ResourceKey<ConfiguredFeature<?, ?>> configuredFeature2RegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_stone_cf2"));
 		ConfiguredFeature<?, ?> configuredFeature2 = BiomeUtils.newConfiguredFeature(configuredFeature2RegistryKey, Feature.ORE
-				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 32))
-				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
+				.configured(new OreConfiguration(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.defaultBlockState(), 32))
+				.range(new RangeConfiguration(UniformHeight.of(VerticalAnchor.bottom(), VerticalAnchor.top())))
 				.spreadHorizontally()
 				.repeatRandomly(4));
 
-		RegistryKey<ConfiguredFeature<?, ?>> configuredFeature3RegistryKey = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, id(this.registryName + "_stone_cf3"));
+		ResourceKey<ConfiguredFeature<?, ?>> configuredFeature3RegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_stone_cf3"));
 		ConfiguredFeature<?, ?> configuredFeature3 = BiomeUtils.newConfiguredFeature(configuredFeature3RegistryKey, Feature.ORE
-				.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.getDefaultState(), 16))
-				.range(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop())))
+				.configured(new OreConfiguration(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.defaultBlockState(), 16))
+				.range(new RangeConfiguration(UniformHeight.of(VerticalAnchor.bottom(), VerticalAnchor.top())))
 				.spreadHorizontally()
 				.repeatRandomly(10));
 
-		world.getRegistryManager().get(Registry.BIOME_KEY).forEach(biome -> {
+		world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).forEach(biome -> {
 			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
 			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
 			List<List<Supplier<ConfiguredFeature<?, ?>>>> features = new ArrayList<>(preFeatures.size());
 			preFeatures.forEach((list) -> { features.add(Lists.newArrayList(list)); });
 			addFeature(Rands.values(new ConfiguredFeature[]{ configuredFeature, configuredFeature2, configuredFeature3 }), features);
 			accessor.raaSetFeatures(features);
-		});
+		});*/
 	}
 
 	@Override
@@ -181,22 +170,22 @@ public class StoneMaterial extends ComplexMaterial {
 		// Texture Genearation
 		ColorGradient palette = this.gradient;
 
-		Identifier stoneTexID = TextureHelper.makeBlockTextureID(textureBaseName);
+		ResourceLocation stoneTexID = TextureHelper.makeBlockTextureID(textureBaseName);
 		BufferTexture texture = ProceduralTextures.makeStoneTexture(palette, random);
 		InnerRegistry.registerTexture(stoneTexID, texture);
 
 		texture = ProceduralTextures.makeBlurredTexture(texture);
 
 		BufferTexture variant = ProceduralTextures.coverWithOverlay(texture, stoneFrame, random, palette);
-		Identifier frameTexID = TextureHelper.makeBlockTextureID("polished_" + textureBaseName);
+		ResourceLocation frameTexID = TextureHelper.makeBlockTextureID("polished_" + textureBaseName);
 		InnerRegistry.registerTexture(frameTexID, variant);
 
 		variant = ProceduralTextures.coverWithOverlay(texture, stoneBricks, random, palette);
-		Identifier bricksTexID = TextureHelper.makeBlockTextureID(textureBaseName + "_bricks");
+		ResourceLocation bricksTexID = TextureHelper.makeBlockTextureID(textureBaseName + "_bricks");
 		InnerRegistry.registerTexture(bricksTexID, variant);
 
 		variant = ProceduralTextures.coverWithOverlay(texture, stoneTiles, random, palette);
-		Identifier tilesTexID = TextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
+		ResourceLocation tilesTexID = TextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
 		InnerRegistry.registerTexture(tilesTexID, variant);
 
 		// Registering models

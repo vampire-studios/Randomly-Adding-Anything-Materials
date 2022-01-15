@@ -1,25 +1,25 @@
 package io.github.vampirestudios.raa_materials;
 
 import io.github.vampirestudios.raa_core.RAACore;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.SmithingRecipe;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.UpgradeRecipe;
+import net.minecraft.world.level.ItemLike;
 
 public class SmithingTableRecipe {
 	
 	private final static SmithingTableRecipe BUILDER = new SmithingTableRecipe();
-	private final static RecipeType<SmithingRecipe> TYPE = RecipeType.SMITHING;
+	private final static RecipeType<UpgradeRecipe> TYPE = RecipeType.SMITHING;
 	
 	public static SmithingTableRecipe create(String modID, String name) {
-		return create(new Identifier(modID, name));
+		return create(new ResourceLocation(modID, name));
 	}
 	
-	public static SmithingTableRecipe create(Identifier id) {
+	public static SmithingTableRecipe create(ResourceLocation id) {
 		BUILDER.id = id;
 		BUILDER.base = null;
 		BUILDER.addition = null;
@@ -29,7 +29,7 @@ public class SmithingTableRecipe {
 		return BUILDER;
 	}
 	
-	private Identifier id;
+	private ResourceLocation id;
 	private Ingredient base;
 	private Ingredient addition;
 	private ItemStack result;
@@ -43,35 +43,35 @@ public class SmithingTableRecipe {
 //		return this;
 //	}
 	
-	public SmithingTableRecipe setResult(ItemConvertible item) {
+	public SmithingTableRecipe setResult(ItemLike item) {
 		return this.setResult(item, 1);
 	}
 	
-	public SmithingTableRecipe setResult(ItemConvertible item, int count) {
+	public SmithingTableRecipe setResult(ItemLike item, int count) {
 		this.alright &= CustomRecipeManager.exists(item);
 		this.result = new ItemStack(item, count);
 		return this;
 	}
 	
-	public SmithingTableRecipe setBase(ItemConvertible... items) {
+	public SmithingTableRecipe setBase(ItemLike... items) {
 		this.alright &= CustomRecipeManager.exists(items);
-		this.base = Ingredient.ofItems(items);
+		this.base = Ingredient.of(items);
 		return this;
 	}
 	
 	public SmithingTableRecipe setBase(Tag<Item> tag) {
-		this.base = (Ingredient.fromTag(tag));
+		this.base = (Ingredient.of(tag));
 		return this;
 	}
 	
-	public SmithingTableRecipe setAddition(ItemConvertible... items) {
+	public SmithingTableRecipe setAddition(ItemLike... items) {
 		this.alright &= CustomRecipeManager.exists(items);
-		this.addition = Ingredient.ofItems(items);
+		this.addition = Ingredient.of(items);
 		return this;
 	}
 	
 	public SmithingTableRecipe setAddition(Tag<Item> tag) {
-		this.addition = (Ingredient.fromTag(tag));
+		this.addition = (Ingredient.of(tag));
 		return this;
 	}
 	
@@ -100,6 +100,6 @@ public class SmithingTableRecipe {
 			RAACore.LOGGER.debug("Can't add Smithing recipe {}! Ingeredients or output not exists.", id);
 			return;
 		}
-		CustomRecipeManager.addRecipe(TYPE, new SmithingRecipe(id, base, addition, result));
+		CustomRecipeManager.addRecipe(TYPE, new UpgradeRecipe(id, base, addition, result));
 	}
 }

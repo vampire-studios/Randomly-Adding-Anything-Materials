@@ -1,14 +1,13 @@
 package io.github.vampirestudios.raa_materials.utils;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.resource.ReloadableResourceManager;
-import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourceReload;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.server.packs.resources.ReloadInstance;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.Unit;
-import net.minecraft.util.Util;
-
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -16,13 +15,13 @@ public class SilentWorldReloader extends Thread {
 	private static boolean silent = false;
 	private static SilentWorldReloader other;
 	
-	private final MinecraftClient client;
-	private final ResourcePackManager resourcePackManager;
-	private final WorldRenderer worldRenderer;
+	private final Minecraft client;
+	private final PackRepository resourcePackManager;
+	private final LevelRenderer worldRenderer;
 	private final ReloadableResourceManager resourceManager;
 	private final CompletableFuture<Unit> future;
 	
-	public SilentWorldReloader(MinecraftClient client, ResourcePackManager resourcePackManager, WorldRenderer worldRenderer, ReloadableResourceManager resourceManager, CompletableFuture<Unit> future) {
+	public SilentWorldReloader(Minecraft client, PackRepository resourcePackManager, LevelRenderer worldRenderer, ReloadableResourceManager resourceManager, CompletableFuture<Unit> future) {
 		other = other == null ? this : other;
 		this.client = client;
 		this.resourcePackManager = resourcePackManager;
@@ -33,12 +32,12 @@ public class SilentWorldReloader extends Thread {
 	
 	public void run() {
 		if (other == this) {
-			resourcePackManager.scanPacks();
-			List<ResourcePack> list = resourcePackManager.createResourcePacks();
-			ResourceReload monitor = resourceManager.reload(Util.getMainWorkerExecutor(), client, future, list);
-			monitor.whenComplete().thenRun(() -> {
-				worldRenderer.reload();
-				client.getItemRenderer().getModels().reloadModels();
+			resourcePackManager.reload();
+			List<PackResources> list = resourcePackManager.openAllSelected();
+			ReloadInstance monitor = resourceManager.createReload(Util.backgroundExecutor(), client, future, list);
+			monitor.done().thenRun(() -> {
+				worldRenderer.allChanged();
+				client.getItemRenderer().getItemModelShaper().rebuildCache();
 				other = null;
 			});
 		}

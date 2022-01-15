@@ -5,9 +5,8 @@ import com.swordglowsblue.artifice.api.builder.TypedJsonBuilder;
 import com.swordglowsblue.artifice.api.resource.JsonResource;
 import com.swordglowsblue.artifice.api.util.IdUtils;
 import com.swordglowsblue.artifice.api.util.Processor;
-import net.minecraft.util.Identifier;
-
 import java.util.function.Supplier;
+import net.minecraft.resources.ResourceLocation;
 
 public class ArtificeRecipeHelper {
 	private final ArtificeResourcePack.ServerResourcePackBuilder dataPackBuilder;
@@ -16,7 +15,7 @@ public class ArtificeRecipeHelper {
 		this.dataPackBuilder = dataPackBuilder;
 	}
 
-	public <T extends TypedJsonBuilder<? extends JsonResource>> void addRecipes(Identifier id, Processor<T> f, Supplier<T> ctor) {
+	public <T extends TypedJsonBuilder<? extends JsonResource>> void addRecipes(ResourceLocation id, Processor<T> f, Supplier<T> ctor) {
 		this.dataPackBuilder.add(IdUtils.wrapPath("recipes/", id, ".json"), f.process(ctor.get()).build());
 	}
 
