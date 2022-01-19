@@ -29,7 +29,7 @@ public class TestNameGenerator {
 	}
 
 	public static String generate(int min, int max) {
-		String vowels = "aeiou", characters = "qwrtypsdfghjklzxcvbnm";
+		String vowels = "aeiou", characters = "qwrtypsdfghjklzxcvbnm"/*, mutations = "'`^´ "*/;
 		StringBuilder name = new StringBuilder();
 		for (int i = 1; i < Rands.randIntRange(min, max); i++) {
 			if ((i == 1)) {
@@ -44,7 +44,10 @@ public class TestNameGenerator {
 			} else if (((i % 2) == 0)) {
 				int rng = Rands.randIntRange(1, 4);
 				name.append(vowels, rng - 1, rng);
-			} else if (Rands.randIntRange(1, 100) >= 75) {
+			}/* else if (Rands.randIntRange(1, 100) >= 95) {
+				int rng = Rands.randIntRange(1, 4);
+				name.append(mutations, rng - 1, rng);
+			}*/ else if (Rands.randIntRange(1, 100) >= 75) {
 				int rng = Rands.randIntRange(1, 4);
 				name.append(vowels, rng - 1, rng);
 			} else {

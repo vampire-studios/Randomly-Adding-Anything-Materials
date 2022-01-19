@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 @Mixin(BiomeGenerationSettings.class)
@@ -15,4 +16,10 @@ public interface GenerationSettingsAccessor {
 	
 	@Accessor("features")
 	void raaSetFeatures(List<List<Supplier<PlacedFeature>>> features);
+
+	@Accessor("featureSet")
+	Set<PlacedFeature> raaGetFeatureSet();
+
+	@Accessor("featureSet")
+	void raaSetFeatureSet(Set<PlacedFeature> features);
 }

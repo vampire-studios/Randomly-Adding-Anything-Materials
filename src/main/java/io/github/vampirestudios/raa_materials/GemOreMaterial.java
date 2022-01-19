@@ -12,8 +12,6 @@ import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
 import io.github.vampirestudios.raa_materials.utils.TextureHelper;
-import java.util.Locale;
-import java.util.Random;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -21,6 +19,9 @@ import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.SwordItem;
+
+import java.util.Locale;
+import java.util.Random;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 
@@ -80,12 +81,11 @@ public class GemOreMaterial extends OreMaterial {
 					.shovelHead(shovelHeadTextures[random.nextInt(shovelHeadTextures.length)])
 					.shovelStick(shovelStickTextures[random.nextInt(shovelStickTextures.length)])
 					.build(),
-				target,
-				random
+				target
 		);
 	}
 
-	public GemOreMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, Random random) {
+	public GemOreMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn) {
 		super(name, gradient, targetIn, InnerRegistry.registerItem(name.toLowerCase(Locale.ROOT) + "_gem", new RAASimpleItem(name.toLowerCase(Locale.ROOT), new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEM)));
 		gem = this.drop;
 
@@ -177,7 +177,7 @@ public class GemOreMaterial extends OreMaterial {
 
 		InnerRegistry.registerBlockModel(this.storageBlock, ModelHelper.makeCube(textureID));
 		InnerRegistry.registerItemModel(this.storageBlock.asItem(), ModelHelper.makeCube(textureID));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), this.name + " Block");
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), String.format("%s Block", this.name));
 
 		makeColoredItemAssets(gemTexture, gem, gradient, random, this.registryName + "_gem", "%s Gem");
 
@@ -188,7 +188,7 @@ public class GemOreMaterial extends OreMaterial {
 		ResourceLocation texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_sword_handle");
 		InnerRegistry.registerTexture(texture2ID, texture);
 		InnerRegistry.registerItemModel(this.sword, ModelHelper.makeThreeLayerItem(textureID, texture2ID, TextureHelper.makeItemTextureID("tools/sword/stick")));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_sword"), this.name + " Sword");
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_sword"), String.format("%s Sword", this.name));
 
 		texture = ProceduralTextures.randomColored(pickaxeHeadTexture, gradient);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_pickaxe_head");
@@ -197,7 +197,7 @@ public class GemOreMaterial extends OreMaterial {
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_pickaxe_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
 		InnerRegistry.registerItemModel(this.pickaxe, ModelHelper.makeTwoLayerItem(textureID, texture2ID));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_pickaxe"), this.name + " Pickaxe");
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_pickaxe"), String.format("%s Pickaxe", this.name));
 
 		texture = ProceduralTextures.randomColored(axeHeadTexture, gradient);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_axe_head");
@@ -206,7 +206,7 @@ public class GemOreMaterial extends OreMaterial {
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_axe_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
 		InnerRegistry.registerItemModel(this.axe, ModelHelper.makeTwoLayerItem(textureID, texture2ID));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_axe"), this.name + " Axe");
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_axe"), String.format("%s Axe", this.name));
 
 		texture = ProceduralTextures.randomColored(hoeHeadTexture, gradient);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_hoe_head");
@@ -215,7 +215,7 @@ public class GemOreMaterial extends OreMaterial {
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_hoe_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
 		InnerRegistry.registerItemModel(this.hoe, ModelHelper.makeTwoLayerItem(textureID, texture2ID));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_hoe"), this.name + " Hoe");
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_hoe"), String.format("%s Hoe", this.name));
 
 		texture = ProceduralTextures.randomColored(shovelHeadTexture, gradient);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_shovel_head");
@@ -224,11 +224,11 @@ public class GemOreMaterial extends OreMaterial {
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_shovel_stick");
 		InnerRegistry.registerTexture(texture2ID, texture);
 		InnerRegistry.registerItemModel(this.shovel, ModelHelper.makeTwoLayerItem(textureID, texture2ID));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shovel"), this.name + " Shovel");
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shovel"), String.format("%s Shovel", this.name));
 	}
 
 	static {
-		oreVeinTextures = new ResourceLocation[25];
+		oreVeinTextures = new ResourceLocation[24];
 		for (int i = 0; i < oreVeinTextures.length; i++) {
 			oreVeinTextures[i] = id("textures/block/ores/gems/ore_" + (i+1) + ".png");
 		}

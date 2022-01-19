@@ -1,14 +1,15 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Maps;
-import java.util.Map;
-import java.util.Map.Entry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class CustomRecipeManager {
 	private static final Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> RECIPES = Maps.newHashMap();
@@ -60,8 +61,8 @@ public class CustomRecipeManager {
 	}
 
 	public static boolean exists(ItemLike item) {
-		if (item instanceof Block) {
-			return Registry.BLOCK.getKey((Block) item) != Registry.BLOCK.getDefaultKey();
+		if (item instanceof Block block) {
+			return Registry.BLOCK.getKey(block) != Registry.BLOCK.getDefaultKey();
 		}
 		else {
 			return Registry.ITEM.getKey(item.asItem()) != Registry.ITEM.getDefaultKey();

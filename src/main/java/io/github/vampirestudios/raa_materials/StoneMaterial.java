@@ -129,35 +129,35 @@ public class StoneMaterial extends ComplexMaterial {
 
 	@Override
 	public void generate(ServerLevel world) {
-		/*ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_stone_cf"));
-		ConfiguredFeature<?, ?> configuredFeature = BiomeUtils.newConfiguredFeature(configuredFeatureRegistryKey, Feature.ORE
-				.configured(new OreConfiguration(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.defaultBlockState(), 64))
-				.range(new RangeConfiguration(UniformHeight.of(VerticalAnchor.bottom(), VerticalAnchor.top())))
-				.spreadHorizontally()
-				.repeatRandomly(2));
+//		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_stone_cf"));
+//		ConfiguredFeature<?, ?> configuredFeature = BiomeUtils.newConfiguredFeature(configuredFeatureRegistryKey, Feature.ORE
+//				.configured(new OreConfiguration(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.defaultBlockState(), 64))
+//				.range(new RangeConfiguration(UniformHeight.of(VerticalAnchor.bottom(), VerticalAnchor.top())))
+//				.spreadHorizontally()
+//				.repeatRandomly(2));
+//
+//		ResourceKey<ConfiguredFeature<?, ?>> configuredFeature2RegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_stone_cf2"));
+//		ConfiguredFeature<?, ?> configuredFeature2 = BiomeUtils.newConfiguredFeature(configuredFeature2RegistryKey, Feature.ORE
+//				.configured(new OreConfiguration(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.defaultBlockState(), 32))
+//				.range(new RangeConfiguration(UniformHeight.of(VerticalAnchor.bottom(), VerticalAnchor.top())))
+//				.spreadHorizontally()
+//				.repeatRandomly(4));
+//
+//		ResourceKey<ConfiguredFeature<?, ?>> configuredFeature3RegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_stone_cf3"));
+//		ConfiguredFeature<?, ?> configuredFeature3 = BiomeUtils.newConfiguredFeature(configuredFeature3RegistryKey, Feature.ORE
+//				.configured(new OreConfiguration(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.defaultBlockState(), 16))
+//				.range(new RangeConfiguration(UniformHeight.of(VerticalAnchor.bottom(), VerticalAnchor.top())))
+//				.spreadHorizontally()
+//				.repeatRandomly(10));
 
-		ResourceKey<ConfiguredFeature<?, ?>> configuredFeature2RegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_stone_cf2"));
-		ConfiguredFeature<?, ?> configuredFeature2 = BiomeUtils.newConfiguredFeature(configuredFeature2RegistryKey, Feature.ORE
-				.configured(new OreConfiguration(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.defaultBlockState(), 32))
-				.range(new RangeConfiguration(UniformHeight.of(VerticalAnchor.bottom(), VerticalAnchor.top())))
-				.spreadHorizontally()
-				.repeatRandomly(4));
-
-		ResourceKey<ConfiguredFeature<?, ?>> configuredFeature3RegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_stone_cf3"));
-		ConfiguredFeature<?, ?> configuredFeature3 = BiomeUtils.newConfiguredFeature(configuredFeature3RegistryKey, Feature.ORE
-				.configured(new OreConfiguration(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.defaultBlockState(), 16))
-				.range(new RangeConfiguration(UniformHeight.of(VerticalAnchor.bottom(), VerticalAnchor.top())))
-				.spreadHorizontally()
-				.repeatRandomly(10));
-
-		world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).forEach(biome -> {
-			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
-			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
-			List<List<Supplier<ConfiguredFeature<?, ?>>>> features = new ArrayList<>(preFeatures.size());
-			preFeatures.forEach((list) -> { features.add(Lists.newArrayList(list)); });
-			addFeature(Rands.values(new ConfiguredFeature[]{ configuredFeature, configuredFeature2, configuredFeature3 }), features);
-			accessor.raaSetFeatures(features);
-		});*/
+//		world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).forEach(biome -> {
+//			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
+//			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
+//			List<List<Supplier<ConfiguredFeature<?, ?>>>> features = new ArrayList<>(preFeatures.size());
+//			preFeatures.forEach((list) -> { features.add(Lists.newArrayList(list)); });
+//			addFeature(Rands.values(new ConfiguredFeature[]{ configuredFeature, configuredFeature2, configuredFeature3 }), features);
+//			accessor.raaSetFeatures(features);
+//		});
 	}
 
 	@Override

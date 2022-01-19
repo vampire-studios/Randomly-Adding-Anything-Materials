@@ -6,16 +6,12 @@ import com.mojang.serialization.Lifecycle;
 import io.github.vampirestudios.raa_materials.api.RegistryRemover;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
-import java.util.Collection;
-import java.util.Map;
-import java.util.OptionalInt;
-import java.util.Set;
-import java.util.function.BiConsumer;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Registry;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -23,6 +19,14 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.OptionalInt;
+import java.util.Set;
+import java.util.function.BiConsumer;
 
 public class InnerRegistry {
 	private static final Map<BlockState, UnbakedModel> BLOCK_MODELS = Maps.newHashMap();
@@ -31,11 +35,15 @@ public class InnerRegistry {
 	private static final Map<ResourceLocation, BufferTexture> TEXTURES = Maps.newHashMap();
 	private static final Map<ResourceLocation, Block> BLOCKS = Maps.newHashMap();
 	private static final Map<ResourceLocation, Item> ITEMS = Maps.newHashMap();
+	private static final Map<ResourceLocation, ConfiguredFeature<?, ?>> CONFIGURED_FEATURES = Maps.newHashMap();
+	private static final Map<ResourceLocation, PlacedFeature> PLACED_FEATURES = Maps.newHashMap();
 	private static final Set<ResourceLocation> MODELED = Sets.newHashSet();
 	
 	public static void clear() {
 		clearRegistry(Registry.BLOCK, BLOCKS.keySet());
 		clearRegistry(Registry.ITEM, ITEMS.keySet());
+		clearRegistry(BuiltinRegistries.CONFIGURED_FEATURE, CONFIGURED_FEATURES.keySet());
+		clearRegistry(BuiltinRegistries.PLACED_FEATURE, PLACED_FEATURES.keySet());
 
 		BLOCK_MODELS.clear();
 		ITEM_MODELS.clear();
@@ -55,7 +63,7 @@ public class InnerRegistry {
 		TagHelper.clearTags();
 	}
 	
-	private static <T> void clearRegistry(DefaultedRegistry<T> registry, Set<ResourceLocation> ids) {
+	private static <T> void clearRegistry(Registry<T> registry, Set<ResourceLocation> ids) {
 		ids.forEach(((RegistryRemover) registry)::remove);
 	}
 
@@ -100,7 +108,47 @@ public class InnerRegistry {
 	public static Item registerItem(String name, Item block) {
 		return registerItem(RAAMaterials.id(name), block);
 	}
-	
+
+	public static ConfiguredFeature<?, ?> registerConfiguredFeature(ResourceLocation id, ConfiguredFeature<?, ?> block) {
+		if (BuiltinRegistries.CONFIGURED_FEATURE.containsKey(id)) {
+			block = BuiltinRegistries.CONFIGURED_FEATURE.get(id);
+		} else {
+			Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id, block);
+		}
+		CONFIGURED_FEATURES.put(id, block);
+		return block;
+	}
+
+	public static ConfiguredFeature<?, ?> registerConfiguredFeature(ResourceKey<ConfiguredFeature<?, ?>> id, ConfiguredFeature<?, ?> block) {
+		if (BuiltinRegistries.CONFIGURED_FEATURE.containsKey(id)) {
+			block = BuiltinRegistries.CONFIGURED_FEATURE.get(id);
+		} else {
+			Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id, block);
+		}
+		CONFIGURED_FEATURES.put(id.location(), block);
+		return block;
+	}
+
+	public static PlacedFeature registerPlacedFeature(ResourceLocation id, PlacedFeature block) {
+		if (BuiltinRegistries.PLACED_FEATURE.containsKey(id)) {
+			block = BuiltinRegistries.PLACED_FEATURE.get(id);
+		} else {
+			Registry.register(BuiltinRegistries.PLACED_FEATURE, id, block);
+		}
+		PLACED_FEATURES.put(id, block);
+		return block;
+	}
+
+	public static PlacedFeature registerPlacedFeature(ResourceKey<PlacedFeature> id, PlacedFeature block) {
+		if (BuiltinRegistries.PLACED_FEATURE.containsKey(id)) {
+			block = BuiltinRegistries.PLACED_FEATURE.get(id);
+		} else {
+			Registry.register(BuiltinRegistries.PLACED_FEATURE, id, block);
+		}
+		PLACED_FEATURES.put(id.location(), block);
+		return block;
+	}
+
 	public static void registerTexture(ResourceLocation id, BufferTexture image) {
 		TEXTURES.put(id, image);
 	}

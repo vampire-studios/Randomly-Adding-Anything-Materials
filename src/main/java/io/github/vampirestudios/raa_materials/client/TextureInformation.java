@@ -3,6 +3,7 @@ package io.github.vampirestudios.raa_materials.client;
 import net.minecraft.resources.ResourceLocation;
 
 public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation storageBlock,
+                                 ResourceLocation crystalBlock, ResourceLocation buddingCrystalBlock,
                                  ResourceLocation rawMaterialBlock, ResourceLocation ingot,
                                  ResourceLocation gem, ResourceLocation rawItem,
                                  ResourceLocation plate, ResourceLocation gear,
@@ -29,6 +30,14 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
 
     public ResourceLocation getRawMaterialBlock() {
         return rawMaterialBlock;
+    }
+
+    public ResourceLocation getCrystalBlock() {
+        return crystalBlock;
+    }
+
+    public ResourceLocation getBuddingCrystalBlock() {
+        return buddingCrystalBlock;
     }
 
     //Items
@@ -109,6 +118,8 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
         private ResourceLocation oreOverlay;
         private ResourceLocation storageBlock;
         private ResourceLocation rawMaterialBlock;
+        private ResourceLocation crystalBlock;
+        private ResourceLocation buddingCrystalBlock;
 
         //Items
         private ResourceLocation ingot;
@@ -143,6 +154,16 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
 
         public Builder rawMaterialBlock(ResourceLocation rawMaterialBlock) {
             this.rawMaterialBlock = rawMaterialBlock;
+            return this;
+        }
+
+        public Builder crystalBlock(ResourceLocation crystalBlock) {
+            this.crystalBlock = crystalBlock;
+            return this;
+        }
+
+        public Builder buddingCrystalBlock(ResourceLocation buddingCrystalBlock) {
+            this.buddingCrystalBlock = buddingCrystalBlock;
             return this;
         }
 
@@ -238,10 +259,10 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
         }
 
         public TextureInformation build() {
-            return new TextureInformation(oreOverlay, storageBlock, rawMaterialBlock,
-                    ingot, gem, rawItem, plate, gear, nugget, dust, smallDust,
-                    swordBlade, swordHandle, pickaxeHead, pickaxeStick, axeHead,
-                    axeStick, hoeHead, hoeStick, shovelHead, shovelStick);
+            return new TextureInformation(oreOverlay, storageBlock, crystalBlock, buddingCrystalBlock,
+                    rawMaterialBlock, ingot, gem, rawItem, plate, gear, nugget, dust, smallDust,
+                    swordBlade, swordHandle, pickaxeHead, pickaxeStick, axeHead, axeStick, hoeHead,
+                    hoeStick, shovelHead, shovelStick);
         }
 
     }

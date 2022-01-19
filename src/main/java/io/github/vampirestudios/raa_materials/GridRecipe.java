@@ -30,7 +30,7 @@ public class GridRecipe {
 	private GridRecipe() {}
 
 	public static GridRecipe make(String modID, String name, ItemLike output) {
-		INSTANCE.id = new ResourceLocation(modID, name);
+		INSTANCE.id = new ResourceLocation(modID, name.replaceAll("'|`|\\^|´", ""));
 		INSTANCE.output = output;
 
 		INSTANCE.group = "";

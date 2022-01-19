@@ -5,12 +5,13 @@ import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
 import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 public abstract class ComplexMaterial {
 	private static final List<ComplexMaterial> MATERIALS = Lists.newArrayList();
@@ -18,7 +19,7 @@ public abstract class ComplexMaterial {
 	public String registryName;
 	public ColorGradient gradient;
 
-	public ComplexMaterial(String name, ColorGradient gradient) {
+	protected ComplexMaterial(String name, ColorGradient gradient) {
 		MATERIALS.add(this);
 		this.name = name;
 		this.registryName = this.name.toLowerCase(Locale.ROOT);
@@ -46,6 +47,8 @@ public abstract class ComplexMaterial {
 		textureInformationBuilder.oreOverlay(ResourceLocation.tryParse(texturesCompound.getString("oreTexture")));
 		textureInformationBuilder.storageBlock(ResourceLocation.tryParse(texturesCompound.getString("storageBlockTexture")));
 		textureInformationBuilder.rawMaterialBlock(ResourceLocation.tryParse(texturesCompound.getString("rawMaterialBlockTexture")));
+		textureInformationBuilder.crystalBlock(ResourceLocation.tryParse(texturesCompound.getString("crystalBlockTexture")));
+		textureInformationBuilder.buddingCrystalBlock(ResourceLocation.tryParse(texturesCompound.getString("buddingCrystalBlockTexture")));
 
 		//Items
 		textureInformationBuilder.ingot(ResourceLocation.tryParse(texturesCompound.getString("ingotTexture")));
@@ -72,9 +75,9 @@ public abstract class ComplexMaterial {
 		TextureInformation textureInformation = textureInformationBuilder.build();
 
 		switch (type) {
-			case "gem" -> material = new GemOreMaterial(name, gradient, textureInformation, target, random);
-			case "crystal" -> material = new CrystalMaterial(name, gradient);
-			case "metal" -> material = new MetalOreMaterial(name, gradient, textureInformation, target, random);
+			case "gem" -> material = new GemOreMaterial(name, gradient, textureInformation, target);
+			case "crystal" -> material = new CrystalMaterial(name, gradient, textureInformation);
+			case "metal" -> material = new MetalOreMaterial(name, gradient, textureInformation, target);
 			default -> {
 				CustomColor mainColor = new CustomColor(colorGradientCompound.getInt("startColor"));
 				gradient = ProceduralTextures.makeStonePalette(mainColor, random);

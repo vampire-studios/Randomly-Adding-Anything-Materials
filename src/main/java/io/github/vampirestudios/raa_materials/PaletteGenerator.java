@@ -24,7 +24,7 @@ public class PaletteGenerator {
 
     private static int nextColor(Random rand, double biasedLerpFactor, double delta, int color, double hueshift, double proportion, double extraProportion, double randProportion, double randSaturation, double randValue, double saturationDecay) {
         double prop = proportion + biasedLerpFactor * extraProportion;
-        prop += (rand.nextDouble() - rand.nextDouble()) * randProportion;
+        prop += ((rand.nextDouble() - rand.nextDouble()) * 0.5 + 0.5) * randProportion;
 
         double h = ColorUtil.hued(color);
         double s = ColorUtil.saturationd(color);
@@ -42,8 +42,8 @@ public class PaletteGenerator {
         s = ColorUtil.saturationd(color);
         v = ColorUtil.valued(color);
 
-        s += (rand.nextDouble() - rand.nextDouble()) * randSaturation;
-        v += (rand.nextDouble() - rand.nextDouble()) * randValue;
+        s += ((rand.nextDouble() - rand.nextDouble()) * 0.5 + 0.5) * randSaturation;
+        v += ((rand.nextDouble() - rand.nextDouble()) * 0.5 + 0.5) * randValue;
         s -= saturationDecay * delta;
 
         return ColorUtil.hsv(h, s, v);

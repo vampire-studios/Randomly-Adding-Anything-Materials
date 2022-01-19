@@ -1,8 +1,9 @@
 package io.github.vampirestudios.raa_materials.utils;
 
-import java.util.Random;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+
+import java.util.Random;
 
 public class ProceduralTextures {
 	public static ColorGradient makeStonePalette(CustomColor color, Random random) {
@@ -19,9 +20,9 @@ public class ProceduralTextures {
 		int type = random.nextInt(3);
 		if (type == 0) {
 			CustomColor color = new CustomColor(true)
-					.setHue(random.nextFloat())
-					.setSaturation(MHelper.randRange(0.3F, 1F, random))
-					.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
+					.setHue((random.nextFloat() - random.nextFloat()) * 0.5F + 0.5F)
+					.setSaturation(MHelper.randRange(0.1F, 1F, random))
+					.setBrightness(MHelper.randRange(0.1F, 0.85F, random));
 			float cos = Mth.cos(color.getHue() * MHelper.PI2);
 			float hue = cos * 0.1F;
 			float sat = cos * 0.15F;
@@ -42,7 +43,7 @@ public class ProceduralTextures {
 
 	public static ColorGradient makeGemPalette(Random random) {
 		CustomColor color = new CustomColor(true)
-				.setHue(random.nextFloat())
+				.setHue((random.nextFloat() - random.nextFloat()) * 0.5F + 0.5F)
 				.setSaturation(MHelper.randRange(0.6F, 1, random))
 				.setBrightness(MHelper.randRange(0.6F, 1, random));
 		float cos = Mth.cos(color.getHue() * MHelper.PI2);
@@ -53,7 +54,7 @@ public class ProceduralTextures {
 
 	public static ColorGradient makeCrystalPalette(Random random) {
 		CustomColor color = new CustomColor(true)
-				.setHue(random.nextFloat())
+				.setHue((random.nextFloat() - random.nextFloat()) * 0.5F + 0.5F)
 				.setSaturation(MHelper.randRange(0.4F, 1F, random))
 				.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
 		float cos = Mth.cos(color.getHue() * MHelper.PI2);

@@ -12,9 +12,9 @@ import java.util.Random;
 public class PaletteTest {
     public static void main(String[] args) throws Exception {
         int paletteSize = 7;
-        int mainColor = 0x751414;
+        int mainColor = 0x674580;
         double hueshift = 40;
-        double proportion = 1.3;
+        double proportion = 1.0;
         double bias = 5.0;
         double extra = 1.6;
 
