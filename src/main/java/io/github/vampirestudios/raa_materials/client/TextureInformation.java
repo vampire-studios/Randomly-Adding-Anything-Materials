@@ -4,16 +4,15 @@ import net.minecraft.resources.ResourceLocation;
 
 public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation storageBlock,
                                  ResourceLocation crystalBlock, ResourceLocation buddingCrystalBlock,
-                                 ResourceLocation rawMaterialBlock, ResourceLocation ingot,
-                                 ResourceLocation gem, ResourceLocation rawItem,
-                                 ResourceLocation plate, ResourceLocation gear,
-                                 ResourceLocation nugget, ResourceLocation dust,
-                                 ResourceLocation smallDust, ResourceLocation swordBlade,
-                                 ResourceLocation swordHandle, ResourceLocation pickaxeHead,
-                                 ResourceLocation pickaxeStick, ResourceLocation axeHead,
-                                 ResourceLocation axeStick, ResourceLocation hoeHead,
-                                 ResourceLocation hoeStick, ResourceLocation shovelHead,
-                                 ResourceLocation shovelStick) {
+                                 ResourceLocation rawMaterialBlock, ResourceLocation crystal,
+                                 ResourceLocation ingot, ResourceLocation gem, ResourceLocation rawItem,
+                                 ResourceLocation plate, ResourceLocation shard, ResourceLocation gear,
+                                 ResourceLocation nugget, ResourceLocation dust, ResourceLocation smallDust,
+                                 ResourceLocation swordBlade, ResourceLocation swordHandle,
+                                 ResourceLocation pickaxeHead, ResourceLocation pickaxeStick,
+                                 ResourceLocation axeHead, ResourceLocation axeStick,
+                                 ResourceLocation hoeHead, ResourceLocation hoeStick,
+                                 ResourceLocation shovelHead, ResourceLocation shovelStick) {
 
     public static Builder builder() {
         return new Builder();
@@ -40,6 +39,10 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
         return buddingCrystalBlock;
     }
 
+    public ResourceLocation getCrystal() {
+        return crystal;
+    }
+
     //Items
     public ResourceLocation getIngot() {
         return ingot;
@@ -55,6 +58,10 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
 
     public ResourceLocation getPlate() {
         return plate;
+    }
+
+    public ResourceLocation getShard() {
+        return shard;
     }
 
     public ResourceLocation getGear() {
@@ -120,13 +127,15 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
         private ResourceLocation rawMaterialBlock;
         private ResourceLocation crystalBlock;
         private ResourceLocation buddingCrystalBlock;
+        private ResourceLocation crystal;
 
         //Items
         private ResourceLocation ingot;
         private ResourceLocation gem;
         private ResourceLocation rawItem;
-        private ResourceLocation plate;
         private ResourceLocation nugget;
+        private ResourceLocation plate;
+        private ResourceLocation shard;
         private ResourceLocation dust;
         private ResourceLocation smallDust;
         private ResourceLocation gear;
@@ -167,6 +176,11 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
             return this;
         }
 
+        public Builder crystal(ResourceLocation crystal) {
+            this.crystal = crystal;
+            return this;
+        }
+
         //Items
         public Builder ingot(ResourceLocation ingot) {
             this.ingot = ingot;
@@ -185,6 +199,11 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
 
         public Builder plate(ResourceLocation plate) {
             this.plate = plate;
+            return this;
+        }
+
+        public Builder shard(ResourceLocation shard) {
+            this.shard = shard;
             return this;
         }
 
@@ -260,9 +279,9 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
 
         public TextureInformation build() {
             return new TextureInformation(oreOverlay, storageBlock, crystalBlock, buddingCrystalBlock,
-                    rawMaterialBlock, ingot, gem, rawItem, plate, gear, nugget, dust, smallDust,
-                    swordBlade, swordHandle, pickaxeHead, pickaxeStick, axeHead, axeStick, hoeHead,
-                    hoeStick, shovelHead, shovelStick);
+                    rawMaterialBlock, crystal, ingot, gem, rawItem, plate, shard, gear, nugget, dust,
+                    smallDust, swordBlade, swordHandle, pickaxeHead, pickaxeStick, axeHead, axeStick,
+                    hoeHead, hoeStick, shovelHead, shovelStick);
         }
 
     }

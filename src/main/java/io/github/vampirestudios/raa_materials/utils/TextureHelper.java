@@ -283,6 +283,23 @@ public class TextureHelper {
 		return result;
 	}
 
+	public static BufferTexture combine(BufferTexture a, BufferTexture b) {
+		BufferTexture result = new BufferTexture(a.getWidth(), a.getHeight());
+		COLOR.forceRGB();
+		COLOR2.forceRGB();
+		for (int x = 0; x < a.getWidth(); x++) {
+			for (int y = 0; y < a.getHeight(); y++) {
+				int pixelA = a.getPixel(x, y);
+				int pixelB = b.getPixel(x, y);
+				COLOR.set(pixelA);
+				COLOR2.set(pixelB);
+				COLOR.set(pixelA).mixWith(COLOR2.set(pixelB), COLOR2.getAlpha());
+				result.setPixel(x, y, COLOR);
+			}
+		}
+		return result;
+	}
+
 	public static BufferTexture outline(BufferTexture texture, CustomColor dark, CustomColor bright, int offsetX, int offsetY) {
 		BufferTexture result = new BufferTexture(texture.getWidth(), texture.getHeight());
 		BufferTexture darkOffset = offset(texture, offsetX, offsetY);

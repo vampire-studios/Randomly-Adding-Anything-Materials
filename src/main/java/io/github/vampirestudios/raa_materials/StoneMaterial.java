@@ -1,6 +1,5 @@
 package io.github.vampirestudios.raa_materials;
 
-import com.google.common.collect.Lists;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
@@ -15,14 +14,10 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.material.MaterialColor;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Random;
-import java.util.function.Supplier;
 
 public class StoneMaterial extends ComplexMaterial {
 	private static BufferTexture[] stoneFrame;
@@ -43,7 +38,7 @@ public class StoneMaterial extends ComplexMaterial {
 	public CustomColor mainColor;
 
 	public StoneMaterial(CustomColor mainColor, Random random) {
-		this(TestNameGenerator.generateOreName(), mainColor, ProceduralTextures.makeStonePalette(mainColor, random));
+		this(TestNameGenerator.generateStoneName(), mainColor, ProceduralTextures.makeStonePalette(mainColor, random));
 	}
 
 	public StoneMaterial(String name, CustomColor mainColor, ColorGradient colorGradient) {
@@ -102,8 +97,7 @@ public class StoneMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public CompoundTag writeToNbt() {
-		CompoundTag materialCompound = new CompoundTag();
+	public CompoundTag writeToNbt(CompoundTag materialCompound) {
 		materialCompound.putString("name", this.name);
 		materialCompound.putString("registryName", this.registryName);
 		materialCompound.putString("materialType", "stone");
@@ -114,17 +108,6 @@ public class StoneMaterial extends ComplexMaterial {
 		materialCompound.put("colorGradient", colorGradientCompound);
 
 		return materialCompound;
-	}
-
-	private static void addFeature(ConfiguredFeature<?, ?> feature, List<List<Supplier<ConfiguredFeature<?, ?>>>> features) {
-		int index = GenerationStep.Decoration.UNDERGROUND_ORES.ordinal();
-		if (features.size() > index) {
-			features.get(index).add(() -> feature);
-		} else {
-			List<Supplier<ConfiguredFeature<?, ?>>> newFeature = Lists.newArrayList();
-			newFeature.add(() -> feature);
-			features.add(newFeature);
-		}
 	}
 
 	@Override

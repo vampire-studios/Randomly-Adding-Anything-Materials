@@ -2,14 +2,15 @@ package io.github.vampirestudios.raa_materials.utils;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import java.util.Map;
-import java.util.Set;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+
+import java.util.Map;
+import java.util.Set;
 
 public class TagHelper {
 	private static final Map<ResourceLocation, Set<ResourceLocation>> TAGS_BLOCK = Maps.newHashMap();
@@ -57,27 +58,19 @@ public class TagHelper {
 	}
 
 	public static Tag.Builder apply(Tag.Builder builder, Set<ResourceLocation> ids) {
-		ids.forEach((value) -> {
-			builder.addElement(value, "Better End Code");
-		});
+		ids.forEach(value -> builder.addElement(value, "RAA Code Code"));
 		return builder;
 	}
 
 	public static void apply(String entry, Map<ResourceLocation, Tag.Builder> tagsMap) {
 		Map<ResourceLocation, Set<ResourceLocation>> endTags = null;
-		if (entry.equals("block")) {
+		if (entry.equals("tags/blocks")) {
 			endTags = TAGS_BLOCK;
-		} else if (entry.equals("item")) {
+		} else if (entry.equals("tags/item")) {
 			endTags = TAGS_ITEM;
 		}
 		if (endTags != null) {
-			endTags.forEach((id, ids) -> {
-				if (tagsMap.containsKey(id)) {
-					apply(tagsMap.get(id), ids);
-				} else {
-					tagsMap.put(id, apply(Tag.Builder.tag(), ids));
-				}
-			});
+			endTags.forEach((id, ids) -> apply(tagsMap.computeIfAbsent(id, key -> Tag.Builder.tag()), ids));
 		}
 	}
 }

@@ -1,87 +1,90 @@
 package io.github.vampirestudios.raa_materials.blocks;
 
-import net.minecraft.core.BlockPos;
+import com.google.common.collect.Maps;
+import com.mojang.math.Transformation;
+import io.github.vampirestudios.raa_materials.api.BasePatterns;
+import io.github.vampirestudios.raa_materials.api.BlockModelProvider;
+import io.github.vampirestudios.raa_materials.api.ModelsHelper;
+import io.github.vampirestudios.raa_materials.api.PatternsHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.AmethystBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.AmethystClusterBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-public class CustomCrystalClusterBlock extends AmethystBlock implements SimpleWaterloggedBlock {
-	public static final BooleanProperty WATERLOGGED;
-	protected final VoxelShape UP_SHAPE;
-	private final Item drop;
+public class CustomCrystalClusterBlock extends AmethystClusterBlock implements SimpleWaterloggedBlock, BlockModelProvider {
+	private Item drop;
 
 	public CustomCrystalClusterBlock(BlockBehaviour.Properties settings, Item drop) {
-		super(settings);
-		this.drop = drop == null ? this.asItem() : drop;
-		this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, false));
-		this.UP_SHAPE = Block.box(3, 0.0D, 3, 16 - 3, 7, 16 - 3);
+		super(7, 3, settings);
+		this.drop = drop;
+		this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, false).setValue(FACING, Direction.UP));
+	}
+
+	public Item getDrop() {
+		if (this.drop == null) {
+			this.drop = this.asItem();
+		}
+		return drop;
 	}
 
 	@Override
 	public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
-		return Collections.singletonList(new ItemStack(drop));
+		return Collections.singletonList(new ItemStack(getDrop()));
 	}
 
-	public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-		return UP_SHAPE;
+	@Override
+	@Environment(EnvType.CLIENT)
+	public BlockModel getItemModel(ResourceLocation blockId) {
+		return ModelsHelper.fromPattern(createBlockPattern(blockId));
 	}
 
-	public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
-		return world.getBlockState(pos).isFaceSturdy(world, pos, Direction.DOWN);
+	@Override
+	@Environment(EnvType.CLIENT)
+	public @Nullable BlockModel getBlockModel(ResourceLocation blockId, BlockState blockState) {
+		return ModelsHelper.fromPattern(createBlockPattern(blockId));
 	}
 
-	public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
-		if (state.getValue(WATERLOGGED)) {
-			world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
+	@Override
+	@Environment(EnvType.CLIENT)
+	public UnbakedModel getModelVariant(ResourceLocation stateId, BlockState blockState, Map<ResourceLocation, UnbakedModel> modelCache) {
+		ModelResourceLocation shardsUp = new ModelResourceLocation(stateId.getNamespace(), stateId.getPath(), this.defaultBlockState().toString());
+
+		if (!modelCache.containsKey(shardsUp)) {
+			Map<String, String> textures = Maps.newHashMap();
+			textures.put("%modid%", stateId.getNamespace());
+			textures.put("%texture%", stateId.getPath());
+			Optional<String> pattern = PatternsHelper.createJson(BasePatterns.BLOCK_CROSS, textures);
+			BlockModel model = ModelsHelper.fromPattern(pattern);
+			modelCache.put(shardsUp, model);
 		}
 
-		return !state.canSurvive(world, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, direction, neighborState, world, pos, neighborPos);
+		Direction facing = blockState.getValue(FACING);
+		if (facing == Direction.UP) {
+			return modelCache.get(shardsUp);
+		}
+
+		Transformation transformation = new Transformation(null, facing.getRotation(), null, null);
+		return ModelsHelper.createMultiVariant(shardsUp, transformation, false);
 	}
 
-	@Nullable
-	public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-		LevelAccessor worldAccess = ctx.getLevel();
-		BlockPos blockPos = ctx.getClickedPos();
-		return this.defaultBlockState().setValue(WATERLOGGED, worldAccess.getFluidState(blockPos).getType() == Fluids.WATER);
-	}
-
-	public FluidState getFluidState(BlockState state) {
-		return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
-	}
-
-	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-		builder.add(WATERLOGGED);
-	}
-
-	public PushReaction getPistonPushReaction(BlockState state) {
-		return PushReaction.DESTROY;
-	}
-
-	static {
-		WATERLOGGED = BlockStateProperties.WATERLOGGED;
+	protected Optional<String> createBlockPattern(ResourceLocation blockId) {
+		return PatternsHelper.createBlockCross(blockId);
 	}
 
 }

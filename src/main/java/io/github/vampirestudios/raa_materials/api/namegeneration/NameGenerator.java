@@ -1,17 +1,9 @@
 package io.github.vampirestudios.raa_materials.api.namegeneration;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import io.github.vampirestudios.raa_core.RAACore;
-import io.github.vampirestudios.raa_core.api.name_generation.Language;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
-import org.apache.commons.lang3.text.WordUtils;
 
-import java.io.InputStream;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
-import java.util.Set;
 
 public class NameGenerator {
 	private static final Map<String, String> NAMES = Maps.newHashMap();
@@ -19,7 +11,8 @@ public class NameGenerator {
 	public static void init() {}
 
 	public static void addTranslation(String raw, String translated) {
-		NAMES.put(raw, translated);
+		NAMES.put(raw.replaceAll("'|`|\\^| |´", ""), translated);
+		System.out.println(translated);
 	}
 
 	public static boolean hasTranslation(String raw) {
@@ -31,6 +24,7 @@ public class NameGenerator {
 	}
 
 	public static String makeRaw(String type, String name) {
+		System.out.println(type + "." + RAAMaterials.MOD_ID + "." + name.replaceAll("'|`|\\^| |´", ""));
 		return type + "." + RAAMaterials.MOD_ID + "." + name;
 	}
 

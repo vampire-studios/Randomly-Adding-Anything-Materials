@@ -27,6 +27,18 @@ public class SpriteAtlasTextureMixin {
 	private void loadSpritesEnd(ResourceManager resourceManager, Set<ResourceLocation> ids, CallbackInfoReturnable<Collection<TextureAtlasSprite.Info>> info) {
 		Collection<TextureAtlasSprite.Info> result = info.getReturnValue();
 		InnerRegistry.iterateTextures((id, img) -> {
+//			TextureAtlasSprite.Info spriteInfo;
+//			try {
+//				Resource resource = resourceManager.getResource(Utils.appendAndPrependToPath(id, "textures/", ".png"));
+//				AnimationMetadataSection animationMetadataSection = resource.getMetadata(AnimationMetadataSection.SERIALIZER);
+//				assert animationMetadataSection != null;
+//				Pair<Integer, Integer> pair = animationMetadataSection.getFrameSize(img.getWidth(), img.getHeight());
+//				spriteInfo = new TextureAtlasSprite.Info(id, pair.getFirst(), pair.getSecond(), animationMetadataSection);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//				spriteInfo = new TextureAtlasSprite.Info(id, img.getWidth(), img.getHeight(), AnimationMetadataSection.EMPTY);
+//				result.add(spriteInfo);
+//			}
 			TextureAtlasSprite.Info spriteInfo = new TextureAtlasSprite.Info(id, img.getWidth(), img.getHeight(), AnimationMetadataSection.EMPTY);
 			result.add(spriteInfo);
 		});
@@ -38,12 +50,11 @@ public class SpriteAtlasTextureMixin {
 		BufferTexture texture = InnerRegistry.getTexture(info.name());
 		if (texture != null) {
 			try {
-				TextureAtlas atlas = (TextureAtlas) (Object) this;
+				TextureAtlas atlas = TextureAtlas.class.cast(this);
 				TextureAtlasSprite sprite = new FabricSprite(atlas, info, maxLevel, atlasWidth, atlasHeight, x, y, texture.makeImage());
 				callbackInfo.setReturnValue(sprite);
 				callbackInfo.cancel();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

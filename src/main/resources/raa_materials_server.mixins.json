@@ -4,14 +4,17 @@
   "package": "io.github.vampirestudios.raa_materials.mixins.server",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "BiomeMixin",
-    "GenerationSettingsAccessor",
-    "RecipeManagerAccessor",
-    "RecipeManagerMixin",
-    "RegistryMixin",
-    "ServerWorldMixin"
+	"BiomeMixin",
+	"GenerationSettingsAccessor",
+	"MainMixin",
+	"RecipeManagerAccessor",
+	"RecipeManagerMixin",
+	"RegistryMixin",
+	"ServerLevelMixin",
+	"ServerWorldMixin",
+	"TagGroupLoaderMixin"
   ],
   "injectors": {
-    "defaultRequire": 1
+	"defaultRequire": 1
   }
 }

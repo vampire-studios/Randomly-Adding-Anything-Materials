@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Lifecycle;
 import io.github.vampirestudios.raa_materials.api.RegistryRemover;
+import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
 import net.minecraft.client.renderer.block.BlockModelShaper;
@@ -28,6 +29,8 @@ import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+import static io.github.vampirestudios.raa_materials.RAAMaterials.isClient;
+
 public class InnerRegistry {
 	private static final Map<BlockState, UnbakedModel> BLOCK_MODELS = Maps.newHashMap();
 	private static final Map<Item, BlockModel> ITEM_MODELS = Maps.newHashMap();
@@ -51,9 +54,9 @@ public class InnerRegistry {
 		BLOCKS.clear();
 		MODELED.clear();
 
-//		if (isClient()) {
-//			ModelHelper.clearModels();
-//		}
+		if (isClient()) {
+			ModelHelper.clearModels();
+		}
 
 		StoneMaterial.resetMaterials();
 		MetalOreMaterial.resetMaterials();

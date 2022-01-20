@@ -22,15 +22,16 @@ public abstract class ComplexMaterial {
 	protected ComplexMaterial(String name, ColorGradient gradient) {
 		MATERIALS.add(this);
 		this.name = name;
-		this.registryName = this.name.toLowerCase(Locale.ROOT);
+		this.registryName = this.name.toLowerCase(Locale.ROOT).replaceAll("'|`|\\^| |´", "");
 		this.gradient = gradient;
 	}
 
-	public abstract CompoundTag writeToNbt();
+	public abstract CompoundTag writeToNbt(CompoundTag materialCompound);
 
 	public static ComplexMaterial readFromNbt(Random random, CompoundTag compound) {
 		String type = compound.getString("materialType");
 		String name = compound.getString("name");
+		int tier = compound.getInt("tier");
 		ResourceLocation targetName = RAAMaterials.id(compound.getString("target"));
 		ComplexMaterial material;
 
@@ -39,6 +40,13 @@ public abstract class ComplexMaterial {
 				new CustomColor(colorGradientCompound.getInt("endColor")));
 
 		OreMaterial.Target target = RAAMaterials.TARGETS.get(targetName);
+
+
+		CompoundTag generationCompound = compound.getCompound("generation");
+		int size = generationCompound.getInt("size");
+		int minHeight = generationCompound.getInt("minHeight");
+		int maxHeight = generationCompound.getInt("maxHeight");
+		int rarity = generationCompound.getInt("rarity");
 
 		CompoundTag texturesCompound = compound.getCompound("textures");
 		TextureInformation.Builder textureInformationBuilder = TextureInformation.builder();
@@ -49,12 +57,14 @@ public abstract class ComplexMaterial {
 		textureInformationBuilder.rawMaterialBlock(ResourceLocation.tryParse(texturesCompound.getString("rawMaterialBlockTexture")));
 		textureInformationBuilder.crystalBlock(ResourceLocation.tryParse(texturesCompound.getString("crystalBlockTexture")));
 		textureInformationBuilder.buddingCrystalBlock(ResourceLocation.tryParse(texturesCompound.getString("buddingCrystalBlockTexture")));
+		textureInformationBuilder.crystal(ResourceLocation.tryParse(texturesCompound.getString("crystalTexture")));
 
 		//Items
 		textureInformationBuilder.ingot(ResourceLocation.tryParse(texturesCompound.getString("ingotTexture")));
 		textureInformationBuilder.gem(ResourceLocation.tryParse(texturesCompound.getString("gemTexture")));
 		textureInformationBuilder.rawItem(ResourceLocation.tryParse(texturesCompound.getString("rawItemTexture")));
 		textureInformationBuilder.plate(ResourceLocation.tryParse(texturesCompound.getString("plateTexture")));
+		textureInformationBuilder.shard(ResourceLocation.tryParse(texturesCompound.getString("shardTexture")));
 		textureInformationBuilder.gear(ResourceLocation.tryParse(texturesCompound.getString("gearTexture")));
 		textureInformationBuilder.nugget(ResourceLocation.tryParse(texturesCompound.getString("nuggetTexture")));
 		textureInformationBuilder.dust(ResourceLocation.tryParse(texturesCompound.getString("dustTexture")));
@@ -75,9 +85,23 @@ public abstract class ComplexMaterial {
 		TextureInformation textureInformation = textureInformationBuilder.build();
 
 		switch (type) {
-			case "gem" -> material = new GemOreMaterial(name, gradient, textureInformation, target);
-			case "crystal" -> material = new CrystalMaterial(name, gradient, textureInformation);
-			case "metal" -> material = new MetalOreMaterial(name, gradient, textureInformation, target);
+			case "gem" -> {
+				material = new GemOreMaterial(name, gradient, textureInformation, target, tier);
+				OreMaterial oreMaterial = (OreMaterial) material;
+				oreMaterial.setSize(size);
+				oreMaterial.setMinHeight(minHeight);
+				oreMaterial.setMaxHeight(maxHeight);
+				oreMaterial.setRarity(rarity);
+			}
+			case "crystal" -> material = new CrystalMaterial(name, gradient, textureInformation, tier);
+			case "metal" -> {
+				material = new MetalOreMaterial(name, gradient, textureInformation, target, tier);
+				OreMaterial oreMaterial = (OreMaterial) material;
+				oreMaterial.setSize(size);
+				oreMaterial.setMinHeight(minHeight);
+				oreMaterial.setMaxHeight(maxHeight);
+				oreMaterial.setRarity(rarity);
+			}
 			default -> {
 				CustomColor mainColor = new CustomColor(colorGradientCompound.getInt("startColor"));
 				gradient = ProceduralTextures.makeStonePalette(mainColor, random);

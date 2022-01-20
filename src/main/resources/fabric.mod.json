@@ -20,6 +20,9 @@
   "entrypoints": {
     "raa:addon": [
       "io.github.vampirestudios.raa_materials.RAAMaterials"
+    ],
+    "raa:addon_client": [
+      "io.github.vampirestudios.raa_materials.client.RAAMaterialsClient"
     ]
   },
   "mixins": [

@@ -9,7 +9,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 public class CustomToolMaterial implements Tier {
 
-    private final transient ResourceLocation materialId;
+    private final ResourceLocation materialId;
 
     public CustomToolMaterial(ResourceLocation materialId) {
         this.materialId = materialId;

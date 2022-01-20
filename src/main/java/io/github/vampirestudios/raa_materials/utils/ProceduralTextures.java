@@ -20,12 +20,12 @@ public class ProceduralTextures {
 		int type = random.nextInt(3);
 		if (type == 0) {
 			CustomColor color = new CustomColor(true)
-					.setHue((random.nextFloat() - random.nextFloat()) * 0.5F + 0.5F)
+					.setHue(random.nextFloat())
 					.setSaturation(MHelper.randRange(0.1F, 1F, random))
-					.setBrightness(MHelper.randRange(0.1F, 0.85F, random));
+					.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
 			float cos = Mth.cos(color.getHue() * MHelper.PI2);
-			float hue = cos * 0.1F;
-			float sat = cos * 0.15F;
+			float hue = cos * 0.2F;
+			float sat = cos * 0.25F;
 			return TextureHelper.makeDistortedPalette(color, hue, sat, 0.5F);
 		}
 		else if (type == 1) {
@@ -43,18 +43,18 @@ public class ProceduralTextures {
 
 	public static ColorGradient makeGemPalette(Random random) {
 		CustomColor color = new CustomColor(true)
-				.setHue((random.nextFloat() - random.nextFloat()) * 0.5F + 0.5F)
+				.setHue(random.nextFloat())
 				.setSaturation(MHelper.randRange(0.6F, 1, random))
-				.setBrightness(MHelper.randRange(0.6F, 1, random));
+				.setBrightness(MHelper.randRange(0.3F, 1, random));
 		float cos = Mth.cos(color.getHue() * MHelper.PI2);
 		float hue = cos * 0.15F;
-		float sat = cos * 0.15F;
-		return TextureHelper.makeDistortedPalette(color, hue, sat, 1F);
+		float sat = cos * 0.35F;
+		return TextureHelper.makeDistortedPalette(color, hue, sat, 1.0F);
 	}
 
 	public static ColorGradient makeCrystalPalette(Random random) {
 		CustomColor color = new CustomColor(true)
-				.setHue((random.nextFloat() - random.nextFloat()) * 0.5F + 0.5F)
+				.setHue(random.nextFloat())
 				.setSaturation(MHelper.randRange(0.4F, 1F, random))
 				.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
 		float cos = Mth.cos(color.getHue() * MHelper.PI2);
@@ -108,7 +108,7 @@ public class ProceduralTextures {
 
 	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture overlay, ColorGradient gradient) {
 		BufferTexture over = TextureHelper.applyGradient(overlay.clone(), gradient);
-		return TextureHelper.blend(texture, over, 0.5F);
+		return TextureHelper.cover(texture, over);
 	}
 
 	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture overlay) {
@@ -154,8 +154,8 @@ public class ProceduralTextures {
 	}
 
 	public static BufferTexture nonColored(ResourceLocation texture) {
-		BufferTexture textures = TextureHelper.loadTexture(texture);
-		TextureHelper.normalize(textures, 0.35F, 1F);
-		return textures;
+//		BufferTexture textures = TextureHelper.loadTexture(texture);
+//		TextureHelper.normalize(textures, 0.35F, 1F);
+		return TextureHelper.loadTexture(texture);
 	}
 }

@@ -21,7 +21,7 @@ public class FurnaceRecipe {
 	private FurnaceRecipe() {}
 
 	public static FurnaceRecipe make(String modID, String name, ItemLike input, ItemLike output) {
-		INSTANCE.id = new ResourceLocation(modID, name.replaceAll("'|`|\\^|´", ""));
+		INSTANCE.id = new ResourceLocation(modID, name.replaceAll("'|`|\\^| |´", ""));
 		INSTANCE.group = "";
 		INSTANCE.input = input;
 		INSTANCE.output = output;

@@ -13,8 +13,6 @@ import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
 import io.github.vampirestudios.raa_materials.utils.TextureHelper;
-import java.util.List;
-import java.util.Map;
 import net.minecraft.client.renderer.block.model.MultiVariant;
 import net.minecraft.client.renderer.block.model.Variant;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -25,6 +23,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.AmethystClusterBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
+
+import java.util.List;
+import java.util.Map;
 
 public class ModelHelper {
 	public static final Map<Item, ModelResourceLocation> MODELS = Maps.newHashMap();
@@ -239,28 +240,22 @@ public class ModelHelper {
 		ResourceLocation model = new ResourceLocation(id.getNamespace(), "block/" + id.getPath());
 		InnerRegistry.registerModel(model, json);
 
-		Variant variant = new Variant(model, Transformation.identity(), false, 1);
-		MultiVariant side = new MultiVariant(Lists.newArrayList(variant));
+		MultiVariant side = new MultiVariant(Lists.newArrayList(new Variant(model, Transformation.identity(), false, 1)));
 		InnerRegistry.registerBlockModel(block.defaultBlockState().setValue(AmethystClusterBlock.FACING, Direction.UP), side);
 
-		variant = new Variant(model, new Transformation(null, Vector3f.ZP.rotationDegrees(180), null, null), false, 1);
-		side = new MultiVariant(Lists.newArrayList(variant));
+		side = new MultiVariant(Lists.newArrayList(new Variant(model, new Transformation(null, Vector3f.ZP.rotationDegrees(180), null, null), false, 1)));
 		InnerRegistry.registerBlockModel(block.defaultBlockState().setValue(AmethystClusterBlock.FACING, Direction.DOWN), side);
 
-		variant = new Variant(model, new Transformation(null, Vector3f.ZP.rotationDegrees(90), null, Vector3f.XP.rotationDegrees(180)), false, 1);
-		side = new MultiVariant(Lists.newArrayList(variant));
+		side = new MultiVariant(Lists.newArrayList(new Variant(model, new Transformation(null, Vector3f.ZP.rotationDegrees(90), null, Vector3f.XP.rotationDegrees(180)), false, 1)));
 		InnerRegistry.registerBlockModel(block.defaultBlockState().setValue(AmethystClusterBlock.FACING, Direction.EAST), side);
 
-		variant = new Variant(model, new Transformation(null, Vector3f.ZP.rotationDegrees(180), null, Vector3f.XP.rotationDegrees(90)), false, 1);
-		side = new MultiVariant(Lists.newArrayList(variant));
+		side = new MultiVariant(Lists.newArrayList(new Variant(model, new Transformation(null, Vector3f.ZP.rotationDegrees(180), null, Vector3f.XP.rotationDegrees(90)), false, 1)));
 		InnerRegistry.registerBlockModel(block.defaultBlockState().setValue(AmethystClusterBlock.FACING, Direction.NORTH), side);
 
-		variant = new Variant(model, new Transformation(null, Vector3f.ZP.rotationDegrees(180), null, Vector3f.XP.rotationDegrees(90)), false, 1);
-		side = new MultiVariant(Lists.newArrayList(variant));
+		side = new MultiVariant(Lists.newArrayList(new Variant(model, new Transformation(null, Vector3f.ZP.rotationDegrees(180), null, Vector3f.XP.rotationDegrees(90)), false, 1)));
 		InnerRegistry.registerBlockModel(block.defaultBlockState().setValue(AmethystClusterBlock.FACING, Direction.SOUTH), side);
 
-		variant = new Variant(model, new Transformation(null, Vector3f.ZP.rotationDegrees(180), null, Vector3f.XP.rotationDegrees(270)), false, 1);
-		side = new MultiVariant(Lists.newArrayList(variant));
+		side = new MultiVariant(Lists.newArrayList(new Variant(model, new Transformation(null, Vector3f.ZP.rotationDegrees(180), null, Vector3f.XP.rotationDegrees(270)), false, 1)));
 		InnerRegistry.registerBlockModel(block.defaultBlockState().setValue(AmethystClusterBlock.FACING, Direction.WEST), side);
 
 		InnerRegistry.registerItemModel(block.asItem(), makeFlatItem(texture));
@@ -315,10 +310,10 @@ public class ModelHelper {
 
 			InnerRegistry.registerBlockModel(ore, ModelHelper.makeCubeTopBottom(textureInformation.side(), textureID, new ResourceLocation(textureInformation.top().getNamespace(), textureInformation.top().getPath().replace("textures/", "").replace(".png", ""))));
 			InnerRegistry.registerItemModel(ore.asItem(), ModelHelper.makeCubeTopBottom(textureInformation.side(), textureID, new ResourceLocation(textureInformation.top().getNamespace(), textureInformation.top().getPath().replace("textures/", "").replace(".png", ""))));
-			NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), name + " Ore");
+			NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), String.format("%s Ore", name));
 		} else if(target == OreMaterial.Target.CRIMSON_NYLIUM
 				|| target == OreMaterial.Target.WARPED_NYLIUM || target == OreMaterial.Target.PODZOL
-				|| target == OreMaterial.Target.MYCELIUM) {
+				|| target == OreMaterial.Target.MYCELIUM || target == OreMaterial.Target.SANDSTONE) {
 			BufferTexture topTexture = TextureHelper.loadTexture(textureInformation.top());
 
 			ResourceLocation textureID = TextureHelper.makeBlockTextureID(registryName + "_ore");
@@ -333,7 +328,7 @@ public class ModelHelper {
 
 			InnerRegistry.registerBlockModel(ore, ModelHelper.makeCubeTopBottom(textureInformation.side(), textureID, bottom));
 			InnerRegistry.registerItemModel(ore.asItem(), ModelHelper.makeCubeTopBottom(textureInformation.side(), textureID, bottom));
-			NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), name + " Ore");
+			NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), String.format("%s Ore", name));
 		}/* else if(target == OreMaterial.Target.GRASS_BLOCK) {
 			Identifier topTextureId = TextureHelper.makeBlockTextureID(registryName + "_grass_top");
 			BufferTexture topTexture = TextureHelper.loadTexture(textureInformation.top());
@@ -363,7 +358,7 @@ public class ModelHelper {
 
 			InnerRegistry.registerBlockModel(ore, ModelHelper.makeCubeTopBottom(sideTextureId, textureID, bottom));
 			InnerRegistry.registerItemModel(ore.asItem(), ModelHelper.makeCubeTopBottom(sideTextureId, textureID, bottom));
-			NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), name + " Ore");
+			NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), String.format("%s Ore", name));
 		}*/ else {
 			BufferTexture baseTexture = TextureHelper.loadTexture(textureInformation.all());
 
@@ -376,7 +371,7 @@ public class ModelHelper {
 
 			InnerRegistry.registerBlockModel(ore, ModelHelper.makeCube(textureID));
 			InnerRegistry.registerItemModel(ore.asItem(), ModelHelper.makeCube(textureID));
-			NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), name + " Ore");
+			NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), String.format("%s Ore", name));
 		}
     }
 }
