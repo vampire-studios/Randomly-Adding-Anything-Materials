@@ -19,6 +19,8 @@
   "text.raa_materials.item.small_dust": "Small {0} Dust",
   "text.raa_materials.item.plate": "{0} Plate",
   "text.raa_materials.item.nugget": "{0}rög",
+  "text.raa_materials.item.geode_core": "{0} Geode Core",
+  "text.raa_materials.item.enriched_geode_core": "{0} Enriched Geode Core",
   "text.raa_materials.item.axe": "{0}fejsze",
   "text.raa_materials.item.sword": "{0}kard",
   "text.raa_materials.item.pickaxe": "{0}csákány",

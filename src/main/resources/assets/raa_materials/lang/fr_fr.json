@@ -19,6 +19,8 @@
   "text.raa_materials.item.small_dust": "Petit tas de poudre {2, select, other {de } a {d’} e {d’} i {d’} o {d’} u {d’} y {d’} h {d’} é {d’} è {d’} ê {d’} à {d’}}{1}",
   "text.raa_materials.item.plate": "Plaque {2, select, other {de } a {d’} e {d’} i {d’} o {d’} u {d’} y {d’} h {d’} é {d’} è {d’} ê {d’} à {d’}}{1}",
   "text.raa_materials.item.nugget": "Pépite {2, select, other {de } a {d’} e {d’} i {d’} o {d’} u {d’} y {d’} h {d’} é {d’} è {d’} ê {d’} à {d’}}{1}",
+  "text.raa_materials.item.geode_core": "{0} Geode Core",
+  "text.raa_materials.item.enriched_geode_core": "{0} Enriched Geode Core",
   "text.raa_materials.item.axe": "Hache en {0}",
   "text.raa_materials.item.sword": "Épée en {0}",
   "text.raa_materials.item.pickaxe": "Pioche en {0}",
