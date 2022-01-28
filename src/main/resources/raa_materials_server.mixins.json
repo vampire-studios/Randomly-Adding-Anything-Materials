@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
 	"BiomeMixin",
+//	"EdenPortalAccessor",
 	"GenerationSettingsAccessor",
 	"MainMixin",
 	"RecipeManagerAccessor",

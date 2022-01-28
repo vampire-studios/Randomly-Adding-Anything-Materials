@@ -6,15 +6,41 @@ import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.utils.*;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
+import net.minecraft.world.level.levelgen.placement.BiomeFilter;
+import net.minecraft.world.level.levelgen.placement.CountOnEveryLayerPlacement;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.levelgen.placement.RarityFilter;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RandomBlockMatchTest;
+import net.minecraft.world.level.material.MaterialColor;
+import paulevs.edenring.blocks.BrainTreeBlock;
+import paulevs.edenring.blocks.OverlayPlantBlock;
+import ru.bclib.util.ColorUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -50,6 +76,11 @@ public class MetalOreMaterial extends OreMaterial {
 	public final Item small_dust;
 	public final Item plate;
 
+	public final Block brainTreeBlock;
+	public final Block grass;
+
+	public boolean hasOreVein;
+
 	public MetalOreMaterial(Target target, Random random) {
 		this(
 				TestNameGenerator.generateOreName(),
@@ -76,12 +107,12 @@ public class MetalOreMaterial extends OreMaterial {
 					.shovelHead(Rands.values(shovelHeadTextures))
 					.shovelStick(Rands.values(shovelStickTextures))
 					.build(),
-				target, Rands.randIntRange(1, 3)
+				target, Rands.randIntRange(1, 3), Rands.chance(10)
 		);
 	}
 
-	public MetalOreMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, int tier) {
-		super(name, gradient, textureInformation, targetIn, "raw_" + name.toLowerCase(Locale.ROOT), tier);
+	public MetalOreMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
+		super(name, gradient, textureInformation, targetIn, "raw_" + name.toLowerCase(Locale.ROOT), tier, true);
 
 		this.oreVeinTexture = textureInformation.getOreOverlay();
 		this.storageBlockTexture = textureInformation.getStorageBlock();
@@ -94,7 +125,16 @@ public class MetalOreMaterial extends OreMaterial {
 		this.dustTexture = textureInformation.getDust();
 		this.smallDustTexture = textureInformation.getSmallDust();
 
+		this.hasOreVein = hasOreVein;
+
 		rawMaterialBlock = InnerRegistry.registerBlockAndItem("raw_" + this.registryName + "_block", new Block(BlockBehaviour.Properties.copy(Blocks.RAW_IRON_BLOCK)), RAAMaterials.RAA_ORES);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, rawMaterialBlock);
+		TagHelper.addTag(switch (tier) {
+			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+			default -> throw new IllegalStateException("Unexpected value: " + tier);
+		}, rawMaterialBlock);
 
 		ingot = InnerRegistry.registerItem(this.registryName + "_ingot", new RAASimpleItem(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.INGOT));
 
@@ -105,6 +145,24 @@ public class MetalOreMaterial extends OreMaterial {
 		dust = InnerRegistry.registerItem(this.registryName + "_dust", new RAASimpleItem(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.DUST));
 		small_dust = InnerRegistry.registerItem("small_" + this.registryName + "_dust", new RAASimpleItem(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SMALL_DUST));
 		plate = InnerRegistry.registerItem(this.registryName + "_plate", new RAASimpleItem(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.PLATE));
+
+		brainTreeBlock = InnerRegistry.registerBlockAndItem(this.registryName + "_brain_tree_block", new BrainTreeBlock(MaterialColor.GOLD), RAAMaterials.RAA_ORES);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, brainTreeBlock);
+		TagHelper.addTag(switch (tier) {
+			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+			default -> throw new IllegalStateException("Unexpected value: " + tier);
+		}, brainTreeBlock);
+
+		grass = InnerRegistry.registerBlockAndItem(this.registryName + "_grass", new OverlayPlantBlock(true), RAAMaterials.RAA_ORES);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, grass);
+		TagHelper.addTag(switch (tier) {
+			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+			default -> throw new IllegalStateException("Unexpected value: " + tier);
+		}, grass);
 
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_raw_block_from_raw_recipe", this.rawMaterialBlock)
 				.addMaterial('r', this.rawItem)
@@ -190,6 +248,9 @@ public class MetalOreMaterial extends OreMaterial {
 		super.writeToNbt(materialCompound);
 		materialCompound.putString("materialType", "metal");
 
+		CompoundTag generationCompound = materialCompound.getCompound("generation");
+		generationCompound.putBoolean("hasOreVein", this.hasOreVein);
+
 		CompoundTag texturesCompound = materialCompound.getCompound("textures");
 		texturesCompound.putString("oreTexture", oreVeinTexture.toString());
 		texturesCompound.putString("storageBlockTexture", storageBlockTexture.toString());
@@ -237,10 +298,69 @@ public class MetalOreMaterial extends OreMaterial {
 		makeColoredItemAssets(smallDustTexture, small_dust, gradient, "small_" + this.registryName + "_dust", "Small %s Dust");
 		makeColoredItemAssets(gearTexture, gear, gradient, this.registryName + "_gear", "%s Gear");
 		makeColoredItemAssets(dustTexture, dust, gradient, this.registryName + "_dust", "%s Dust");
+
+		initClientModded();
+	}
+
+	public void initClientModded() {
+		BufferTexture brainTreeBlockTexture = TextureHelper.loadTexture("textures/block/brain_tree_block.png");
+		BufferTexture grassTextureOverlay = TextureHelper.loadTexture("textures/block/grass_color.png");
+		BufferTexture grassTexture = TextureHelper.loadTexture("textures/block/grass_overlay.png");
+
+		ResourceLocation textureID = TextureHelper.makeBlockTextureID(this.registryName + "_brain_tree_block");
+		BufferTexture texture = ProceduralTextures.randomColored(brainTreeBlockTexture, gradient);
+		InnerRegistry.registerTexture(textureID, texture);
+		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_brain_tree_block_active");
+		InnerRegistry.registerTexture(textureID, texture);
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_brain_tree_block"),  String.format("%s Brain Tree Block", this.name));
+
+		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_grass_color");
+		texture = ProceduralTextures.randomColored(grassTextureOverlay, gradient);
+		InnerRegistry.registerTexture(textureID, texture);
+		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_grass_overlay");
+		InnerRegistry.registerTexture(textureID, grassTexture);
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock( this.registryName + "_grass"),  String.format("%s Grass", this.name));
+
+		ColorProviderRegistry.BLOCK.register((blockState, blockAndTintGetter, blockPos, i) -> blockAndTintGetter != null && blockPos != null ?
+				BiomeColors.getAverageGrassColor(blockAndTintGetter, blockPos) : GrassColor.get(0.5D, 1.0D), grass);
+		ColorProviderRegistry.ITEM.register((itemStack, i) -> i == 1 ? GrassColor.get(0.5D, 1.0D) :
+				ColorUtil.color(255, 255, 255), grass);
+		BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutoutMipped(), grass);
+
+	}
+
+	@Override
+	public void generate(ServerLevel world) {
+		if (this.hasOreVein) {
+			List<OreConfiguration.TargetBlockState> blockStates = new ArrayList<>();
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.3F), ore.defaultBlockState()));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.01F), rawMaterialBlock.defaultBlockState()));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.25F), rawMaterialBlock.defaultBlockState()));
+			ConfiguredFeature<?, ?> oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein"), Feature.ORE
+					.configured(new OreConfiguration(blockStates, 32)));
+
+			ResourceKey<PlacedFeature> oreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, RAAMaterials.id(this.registryName + "_ore_vein_pf"));
+			InnerRegistry.registerPlacedFeature(world, oreVeinKey, oreVein
+					.placed(CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(32), BiomeFilter.biome()));
+
+			List<OreConfiguration.TargetBlockState> hugeOreVeinBlockStates = new ArrayList<>();
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.5F), ore.defaultBlockState()));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.05F), rawMaterialBlock.defaultBlockState()));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.35F), rawMaterialBlock.defaultBlockState()));
+			ConfiguredFeature<?, ?> hugeOreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein_huge"), Feature.ORE
+					.configured(new OreConfiguration(hugeOreVeinBlockStates, 64)));
+
+			ResourceKey<PlacedFeature> placedHugeOreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, RAAMaterials.id(this.registryName + "_ore_vein_huge_pf"));
+			InnerRegistry.registerPlacedFeature(world, placedHugeOreVeinKey, hugeOreVein
+					.placed(CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(64), BiomeFilter.biome()));
+			BiomeModifications.addFeature(BiomeSelectors.all(), GenerationStep.Decoration.UNDERGROUND_ORES, oreVeinKey);
+		} else {
+			super.generate(world);
+		}
 	}
 
 	static {
-		oreVeinTextures = new ResourceLocation[37];
+		oreVeinTextures = new ResourceLocation[39];
 		for (int i = 0; i < oreVeinTextures.length; i++) {
 			oreVeinTextures[i] = RAAMaterials.id("textures/block/ores/metals/ore_" + (i+1) + ".png");
 		}
@@ -248,7 +368,7 @@ public class MetalOreMaterial extends OreMaterial {
 		for (int i = 0; i < storageBlockTextures.length; i++) {
 			storageBlockTextures[i] = RAAMaterials.id("textures/block/storage_blocks/metals/metal_" + (i+1) + ".png");
 		}
-		rawMaterialBlockTextures = new ResourceLocation[10];
+		rawMaterialBlockTextures = new ResourceLocation[14];
 		for (int i = 0; i < rawMaterialBlockTextures.length; i++) {
 			rawMaterialBlockTextures[i] = RAAMaterials.id("textures/block/storage_blocks/metals/raw_" + (i+1) + ".png");
 		}

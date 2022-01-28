@@ -16,8 +16,6 @@ public class GeneralConfig implements ConfigData {
     public int crystalTypeAmount = 40;
     @Comment("Amount of stone types to generate")
     public int stoneTypeAmount = 40;
-    @Comment("Chance for an ore to glow")
-    public int oreGlowChance = 10;
 
     public boolean debugMode = true;
 

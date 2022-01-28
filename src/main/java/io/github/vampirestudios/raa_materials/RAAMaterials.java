@@ -77,7 +77,7 @@ public class RAAMaterials implements RAAAddon {
 				if (!world.getServer().getWorldPath(LevelResource.ROOT).resolve(nbtFile).toFile().exists()) {
 					if (CONFIG.debugMode) System.out.println("Starting new generator!");
 
-					InnerRegistry.clear();
+					InnerRegistry.clear(world);
 					if (CONFIG.debugMode) System.out.println("Clearing Registry");
 
 					if (CONFIG.stoneTypeAmount != 0) {

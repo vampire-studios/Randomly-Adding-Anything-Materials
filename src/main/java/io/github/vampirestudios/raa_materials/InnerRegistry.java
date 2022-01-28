@@ -15,6 +15,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -42,11 +43,11 @@ public class InnerRegistry {
 	private static final Map<ResourceLocation, PlacedFeature> PLACED_FEATURES = Maps.newHashMap();
 	private static final Set<ResourceLocation> MODELED = Sets.newHashSet();
 	
-	public static void clear() {
+	public static void clear(ServerLevel level) {
 		clearRegistry(Registry.BLOCK, BLOCKS.keySet());
 		clearRegistry(Registry.ITEM, ITEMS.keySet());
-		clearRegistry(BuiltinRegistries.CONFIGURED_FEATURE, CONFIGURED_FEATURES.keySet());
-		clearRegistry(BuiltinRegistries.PLACED_FEATURE, PLACED_FEATURES.keySet());
+		clearRegistry(level.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY), CONFIGURED_FEATURES.keySet());
+		clearRegistry(level.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY), PLACED_FEATURES.keySet());
 
 		BLOCK_MODELS.clear();
 		ITEM_MODELS.clear();
@@ -112,9 +113,11 @@ public class InnerRegistry {
 		return registerItem(RAAMaterials.id(name), block);
 	}
 
-	public static ConfiguredFeature<?, ?> registerConfiguredFeature(ResourceLocation id, ConfiguredFeature<?, ?> block) {
+	public static ConfiguredFeature<?, ?> registerConfiguredFeature(ServerLevel serverLevel, ResourceLocation id, ConfiguredFeature<?, ?> block) {
 		if (BuiltinRegistries.CONFIGURED_FEATURE.containsKey(id)) {
 			block = BuiltinRegistries.CONFIGURED_FEATURE.get(id);
+		} else if (serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).containsKey(id)) {
+			block = serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).get(id);
 		} else {
 			Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id, block);
 		}
@@ -122,9 +125,11 @@ public class InnerRegistry {
 		return block;
 	}
 
-	public static ConfiguredFeature<?, ?> registerConfiguredFeature(ResourceKey<ConfiguredFeature<?, ?>> id, ConfiguredFeature<?, ?> block) {
+	public static ConfiguredFeature<?, ?> registerConfiguredFeature(ServerLevel serverLevel, ResourceKey<ConfiguredFeature<?, ?>> id, ConfiguredFeature<?, ?> block) {
 		if (BuiltinRegistries.CONFIGURED_FEATURE.containsKey(id)) {
 			block = BuiltinRegistries.CONFIGURED_FEATURE.get(id);
+		} else if (serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).containsKey(id)) {
+			block = serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).get(id);
 		} else {
 			Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id, block);
 		}
@@ -132,9 +137,11 @@ public class InnerRegistry {
 		return block;
 	}
 
-	public static PlacedFeature registerPlacedFeature(ResourceLocation id, PlacedFeature block) {
+	public static PlacedFeature registerPlacedFeature(ServerLevel serverLevel, ResourceLocation id, PlacedFeature block) {
 		if (BuiltinRegistries.PLACED_FEATURE.containsKey(id)) {
 			block = BuiltinRegistries.PLACED_FEATURE.get(id);
+		} else if (serverLevel.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY).containsKey(id)) {
+			block = serverLevel.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY).get(id);
 		} else {
 			Registry.register(BuiltinRegistries.PLACED_FEATURE, id, block);
 		}
@@ -142,9 +149,11 @@ public class InnerRegistry {
 		return block;
 	}
 
-	public static PlacedFeature registerPlacedFeature(ResourceKey<PlacedFeature> id, PlacedFeature block) {
+	public static PlacedFeature registerPlacedFeature(ServerLevel serverLevel, ResourceKey<PlacedFeature> id, PlacedFeature block) {
 		if (BuiltinRegistries.PLACED_FEATURE.containsKey(id)) {
 			block = BuiltinRegistries.PLACED_FEATURE.get(id);
+		} else if (serverLevel.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY).containsKey(id)) {
+			block = serverLevel.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY).get(id);
 		} else {
 			Registry.register(BuiltinRegistries.PLACED_FEATURE, id, block);
 		}

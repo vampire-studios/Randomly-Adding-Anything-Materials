@@ -13,11 +13,9 @@ public class ColorGradient {
 	public CustomColor getColor(float value) {
 		if (value < 0) {
 			return VALUE.set(start);
-		}
-		else if (value > 1) {
+		} else if (value > 1) {
 			return VALUE.set(end);
-		}
-		else {
+		} else {
 			return VALUE.set(start).mixWith(end, value);
 		}
 	}

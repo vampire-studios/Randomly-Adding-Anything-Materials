@@ -1,5 +1,6 @@
-package io.github.vampirestudios.raa_materials;
+package io.github.vampirestudios.raa_materials.items;
 
+import io.github.vampirestudios.raa_materials.utils.Rands;
 import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -10,67 +11,68 @@ import net.minecraft.world.item.crafting.Ingredient;
 public class CustomToolMaterial implements Tier {
 
     private final ResourceLocation materialId;
+    private final boolean metal;
+    private final int tier;
+    private final Tiers finalTier;
 
-    public CustomToolMaterial(ResourceLocation materialId) {
+    public CustomToolMaterial(ResourceLocation materialId, boolean metal, int tier) {
         this.materialId = materialId;
+        this.metal = metal;
+        this.tier = tier;
+        finalTier = getTier();
+    }
+
+    private Tiers getTier() {
+        return switch (tier) {
+            case 0 -> Rands.chance(50) ? Tiers.GOLD : Tiers.WOOD;
+            case 1 -> Tiers.STONE;
+            case 2 -> Tiers.IRON;
+            case 3 -> Tiers.DIAMOND;
+            case 4 -> Tiers.NETHERITE;
+            default -> throw new IllegalStateException("Unexpected value: " + tier);
+        };
     }
 
     @Override
     public int getUses() {
-        return Tiers.IRON.getUses();
+        return finalTier.getUses();
     }
 
     @Override
     public float getSpeed() {
-        return Tiers.IRON.getSpeed();
+        return finalTier.getSpeed();
     }
 
     @Override
     public float getAttackDamageBonus() {
-        return Tiers.IRON.getAttackDamageBonus();
+        return finalTier.getAttackDamageBonus();
     }
 
     @Override
     public int getLevel() {
-        return Tiers.IRON.getLevel();
+        return finalTier.getLevel();
     }
 
     @Override
     public int getEnchantmentValue() {
-        return Tiers.IRON.getEnchantmentValue();
+        return finalTier.getEnchantmentValue();
     }
 
     @Override
     public Ingredient getRepairIngredient() {
-        return Ingredient.of(Registry.ITEM.get(Utils.appendToPath(materialId, "_ingot")));
-    }
-
-    public int getSwordAttackDamage() {
-        return 3;
+        return Ingredient.of(Registry.ITEM.get(Utils.appendToPath(materialId, metal ? "_ingot" : "_gem")));
     }
 
     public float getSwordAttackSpeed() {
         return -2.4F;
     }
 
-    public float getShovelAttackDamage() {
-        return 1.5F;
-    }
-
     public float getShovelAttackSpeed() {
         return -3.0F;
     }
 
-    public int getPickaxeAttackDamage() {
-        return 1;
-    }
-
     public float getPickaxeAttackSpeed() {
         return -2.8F;
-    }
-
-    public float getAxeAttackDamage() {
-        return 6.0F;
     }
 
     public float getAxeAttackSpeed() {

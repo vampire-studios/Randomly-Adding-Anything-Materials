@@ -153,6 +153,21 @@ public class TextureHelper {
 		return new BufferTexture(Objects.requireNonNull(loadImage(namespace, name)));
 	}
 
+	public static BufferTexture makeOxidationStages(BufferTexture base, BufferTexture[] stages, BufferTexture oxidized) {
+		BufferTexture result = new BufferTexture(base.getWidth(), base.getHeight());
+		COLOR.forceRGB().setAlpha(1F);
+
+		for (int x = 0; x < result.getWidth(); x++) {
+			for (int y = 0; y < result.getHeight(); y++) {
+				for (BufferTexture stage : stages) {
+
+				}
+			}
+		}
+
+		return result;
+	}
+
 	public static BufferTexture makeNoiseTexture(Random random) {
 		BufferTexture texture = new BufferTexture(16, 16);
 		OpenSimplexNoise noise = new OpenSimplexNoise(random.nextInt());
@@ -381,6 +396,18 @@ public class TextureHelper {
 		return texture;
 	}
 
+	public static BufferTexture applyGradientWithOriginalColors(BufferTexture texture, ColorGradient gradient) {
+		BufferTexture newTexture = new BufferTexture(texture.getWidth(), texture.getHeight());
+		for (int x = 0; x < texture.getWidth(); x++) {
+			for (int y = 0; y < texture.getHeight(); y++) {
+				COLOR.set(texture.getPixel(x, y));
+				COLOR2.set(texture.getPixel(MHelper.wrap(x, texture.getWidth()), MHelper.wrap(y, texture.getHeight())));
+				texture.setPixel(x, y, gradient.getColor(COLOR.getRed()).setAlpha(COLOR.getAlpha()));
+			}
+		}
+		return texture;
+	}
+
 	public static BufferTexture heightPass(BufferTexture texture, int offsetX, int offsetY) {
 		BufferTexture result = new BufferTexture(texture.getWidth(), texture.getHeight());
 		COLOR.forceRGB();
@@ -541,17 +568,28 @@ public class TextureHelper {
 	}
 
 	public static ColorGradient makeDistortedPalette(CustomColor color, float hueDist, float satDist, float valDist) {
+//		CustomColor colorStart = new CustomColor().set(color).switchToHSV();
+//		colorStart
+//				.setHue(MHelper.wrap(colorStart.getHue() - hueDist, 1F))
+//				.setSaturation(Mth.clamp(colorStart.getSaturation() - satDist, 0F, 1F))
+//				.setBrightness(Mth.clamp(colorStart.getBrightness() - valDist, 0F, 1F));
+//
+//		CustomColor colorEnd = new CustomColor().set(color).switchToHSV();
+//		colorEnd
+//				.setHue(MHelper.wrap(colorEnd.getHue() + hueDist, 1F))
+//				.setSaturation(Mth.clamp(colorEnd.getSaturation() + satDist, 0F, 1F))
+//				.setBrightness(Mth.clamp(colorEnd.getBrightness() + valDist, 0F, 1F));
 		CustomColor colorStart = new CustomColor().set(color).switchToHSV();
 		colorStart
 				.setHue(colorStart.getHue() - hueDist)
-				.setSaturation(colorStart.getSaturation() - satDist)
-				.setBrightness(colorStart.getBrightness() - valDist);
+				.setSaturation(Mth.clamp(colorStart.getSaturation() - satDist, 0F, 1F))
+				.setBrightness(Mth.clamp(colorStart.getBrightness() - valDist, 0F, 1F));
 
 		CustomColor colorEnd = new CustomColor().set(color).switchToHSV();
 		colorEnd
 				.setHue(colorEnd.getHue() + hueDist)
-				.setSaturation(colorEnd.getSaturation() + satDist)
-				.setBrightness(colorEnd.getBrightness() + valDist);
+				.setSaturation(Mth.clamp(colorEnd.getSaturation() + satDist, 0F, 1F))
+				.setBrightness(Mth.clamp(colorEnd.getBrightness() + valDist, 0F, 1F));
 
 		return new ColorGradient(colorStart, colorEnd);
 	}

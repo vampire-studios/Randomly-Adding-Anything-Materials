@@ -20,12 +20,18 @@ public class ProceduralTextures {
 		int type = random.nextInt(3);
 		if (type == 0) {
 			CustomColor color = new CustomColor(true)
-					.setHue(random.nextFloat())
-					.setSaturation(MHelper.randRange(0.1F, 1F, random))
-					.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
+					.setHue(Rands.randFloatRange(0F, 1F))
+//				.setSaturation(MHelper.randRange(0.6F, 1, random))
+					.setSaturation(Rands.randFloatRange(0.25F, 0.6F))
+//				.setBrightness(MHelper.randRange(0.3F, 1, random))
+					.setBrightness(Rands.randFloatRange(0.7F, 0.9F));
+//			CustomColor color = new CustomColor(true)
+//					.setHue(Rands.randFloatRange(0F, 1F))
+//					.setSaturation(MHelper.randRange(0.1F, 1F, random))
+//					.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
 			float cos = Mth.cos(color.getHue() * MHelper.PI2);
-			float hue = cos * 0.2F;
-			float sat = cos * 0.25F;
+			float hue = (color.getHue()<0.66?-1:1) * cos * 0.2F;
+			float sat = -0.25F;
 			return TextureHelper.makeDistortedPalette(color, hue, sat, 0.5F);
 		}
 		else if (type == 1) {
@@ -42,24 +48,32 @@ public class ProceduralTextures {
 	}
 
 	public static ColorGradient makeGemPalette(Random random) {
+//		CustomColor color = new CustomColor(true)
+//				.setHue(Rands.randFloatRange(0F, 1F))
+//				.setSaturation(MHelper.randRange(0.6F, 1, random))
+//				.setBrightness(MHelper.randRange(0.3F, 1, random));
 		CustomColor color = new CustomColor(true)
-				.setHue(random.nextFloat())
-				.setSaturation(MHelper.randRange(0.6F, 1, random))
-				.setBrightness(MHelper.randRange(0.3F, 1, random));
+				.setHue(Rands.randFloatRange(0F, 1F))
+				.setSaturation(Rands.randFloatRange(0.25F, 0.8F))
+				.setBrightness(Rands.randFloatRange(0.7F, 0.9F));
 		float cos = Mth.cos(color.getHue() * MHelper.PI2);
-		float hue = cos * 0.15F;
-		float sat = cos * 0.35F;
+		float hue = (color.getHue()<0.66?-1:1) * cos * 0.15F;
+		float sat = -0.35F;
 		return TextureHelper.makeDistortedPalette(color, hue, sat, 1.0F);
 	}
 
 	public static ColorGradient makeCrystalPalette(Random random) {
+//		CustomColor color = new CustomColor(true)
+//				.setHue(Rands.randFloatRange(0F, 1F))
+//				.setSaturation(MHelper.randRange(0.4F, 1F, random))
+//				.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
 		CustomColor color = new CustomColor(true)
-				.setHue(random.nextFloat())
-				.setSaturation(MHelper.randRange(0.4F, 1F, random))
-				.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
+				.setHue(Rands.randFloatRange(0F, 1F))
+				.setSaturation(Rands.randFloatRange(0.35F, 0.8F))
+				.setBrightness(Rands.randFloatRange(0.7F, 0.9F));
 		float cos = Mth.cos(color.getHue() * MHelper.PI2);
-		float hue = cos * 0.07F;
-		float sat = cos * 0.12F;
+		float hue = (color.getHue()<0.66?-1:1) * cos * 0.07F;
+		float sat = -0.12F;
 		return TextureHelper.makeDistortedPalette(color, hue, sat, 0.5F);
 	}
 
@@ -141,7 +155,12 @@ public class ProceduralTextures {
 		return TextureHelper.applyGradient(textures.clone(), gradient);
 	}
 
+	public static BufferTexture randomColoredNoNormalize(BufferTexture texture, ColorGradient gradient) {
+		return TextureHelper.applyGradient(texture.clone(), gradient);
+	}
+
 	public static BufferTexture randomColored(BufferTexture textures, ColorGradient gradient) {
+		TextureHelper.normalize(textures, 0.35F, 1F);
 		return TextureHelper.applyGradient(textures.clone(), gradient);
 	}
 

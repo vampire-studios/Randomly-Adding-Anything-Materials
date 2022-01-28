@@ -46,7 +46,7 @@ public class GemOreMaterial extends OreMaterial {
 	}
 
 	public GemOreMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, int tier) {
-		super(name, gradient, textureInformation, targetIn, name.toLowerCase(Locale.ROOT) + "_gem", tier);
+		super(name, gradient, textureInformation, targetIn, name.toLowerCase(Locale.ROOT) + "_gem", tier, false);
 
 		this.oreVeinTexture = textureInformation.oreOverlay();
 		this.storageBlockTexture = textureInformation.storageBlock();
@@ -122,12 +122,12 @@ public class GemOreMaterial extends OreMaterial {
 	}
 
 	static {
-		oreVeinTextures = new ResourceLocation[28];
+		oreVeinTextures = new ResourceLocation[32];
 		for (int i = 0; i < oreVeinTextures.length; i++) {
 			oreVeinTextures[i] = id("textures/block/ores/gems/ore_" + (i+1) + ".png");
 		}
 
-		storageBlockTextures = new ResourceLocation[7];
+		storageBlockTextures = new ResourceLocation[11];
 		for (int i = 0; i < storageBlockTextures.length; i++) {
 			storageBlockTextures[i] = id("textures/block/storage_blocks/gems/gem_" + (i+1) + ".png");
 		}

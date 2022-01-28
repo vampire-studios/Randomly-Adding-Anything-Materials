@@ -10,9 +10,9 @@ public class TestNameGenerator {
 	private static final List<String> generatedNames = new ArrayList<>();
 
 	public static String generateOreName() {
-		String name = generate(Rands.chance(50) ? 2 : 3, Rands.chance(30) ? 20 : 12);
+		String name = generate(Rands.chance(50) ? (Rands.chance(100) ? 2 : 3) : (Rands.chance(100) ? 3 : 4), Rands.chance(30) ? 20 : 12);
 		while(generatedNames.contains(name.replaceAll("'|`|\\^| |´", ""))) {
-			name = generate(Rands.chance(50) ? 2 : 3, Rands.chance(30) ? 20 : 12);
+			name = generate(Rands.chance(50) ? (Rands.chance(100) ? 2 : 3) : (Rands.chance(100) ? 3 : 4), Rands.chance(30) ? 20 : 12);
 		}
 		generatedNames.add(name);
 		return name;

@@ -18,6 +18,7 @@ repositories {
 	maven { url = "https://maven.terraformersmc.com/" }
 	maven { url = "https://maven.quiltmc.org/repository/" }
 	maven { url = "https://maven.parchmentmc.org" }
+	maven { url = "https://jitpack.io" }
 }
 
 minecraft { }
@@ -37,8 +38,11 @@ dependencies {
 
 	modImplementation "io.github.vampirestudios:Randomly-Adding-Anything-Core:${project.core_version}"
 
-	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:7.1.368"
-	modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:7.1.368"
+	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:7.2.409"
+	modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:7.2.409"
+
+	modImplementation "paulevs.edenring:EdenRing-master:0.3.0"
+	modImplementation "com.github.paulevsGitch:BCLib:1.2.5"
 }
 
 processResources {

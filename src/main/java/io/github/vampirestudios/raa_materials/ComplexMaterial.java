@@ -41,12 +41,13 @@ public abstract class ComplexMaterial {
 
 		OreMaterial.Target target = RAAMaterials.TARGETS.get(targetName);
 
-
 		CompoundTag generationCompound = compound.getCompound("generation");
 		int size = generationCompound.getInt("size");
 		int minHeight = generationCompound.getInt("minHeight");
 		int maxHeight = generationCompound.getInt("maxHeight");
 		int rarity = generationCompound.getInt("rarity");
+		float hiddenChance = generationCompound.getFloat("hiddenChance");
+		boolean hasOreVein = generationCompound.getBoolean("hasOreVein");
 
 		CompoundTag texturesCompound = compound.getCompound("textures");
 		TextureInformation.Builder textureInformationBuilder = TextureInformation.builder();
@@ -81,6 +82,8 @@ public abstract class ComplexMaterial {
 		textureInformationBuilder.hoeStick(ResourceLocation.tryParse(texturesCompound.getString("hoeStickTexture")));
 		textureInformationBuilder.shovelHead(ResourceLocation.tryParse(texturesCompound.getString("shovelHeadTexture")));
 		textureInformationBuilder.shovelStick(ResourceLocation.tryParse(texturesCompound.getString("shovelStickTexture")));
+		int crystalLampOverlayTextureInt = texturesCompound.getInt("crystalLampOverlayTextureInt");
+		int crystalOreTextureInt = texturesCompound.getInt("crystalOreTextureInt");
 
 		TextureInformation textureInformation = textureInformationBuilder.build();
 
@@ -92,15 +95,17 @@ public abstract class ComplexMaterial {
 				oreMaterial.setMinHeight(minHeight);
 				oreMaterial.setMaxHeight(maxHeight);
 				oreMaterial.setRarity(rarity);
+				oreMaterial.setHiddenChance(hiddenChance);
 			}
-			case "crystal" -> material = new CrystalMaterial(name, gradient, textureInformation, tier);
+			case "crystal" -> material = new CrystalMaterial(name, gradient, textureInformation, tier, crystalLampOverlayTextureInt, crystalOreTextureInt);
 			case "metal" -> {
-				material = new MetalOreMaterial(name, gradient, textureInformation, target, tier);
+				material = new MetalOreMaterial(name, gradient, textureInformation, target, tier, hasOreVein);
 				OreMaterial oreMaterial = (OreMaterial) material;
 				oreMaterial.setSize(size);
 				oreMaterial.setMinHeight(minHeight);
 				oreMaterial.setMaxHeight(maxHeight);
 				oreMaterial.setRarity(rarity);
+				oreMaterial.setHiddenChance(hiddenChance);
 			}
 			default -> {
 				CustomColor mainColor = new CustomColor(colorGradientCompound.getInt("startColor"));

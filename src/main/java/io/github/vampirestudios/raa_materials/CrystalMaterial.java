@@ -53,6 +53,8 @@ public class CrystalMaterial extends ComplexMaterial {
     private final ResourceLocation buddingCrystalBlock;
     private final ResourceLocation shardTexture;
     private final ResourceLocation crystalTexture;
+    private final int crystalLampOverlayTextureInt;
+    private final int crystalOreTextureInt;
 
     public final Block block;
     public final Block tintedGlass;
@@ -81,11 +83,13 @@ public class CrystalMaterial extends ComplexMaterial {
                         .crystal(crystals[random.nextInt(crystals.length)])
                         .shard(shards[random.nextInt(shards.length)])
                         .build(),
-                Rands.randIntRange(1, 3)
+                Rands.randIntRange(1, 3),
+                Rands.randIntRange(1, 4),
+                Rands.randIntRange(1, 4)
         );
     }
 
-    public CrystalMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, int tier) {
+    public CrystalMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, int tier, int crystalLampOverlayTextureInt, int crystalOreTextureInt) {
         super(name, gradient);
         this.tier = tier;
         block = InnerRegistry.registerBlockAndItem(this.registryName + "_block", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.AMETHYST_BLOCK)), RAA_ORES);
@@ -200,6 +204,63 @@ public class CrystalMaterial extends ComplexMaterial {
         this.buddingCrystalBlock = textureInformation.getBuddingCrystalBlock();
         this.crystalTexture = textureInformation.getCrystal();
         this.shardTexture = textureInformation.getShard();
+
+        this.crystalLampOverlayTextureInt = crystalLampOverlayTextureInt;
+        this.crystalOreTextureInt = crystalOreTextureInt;
+
+//        EnumProperty<EdenBlockProperties.EdenPortalState> portalProperty = EdenBlockProperties.EDEN_PORTAL;
+//        BlockState portal = EdenBlocks.PORTAL_BLOCK.defaultBlockState();
+//        BlockState pillarBottom = portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.PILLAR_BOTTOM);
+//        BlockState pillarTop = portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.PILLAR_TOP);
+//        EdenPortalAccessor.getPORTAL().put(new BlockPos(-2, -1, -2), pillarBottom);
+//        EdenPortalAccessor.getPORTAL().put(new BlockPos(-2, 0, -2), pillarTop);
+//        EdenPortalAccessor.getPORTAL().put(new BlockPos(2, -1, -2), pillarBottom);
+//        EdenPortalAccessor.getPORTAL().put(new BlockPos(2, 0, -2), pillarTop);
+//        EdenPortalAccessor.getPORTAL().put(new BlockPos(-2, -1, 2), pillarBottom);
+//        EdenPortalAccessor.getPORTAL().put(new BlockPos(-2, 0, 2), pillarTop);
+//        EdenPortalAccessor.getPORTAL().put(new BlockPos(2, -1, 2), pillarBottom);
+//        EdenPortalAccessor.getPORTAL().put(new BlockPos(2, 0, 2), pillarTop);
+//        EdenPortalAccessor.getPORTAL().put(BlockPos.ZERO, EdenBlocks.PORTAL_CENTER.defaultBlockState());
+//        BlockPos below = new BlockPos(0, -1, 0);
+//        EdenPortalAccessor.getPORTAL().put(below, portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_MIDDLE));
+//        EdenPortalAccessor.getPORTAL().put(below.north(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_N));
+//        EdenPortalAccessor.getPORTAL().put(below.north().east(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_NE));
+//        EdenPortalAccessor.getPORTAL().put(below.east(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_E));
+//        EdenPortalAccessor.getPORTAL().put(below.south().east(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_SE));
+//        EdenPortalAccessor.getPORTAL().put(below.south(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_S));
+//        EdenPortalAccessor.getPORTAL().put(below.south().west(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_SW));
+//        EdenPortalAccessor.getPORTAL().put(below.west(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_W));
+//        EdenPortalAccessor.getPORTAL().put(below.north().west(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_NW));
+//        DirectionProperty facing = HorizontalDirectionalBlock.FACING;
+//        BlockState stairs = Blocks.WAXED_CUT_COPPER_STAIRS.defaultBlockState();
+//
+//        for(int i = -1; i < 2; ++i) {
+//            EdenPortalAccessor.getPORTAL().put(below.north(2).east(i), stairs.setValue(facing, Direction.SOUTH));
+//            EdenPortalAccessor.getPORTAL().put(below.south(2).east(i), stairs.setValue(facing, Direction.NORTH));
+//            EdenPortalAccessor.getPORTAL().put(below.east(2).north(i), stairs.setValue(facing, Direction.WEST));
+//            EdenPortalAccessor.getPORTAL().put(below.west(2).north(i), stairs.setValue(facing, Direction.EAST));
+//        }
+//
+//        BlockPos above = new BlockPos(0, 1, 0);
+//        facing = BlockStateProperties.FACING;
+//        BlockState amethystCluster = crystal.defaultBlockState().setValue(facing, Direction.UP);
+//        EdenPortalAccessor.getPORTAL().put(above.north(2).west(2), amethystCluster);
+//        EdenPortalAccessor.getPORTAL().put(above.north(2).east(2), amethystCluster);
+//        EdenPortalAccessor.getPORTAL().put(above.south(2).west(2), amethystCluster);
+//        EdenPortalAccessor.getPORTAL().put(above.south(2).east(2), amethystCluster);
+//        BlockState copperBlock = Blocks.WAXED_COPPER_BLOCK.defaultBlockState();
+//        BlockState amethystBlock = block.defaultBlockState();
+//        EdenPortalAccessor.getPORTAL().forEach((pos, state) -> {
+//            if (pos.getY() < 0) {
+//                EdenPortalAccessor.getPRE_PORTAL().put(pos, state.is(EdenBlocks.PORTAL_BLOCK) ? copperBlock : state);
+//            } else if (state.is(EdenBlocks.PORTAL_BLOCK)) {
+//                EdenPortalAccessor.getPRE_PORTAL().put(pos, amethystBlock);
+//            } else if (state.is(Blocks.AMETHYST_CLUSTER)) {
+//                EdenPortalAccessor.getPRE_PORTAL().put(pos, state);
+//            }
+//
+//        });
+//        EdenPortalAccessor.getPRE_PORTAL().put(below, Blocks.DIAMOND_BLOCK.defaultBlockState());
     }
 
     @Override
@@ -214,6 +275,8 @@ public class CrystalMaterial extends ComplexMaterial {
         texturesCompound.putString("buddingCrystalBlockTexture", buddingCrystalBlock.toString());
         texturesCompound.putString("crystalTexture", crystalTexture.toString());
         texturesCompound.putString("shardTexture", shardTexture.toString());
+        texturesCompound.putInt("crystalOreTextureInt", crystalOreTextureInt);
+        texturesCompound.putInt("crystalLampOverlayTextureInt", crystalLampOverlayTextureInt);
         materialCompound.put("textures", texturesCompound);
 
         CompoundTag colorGradientCompound = new CompoundTag();
@@ -274,14 +337,14 @@ public class CrystalMaterial extends ComplexMaterial {
     public void initModdedClient() {
         BufferTexture basaltLampTexture = TextureHelper.loadTexture("textures/block/basalt_lamp.png");
         BufferTexture calciteLampTexture = TextureHelper.loadTexture("textures/block/calcite_lamp.png");
-        BufferTexture lampOverlayTexture = TextureHelper.loadTexture("textures/block/lamp_overlay.png");
+        BufferTexture lampOverlayTexture = TextureHelper.loadTexture(String.format("textures/block/lamp_overlay1.png", crystalOreTextureInt));
         BufferTexture chiseledBasaltTexture = TextureHelper.loadTexture("textures/block/chiseled_basalt.png");
         BufferTexture chiseledCalciteTexture = TextureHelper.loadTexture("textures/block/chiseled_calcite.png");
         BufferTexture chiseledOverlayTexture = TextureHelper.loadTexture("textures/block/chiseled_overlay.png");
-        BufferTexture oreTexture = TextureHelper.loadTexture("textures/block/crystal_ore.png");
-        BufferTexture deepslateOreTexture = TextureHelper.loadTexture("textures/block/crystal_deepslate_ore.png");
-        BufferTexture oreOverlayTexture = TextureHelper.loadTexture("textures/block/crystal_ore_overlay.png");
-        BufferTexture oreOverlay2Texture = TextureHelper.loadTexture("textures/block/crystal_ore_overlay2.png");
+        BufferTexture oreTexture = TextureHelper.loadTexture(String.format("textures/block/crystal_ore1.png", crystalOreTextureInt));
+        BufferTexture deepslateOreTexture = TextureHelper.loadTexture(String.format("textures/block/crystal_deepslate_ore1.png", crystalOreTextureInt));
+        BufferTexture oreOverlayTexture = TextureHelper.loadTexture(String.format("textures/block/crystal_ore_overlay_deepslate1.png", crystalOreTextureInt));
+        BufferTexture oreOverlay2Texture = TextureHelper.loadTexture(String.format("textures/block/crystal_ore_overlay_normal1.png", crystalOreTextureInt));
         BufferTexture storageBlockTexture = TextureHelper.loadTexture("textures/block/crystal_storage_block.png");
 
         BufferTexture geodeCoreTexture = TextureHelper.loadTexture("textures/item/geode_core.png");
@@ -421,16 +484,10 @@ public class CrystalMaterial extends ComplexMaterial {
                         8.0D,
                         12.0D,
                         16.0D
-                ),
-                new GeodeLayerSettings(
-                        8.0D,
-                        16.0D,
-                        24.0D,
-                        32.0D
                 )
         );
 
-        ConfiguredFeature<?, ?> geodeCf = InnerRegistry.registerConfiguredFeature(id(this.registryName + "_geode"),
+        ConfiguredFeature<?, ?> geodeCf = InnerRegistry.registerConfiguredFeature(world, id(this.registryName + "_geode"),
                 Feature.GEODE.configured(
                         new GeodeConfiguration(
                                 new GeodeBlockSettings(
@@ -464,7 +521,7 @@ public class CrystalMaterial extends ComplexMaterial {
                         )
                 ));
         ResourceKey<PlacedFeature> placedFeatureHugeRareRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_geode"));
-        InnerRegistry.registerPlacedFeature(placedFeatureHugeRareRegistryKey, geodeCf.placed(
+        InnerRegistry.registerPlacedFeature(world, placedFeatureHugeRareRegistryKey, geodeCf.placed(
                 HeightRangePlacement.uniform(VerticalAnchor.aboveBottom(10), VerticalAnchor.absolute(46)),
                 RarityFilter.onAverageOnceEvery(RAAMaterials.CONFIG.crystalTypeAmount * 100)
         ));

@@ -169,35 +169,36 @@ public class CustomColor {
 				float v2 = z * (1.0F - y * invert);
 				float v3 = z * (1.0F - y * (1.0F - invert));
 				switch ((int) segment) {
-					case 0:
+					case 0 -> {
 						newRed = z;
 						newGreen = v3;
 						newBlue = v1;
-						break;
-					case 1:
+					}
+					case 1 -> {
 						newRed = v2;
 						newGreen = z;
 						newBlue = v1;
-						break;
-					case 2:
+					}
+					case 2 -> {
 						newRed = v1;
 						newGreen = z;
 						newBlue = v3;
-						break;
-					case 3:
+					}
+					case 3 -> {
 						newRed = v1;
 						newGreen = v2;
 						newBlue = z;
-						break;
-					case 4:
+					}
+					case 4 -> {
 						newRed = v3;
 						newGreen = v1;
 						newBlue = z;
-						break;
-					case 5:
+					}
+					case 5 -> {
 						newRed = z;
 						newGreen = v1;
 						newBlue = v2;
+					}
 				}
 			}
 
