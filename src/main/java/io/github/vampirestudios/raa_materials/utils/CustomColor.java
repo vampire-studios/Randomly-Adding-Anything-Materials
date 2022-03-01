@@ -105,7 +105,7 @@ public class CustomColor {
 				this.x = MHelper.wrap(Mth.lerp(blend, x1, x2), 1);
 			}
 			else {
-				this.x = Mth.lerp(blend, color.x, this.x) % 1.0F;
+				this.x = Mth.lerp(blend, this.x, color.x) % 1.0F;
 			}
 		}
 		else {

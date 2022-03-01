@@ -568,30 +568,28 @@ public class TextureHelper {
 	}
 
 	public static ColorGradient makeDistortedPalette(CustomColor color, float hueDist, float satDist, float valDist) {
-//		CustomColor colorStart = new CustomColor().set(color).switchToHSV();
-//		colorStart
-//				.setHue(MHelper.wrap(colorStart.getHue() - hueDist, 1F))
-//				.setSaturation(Mth.clamp(colorStart.getSaturation() - satDist, 0F, 1F))
-//				.setBrightness(Mth.clamp(colorStart.getBrightness() - valDist, 0F, 1F));
-//
-//		CustomColor colorEnd = new CustomColor().set(color).switchToHSV();
-//		colorEnd
-//				.setHue(MHelper.wrap(colorEnd.getHue() + hueDist, 1F))
-//				.setSaturation(Mth.clamp(colorEnd.getSaturation() + satDist, 0F, 1F))
-//				.setBrightness(Mth.clamp(colorEnd.getBrightness() + valDist, 0F, 1F));
 		CustomColor colorStart = new CustomColor().set(color).switchToHSV();
 		colorStart
 				.setHue(colorStart.getHue() - hueDist)
-				.setSaturation(Mth.clamp(colorStart.getSaturation() - satDist, 0F, 1F))
-				.setBrightness(Mth.clamp(colorStart.getBrightness() - valDist, 0F, 1F));
+				.setSaturation(Mth.clamp(colorStart.getSaturation() - satDist, 0.01F, 1F))
+				.setBrightness(Mth.clamp(colorStart.getBrightness() - valDist, 0.07F, 0.55F));
+
+		CustomColor colorMid = new CustomColor().set(color).switchToHSV();
+		colorStart
+				.setHue(colorStart.getHue() )
+				.setSaturation(Mth.clamp(colorStart.getSaturation() , 0.03F, 1F))
+				.setBrightness(Mth.clamp(colorStart.getBrightness() , 0.1F, 0.6F));
 
 		CustomColor colorEnd = new CustomColor().set(color).switchToHSV();
 		colorEnd
 				.setHue(colorEnd.getHue() + hueDist)
-				.setSaturation(Mth.clamp(colorEnd.getSaturation() + satDist, 0F, 1F))
-				.setBrightness(Mth.clamp(colorEnd.getBrightness() + valDist, 0F, 1F));
-
-		return new ColorGradient(colorStart, colorEnd);
+				.setSaturation(Mth.clamp(colorEnd.getSaturation() + satDist, 0.01F, 0.5F))
+				.setBrightness(Mth.clamp(colorEnd.getBrightness() + valDist, 0.5F, 1F));
+		System.out.println(ColorUtil.toHexString(colorStart.getAsInt()));
+		System.out.println(ColorUtil.toHexString(colorMid.getAsInt()));
+		System.out.println(ColorUtil.toHexString(colorEnd.getAsInt()));
+		System.out.println("");
+		return new ColorGradient(colorStart, colorMid, colorEnd);
 	}
 
 	public static CustomColor getAverageColor(BufferTexture texture, int x, int y, int r) {

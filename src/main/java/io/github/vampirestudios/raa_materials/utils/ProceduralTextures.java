@@ -21,29 +21,25 @@ public class ProceduralTextures {
 		if (type == 0) {
 			CustomColor color = new CustomColor(true)
 					.setHue(Rands.randFloatRange(0F, 1F))
-//				.setSaturation(MHelper.randRange(0.6F, 1, random))
-					.setSaturation(Rands.randFloatRange(0.25F, 0.6F))
-//				.setBrightness(MHelper.randRange(0.3F, 1, random))
-					.setBrightness(Rands.randFloatRange(0.7F, 0.9F));
-//			CustomColor color = new CustomColor(true)
-//					.setHue(Rands.randFloatRange(0F, 1F))
-//					.setSaturation(MHelper.randRange(0.1F, 1F, random))
-//					.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
+					.setSaturation(MHelper.randRange(0.1F, 0.7F, random))
+					.setBrightness(MHelper.randRange(0.3F, 0.8F, random));
 			float cos = Mth.cos(color.getHue() * MHelper.PI2);
-			float hue = (color.getHue()<0.66?-1:1) * cos * 0.2F;
-			float sat = -0.25F;
-			return TextureHelper.makeDistortedPalette(color, hue, sat, 0.5F);
+			float hue = (color.getHue()<0.66?-1:1) * cos * 0.14F;
+			float sat = -0.35F;
+			return TextureHelper.makeDistortedPalette(color, hue, sat, 0.6F);
 		}
 		else if (type == 1) {
 			CustomColor color = new CustomColor(random.nextFloat(), random.nextFloat(), random.nextFloat());
 			color.switchToHSV();
 			color.setSaturation(Math.min(color.getSaturation(), 0.7F));
-			return TextureHelper.makeDistortedPalette(color, 0.1F, 0.1F, 0.5F);
+			return TextureHelper.makeDistortedPalette(color, 0.07F, -0.3F, 0.5F);
 		}
 		else {
-			float value = random.nextBoolean() ? random.nextFloat() * 0.2F : MHelper.randRange(0.7F, 1, random);
-			CustomColor color = new CustomColor(value, value, value);
-			return TextureHelper.makeDistortedPalette(color, 0.0F, 0.0F, MHelper.randRange(0.2F, 0.6F, random));
+			float value = random.nextBoolean() ? MHelper.randRange(0.1F, 0.3F, random) : MHelper.randRange(0.6F, 0.85F, random);
+			CustomColor color = new CustomColor(value, value+0.01f, value).switchToHSV()
+					.setHue(Rands.randFloatRange(0F, 1F))
+					.setSaturation(MHelper.randRange(0F, 0.06F, random));
+			return TextureHelper.makeDistortedPalette(color, MHelper.randRange(0.02F, 0.2F, random), -0.06F, MHelper.randRange(0.25F, 0.6F, random));
 		}
 	}
 
@@ -57,8 +53,8 @@ public class ProceduralTextures {
 				.setSaturation(Rands.randFloatRange(0.25F, 0.8F))
 				.setBrightness(Rands.randFloatRange(0.7F, 0.9F));
 		float cos = Mth.cos(color.getHue() * MHelper.PI2);
-		float hue = (color.getHue()<0.66?-1:1) * cos * 0.15F;
-		float sat = -0.35F;
+		float hue = (color.getHue()<0.66?-1:1) * cos * 0.17F;
+		float sat = -0.37F;
 		return TextureHelper.makeDistortedPalette(color, hue, sat, 1.0F);
 	}
 
@@ -69,12 +65,12 @@ public class ProceduralTextures {
 //				.setBrightness(MHelper.randRange(0.3F, 0.85F, random));
 		CustomColor color = new CustomColor(true)
 				.setHue(Rands.randFloatRange(0F, 1F))
-				.setSaturation(Rands.randFloatRange(0.35F, 0.8F))
-				.setBrightness(Rands.randFloatRange(0.7F, 0.9F));
+				.setSaturation(Rands.randFloatRange(0.5F, 0.8F))
+				.setBrightness(Rands.randFloatRange(0.7F, 0.85F));
 		float cos = Mth.cos(color.getHue() * MHelper.PI2);
-		float hue = (color.getHue()<0.66?-1:1) * cos * 0.07F;
-		float sat = -0.12F;
-		return TextureHelper.makeDistortedPalette(color, hue, sat, 0.5F);
+		float hue = (color.getHue()<0.66?-1:1) * cos * 0.06F;
+		float sat = -0.25F;
+		return TextureHelper.makeDistortedPalette(color, hue, sat, 0.7F);
 	}
 
 	public static BufferTexture makeStoneTexture(ColorGradient gradient, Random random) {

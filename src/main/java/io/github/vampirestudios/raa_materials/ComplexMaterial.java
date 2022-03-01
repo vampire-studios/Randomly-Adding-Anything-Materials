@@ -37,6 +37,7 @@ public abstract class ComplexMaterial {
 
 		CompoundTag colorGradientCompound = compound.getCompound("colorGradient");
 		ColorGradient gradient = new ColorGradient(new CustomColor(colorGradientCompound.getInt("startColor")),
+				new CustomColor(colorGradientCompound.getInt("midColor")),
 				new CustomColor(colorGradientCompound.getInt("endColor")));
 
 		OreMaterial.Target target = RAAMaterials.TARGETS.get(targetName);

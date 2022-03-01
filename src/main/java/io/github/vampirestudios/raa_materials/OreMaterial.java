@@ -236,6 +236,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 		CompoundTag colorGradientCompound = new CompoundTag();
 		colorGradientCompound.putInt("startColor", this.gradient.getColor(0.0F).getAsInt());
+		colorGradientCompound.putInt("midColor", this.gradient.getColor(0.5F).getAsInt());
 		colorGradientCompound.putInt("endColor", this.gradient.getColor(1.0F).getAsInt());
 		materialCompound.put("colorGradient", colorGradientCompound);
 		return materialCompound;
