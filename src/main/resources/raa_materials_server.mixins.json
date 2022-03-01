@@ -5,8 +5,8 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
 	"BiomeMixin",
-	"GenerationSettingsAccessor",
 	"MainMixin",
+	"MappedRegistryMixin",
 	"RecipeManagerAccessor",
 	"RecipeManagerMixin",
 	"RegistryMixin",

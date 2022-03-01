@@ -11,6 +11,7 @@ import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.nbt.CompoundTag;
@@ -18,7 +19,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ShovelItem;
@@ -177,30 +178,29 @@ public abstract class OreMaterial extends ComplexMaterial {
 	public void generate(ServerLevel world) {
 		if (RAAMaterials.CONFIG.debugMode) System.out.println("Generating Ores");
 		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureCommonRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_ore_cf"));
-		ConfiguredFeature<?, ?> configuredFeatureCommon = InnerRegistry.registerConfiguredFeature(world, configuredFeatureCommonRegistryKey, Feature.ORE
-				.configured(new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), size / 2, hiddenChance))
+		Holder<ConfiguredFeature<?, ?>> configuredFeatureCommon = InnerRegistry.registerConfiguredFeature(world, configuredFeatureCommonRegistryKey, Feature.ORE ,
+				new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), size / 2, hiddenChance)
 		);
 		ResourceKey<PlacedFeature> placedFeatureCommonRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_pf"));
-		InnerRegistry.registerPlacedFeature(world, placedFeatureCommonRegistryKey, configuredFeatureCommon
-				.placed(PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, CountPlacement.of(20), RarityFilter.onAverageOnceEvery(rarity * 2), InSquarePlacement.spread(), BiomeFilter.biome()));
+		InnerRegistry.registerPlacedFeature(world, placedFeatureCommonRegistryKey, configuredFeatureCommon,
+				PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, CountPlacement.of(20), RarityFilter.onAverageOnceEvery(rarity * 2), InSquarePlacement.spread(), BiomeFilter.biome());
 
 		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureMiddleRareRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_ore_cf2"));
-		ConfiguredFeature<?, ?> configuredFeatureMiddleRare = InnerRegistry.registerConfiguredFeature(world, configuredFeatureMiddleRareRegistryKey, Feature.ORE
-				.configured(new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), size, hiddenChance))
+		Holder<ConfiguredFeature<?, ?>> configuredFeatureMiddleRare = InnerRegistry.registerConfiguredFeature(world, configuredFeatureMiddleRareRegistryKey, Feature.ORE,
+				new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), size, hiddenChance)
 		);
 		ResourceKey<PlacedFeature> placedFeatureMiddleRareRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_pf2"));
-		InnerRegistry.registerPlacedFeature(world, placedFeatureMiddleRareRegistryKey, configuredFeatureMiddleRare
-				.placed(PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, CountPlacement.of(6), RarityFilter.onAverageOnceEvery(rarity), InSquarePlacement.spread(), BiomeFilter.biome()));
+		InnerRegistry.registerPlacedFeature(world, placedFeatureMiddleRareRegistryKey, configuredFeatureMiddleRare,
+				PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, CountPlacement.of(6), RarityFilter.onAverageOnceEvery(rarity), InSquarePlacement.spread(), BiomeFilter.biome());
 
 
 		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureHugeRareRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_ore_cf3"));
-		ConfiguredFeature<?, ?> configuredFeatureHugeRare = InnerRegistry.registerConfiguredFeature(world, configuredFeatureHugeRareRegistryKey, Feature.ORE
-				
-				.configured(new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), Mth.clamp(size * 2, 0, 64), hiddenChance))
+		Holder<ConfiguredFeature<?, ?>> configuredFeatureHugeRare = InnerRegistry.registerConfiguredFeature(world, configuredFeatureHugeRareRegistryKey, Feature.ORE,
+				new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), Mth.clamp(size * 2, 0, 64), hiddenChance)
 		);
 		ResourceKey<PlacedFeature> placedFeatureHugeRareRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_pf3"));
-		InnerRegistry.registerPlacedFeature(world, placedFeatureHugeRareRegistryKey, configuredFeatureHugeRare
-				.placed(PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, CountPlacement.of(9), RarityFilter.onAverageOnceEvery(rarity / 2), InSquarePlacement.spread(), BiomeFilter.biome()));
+		InnerRegistry.registerPlacedFeature(world, placedFeatureHugeRareRegistryKey, configuredFeatureHugeRare,
+				PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, CountPlacement.of(9), RarityFilter.onAverageOnceEvery(rarity / 2), InSquarePlacement.spread(), BiomeFilter.biome());
 		ResourceKey<PlacedFeature> selectedKey = Rands.values(new ResourceKey[]{ placedFeatureCommonRegistryKey, placedFeatureMiddleRareRegistryKey, placedFeatureHugeRareRegistryKey });
 
 		BiomeModifications.addFeature(BiomeSelectors.all(), GenerationStep.Decoration.UNDERGROUND_ORES, selectedKey);
@@ -408,7 +408,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 	}
 
-	public record Target(Block block, String name, TargetTextureInformation textureInformation, CustomColor darkOutline, CustomColor lightOutline, Tag.Named<Block> toolType) {
+	public record Target(Block block, String name, TargetTextureInformation textureInformation, CustomColor darkOutline, CustomColor lightOutline, TagKey<Block> toolType) {
 		public static final Target STONE = new Target(Blocks.STONE, "stone", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/stone.png")).build(), new CustomColor(104, 104, 104), new CustomColor(143, 143, 143), BlockTags.MINEABLE_WITH_PICKAXE);
 		public static final Target DIORITE = new Target(Blocks.DIORITE, "diorite", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/diorite.png")).build(), new CustomColor(139, 139, 139), new CustomColor(206, 206, 207), BlockTags.MINEABLE_WITH_PICKAXE);
 		public static final Target ANDESITE = new Target(Blocks.ANDESITE, "andesite", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/andesite.png")).build(), new CustomColor(116, 116, 116), new CustomColor(156, 156, 156), BlockTags.MINEABLE_WITH_PICKAXE);

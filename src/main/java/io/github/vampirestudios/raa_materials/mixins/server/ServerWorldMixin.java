@@ -1,5 +1,6 @@
 package io.github.vampirestudios.raa_materials.mixins.server;
 
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -22,7 +23,7 @@ import java.util.concurrent.Executor;
 public class ServerWorldMixin {
 
 	@Inject(method = "<init>*", at = @At("TAIL"))
-	private void procmcInit(MinecraftServer server, Executor workerExecutor, LevelStorageSource.LevelStorageAccess session, ServerLevelData properties, ResourceKey<Level> registryKey, DimensionType dimensionType, ChunkProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long l, List<CustomSpawner> list, boolean bl, CallbackInfo info) {
+	private void procmcInit(MinecraftServer server, Executor workerExecutor, LevelStorageSource.LevelStorageAccess session, ServerLevelData properties, ResourceKey<Level> registryKey, Holder<DimensionType> dimensionType, ChunkProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long l, List<CustomSpawner> list, boolean bl, CallbackInfo info) {
 //		RAAMaterials.onServerStart((ServerLevel) (Object) this, registryKey.equals(Level.OVERWORLD));
 	}
 

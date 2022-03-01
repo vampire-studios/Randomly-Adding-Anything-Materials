@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
@@ -21,8 +22,8 @@ public class TagHelper {
 		TAGS_ITEM.clear();
 	}
 
-	public static void addTag(Tag.Named<Block> tag, Block... blocks) {
-		ResourceLocation tagID = tag.getName();
+	public static void addTag(TagKey<Block> tag, Block... blocks) {
+		ResourceLocation tagID = tag.location();
 		Set<ResourceLocation> set = TAGS_BLOCK.computeIfAbsent(tagID, k -> Sets.newHashSet());
 		for (Block block: blocks) {
 			ResourceLocation id = Registry.BLOCK.getKey(block);
@@ -32,8 +33,8 @@ public class TagHelper {
 		}
 	}
 
-	public static void addTag(Tag.Named<Item> tag, ItemLike... items) {
-		ResourceLocation tagID = tag.getName();
+	public static void addTag(TagKey<Item> tag, ItemLike... items) {
+		ResourceLocation tagID = tag.location();
 		Set<ResourceLocation> set = TAGS_ITEM.computeIfAbsent(tagID, k -> Sets.newHashSet());
 		for (ItemLike item: items) {
 			ResourceLocation id = Registry.ITEM.getKey(item.asItem());
@@ -44,15 +45,15 @@ public class TagHelper {
 	}
 
 	@SafeVarargs
-	public static void addTags(ItemLike item, Tag.Named<Item>... tags) {
-		for (Tag.Named<Item> tag: tags) {
+	public static void addTags(ItemLike item, TagKey<Item>... tags) {
+		for (TagKey<Item> tag: tags) {
 			addTag(tag, item);
 		}
 	}
 
 	@SafeVarargs
-	public static void addTags(Block block, Tag.Named<Block>... tags) {
-		for (Tag.Named<Block> tag: tags) {
+	public static void addTags(Block block, TagKey<Block>... tags) {
+		for (TagKey<Block> tag: tags) {
 			addTag(tag, block);
 		}
 	}

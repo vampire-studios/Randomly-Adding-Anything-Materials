@@ -2,7 +2,7 @@ plugins {
 	id 'fabric-loom' version '0.11-SNAPSHOT'
 	id 'maven-publish'
 	id "io.github.juuxel.loom-quiltflower" version "1.6.0"
-	id 'org.quiltmc.quilt-mappings-on-loom' version '3.1.1'
+	id 'org.quiltmc.quilt-mappings-on-loom' version '4.0.0'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -25,8 +25,8 @@ dependencies {
 	//to change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings loom.layered {
-		it.addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:1.18.1+build.5:v2")) // https://maven.quiltmc.org/#browse/browse:release
-		it.parchment("org.parchmentmc.data:parchment-1.18.1:2021.12.19@zip") // https://ldtteam.jfrog.io/ui/natiave/parchmentmc-public/org/parchmentmc/data/parchment-1.18.1/BLEEDING-SNAPSHOT
+		it.addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:1.18.2+build.2:v2")) // https://maven.quiltmc.org/#browse/browse:release
+		it.parchment("org.parchmentmc.data:parchment-1.18.1:2022.02.13@zip") // https://ldtteam.jfrog.io/ui/natiave/parchmentmc-public/org/parchmentmc/data/parchment-1.18.1/BLEEDING-SNAPSHOT
 		it.officialMojangMappings {
 			setNameSyntheticMembers(false)
 		}
@@ -36,11 +36,8 @@ dependencies {
 
 	modImplementation "io.github.vampirestudios:Randomly-Adding-Anything-Core:${project.core_version}"
 
-	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:7.1.368"
-	modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:7.1.368"
-
-	modImplementation "paulevs.edenring:EdenRing-master:0.3.0"
-	modImplementation "com.github.paulevsGitch:BCLib:1.2.5"
+//	modImplementation "paulevs.edenring:EdenRing-master:0.3.0"
+//	modImplementation "com.github.paulevsGitch:BCLib:1.2.5"
 }
 
 processResources {

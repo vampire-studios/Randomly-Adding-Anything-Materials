@@ -2,7 +2,7 @@ package io.github.vampirestudios.raa_materials.mixins.client;
 
 import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.RegistryAccess.RegistryHolder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.level.LevelSettings;
 import net.minecraft.world.level.levelgen.WorldGenSettings;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +18,7 @@ public abstract class MinecraftMixin {
 	}
 	
 	@Inject(method = "createLevel", at = @At("HEAD"))
-	private void raa_initPatchData(String levelID, LevelSettings levelSettings, RegistryHolder registryHolder, WorldGenSettings worldGenSettings, CallbackInfo ci) {
+	private void raa_initPatchData(String worldName, LevelSettings levelInfo, RegistryAccess registryAccess, WorldGenSettings generatorOptions, CallbackInfo ci) {
 		LifeCycleAPI._runBeforeLevelLoad();
 	}
 }

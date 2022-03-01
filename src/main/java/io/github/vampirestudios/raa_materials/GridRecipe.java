@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import io.github.vampirestudios.raa_core.RAACore;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
@@ -66,7 +66,7 @@ public class GridRecipe {
 		return this;
 	}
 
-	public GridRecipe addMaterial(char key, Tag<Item> value) {
+	public GridRecipe addMaterial(char key, TagKey<Item> value) {
 		return addMaterial(key, Ingredient.of(value));
 	}
 

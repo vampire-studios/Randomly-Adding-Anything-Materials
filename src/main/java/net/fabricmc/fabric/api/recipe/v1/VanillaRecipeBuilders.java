@@ -22,7 +22,7 @@ import it.unimi.dsi.fastutil.chars.CharArraySet;
 import it.unimi.dsi.fastutil.chars.CharSet;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
@@ -257,7 +257,7 @@ public final class VanillaRecipeBuilders {
 		 * @return this builder
 		 * @see #ingredient(char, Ingredient)
 		 */
-		public ShapedRecipeBuilder ingredient(char key, Tag<Item> tag) {
+		public ShapedRecipeBuilder ingredient(char key, TagKey<Item> tag) {
 			return this.ingredient(key, Ingredient.of(tag));
 		}
 
@@ -335,7 +335,7 @@ public final class VanillaRecipeBuilders {
 		 * @return this builder
 		 * @see #ingredient(Ingredient)
 		 */
-		public ShapelessRecipeBuilder ingredient(Tag<Item> tag) {
+		public ShapelessRecipeBuilder ingredient(TagKey<Item> tag) {
 			return this.ingredient(Ingredient.of(tag));
 		}
 

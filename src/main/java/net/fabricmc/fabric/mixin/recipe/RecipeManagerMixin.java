@@ -67,7 +67,7 @@ public class RecipeManagerMixin {
 
 	@Inject(
 			method = "apply",
-			at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;info(Ljava/lang/String;Ljava/lang/Object;)V", remap = false)
+			at = @At(value = "INVOKE", target = "Lorg/slf4j/Logger;info(Ljava/lang/String;Ljava/lang/Object;)V", remap = false)
 	)
 	private void onReloadEnd(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler,
 							CallbackInfo ci) {

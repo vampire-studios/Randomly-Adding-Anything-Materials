@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -98,20 +99,20 @@ public class CrystalMaterial extends ComplexMaterial {
         shard = InnerRegistry.registerItem(this.registryName + "_shard", new RAASimpleItem(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHARD));
         crystal = InnerRegistry.registerBlockAndItem(this.registryName + "_crystal", new CustomCrystalClusterBlock(BlockBehaviour.Properties.copy(Blocks.AMETHYST_CLUSTER), shard), RAA_ORES);
 
-        TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, block);
-        TagHelper.addTag(switch (tier) {
-            case 1 -> BlockTags.NEEDS_STONE_TOOL;
-            case 2 -> BlockTags.NEEDS_IRON_TOOL;
-            case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-            default -> throw new IllegalStateException("Unexpected value: " + tier);
-        }, block);
-        TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, crystal);
-        TagHelper.addTag(switch (tier) {
-            case 1 -> BlockTags.NEEDS_STONE_TOOL;
-            case 2 -> BlockTags.NEEDS_IRON_TOOL;
-            case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-            default -> throw new IllegalStateException("Unexpected value: " + tier);
-        }, crystal);
+//        TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, block);
+//        TagHelper.addTag(switch (tier) {
+//            case 1 -> BlockTags.NEEDS_STONE_TOOL;
+//            case 2 -> BlockTags.NEEDS_IRON_TOOL;
+//            case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+//            default -> throw new IllegalStateException("Unexpected value: " + tier);
+//        }, block);
+//        TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, crystal);
+//        TagHelper.addTag(switch (tier) {
+//            case 1 -> BlockTags.NEEDS_STONE_TOOL;
+//            case 2 -> BlockTags.NEEDS_IRON_TOOL;
+//            case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+//            default -> throw new IllegalStateException("Unexpected value: " + tier);
+//        }, crystal);
 
         basaltLamp = InnerRegistry.registerBlockAndItem(this.registryName + "_basalt_lamp", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.SMOOTH_BASALT)), RAA_ORES);
         calciteLamp = InnerRegistry.registerBlockAndItem(this.registryName + "_calcite_lamp", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.CALCITE)), RAA_ORES);
@@ -487,20 +488,19 @@ public class CrystalMaterial extends ComplexMaterial {
                 )
         );
 
-        ConfiguredFeature<?, ?> geodeCf = InnerRegistry.registerConfiguredFeature(world, id(this.registryName + "_geode"),
-                Feature.GEODE.configured(
-                        new GeodeConfiguration(
+        Holder<ConfiguredFeature<?, ?>> geodeCf = InnerRegistry.registerConfiguredFeature(world, id(this.registryName + "_geode"),
+                Feature.GEODE, new GeodeConfiguration(
                                 new GeodeBlockSettings(
                                         BlockStateProvider.simple(Blocks.AIR),
-                                        BlockStateProvider.simple(Registry.BLOCK.get(RAAMaterials.id(this.registryName + "_block"))),
-                                        BlockStateProvider.simple(Registry.BLOCK.get(RAAMaterials.id("budding_" + this.registryName + "_block"))),
+                                        BlockStateProvider.simple(Registry.BLOCK.get(id(this.registryName + "_block"))),
+                                        BlockStateProvider.simple(Registry.BLOCK.get(id("budding_" + this.registryName + "_block"))),
                                         BlockStateProvider.simple(Blocks.CALCITE),
                                         Rands.list(List.of(BlockStateProvider.simple(Blocks.SMOOTH_BASALT), BlockStateProvider.simple(Blocks.TUFF))),
                                         ImmutableList.of(
-                                                Registry.BLOCK.get(RAAMaterials.id(this.registryName + "_crystal")).defaultBlockState()
+                                                Registry.BLOCK.get(id(this.registryName + "_crystal")).defaultBlockState()
                                         ),
-                                        BlockTags.FEATURES_CANNOT_REPLACE.getName(),
-                                        BlockTags.GEODE_INVALID_BLOCKS.getName()
+                                        BlockTags.FEATURES_CANNOT_REPLACE,
+                                        BlockTags.GEODE_INVALID_BLOCKS
                                 ),
                                 Rands.list(geodeLayerThicknessConfigs),
                                 new GeodeCrackSettings(
@@ -519,12 +519,12 @@ public class CrystalMaterial extends ComplexMaterial {
                                 0.05D,
                                 1
                         )
-                ));
+                );
         ResourceKey<PlacedFeature> placedFeatureHugeRareRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_geode"));
-        InnerRegistry.registerPlacedFeature(world, placedFeatureHugeRareRegistryKey, geodeCf.placed(
+        InnerRegistry.registerPlacedFeature(world, placedFeatureHugeRareRegistryKey, geodeCf,
                 HeightRangePlacement.uniform(VerticalAnchor.aboveBottom(10), VerticalAnchor.absolute(46)),
                 RarityFilter.onAverageOnceEvery(RAAMaterials.CONFIG.crystalTypeAmount * 100)
-        ));
+        );
 
         BiomeModifications.addFeature(BiomeSelectors.all(), GenerationStep.Decoration.LOCAL_MODIFICATIONS, placedFeatureHugeRareRegistryKey);
     }

@@ -2,7 +2,6 @@ package io.github.vampirestudios.raa_materials.mixins.server;
 
 import com.google.gson.JsonElement;
 import io.github.vampirestudios.raa_materials.CustomRecipeManager;
-import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -49,6 +48,6 @@ public class RecipeManagerMixin {
 			return b1 ^ b2 ? (b1 ? 1 : -1) : 0;
 		});
 
-		return list.stream().flatMap(recipe -> Util.toStream(type.tryMatch(recipe, world, inventory))).findFirst();
+		return list.stream().flatMap(recipe -> type.tryMatch(recipe, world, inventory).stream()).findFirst();
 	}
 } 
