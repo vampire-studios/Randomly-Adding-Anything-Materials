@@ -14,7 +14,7 @@ import  io.github.vampirestudios.raa_materials.utils.ProceduralTextures;
 public class PaletteTest {
     public static void main(String[] args) throws Exception {
         Random random = new Random();
-        int paletteSize = 8;
+        int paletteSize = 7;
         int palettes = 32;
         CustomColor startColor = new CustomColor(0.1f,0.05f,0.05f).switchToHSV();
         CustomColor mainColor = new CustomColor(//0.1f,1f,0.1f

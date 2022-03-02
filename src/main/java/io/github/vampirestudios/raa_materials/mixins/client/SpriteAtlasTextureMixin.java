@@ -1,5 +1,6 @@
 package io.github.vampirestudios.raa_materials.mixins.client;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import net.fabricmc.fabric.impl.client.texture.FabricSprite;
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.Set;
 
@@ -27,19 +29,9 @@ public class SpriteAtlasTextureMixin {
 	private void loadSpritesEnd(ResourceManager resourceManager, Set<ResourceLocation> ids, CallbackInfoReturnable<Collection<TextureAtlasSprite.Info>> info) {
 		Collection<TextureAtlasSprite.Info> result = info.getReturnValue();
 		InnerRegistry.iterateTextures((id, img) -> {
-//			TextureAtlasSprite.Info spriteInfo;
-//			try {
-//				Resource resource = resourceManager.getResource(Utils.appendAndPrependToPath(id, "textures/", ".png"));
-//				AnimationMetadataSection animationMetadataSection = resource.getMetadata(AnimationMetadataSection.SERIALIZER);
-//				assert animationMetadataSection != null;
-//				Pair<Integer, Integer> pair = animationMetadataSection.getFrameSize(img.getWidth(), img.getHeight());
-//				spriteInfo = new TextureAtlasSprite.Info(id, pair.getFirst(), pair.getSecond(), animationMetadataSection);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//				spriteInfo = new TextureAtlasSprite.Info(id, img.getWidth(), img.getHeight(), AnimationMetadataSection.EMPTY);
-//				result.add(spriteInfo);
-//			}
-			TextureAtlasSprite.Info spriteInfo = new TextureAtlasSprite.Info(id, img.getWidth(), img.getHeight(), AnimationMetadataSection.EMPTY);
+
+			Pair<Integer, Integer> pair = img.getAnimation().getFrameSize(img.getWidth(), img.getHeight());
+			TextureAtlasSprite.Info spriteInfo = new TextureAtlasSprite.Info(id, pair.getFirst(), pair.getSecond(), img.getAnimation());
 			result.add(spriteInfo);
 		});
 		info.setReturnValue(result);
@@ -50,6 +42,7 @@ public class SpriteAtlasTextureMixin {
 		BufferTexture texture = InnerRegistry.getTexture(info.name());
 		if (texture != null) {
 			try {
+
 				TextureAtlas atlas = TextureAtlas.class.cast(this);
 				TextureAtlasSprite sprite = new FabricSprite(atlas, info, maxLevel, atlasWidth, atlasHeight, x, y, texture.makeImage());
 				callbackInfo.setReturnValue(sprite);

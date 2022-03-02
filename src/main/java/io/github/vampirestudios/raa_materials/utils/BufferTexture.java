@@ -1,20 +1,28 @@
 package io.github.vampirestudios.raa_materials.utils;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.NativeImage;
-import java.util.Arrays;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.metadata.animation.AnimationFrame;
+import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
 
 public class BufferTexture {
 	final int width;
 	final int height;
 	final int[] buffer;
+	AnimationMetadataSection animation;
 	
 	public BufferTexture(int width, int height) {
 		this.width = width;
 		this.height = height;
 		buffer = new int[width * height];
+		this.animation = AnimationMetadataSection.EMPTY;
 	}
 
-	public BufferTexture(NativeImage image) {
+	public BufferTexture(NativeImage image, AnimationMetadataSection animation) {
 		this.width = image.getWidth();
 		this.height = image.getHeight();
 		buffer = new int[width * height];
@@ -23,12 +31,20 @@ public class BufferTexture {
 			int y = i / width;
 			buffer[i] = image.getPixelRGBA(x, y);
 		}
+		this.animation = animation;
 	}
 
 	private BufferTexture(BufferTexture texture) {
 		this.width = texture.width;
 		this.height = texture.height;
 		buffer = Arrays.copyOf(texture.buffer, texture.buffer.length);
+		List<AnimationFrame> copyani = Lists.<AnimationFrame>newArrayList();
+		texture.animation.forEachFrame((index, time) -> copyani.add(new AnimationFrame(index, time)));
+		this.animation = new AnimationMetadataSection(copyani,
+				texture.animation.getFrameWidth(-1),
+				texture.animation.getFrameHeight(-1),
+				texture.animation.getDefaultFrameTime(),
+				texture.animation.isInterpolatedFrames());
 	}
 
 	public void setPixel(int x, int y, int r, int g, int b) {
@@ -60,6 +76,14 @@ public class BufferTexture {
 	
 	public int getHeight() {
 		return height;
+	}
+
+	public AnimationMetadataSection getAnimation() {
+		return animation;
+	}
+
+	public void setAnimation(AnimationMetadataSection animation) {
+		 this.animation = animation;
 	}
 
 	public BufferTexture clone() {

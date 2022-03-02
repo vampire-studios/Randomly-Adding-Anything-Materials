@@ -4,6 +4,8 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.math.Vector3f;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.metadata.animation.AnimationFrame;
+import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.Mth;
@@ -141,16 +143,35 @@ public class TextureHelper {
 		}
 	}
 
+	public static AnimationMetadataSection loadAnimation(ResourceLocation name) {
+		try {
+			Resource input = Minecraft.getInstance().getResourceManager().getResource(name);
+			AnimationMetadataSection animation = input.getMetadata(AnimationMetadataSection.SERIALIZER);
+			return animation != null ? animation : AnimationMetadataSection.EMPTY ;
+		}
+		catch (IOException e) {
+			return AnimationMetadataSection.EMPTY;
+		}
+	}
+
+	public static AnimationMetadataSection loadAnimation(String name) {
+		return loadAnimation(RAAMaterials.id(name));
+	}
+
+	public static AnimationMetadataSection loadAnimation(String namespace, String name) {
+		return loadAnimation(new ResourceLocation(namespace, name));
+	}
+
 	public static BufferTexture loadTexture(String name) {
-		return new BufferTexture(Objects.requireNonNull(loadImage(name)));
+		return new BufferTexture(Objects.requireNonNull(loadImage(name)), loadAnimation(name));
 	}
 
 	public static BufferTexture loadTexture(ResourceLocation name) {
-		return new BufferTexture(Objects.requireNonNull(loadImage(name)));
+		return new BufferTexture(Objects.requireNonNull(loadImage(name)), loadAnimation(name));
 	}
 
 	public static BufferTexture loadTexture(String namespace, String name) {
-		return new BufferTexture(Objects.requireNonNull(loadImage(namespace, name)));
+		return new BufferTexture(Objects.requireNonNull(loadImage(namespace, name)), loadAnimation(namespace, name));
 	}
 
 	public static BufferTexture makeOxidationStages(BufferTexture base, BufferTexture[] stages, BufferTexture oxidized) {
@@ -261,7 +282,7 @@ public class TextureHelper {
 	}
 
 	public static BufferTexture blend(BufferTexture a, BufferTexture b, float mix) {
-		BufferTexture result = new BufferTexture(a.getWidth(), a.getHeight());
+		BufferTexture result = a.clone();
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -278,7 +299,7 @@ public class TextureHelper {
 	}
 
 	public static BufferTexture cover(BufferTexture a, BufferTexture b) {
-		BufferTexture result = new BufferTexture(a.getWidth(), a.getHeight());
+		BufferTexture result = a.clone();
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -299,7 +320,7 @@ public class TextureHelper {
 	}
 
 	public static BufferTexture combine(BufferTexture a, BufferTexture b) {
-		BufferTexture result = new BufferTexture(a.getWidth(), a.getHeight());
+		BufferTexture result = a.clone();
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -316,7 +337,7 @@ public class TextureHelper {
 	}
 
 	public static BufferTexture outline(BufferTexture texture, CustomColor dark, CustomColor bright, int offsetX, int offsetY) {
-		BufferTexture result = new BufferTexture(texture.getWidth(), texture.getHeight());
+		BufferTexture result = texture.clone();
 		BufferTexture darkOffset = offset(texture, offsetX, offsetY);
 		BufferTexture lightOffset = offset(texture, -offsetX, -offsetY);
 		COLOR.forceRGB();
@@ -359,7 +380,7 @@ public class TextureHelper {
 	}
 
 	public static BufferTexture distort(BufferTexture texture, BufferTexture distortion, float amount) {
-		BufferTexture result = new BufferTexture(texture.getWidth(), texture.getHeight());
+		BufferTexture result = texture.clone();
 		Vector3f dirX = new Vector3f();
 		Vector3f dirY = new Vector3f();
 		COLOR.forceRGB();
@@ -397,7 +418,7 @@ public class TextureHelper {
 	}
 
 	public static BufferTexture applyGradientWithOriginalColors(BufferTexture texture, ColorGradient gradient) {
-		BufferTexture newTexture = new BufferTexture(texture.getWidth(), texture.getHeight());
+		BufferTexture newTexture = texture.clone();
 		for (int x = 0; x < texture.getWidth(); x++) {
 			for (int y = 0; y < texture.getHeight(); y++) {
 				COLOR.set(texture.getPixel(x, y));
@@ -409,7 +430,7 @@ public class TextureHelper {
 	}
 
 	public static BufferTexture heightPass(BufferTexture texture, int offsetX, int offsetY) {
-		BufferTexture result = new BufferTexture(texture.getWidth(), texture.getHeight());
+		BufferTexture result = texture.clone();
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < texture.getWidth(); x++) {
@@ -585,10 +606,27 @@ public class TextureHelper {
 				.setHue(colorEnd.getHue() + hueDist)
 				.setSaturation(Mth.clamp(colorEnd.getSaturation() + satDist, 0.01F, 0.5F))
 				.setBrightness(Mth.clamp(colorEnd.getBrightness() + valDist, 0.5F, 1F));
-		System.out.println(ColorUtil.toHexString(colorStart.getAsInt()));
-		System.out.println(ColorUtil.toHexString(colorMid.getAsInt()));
-		System.out.println(ColorUtil.toHexString(colorEnd.getAsInt()));
-		System.out.println("");
+		return new ColorGradient(colorStart, colorMid, colorEnd);
+	}
+
+	public static ColorGradient makeDualPalette(CustomColor color, float hueDist, float satDist, float valDist) {
+		CustomColor colorStart = new CustomColor().set(color).switchToHSV();
+		colorStart
+				.setHue(colorStart.getHue() - hueDist)
+				.setSaturation(Mth.clamp(colorStart.getSaturation() - satDist, 0.01F, 1F))
+				.setBrightness(Mth.clamp(colorStart.getBrightness() - valDist, 0.07F, 0.55F));
+
+		CustomColor colorMid = new CustomColor().set(color).switchToHSV();
+		colorStart
+				.setHue(colorStart.getHue() )
+				.setSaturation(Mth.clamp(colorStart.getSaturation() , 0.03F, 1F))
+				.setBrightness(Mth.clamp(colorStart.getBrightness() , 0.1F, 0.6F));
+
+		CustomColor colorEnd = new CustomColor().set(color).switchToHSV();
+		colorEnd
+				.setHue(colorEnd.getHue() + hueDist)
+				.setSaturation(Mth.clamp(colorEnd.getSaturation() + satDist, 0.01F, 0.5F))
+				.setBrightness(Mth.clamp(colorEnd.getBrightness() + valDist, 0.5F, 1F));
 		return new ColorGradient(colorStart, colorMid, colorEnd);
 	}
 
