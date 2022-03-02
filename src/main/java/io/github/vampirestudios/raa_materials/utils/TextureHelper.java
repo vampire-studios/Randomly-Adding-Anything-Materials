@@ -290,7 +290,10 @@ public class TextureHelper {
 				COLOR.set(a.getPixel(x, y));
 				COLOR2.set(b.getPixel(x, y));
 				if (COLOR2.getAlpha() > 0 && COLOR.getAlpha() > 0) {
-					COLOR.mixWith(COLOR2, mix);
+					COLOR.mixWith(COLOR2, mix,false,true);
+				}
+				if (COLOR2.getAlpha() > 0 && (COLOR.getAlpha() <= 0)) {
+					COLOR.set(COLOR2);
 				}
 				result.setPixel(x, y, COLOR);
 			}
@@ -607,24 +610,22 @@ public class TextureHelper {
 		return new ColorGradient(colorStart, colorMid, colorEnd);
 	}
 
-	public static ColorGradient makeDualPalette(CustomColor color, float hueDist, float satDist, float valDist) {
+	public static ColorGradient makeDualDistPalette(CustomColor color, float backHue, float forHue, float backSat, float forSat, float backVal, float forVal) {
 		CustomColor colorStart = new CustomColor().set(color).switchToHSV();
 		colorStart
-				.setHue(colorStart.getHue() - hueDist)
-				.setSaturation(Mth.clamp(colorStart.getSaturation() - satDist, 0.01F, 1F))
-				.setBrightness(Mth.clamp(colorStart.getBrightness() - valDist, 0.07F, 0.55F));
-
+				.setHue(colorStart.getHue() - backHue)
+				.setSaturation(Mth.clamp(colorStart.getSaturation() - backSat, 0.01F, 1F))
+				.setBrightness(Mth.clamp(colorStart.getBrightness() - backVal, 0.07F, 0.55F));
 		CustomColor colorMid = new CustomColor().set(color).switchToHSV();
 		colorStart
 				.setHue(colorStart.getHue() )
-				.setSaturation(Mth.clamp(colorStart.getSaturation() , 0.03F, 1F))
-				.setBrightness(Mth.clamp(colorStart.getBrightness() , 0.1F, 0.6F));
-
+				.setSaturation(Mth.clamp(colorStart.getSaturation() , 0.0F, 1F))
+				.setBrightness(Mth.clamp(colorStart.getBrightness() , 0.0F, 1F));
 		CustomColor colorEnd = new CustomColor().set(color).switchToHSV();
 		colorEnd
-				.setHue(colorEnd.getHue() + hueDist)
-				.setSaturation(Mth.clamp(colorEnd.getSaturation() + satDist, 0.01F, 0.5F))
-				.setBrightness(Mth.clamp(colorEnd.getBrightness() + valDist, 0.5F, 1F));
+				.setHue(colorEnd.getHue() + forHue)
+				.setSaturation(Mth.clamp(colorEnd.getSaturation() + forSat, 0.01F, 1F))
+				.setBrightness(Mth.clamp(colorEnd.getBrightness() + forVal, 0.5F, 1F));
 		return new ColorGradient(colorStart, colorMid, colorEnd);
 	}
 

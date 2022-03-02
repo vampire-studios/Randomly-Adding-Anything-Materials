@@ -90,8 +90,17 @@ public class CustomColor {
 		a = ((value >> 24) & 255) / 255F;
 		return this;
 	}
-	
+
+	public CustomColor alphaBlend(CustomColor color) {
+		return mixWith(color,color.a);
+	}
+
 	public CustomColor mixWith(CustomColor color, float blend) {
+		return mixWith(color,color.a, true,false);
+	}
+
+	public CustomColor mixWith(CustomColor color, float blend, boolean parentAlpha, boolean alphaAffectsBlendStrength) {
+		if(alphaAffectsBlendStrength) blend = color.a * blend;
 		if (hsvMode) {
 			if (Math.abs(this.x - color.x) > 0.5F) {
 				float x1 = this.x;
@@ -113,7 +122,8 @@ public class CustomColor {
 		}
 		this.y = Mth.lerp(blend, this.y, color.y);
 		this.z = Mth.lerp(blend, this.z, color.z);
-		this.a = Mth.lerp(blend, this.a, color.a);
+		if(!parentAlpha) this.a = Mth.lerp(blend, this.a, color.a);
+
 		return this;
 	}
 
