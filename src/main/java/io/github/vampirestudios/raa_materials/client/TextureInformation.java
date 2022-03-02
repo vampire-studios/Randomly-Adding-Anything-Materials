@@ -8,10 +8,9 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
                                  ResourceLocation ingot, ResourceLocation gem, ResourceLocation rawItem,
                                  ResourceLocation plate, ResourceLocation shard, ResourceLocation gear,
                                  ResourceLocation nugget, ResourceLocation dust, ResourceLocation smallDust,
-                                 ResourceLocation swordBlade, ResourceLocation swordHandle,
-                                 ResourceLocation pickaxeHead, ResourceLocation pickaxeStick,
-                                 ResourceLocation axeHead, ResourceLocation axeStick,
-                                 ResourceLocation hoeHead, ResourceLocation hoeStick,
+                                 ResourceLocation crushedOre, ResourceLocation swordBlade, ResourceLocation swordHandle,
+                                 ResourceLocation pickaxeHead, ResourceLocation pickaxeStick, ResourceLocation axeHead,
+                                 ResourceLocation axeStick, ResourceLocation hoeHead, ResourceLocation hoeStick,
                                  ResourceLocation shovelHead, ResourceLocation shovelStick) {
 
     public static Builder builder() {
@@ -78,6 +77,10 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
 
     public ResourceLocation getSmallDust() {
         return smallDust;
+    }
+
+    public ResourceLocation getCrushedOre() {
+        return crushedOre;
     }
 
     public ResourceLocation getSwordBlade() {
@@ -149,6 +152,7 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
         private ResourceLocation hoeStick;
         private ResourceLocation shovelHead;
         private ResourceLocation shovelStick;
+        private ResourceLocation crushedOre;
 
         //Blocks
         public Builder oreOverlay(ResourceLocation oreOverlay) {
@@ -277,11 +281,16 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
             return this;
         }
 
+        public Builder crushedOre(ResourceLocation crushedOre) {
+            this.crushedOre = crushedOre;
+            return this;
+        }
+
         public TextureInformation build() {
             return new TextureInformation(oreOverlay, storageBlock, crystalBlock, buddingCrystalBlock,
                     rawMaterialBlock, crystal, ingot, gem, rawItem, plate, shard, gear, nugget, dust,
-                    smallDust, swordBlade, swordHandle, pickaxeHead, pickaxeStick, axeHead, axeStick,
-                    hoeHead, hoeStick, shovelHead, shovelStick);
+                    smallDust, crushedOre, swordBlade, swordHandle, pickaxeHead, pickaxeStick, axeHead,
+                    axeStick, hoeHead, hoeStick, shovelHead, shovelStick);
         }
 
     }

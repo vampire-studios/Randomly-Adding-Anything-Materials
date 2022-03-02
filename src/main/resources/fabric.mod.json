@@ -39,6 +39,7 @@
       "environment": "*"
     }
   ],
+  "accessWidener": "raa_materials.accesswidener",
   "depends": {
     "fabricloader": ">=0.10.8",
     "fabric": "*",

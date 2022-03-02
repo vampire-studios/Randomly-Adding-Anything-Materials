@@ -16,4 +16,10 @@ public interface RecipeManagerAccessor {
 
 	@Accessor("recipes")
 	void raa_setRecipes(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes);
+
+	@Accessor("byName")
+	Map<ResourceLocation, Recipe<?>> raa_getRecipesByName();
+
+	@Accessor("byName")
+	void raa_setRecipesByName(Map<ResourceLocation, Recipe<?>> recipes);
 }

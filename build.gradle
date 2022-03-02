@@ -12,6 +12,7 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
+	mavenCentral()
 	mavenLocal()
 	maven { url = "https://raw.githubusercontent.com/vampire-studios/VampireStudiosMaven/main/" }
 	maven { url = "https://maven.shedaniel.me/" }
@@ -19,6 +20,19 @@ repositories {
 	maven { url = "https://maven.quiltmc.org/repository/" }
 	maven { url = "https://maven.parchmentmc.org" }
 	maven { url = "https://jitpack.io" }
+	maven { url = "https://cursemaven.com" }
+	maven { url = "https://maven.devos.community/releases/" }
+	maven { url = "https://maven.devos.community/snapshots/" }
+	maven { url = "https://api.modrinth.com/maven" }
+	maven { url = "https://aperlambda.github.io/maven" }
+	maven { url = "https://maven.cafeteria.dev" }
+	maven { url = "https://maven.jamieswhiteshirt.com/libs-release" }
+	maven { url = "https://aperlambda.github.io/maven" }
+	maven { url = "https://maven.tterrag.com/" }
+}
+
+loom {
+	accessWidenerPath = file("src/main/resources/raa_materials.accesswidener")
 }
 
 dependencies {
@@ -31,6 +45,7 @@ dependencies {
 			setNameSyntheticMembers(false)
 		}
 	}
+//	modImplementation("com.simibubi:Create-Refabricated:mc1.18.1_v0.4b")
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 

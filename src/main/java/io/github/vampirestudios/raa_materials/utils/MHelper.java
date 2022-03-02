@@ -1,7 +1,9 @@
 package io.github.vampirestudios.raa_materials.utils;
 
-import java.util.Random;
+import com.mojang.math.Vector3f;
 import net.minecraft.util.Mth;
+
+import java.util.Random;
 
 public class MHelper {
 	public static final float PI2 = (float) (Math.PI * 2);
@@ -72,6 +74,13 @@ public class MHelper {
 
 	public static double length(double x, double y) {
 		return Math.sqrt(lengthSqr(x, y));
+	}
+
+	public static Vector3f cross(Vector3f vec1, Vector3f vec2) {
+		float cx = vec1.y() * vec2.z() - vec1.z() * vec2.y();
+		float cy = vec1.z() * vec2.x() - vec1.x() * vec2.z();
+		float cz = vec1.x() * vec2.y() - vec1.y() * vec2.x();
+		return new Vector3f(cx, cy, cz);
 	}
 
 }

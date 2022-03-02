@@ -20,7 +20,7 @@ import java.util.Set;
 
 @Mixin(TextureAtlas.class)
 public class SpriteAtlasTextureMixin {
-	@Inject(method = "getBasicSpriteInfos", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "getBasicSpriteInfos", at = @At("HEAD"))
 	private void loadSpritesStart(ResourceManager resourceManager, Set<ResourceLocation> ids, CallbackInfoReturnable<Collection<TextureAtlasSprite.Info>> info) {
 		ids.removeAll(InnerRegistry.getTextureIDs());
 	}

@@ -12,7 +12,6 @@ public class NameGenerator {
 
 	public static void addTranslation(String raw, String translated) {
 		NAMES.put(raw.replaceAll("'|`|\\^| |´", ""), translated);
-		System.out.println(translated);
 	}
 
 	public static boolean hasTranslation(String raw) {
@@ -24,7 +23,6 @@ public class NameGenerator {
 	}
 
 	public static String makeRaw(String type, String name) {
-		System.out.println(type + "." + RAAMaterials.MOD_ID + "." + name.replaceAll("'|`|\\^| |´", ""));
 		return type + "." + RAAMaterials.MOD_ID + "." + name;
 	}
 

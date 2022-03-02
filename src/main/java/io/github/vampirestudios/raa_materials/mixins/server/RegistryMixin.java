@@ -44,7 +44,7 @@ public class RegistryMixin<T> implements ChangeableRegistry {
 			byLocation.remove(key);
 			ResourceKey<T> storageKey = null;
 			for (ResourceKey<T> searchKey: byKey.keySet()) {
-				if (byKey.get(searchKey).value() != null) {
+				if (byKey.get(searchKey) != null) {
 					if (byKey.get(searchKey).value() == entry) {
 						storageKey = searchKey;
 						break;

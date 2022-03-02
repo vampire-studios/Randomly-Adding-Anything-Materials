@@ -14,12 +14,14 @@ public class CustomToolMaterial implements Tier {
     private final boolean metal;
     private final int tier;
     private final Tiers finalTier;
+    private final int bonus;
 
-    public CustomToolMaterial(ResourceLocation materialId, boolean metal, int tier) {
+    public CustomToolMaterial(ResourceLocation materialId, boolean metal, int tier, int bonus) {
         this.materialId = materialId;
         this.metal = metal;
         this.tier = tier;
         finalTier = getTier();
+        this.bonus = bonus;
     }
 
     private Tiers getTier() {
@@ -35,17 +37,17 @@ public class CustomToolMaterial implements Tier {
 
     @Override
     public int getUses() {
-        return finalTier.getUses();
+        return finalTier.getUses() + bonus * 2;
     }
 
     @Override
     public float getSpeed() {
-        return finalTier.getSpeed();
+        return finalTier.getSpeed() + bonus;
     }
 
     @Override
     public float getAttackDamageBonus() {
-        return finalTier.getAttackDamageBonus();
+        return finalTier.getAttackDamageBonus() + bonus;
     }
 
     @Override
@@ -55,7 +57,7 @@ public class CustomToolMaterial implements Tier {
 
     @Override
     public int getEnchantmentValue() {
-        return finalTier.getEnchantmentValue();
+        return finalTier.getEnchantmentValue() + bonus * 2;
     }
 
     @Override

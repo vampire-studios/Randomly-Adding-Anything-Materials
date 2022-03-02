@@ -6,7 +6,7 @@ import com.mojang.math.Quaternion;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
-import io.github.vampirestudios.raa_materials.OreMaterial;
+import io.github.vampirestudios.raa_materials.materials.OreMaterial;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
@@ -43,6 +43,19 @@ public class ModelHelper {
 				  }
 				}""";
 		return String.format(template, texture.getNamespace(), texture.getPath());
+	}
+
+	public static String makeCrate(ResourceLocation crate, ResourceLocation casing) {
+		String template = """
+				{
+				  "parent": "raa_materials:block/crate/single",
+				  "textures": {
+				    "crate": "%s:%s",
+				    "casing": "%s:%s"
+				  }
+				}""";
+		return String.format(template, crate.getNamespace(), crate.getPath(),
+				casing.getNamespace(), casing.getPath());
 	}
 
 	public static String makeCubeTopBottom(ResourceLocation side, ResourceLocation top, ResourceLocation bottom) {

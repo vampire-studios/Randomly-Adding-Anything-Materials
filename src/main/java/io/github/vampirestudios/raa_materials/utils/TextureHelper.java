@@ -193,7 +193,7 @@ public class TextureHelper {
 		BufferTexture texture = new BufferTexture(16, 16);
 		OpenSimplexNoise noise = new OpenSimplexNoise(random.nextInt());
 		COLOR.forceRGB().setAlpha(1F);
-		float scale = MHelper.randRange(0.4F, 0.7F, random);
+		float scale = Rands.randFloatRange(random, 0.4F, 0.7F);
 		for (int x = 0; x < texture.getWidth(); x++) {
 			for (int y = 0; y < texture.getHeight(); y++) {
 				float nx = (float) x / texture.getWidth();
@@ -594,13 +594,11 @@ public class TextureHelper {
 				.setHue(colorStart.getHue() - hueDist)
 				.setSaturation(Mth.clamp(colorStart.getSaturation() - satDist, 0.01F, 1F))
 				.setBrightness(Mth.clamp(colorStart.getBrightness() - valDist, 0.07F, 0.55F));
-
 		CustomColor colorMid = new CustomColor().set(color).switchToHSV();
 		colorStart
 				.setHue(colorStart.getHue() )
 				.setSaturation(Mth.clamp(colorStart.getSaturation() , 0.03F, 1F))
 				.setBrightness(Mth.clamp(colorStart.getBrightness() , 0.1F, 0.6F));
-
 		CustomColor colorEnd = new CustomColor().set(color).switchToHSV();
 		colorEnd
 				.setHue(colorEnd.getHue() + hueDist)

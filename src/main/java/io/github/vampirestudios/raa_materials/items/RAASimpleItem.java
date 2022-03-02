@@ -29,6 +29,6 @@ public class RAASimpleItem extends Item implements GeneratedItemName {
     }
 
     public enum SimpleItemType {
-        GEM, INGOT, NUGGET, SHARD, RAW, GEAR, DUST, SMALL_DUST, PLATE, GEODE_CORE, ENRICHED_GEODE_CORE
+        GEM, INGOT, NUGGET, SHARD, RAW, GEAR, DUST, SMALL_DUST, PLATE, GEODE_CORE, ENRICHED_GEODE_CORE, CRUSHED_ORE
     }
 }

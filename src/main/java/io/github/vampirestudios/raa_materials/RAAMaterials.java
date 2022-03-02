@@ -6,6 +6,7 @@ import io.github.vampirestudios.raa_core.api.RAAAddon;
 import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
+import io.github.vampirestudios.raa_materials.materials.*;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -33,6 +34,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.LevelResource;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,8 +44,12 @@ import java.util.Random;
 
 public class RAAMaterials implements RAAAddon {
 	public static final String MOD_ID = "raa_materials";
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+
 	public static final CreativeModeTab RAA_ORES = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "ores"), () -> new ItemStack(Blocks.IRON_ORE));
 	public static final CreativeModeTab RAA_RESOURCES = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "resources"), () -> new ItemStack(Items.IRON_INGOT));
+	public static final CreativeModeTab RAA_CREATE = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "create"), () -> new ItemStack(Blocks.IRON_BLOCK));
 	public static final CreativeModeTab RAA_TOOLS = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "tools"), () -> new ItemStack(Items.IRON_PICKAXE));
 	public static final CreativeModeTab RAA_WEAPONS = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "weapons"), () -> new ItemStack(Items.IRON_SWORD));
 	public static final CreativeModeTab RAA_FOOD = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "food"), () -> new ItemStack(Items.GOLDEN_APPLE));
