@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials.mixins.server;
 
 import com.mojang.serialization.Lifecycle;
-import io.github.vampirestudios.raa_materials.api.RegistryRemover;
+import io.github.vampirestudios.raa_materials.utils.ChangeableRegistry;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.minecraft.core.Holder;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.Map;
 
 @Mixin(MappedRegistry.class)
-public class RegistryMixin<T> implements RegistryRemover {
+public class RegistryMixin<T> implements ChangeableRegistry {
 	@Final
 	@Shadow
 	private ObjectList<T> byId;
@@ -33,27 +33,37 @@ public class RegistryMixin<T> implements RegistryRemover {
 	private Map<T, Lifecycle> lifecycles;
 	@Shadow
 	private int nextId;
-	
+
 	@Override
 	public void remove(ResourceLocation key) {
-		if (!byLocation.containsKey(key)) {
-			return;
-		}
-		
-		T object = byLocation.get(key).value();
-		byLocation.remove(key);
-		byId.remove(object);
-		toId.removeInt(object);
-		lifecycles.remove(object);
-		ResourceKey<T> storageKey = null;
-		for (ResourceKey<T> searchKey: byKey.keySet()) {
-			if (byKey.get(searchKey).value() == object) {
-				storageKey = searchKey;
-				break;
+		T entry = byLocation.get(key).value();
+		if (entry != null) {
+			int rawID = toId.getInt(entry);
+			byId.set(rawID, null);
+			toId.removeInt(rawID);
+			byLocation.remove(key);
+			ResourceKey<T> storageKey = null;
+			for (ResourceKey<T> searchKey: byKey.keySet()) {
+				if (byKey.get(searchKey).value() != null) {
+					if (byKey.get(searchKey).value() == entry) {
+						storageKey = searchKey;
+						break;
+					}
+				}
 			}
+			if (storageKey != null) {
+				byKey.remove(storageKey);
+			}
+			lifecycles.remove(entry);
 		}
-		if (storageKey != null) {
-			byKey.remove(storageKey);
+	}
+
+	@Override
+	public void recalculateLastID() {
+		int lastID = 0;
+		for (int id: toId.values()) {
+			lastID = Math.max(id, lastID);
 		}
+		nextId = lastID + 1;
 	}
 }

@@ -3,9 +3,13 @@ package io.github.vampirestudios.raa_materials;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Lifecycle;
-import io.github.vampirestudios.raa_materials.api.RegistryRemover;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
+import io.github.vampirestudios.raa_materials.materials.CrystalMaterial;
+import io.github.vampirestudios.raa_materials.materials.GemOreMaterial;
+import io.github.vampirestudios.raa_materials.materials.MetalOreMaterial;
+import io.github.vampirestudios.raa_materials.materials.StoneMaterial;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
+import io.github.vampirestudios.raa_materials.utils.ChangeableRegistry;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BlockModel;
@@ -47,6 +51,8 @@ public class InnerRegistry {
 	public static void clear(ServerLevel level) {
 		clearRegistry(Registry.BLOCK, BLOCKS.keySet());
 		clearRegistry(Registry.ITEM, ITEMS.keySet());
+//		clearRegistry(BuiltinRegistries.CONFIGURED_FEATURE, CONFIGURED_FEATURES.keySet());
+//		clearRegistry(BuiltinRegistries.PLACED_FEATURE, PLACED_FEATURES.keySet());
 		clearRegistry(level.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY), CONFIGURED_FEATURES.keySet());
 		clearRegistry(level.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY), PLACED_FEATURES.keySet());
 
@@ -69,15 +75,21 @@ public class InnerRegistry {
 	}
 	
 	private static <T> void clearRegistry(Registry<T> registry, Set<ResourceLocation> ids) {
-		ids.forEach(((RegistryRemover) registry)::remove);
+		ids.forEach(((ChangeableRegistry) registry)::remove);
+		((ChangeableRegistry) registry).recalculateLastID();
 	}
 
 	private static <T> void replace(DefaultedRegistry<T> registry, ResourceLocation id, T replacement) {
 		T entry = registry.get(id);
 		int rawId = registry.getId(entry);
-		ResourceKey<T> key = registry.getResourceKey(entry).get();
+		Optional<ResourceKey<T>> key = registry.getResourceKey(entry);
 		Lifecycle lifecycle = registry.lifecycle(entry);
-		registry.registerOrOverride(OptionalInt.of(rawId), key, replacement, lifecycle);
+
+		key.ifPresent(tResourceKey -> {
+			if (!registry.containsKey(tResourceKey)) registry.register(tResourceKey, replacement, lifecycle);
+//			else registry.get(tResourceKey);
+//			registry.registerOrOverride(OptionalInt.of(rawId), tResourceKey, replacement, lifecycle)
+		});
 	}
 
 	public static <T extends Block> T registerBlockAndItem(String name, T block, CreativeModeTab group) {
