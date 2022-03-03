@@ -93,7 +93,6 @@ public class ProceduralTextures {
 		result = TextureHelper.normalize(result, 0.15F, 0.85F);
 		result = TextureHelper.clamp(result, 9);
 
-		result = TextureHelper.applyGradient(result, gradient);
 
 		return result;
 	}
@@ -118,6 +117,11 @@ public class ProceduralTextures {
 	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture[] overlay, Random random, ColorGradient gradient) {
 		BufferTexture over = TextureHelper.applyGradient(overlay[random.nextInt(overlay.length)].clone(), gradient);
 		return TextureHelper.cover(texture, over);
+	}
+
+	public static BufferTexture clampCoverWithOverlay(BufferTexture texture, BufferTexture overlay, int levels) {
+		BufferTexture over = TextureHelper.cover(texture, overlay);
+		return TextureHelper.clamp(over, levels);
 	}
 
 	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture overlay, ColorGradient gradient) {

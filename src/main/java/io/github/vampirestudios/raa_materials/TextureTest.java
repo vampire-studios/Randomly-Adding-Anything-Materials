@@ -60,25 +60,29 @@ public class TextureTest {
 
         ResourceLocation stoneTexID = notTextureHelper.makeBlockTextureID(textureBaseName);
         BufferTexture texture = ProceduralTextures.makeStoneTexture(palette, random);
-        notInnerRegistry.registerTexture(stoneTexID, texture);
+        BufferTexture variant = TextureHelper.applyGradient(texture, gradient);
+        notInnerRegistry.registerTexture(stoneTexID, variant);
 
         texture = ProceduralTextures.makeBlurredTexture(texture);
 
         BufferTexture overlayTexture = notTextureHelper.loadTexture(stoneFrame);
         TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-        BufferTexture variant = ProceduralTextures.coverWithOverlay(texture, overlayTexture, palette);
+        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
+        variant = TextureHelper.applyGradient(variant, gradient);
         ResourceLocation frameTexID = notTextureHelper.makeBlockTextureID("polished_" + textureBaseName);
         notInnerRegistry.registerTexture(frameTexID, variant);
 
         overlayTexture = notTextureHelper.loadTexture(stoneBrick);
         TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-        variant = ProceduralTextures.coverWithOverlay(texture, overlayTexture, palette);
+        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
+        variant = TextureHelper.applyGradient(variant, gradient);
         ResourceLocation bricksTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_bricks");
         notInnerRegistry.registerTexture(bricksTexID, variant);
 
         overlayTexture = notTextureHelper.loadTexture(stoneTile);
         TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-        variant = ProceduralTextures.coverWithOverlay(texture, overlayTexture, palette);
+        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
+        variant = TextureHelper.applyGradient(variant, gradient);
         ResourceLocation tilesTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
         notInnerRegistry.registerTexture(tilesTexID, variant);
 
