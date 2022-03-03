@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 @Mixin(MappedRegistry.class)
-public class SimpleRegistryMixin<T> implements ChangeableRegistry {
+public class SimpleRegistryMixin{/*<T> implements ChangeableRegistry {
 	@Final
 	@Shadow
 	private ObjectList<T> rawIdToEntry;
@@ -54,5 +54,5 @@ public class SimpleRegistryMixin<T> implements ChangeableRegistry {
 			lastID = Math.max(id, lastID);
 		}
 		nextId = lastID + 1;
-	}
+	}*/
 }

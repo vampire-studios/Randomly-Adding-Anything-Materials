@@ -27,6 +27,6 @@ public class PaletteTest {
                 //System.out.println(ColorUtil.toHexString(palette[i]));
             }
         }
-        ImageIO.write(img, "PNG", new File("./palette.png"));
+        ImageIO.write(img, "PNG", new File("./test/palette.png"));
     }
 }
