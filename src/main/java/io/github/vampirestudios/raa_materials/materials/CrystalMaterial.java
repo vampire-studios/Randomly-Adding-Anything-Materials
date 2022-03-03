@@ -446,7 +446,6 @@ public class CrystalMaterial extends ComplexMaterial {
 
     @Override
     public void generate(ServerLevel world) {
-        System.out.println("Generating Geodes");
         List<GeodeLayerSettings> geodeLayerThicknessConfigs = List.of(
                 new GeodeLayerSettings(
                         0.6D,

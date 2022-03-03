@@ -28,7 +28,7 @@ public abstract class ComplexMaterial {
 
 	public abstract CompoundTag writeToNbt(CompoundTag materialCompound);
 
-	public static ComplexMaterial readFromNbt(Random random, CompoundTag compound) {
+	public static ComplexMaterial readFromNbt(CompoundTag compound) {
 		String type = compound.getString("materialType");
 		String name = compound.getString("name");
 		int tier = compound.getInt("tier");
@@ -87,6 +87,9 @@ public abstract class ComplexMaterial {
 		textureInformationBuilder.hoeStick(ResourceLocation.tryParse(texturesCompound.getString("hoeStickTexture")));
 		textureInformationBuilder.shovelHead(ResourceLocation.tryParse(texturesCompound.getString("shovelHeadTexture")));
 		textureInformationBuilder.shovelStick(ResourceLocation.tryParse(texturesCompound.getString("shovelStickTexture")));
+		textureInformationBuilder.stoneTiles(ResourceLocation.tryParse(texturesCompound.getString("stoneTileTexture")));
+		textureInformationBuilder.stoneBricks(ResourceLocation.tryParse(texturesCompound.getString("stoneBrickTexture")));
+		textureInformationBuilder.stoneFrame(ResourceLocation.tryParse(texturesCompound.getString("stoneFrameTexture")));
 		int crystalLampOverlayTextureInt = texturesCompound.getInt("crystalLampOverlayTextureInt");
 		int crystalOreTextureInt = texturesCompound.getInt("crystalOreTextureInt");
 
@@ -114,10 +117,7 @@ public abstract class ComplexMaterial {
 				oreMaterial.setRarity(rarity);
 				oreMaterial.setHiddenChance(hiddenChance);
 			}
-			default -> {
-				CustomColor mainColor = new CustomColor(colorGradientCompound.getInt("startColor"));
-				material = new StoneMaterial(name, mainColor, gradient);
-			}
+			default -> material = new StoneMaterial(name, gradient, textureInformation);
 		}
 
 		return material;

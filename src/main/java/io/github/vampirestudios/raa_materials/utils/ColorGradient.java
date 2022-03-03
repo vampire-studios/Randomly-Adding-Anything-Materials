@@ -22,7 +22,6 @@ public class ColorGradient {
 		} else if (value > 1) {
 			return VALUE.set(end);
 		} else if (value == 0.5f) {
-			System.out.println(value);
 			return VALUE.set(midpoint);
 		} else if (value < 0.5f){
 			return VALUE.set(start).mixWith(midpoint, value*2);

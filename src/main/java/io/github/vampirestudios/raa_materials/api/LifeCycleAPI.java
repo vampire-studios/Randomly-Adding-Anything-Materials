@@ -90,8 +90,9 @@ public class LifeCycleAPI {
 	 * For internal use, You should not call this method!
 	 */
 	public static void _runBeforeLevelLoad(){
-		beforeLoadLevel.forEach(c -> c.beforeLoad());
+		beforeLoadLevel.forEach(BeforeLevelLoadCall::beforeLoad);
 	}
+
 	/**
 	 * For internal use, You should not call this method!
 	 * @param minecraftServer

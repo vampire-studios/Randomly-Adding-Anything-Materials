@@ -17,6 +17,4 @@ public class GeneralConfig implements ConfigData {
     @Comment("Amount of stone types to generate")
     public int stoneTypeAmount = 40;
 
-    public boolean debugMode = true;
-
 }

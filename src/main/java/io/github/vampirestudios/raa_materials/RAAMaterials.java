@@ -7,7 +7,6 @@ import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
 import io.github.vampirestudios.raa_materials.materials.*;
-import io.github.vampirestudios.raa_materials.utils.CustomColor;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
@@ -80,22 +79,13 @@ public class RAAMaterials implements RAAAddon {
 				String nbtFile = "data/raa_materials.dat";
 				String materialCompoundName = "materials";
 				if (!world.getServer().getWorldPath(LevelResource.ROOT).resolve(nbtFile).toFile().exists()) {
-					if (CONFIG.debugMode) System.out.println("Starting new generator!");
-
 					InnerRegistry.clear(world);
-					if (CONFIG.debugMode) System.out.println("Clearing Registry");
 
 					if (CONFIG.stoneTypeAmount != 0) {
 						for (int i = 0; i < CONFIG.stoneTypeAmount; i++) {
-							CustomColor mainColor = new CustomColor(
-									random.nextFloat(),
-									random.nextFloat(),
-									random.nextFloat()
-							);
-							StoneMaterial material = new StoneMaterial(mainColor, random);
+							StoneMaterial material = new StoneMaterial(random);
 							materials.add(material);
 						}
-						if (CONFIG.debugMode) System.out.println("Creating Stone Types");
 					}
 
 					if (CONFIG.metalMaterialAmount != 0) {
@@ -104,7 +94,6 @@ public class RAAMaterials implements RAAAddon {
 							OreMaterial material = new MetalOreMaterial(target, random);
 							materials.add(material);
 						}
-						if (CONFIG.debugMode) System.out.println("Creating Metal Materials");
 					}
 					if (CONFIG.gemMaterialAmount != 0) {
 						for (int i = 0; i < CONFIG.gemMaterialAmount; i++) {
@@ -112,14 +101,12 @@ public class RAAMaterials implements RAAAddon {
 							OreMaterial material = new GemOreMaterial(target, random);
 							materials.add(material);
 						}
-						if (CONFIG.debugMode) System.out.println("Creating Gem Materials");
 					}
 					if (CONFIG.crystalTypeAmount != 0) {
 						for (int i = 0; i < CONFIG.crystalTypeAmount; i++) {
 							ComplexMaterial material = new CrystalMaterial(random);
 							materials.add(material);
 						}
-						if (CONFIG.debugMode) System.out.println("Creating Crystal Materials");
 					}
 
 					CompoundTag compound = new CompoundTag();
@@ -136,7 +123,6 @@ public class RAAMaterials implements RAAAddon {
 
 					materials.forEach(material -> material.generate(world));
 				} else {
-					if (CONFIG.debugMode) System.out.println("Loading generated materials!");
 					CompoundTag compound;
 
 					try {
@@ -148,7 +134,7 @@ public class RAAMaterials implements RAAAddon {
 
 					if (compound.contains(materialCompoundName)) {
 						ListTag list = compound.getList(materialCompoundName, Tag.TAG_COMPOUND);
-						list.forEach(nbtElement -> materials.add(ComplexMaterial.readFromNbt(random, (CompoundTag) nbtElement)));
+						list.forEach(nbtElement -> materials.add(ComplexMaterial.readFromNbt((CompoundTag) nbtElement)));
 					}
 
 					materials.forEach(material -> material.generate(world));
@@ -156,7 +142,6 @@ public class RAAMaterials implements RAAAddon {
 
 				world.getServer().reloadResources(world.getServer().getPackRepository().getSelectedIds());
 
-				if (CONFIG.debugMode) System.out.println("Make Client update!");
 				if (isClient()) {
 					materials.forEach(material -> material.initClient(random));
 					Minecraft.getInstance().delayTextureReload().thenRun(() ->
@@ -208,8 +193,7 @@ public class RAAMaterials implements RAAAddon {
 		Registry.register(TARGETS, id("mycelium"), OreMaterial.Target.MYCELIUM);
 		Registry.register(TARGETS, id("podzol"), OreMaterial.Target.PODZOL);
 
-		LifeCycleAPI.onLevelLoad((world, minecraftServer, executor, levelStorageAccess, serverLevelData, resourceKey, dimensionType, chunkProgressListener,
-								  chunkGenerator, bl, l, list, bl2) -> onServerStart(world, resourceKey.equals(Level.OVERWORLD)));
+		LifeCycleAPI.onLevelLoad((world, seed, registry) -> onServerStart(world, world.getLevel().dimension().equals(Level.OVERWORLD)));
 
 		KeyMapping keyBinding = KeyBindingHelper.registerKeyBinding(new KeyMapping(
 				"key.raa_materials.fully_reload_assets", // The translation key of the keybinding's name

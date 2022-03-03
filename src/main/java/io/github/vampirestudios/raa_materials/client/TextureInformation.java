@@ -11,7 +11,8 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
                                  ResourceLocation crushedOre, ResourceLocation swordBlade, ResourceLocation swordHandle,
                                  ResourceLocation pickaxeHead, ResourceLocation pickaxeStick, ResourceLocation axeHead,
                                  ResourceLocation axeStick, ResourceLocation hoeHead, ResourceLocation hoeStick,
-                                 ResourceLocation shovelHead, ResourceLocation shovelStick) {
+                                 ResourceLocation shovelHead, ResourceLocation shovelStick, ResourceLocation stoneBricks,
+                                 ResourceLocation stoneFrame, ResourceLocation stoneTiles) {
 
     public static Builder builder() {
         return new Builder();
@@ -123,6 +124,18 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
         return shovelStick;
     }
 
+    public ResourceLocation getStoneBricks() {
+        return stoneBricks;
+    }
+
+    public ResourceLocation getStoneFrame() {
+        return stoneFrame;
+    }
+
+    public ResourceLocation getStoneTiles() {
+        return stoneTiles;
+    }
+
     public static class Builder {
         //Blocks
         private ResourceLocation oreOverlay;
@@ -153,6 +166,9 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
         private ResourceLocation shovelHead;
         private ResourceLocation shovelStick;
         private ResourceLocation crushedOre;
+        private ResourceLocation stoneBricks;
+        private ResourceLocation stoneFrame;
+        private ResourceLocation stoneTiles;
 
         //Blocks
         public Builder oreOverlay(ResourceLocation oreOverlay) {
@@ -286,11 +302,27 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
             return this;
         }
 
+        public Builder stoneBricks(ResourceLocation stoneBricks) {
+            this.stoneBricks = stoneBricks;
+            return this;
+        }
+
+        public Builder stoneFrame(ResourceLocation stoneFrame) {
+            this.stoneFrame = stoneFrame;
+            return this;
+        }
+
+        public Builder stoneTiles(ResourceLocation stoneTiles) {
+            this.stoneTiles = stoneTiles;
+            return this;
+        }
+
         public TextureInformation build() {
             return new TextureInformation(oreOverlay, storageBlock, crystalBlock, buddingCrystalBlock,
                     rawMaterialBlock, crystal, ingot, gem, rawItem, plate, shard, gear, nugget, dust,
                     smallDust, crushedOre, swordBlade, swordHandle, pickaxeHead, pickaxeStick, axeHead,
-                    axeStick, hoeHead, hoeStick, shovelHead, shovelStick);
+                    axeStick, hoeHead, hoeStick, shovelHead, shovelStick, stoneBricks, stoneFrame,
+                    stoneTiles);
         }
 
     }

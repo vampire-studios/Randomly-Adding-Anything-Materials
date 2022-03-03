@@ -96,7 +96,7 @@ public class CustomColor {
 	}
 
 	public CustomColor mixWith(CustomColor color, float blend) {
-		return mixWith(color,color.a, true,false);
+		return mixWith(color,blend, true,false);
 	}
 
 	public CustomColor mixWith(CustomColor color, float blend, boolean parentAlpha, boolean alphaAffectsBlendStrength) {

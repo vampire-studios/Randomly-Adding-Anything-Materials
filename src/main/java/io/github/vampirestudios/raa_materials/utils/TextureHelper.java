@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.math.Vector3f;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.metadata.animation.AnimationFrame;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -253,7 +252,13 @@ public class TextureHelper {
 
 	public static BufferTexture makeNoiseTexture(Random random, int side, float scale) {
 		BufferTexture texture = new BufferTexture(side, side);
-		OpenSimplexNoise noise = new OpenSimplexNoise(random.nextInt());
+		int seed = random.nextInt();
+		OpenSimplex2S_ImprovedXZPlanes_TileableXZ noise = new OpenSimplex2S_ImprovedXZPlanes_TileableXZ(
+				Mth.clamp(random.nextDouble(), 1.0/side, 1.0/2.0),
+				2,
+				side,
+				side
+		);
 		COLOR.forceRGB().setAlpha(1F);
 		for (int x = 0; x < side; x++) {
 			for (int y = 0; y < side; y++) {
@@ -265,10 +270,10 @@ public class TextureHelper {
 				float px2 = (x - side) * scale;
 				float py2 = (y - side) * scale;
 
-				float v1 = (float) noise.eval(px1, py1) * 0.5F + 0.5F;
-				float v2 = (float) noise.eval(px2, py1) * 0.5F + 0.5F;
-				float v3 = (float) noise.eval(px1, py2) * 0.5F + 0.5F;
-				float v4 = (float) noise.eval(px2, py2) * 0.5F + 0.5F;
+				float v1 = (float) noise.noise2(seed, px1, py1) * 0.5F + 0.5F;
+				float v2 = (float) noise.noise2(seed, px2, py1) * 0.5F + 0.5F;
+				float v3 = (float) noise.noise2(seed, px1, py2) * 0.5F + 0.5F;
+				float v4 = (float) noise.noise2(seed, px2, py2) * 0.5F + 0.5F;
 
 				v1 = Mth.lerp(nx, v1, v2);
 				v2 = Mth.lerp(nx, v3, v4);

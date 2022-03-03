@@ -6,6 +6,7 @@ import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.*;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
+import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
@@ -22,10 +23,16 @@ import net.minecraft.world.level.material.MaterialColor;
 import java.util.Locale;
 import java.util.Random;
 
+import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
+
 public class StoneMaterial extends ComplexMaterial {
-	private static BufferTexture[] stoneFrame;
-	private static BufferTexture[] stoneBricks;
-	private static BufferTexture[] stoneTiles;
+	private static final ResourceLocation[] stoneFrames;
+	private static final ResourceLocation[] stoneBricks;
+	private static final ResourceLocation[] stoneTiles;
+
+	private final ResourceLocation stoneFrame;
+	private final ResourceLocation stoneBrick;
+	private final ResourceLocation stoneTile;
 
 	public final Block stone;
 	public final Block stairs;
@@ -46,15 +53,22 @@ public class StoneMaterial extends ComplexMaterial {
 	public final Block brick_button;
 	public final Block brick_wall;
 
-	public CustomColor mainColor;
-
-	public StoneMaterial(CustomColor mainColor, Random random) {
-		this(TestNameGenerator.generateStoneName(), mainColor, ProceduralTextures.makeStonePalette(mainColor, random));
+	public StoneMaterial(Random random) {
+		this(TestNameGenerator.generateStoneName(), ProceduralTextures.makeStonePalette(random),
+				TextureInformation.builder()
+						.stoneBricks(stoneBricks[random.nextInt(stoneBricks.length)])
+						.stoneFrame(stoneFrames[random.nextInt(stoneFrames.length)])
+						.stoneTiles(stoneTiles[random.nextInt(stoneTiles.length)])
+						.build());
 	}
 
-	public StoneMaterial(String name, CustomColor mainColor, ColorGradient colorGradient) {
+	public StoneMaterial(String name, ColorGradient colorGradient, TextureInformation textureInformation) {
 		super(name, colorGradient);
-		this.mainColor = mainColor;
+
+		this.stoneFrame = textureInformation.getStoneFrame();
+		this.stoneBrick = textureInformation.getStoneBricks();
+		this.stoneTile = textureInformation.getStoneTiles();
+
 		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(Blocks.STONE).color(MaterialColor.COLOR_GRAY);
 
 		stone = InnerRegistry.registerBlockAndItem(this.registryName, new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
@@ -191,9 +205,16 @@ public class StoneMaterial extends ComplexMaterial {
 		materialCompound.putString("materialType", "stone");
 
 		CompoundTag colorGradientCompound = new CompoundTag();
-		colorGradientCompound.putInt("startColor", this.mainColor.getAsInt());
+		colorGradientCompound.putInt("startColor", this.gradient.getColor(0.0F).getAsInt());
+		colorGradientCompound.putInt("midColor", this.gradient.getColor(0.5F).getAsInt());
 		colorGradientCompound.putInt("endColor", this.gradient.getColor(1.0F).getAsInt());
 		materialCompound.put("colorGradient", colorGradientCompound);
+
+		CompoundTag texturesCompound = new CompoundTag();
+		texturesCompound.putString("stoneFrameTexture", stoneFrame.toString());
+		texturesCompound.putString("stoneTileTexture", stoneTile.toString());
+		texturesCompound.putString("stoneBrickTexture", stoneBrick.toString());
+		materialCompound.put("textures", texturesCompound);
 
 		return materialCompound;
 	}
@@ -233,8 +254,6 @@ public class StoneMaterial extends ComplexMaterial {
 
 	@Override
 	public void initClient(Random random) {
-		loadStaticImages();
-
 		String textureBaseName = name.toLowerCase(Locale.ROOT);
 		String mainName = RAAMaterials.MOD_ID + "." + textureBaseName;
 
@@ -246,21 +265,29 @@ public class StoneMaterial extends ComplexMaterial {
 		InnerRegistry.registerTexture(stoneTexID, texture);
 
 		texture = ProceduralTextures.makeBlurredTexture(texture);
+		//Only needed if texture is bigger than 16x16, 4x is for 64x64 textures
+//		texture = TextureHelper.downScale(texture, 4);
 
-		BufferTexture variant = ProceduralTextures.coverWithOverlay(texture, stoneFrame, random, palette);
+		BufferTexture overlayTexture = TextureHelper.loadTexture(stoneFrame);
+		TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+		BufferTexture variant = ProceduralTextures.coverWithOverlay(texture, overlayTexture, palette);
 		ResourceLocation frameTexID = TextureHelper.makeBlockTextureID("polished_" + textureBaseName);
 		InnerRegistry.registerTexture(frameTexID, variant);
 
-		variant = ProceduralTextures.coverWithOverlay(texture, stoneBricks, random, palette);
+		overlayTexture = TextureHelper.loadTexture(stoneBrick);
+		TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+		variant = ProceduralTextures.coverWithOverlay(texture, overlayTexture, palette);
 		ResourceLocation bricksTexID = TextureHelper.makeBlockTextureID(textureBaseName + "_bricks");
 		InnerRegistry.registerTexture(bricksTexID, variant);
 
-		variant = ProceduralTextures.coverWithOverlay(texture, stoneTiles, random, palette);
+		overlayTexture = TextureHelper.loadTexture(stoneTile);
+		TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+		variant = ProceduralTextures.coverWithOverlay(texture, overlayTexture, palette);
 		ResourceLocation tilesTexID = TextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
 		InnerRegistry.registerTexture(tilesTexID, variant);
 
 		// Registering models
-		ModelHelper.registerRandMirrorBlockModel(stone, stoneTexID);
+		ModelHelper.registerSimpleBlockModel(stone, stoneTexID);
 		NameGenerator.addTranslation("block." + mainName, name);
 		NameGenerator.addTranslation("block." + mainName + "_stairs", name + " Stairs");
 		NameGenerator.addTranslation("block." + mainName + "_slab", name + " Slab");
@@ -277,23 +304,18 @@ public class StoneMaterial extends ComplexMaterial {
 		NameGenerator.addTranslation("block." + mainName + "_tiles", name + " Tiles");
 	}
 
-	private void loadStaticImages() {
-		if (stoneFrame == null) {
-			stoneFrame = new BufferTexture[1];
-			for (int i = 0; i < stoneFrame.length; i++) {
-				stoneFrame[i] = TextureHelper.loadTexture("textures/block/stone_frame_0" + (i+1) + ".png");
-				TextureHelper.normalize(stoneFrame[i], 0.1F, 1F);
-			}
-			stoneBricks = new BufferTexture[3];
-			for (int i = 0; i < stoneBricks.length; i++) {
-				stoneBricks[i] = TextureHelper.loadTexture("textures/block/stone_bricks_0" + (i+1) + ".png");
-				TextureHelper.normalize(stoneBricks[i], 0.1F, 1F);
-			}
-			stoneTiles = new BufferTexture[2];
-			for (int i = 0; i < stoneTiles.length; i++) {
-				stoneTiles[i] = TextureHelper.loadTexture("textures/block/stone_tiles_0" + (i+1) + ".png");
-				TextureHelper.normalize(stoneTiles[i], 0.1F, 1F);
-			}
+	static {
+		stoneFrames = new ResourceLocation[2];
+		for (int i = 0; i < stoneFrames.length; i++) {
+			stoneFrames[i] = id("textures/block/stone_frame_0" + (i+1) + ".png");
+		}
+		stoneBricks = new ResourceLocation[6];
+		for (int i = 0; i < stoneBricks.length; i++) {
+			stoneBricks[i] = id("textures/block/stone_bricks_0" + (i+1) + ".png");
+		}
+		stoneTiles = new ResourceLocation[3];
+		for (int i = 0; i < stoneTiles.length; i++) {
+			stoneTiles[i] = id("textures/block/stone_tiles_0" + (i+1) + ".png");
 		}
 	}
 }

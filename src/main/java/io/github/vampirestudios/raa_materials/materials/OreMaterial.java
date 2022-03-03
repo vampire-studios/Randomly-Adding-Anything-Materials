@@ -8,12 +8,12 @@ import io.github.vampirestudios.raa_materials.blocks.BaseDropBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.*;
-import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
 import io.github.vampirestudios.raa_materials.utils.*;
 import io.github.vampirestudios.vampirelib.utils.Rands;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.nbt.CompoundTag;
@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
@@ -37,8 +38,6 @@ import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
 import net.minecraft.world.level.material.MaterialColor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -187,7 +186,6 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 	@Override
 	public void generate(ServerLevel world) {
-		if (RAAMaterials.CONFIG.debugMode) System.out.println("Generating Ores");
 		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureCommonRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_ore_cf"));
 		Holder<ConfiguredFeature<?, ?>> configuredFeatureCommon = InnerRegistry.registerConfiguredFeature(world, configuredFeatureCommonRegistryKey, Feature.ORE ,
 				new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), size / 2, hiddenChance)
@@ -214,20 +212,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 				PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, CountPlacement.of(9), RarityFilter.onAverageOnceEvery(rarity / 2), InSquarePlacement.spread(), BiomeFilter.biome());
 		ResourceKey<PlacedFeature> selectedKey = Rands.values(new ResourceKey[]{ placedFeatureCommonRegistryKey, placedFeatureMiddleRareRegistryKey, placedFeatureHugeRareRegistryKey });
 
-//		BiomeModifications.addFeature(BiomeSelectors.all(), GenerationStep.Decoration.UNDERGROUND_ORES, selectedKey);
-		world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).forEach(biome -> {
-			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
-			List<HolderSet<PlacedFeature>> preFeatures = accessor.raaGetFeatures();
-			List<HolderSet<PlacedFeature>> features = new ArrayList<>(preFeatures.size());
-			features.addAll(preFeatures);
-			addFeature(selected, features);
-			accessor.raaSetFeatures(features);
-		});
-	}
-
-	private static void addFeature(Holder<PlacedFeature> feature, List<HolderSet<PlacedFeature>> features) {
-		HolderSet<PlacedFeature> newFeature = HolderSet.direct(feature);
-		features.add(newFeature);
+		BiomeModifications.addFeature(BiomeSelectors.all(), GenerationStep.Decoration.UNDERGROUND_ORES, placedFeatureCommonRegistryKey);
 	}
 
 	@Override
