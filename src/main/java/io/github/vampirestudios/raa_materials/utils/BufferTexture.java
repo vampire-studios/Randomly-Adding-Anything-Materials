@@ -2,17 +2,16 @@ package io.github.vampirestudios.raa_materials.utils;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.animation.AnimationFrame;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 public class BufferTexture {
-	final int width;
-	final int height;
-	final int[] buffer;
+	int width;
+	int height;
+	int[] buffer;
 	AnimationMetadataSection animation;
 	
 	public BufferTexture(int width, int height) {
@@ -76,6 +75,22 @@ public class BufferTexture {
 	
 	public int getHeight() {
 		return height;
+	}
+
+	public void changeSize(int width, int height) {
+		this.width = width;
+		this.height = height;
+		this.buffer = new int[width * height];
+	}
+
+	public void scale(int scale) {
+		scale(scale, true);
+	}
+
+	public void scale(int scale, boolean increase) {
+		this.width = increase ? width * scale : width / scale;
+		this.height = increase ? height * scale : height / scale;
+		this.buffer = new int[width * height];
 	}
 
 	public AnimationMetadataSection getAnimation() {

@@ -4,22 +4,22 @@ import io.github.vampirestudios.raa_materials.utils.*;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.Locale;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 import java.util.Random;
 
 
 public class TextureTest {
     public static void main(String[] args) throws Exception {
-        Random random = new Random();
-        for(int i =0; i< stoneBricks.length; i++){
+        Random random = new Random(Rands.getRandom().nextLong());
+        for(int i =0; i < 200; i++) {
             new TextureTest(random,i);
         }
     }
-
 
     // Okay so this is build, so you replace the appropriate class references in a copy-pasted section of the material texture generation you're working on with the "not" version
     //ideally we'd just call some material creation instead but we literally can't without calling most of the game with it.
@@ -51,51 +51,47 @@ public class TextureTest {
         String stoneBrick = stoneBricks[id % stoneBricks.length];
         String stoneTile = stoneTiles[id % stoneTiles.length];
 
-        String textureBaseName = "test_"+id+"_";
+        String textureBaseName = "test_" + id + "_";
 
         this.gradient = ProceduralTextures.makeStonePalette(random);
 
-        // Texture Generation
-        ColorGradient palette = this.gradient;
-
         ResourceLocation stoneTexID = notTextureHelper.makeBlockTextureID(textureBaseName);
-        BufferTexture texture = ProceduralTextures.makeStoneTexture(palette, random);
+        BufferTexture texture = ProceduralTextures.makeStoneTexture(random);
         BufferTexture variant = TextureHelper.applyGradient(texture, gradient);
         notInnerRegistry.registerTexture(stoneTexID, variant);
 
-        texture = ProceduralTextures.makeBlurredTexture(texture);
-
-        BufferTexture overlayTexture = notTextureHelper.loadTexture(stoneFrame);
-        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
-        variant = TextureHelper.applyGradient(variant, gradient);
-        ResourceLocation frameTexID = notTextureHelper.makeBlockTextureID("polished_" + textureBaseName);
-        notInnerRegistry.registerTexture(frameTexID, variant);
-
-        overlayTexture = notTextureHelper.loadTexture(stoneBrick);
-        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
-        variant = TextureHelper.applyGradient(variant, gradient);
-        ResourceLocation bricksTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_bricks");
-        notInnerRegistry.registerTexture(bricksTexID, variant);
-
-        overlayTexture = notTextureHelper.loadTexture(stoneTile);
-        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
-        variant = TextureHelper.applyGradient(variant, gradient);
-        ResourceLocation tilesTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
-        notInnerRegistry.registerTexture(tilesTexID, variant);
-
+//        texture = ProceduralTextures.makeBlurredTexture(texture);
+//
+//        BufferTexture overlayTexture = notTextureHelper.loadTexture(stoneFrame);
+//        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+//        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
+//        variant = TextureHelper.applyGradient(variant, gradient);
+//        ResourceLocation frameTexID = notTextureHelper.makeBlockTextureID("polished_" + textureBaseName);
+//        notInnerRegistry.registerTexture(frameTexID, variant);
+//
+//        overlayTexture = notTextureHelper.loadTexture(stoneBrick);
+//        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+//        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
+//        variant = TextureHelper.applyGradient(variant, gradient);
+//        ResourceLocation bricksTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_bricks");
+//        notInnerRegistry.registerTexture(bricksTexID, variant);
+//
+//        overlayTexture = notTextureHelper.loadTexture(stoneTile);
+//        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+//        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
+//        variant = TextureHelper.applyGradient(variant, gradient);
+//        ResourceLocation tilesTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
+//        notInnerRegistry.registerTexture(tilesTexID, variant);
     }
 
     private static class notTextureHelper{
 
         public static ResourceLocation makeBlockTextureID(String name) {
-            return new ResourceLocation("raa",("block/" + name).replaceAll("'|`|\\^|/| |´", ""));
+            return new ResourceLocation("raa", ("block/" + name).replaceAll("'|`|\\^|/| |´", ""));
         }
 
         public static ResourceLocation makeItemTextureID(String name) {
-            return new ResourceLocation("raa",("item/" + name).replaceAll("'|`|\\^|/| |´", ""));
+            return new ResourceLocation("raa", ("item/" + name).replaceAll("'|`|\\^|/| |´", ""));
         }
 
         private static BufferedImage loadImage(String name) {

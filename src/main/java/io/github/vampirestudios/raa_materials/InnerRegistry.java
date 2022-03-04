@@ -87,8 +87,6 @@ public class InnerRegistry {
 
 		key.ifPresent(tResourceKey -> {
 			if (!registry.containsKey(tResourceKey)) registry.register(tResourceKey, replacement, lifecycle);
-//			else registry.get(tResourceKey);
-//			registry.registerOrOverride(OptionalInt.of(rawId), tResourceKey, replacement, lifecycle)
 		});
 	}
 

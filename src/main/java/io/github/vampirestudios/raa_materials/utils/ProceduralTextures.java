@@ -1,5 +1,6 @@
 package io.github.vampirestudios.raa_materials.utils;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
@@ -19,6 +20,40 @@ public class ProceduralTextures {
 		sat = random.nextFloat() * 0.3F;
 		val = Rands.randFloatRange(random, 0.3F, 0.5F);
 		return TextureHelper.makeDistortedPalette(color, hue, sat, val);
+	}
+
+	public static ColorGradient makeDirtPalette(Random random) {
+		CustomColor color = new CustomColor(
+				random.nextFloat(),
+				random.nextFloat(),
+				random.nextFloat()
+		);
+		float sat = Rands.randFloatRange(random, 0, 0.2F);
+		float val = Rands.randFloatRange(random, 0.3F, 0.7F);
+		color.switchToHSV().setSaturation(sat).setBrightness(val);
+		float hue = Rands.randFloatRange(random, 0, 0.3F);
+		sat = random.nextFloat() * 0.3F;
+		val = Rands.randFloatRange(random, 0.3F, 0.5F);
+		return TextureHelper.makeDistortedPalette(color, hue, sat, val);
+	}
+
+	public static Pair<ColorGradient, ColorGradient> makeWoodPalette(Random random) {
+		CustomColor color = new CustomColor(
+				random.nextFloat(),
+				random.nextFloat(),
+				random.nextFloat()
+		);
+		float sat = Rands.randFloatRange(random, 0, 0.2F);
+		float val = Rands.randFloatRange(random, 0.3F, 0.7F);
+		color.switchToHSV().setSaturation(sat).setBrightness(val);
+		float hue = Rands.randFloatRange(random, 0, 0.3F);
+		sat = random.nextFloat() * 0.3F;
+		val = Rands.randFloatRange(random, 0.3F, 0.5F);
+		ColorGradient outerGradient = TextureHelper.makeDistortedPalette(color, hue, sat, val);
+		color.setBrightness(Rands.randFloatRange(random, 0.5F, 0.9F));
+		ColorGradient innerGradient = TextureHelper.makeDistortedPalette(color, hue, sat, val);
+
+		return Pair.of(outerGradient, innerGradient);
 	}
 
 	public static ColorGradient makeMetalPalette(Random random) {
@@ -68,10 +103,10 @@ public class ProceduralTextures {
 		return TextureHelper.makeDistortedPalette(color, hue, sat, 0.7F);
 	}
 
-	public static BufferTexture makeStoneTexture(ColorGradient gradient, Random random) {
-		BufferTexture texture = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.4F, 0.6F) / 4F);
-		BufferTexture distort = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.4F, 0.8F) / 4F);
-		BufferTexture additions = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.5F, 1.0F) / 4F);
+	public static BufferTexture makeStoneTexture(Random random) {
+		BufferTexture texture = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.6F, 1.2F) / 4F);
+		BufferTexture distort = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.6F, 1.2F) / 4F);
+		BufferTexture additions = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.5F, 1.4F) / 4F);
 		BufferTexture result = TextureHelper.distort(texture, distort, Rands.randFloatRange(random, 0F, 5F));
 		BufferTexture pass = TextureHelper.heightPass(result, -1, -1);
 
@@ -84,15 +119,18 @@ public class ProceduralTextures {
 		result = TextureHelper.normalize(result);
 		result = TextureHelper.clamp(result, 8);
 
-		BufferTexture offseted1 = TextureHelper.offset(texture, -1, 0);
-		BufferTexture offseted2 = TextureHelper.offset(texture, 0, -1);
-		result = TextureHelper.blend(result, offseted1, 0.2F);
-		result = TextureHelper.blend(result, offseted2, 0.2F);
+//		BufferTexture offseted1 = TextureHelper.offset(texture, -1, 0);
+//		BufferTexture offseted2 = TextureHelper.offset(texture, 0, -1);
+//		result = TextureHelper.blend(result, offseted1, 0.2F);
+//		result = TextureHelper.blend(result, offseted2, 0.2F);
 
 		result = TextureHelper.downScale(result, 4);
-		result = TextureHelper.normalize(result, 0.15F, 0.85F);
+		result = TextureHelper.normalize(result, 0.05F, 0.85F);
 		result = TextureHelper.clamp(result, 9);
 
+//		result = TextureHelper.downScale(result, 4);
+//		result = TextureHelper.normalize(result, 0.15F, 0.85F);
+//		result = TextureHelper.clamp(result, 9);
 
 		return result;
 	}

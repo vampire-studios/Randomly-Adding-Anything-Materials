@@ -169,117 +169,24 @@ public class TextureHelper {
 		return new BufferTexture(Objects.requireNonNull(loadImage(name)), loadAnimation(name));
 	}
 
-	public static BufferTexture loadTexture(String namespace, String name) {
-		return new BufferTexture(Objects.requireNonNull(loadImage(namespace, name)), loadAnimation(namespace, name));
-	}
-
-	public static BufferTexture makeOxidationStages(BufferTexture base, BufferTexture[] stages, BufferTexture oxidized) {
-		BufferTexture result = new BufferTexture(base.getWidth(), base.getHeight());
-		COLOR.forceRGB().setAlpha(1F);
-
-		for (int x = 0; x < result.getWidth(); x++) {
-			for (int y = 0; y < result.getHeight(); y++) {
-				for (BufferTexture stage : stages) {
-
-				}
-			}
-		}
-
-		return result;
-	}
-
-	public static BufferTexture makeNoiseTexture(Random random) {
-		BufferTexture texture = new BufferTexture(16, 16);
-		OpenSimplexNoise noise = new OpenSimplexNoise(random.nextInt());
-		COLOR.forceRGB().setAlpha(1F);
-		float scale = Rands.randFloatRange(random, 0.4F, 0.7F);
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				float nx = (float) x / texture.getWidth();
-				float ny = (float) y / texture.getWidth();
-
-				float px1 = x * scale;
-				float py1 = y * scale;
-				float px2 = (x - texture.getWidth()) * scale;
-				float py2 = (y - texture.getHeight()) * scale;
-
-				float v1 = (float) noise.eval(px1, py1) * 0.5F + 0.5F;
-				float v2 = (float) noise.eval(px2, py1) * 0.5F + 0.5F;
-				float v3 = (float) noise.eval(px1, py2) * 0.5F + 0.5F;
-				float v4 = (float) noise.eval(px2, py2) * 0.5F + 0.5F;
-
-				v1 = Mth.lerp(nx, v1, v2);
-				v2 = Mth.lerp(nx, v3, v4);
-
-				v1 = Mth.lerp(ny, v1, v2);
-				COLOR.set(v1, v1, v1);
-				texture.setPixel(x, y, COLOR);
-			}
-		}
-		return texture;
-	}
-
-	public static BufferTexture makeNoiseTexture(Random random, float scale) {
-		BufferTexture texture = new BufferTexture(16, 16);
-		OpenSimplexNoise noise = new OpenSimplexNoise(random.nextInt());
-		COLOR.forceRGB().setAlpha(1F);
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				float nx = (float) x / texture.getWidth();
-				float ny = (float) y / texture.getWidth();
-
-				float px1 = x * scale;
-				float py1 = y * scale;
-				float px2 = (x - texture.getWidth()) * scale;
-				float py2 = (y - texture.getHeight()) * scale;
-
-				float v1 = (float) noise.eval(px1, py1) * 0.5F + 0.5F;
-				float v2 = (float) noise.eval(px2, py1) * 0.5F + 0.5F;
-				float v3 = (float) noise.eval(px1, py2) * 0.5F + 0.5F;
-				float v4 = (float) noise.eval(px2, py2) * 0.5F + 0.5F;
-
-				v1 = Mth.lerp(nx, v1, v2);
-				v2 = Mth.lerp(nx, v3, v4);
-
-				v1 = Mth.lerp(ny, v1, v2);
-				COLOR.set(v1, v1, v1);
-				texture.setPixel(x, y, COLOR);
-			}
-		}
-		return texture;
-	}
-
-
 	public static BufferTexture makeNoiseTexture(Random random, int side, float scale) {
 		BufferTexture texture = new BufferTexture(side, side);
-		int seed = random.nextInt();
-		OpenSimplex2S_ImprovedXZPlanes_TileableXZ noise = new OpenSimplex2S_ImprovedXZPlanes_TileableXZ(
-				Mth.clamp(random.nextDouble(), 1.0/side, 1.0/2.0),
-				2,
-				side,
-				side
-		);
+
+		long seed = random.nextLong();
+		double f = Math.PI * 2 / side;
+		double r = side * scale * (1.0 / (Math.PI * 2));
+
+		double[] sin = new double[side];
+		double[] cos = new double[side];
+
+		for (int t = 0; t < side; t++) { sin[t] = Math.sin(t * f) * r; }
+		for (int t = 0; t < side; t++) { cos[t] = Math.cos(t * f) * r; }
+
 		COLOR.forceRGB().setAlpha(1F);
 		for (int x = 0; x < side; x++) {
 			for (int y = 0; y < side; y++) {
-				float nx = (float) x / side;
-				float ny = (float) y / side;
-
-				float px1 = x * scale;
-				float py1 = y * scale;
-				float px2 = (x - side) * scale;
-				float py2 = (y - side) * scale;
-
-				float v1 = (float) noise.noise2(seed, px1, py1) * 0.5F + 0.5F;
-				float v2 = (float) noise.noise2(seed, px2, py1) * 0.5F + 0.5F;
-				float v3 = (float) noise.noise2(seed, px1, py2) * 0.5F + 0.5F;
-				float v4 = (float) noise.noise2(seed, px2, py2) * 0.5F + 0.5F;
-
-				v1 = Mth.lerp(nx, v1, v2);
-				v2 = Mth.lerp(nx, v3, v4);
-
-				v1 = Mth.lerp(ny, v1, v2);
-				COLOR.set(v1, v1, v1);
+				float value = OpenSimplex2S.noise4_Fallback(seed, sin[x], cos[x], sin[y], cos[y]);
+				COLOR.set(value, value, value);
 				texture.setPixel(x, y, COLOR);
 			}
 		}
@@ -387,6 +294,19 @@ public class TextureHelper {
 		return texture;
 	}
 
+	public static BufferTexture clampHSV(BufferTexture texture, int levels) {
+		COLOR.forceHSV();
+		for (int x = 0; x < texture.getWidth(); x++) {
+			for (int y = 0; y < texture.getHeight(); y++) {
+				COLOR.set(texture.getPixel(x, y));
+				float b = (float) Mth.floor(COLOR.getBrightness() * levels) / levels;
+				COLOR.setBrightness(b);
+				texture.setPixel(x, y, COLOR);
+			}
+		}
+		return texture;
+	}
+
 	public static BufferTexture distort(BufferTexture texture, BufferTexture distortion, float amount) {
 		BufferTexture result = texture.clone();
 		Vector3f dirX = new Vector3f();
@@ -419,18 +339,6 @@ public class TextureHelper {
 		for (int x = 0; x < texture.getWidth(); x++) {
 			for (int y = 0; y < texture.getHeight(); y++) {
 				COLOR.set(texture.getPixel(x, y));
-				texture.setPixel(x, y, gradient.getColor(COLOR.getRed()).setAlpha(COLOR.getAlpha()));
-			}
-		}
-		return texture;
-	}
-
-	public static BufferTexture applyGradientWithOriginalColors(BufferTexture texture, ColorGradient gradient) {
-		BufferTexture newTexture = texture.clone();
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(x, y));
-				COLOR2.set(texture.getPixel(MHelper.wrap(x, texture.getWidth()), MHelper.wrap(y, texture.getHeight())));
 				texture.setPixel(x, y, gradient.getColor(COLOR.getRed()).setAlpha(COLOR.getAlpha()));
 			}
 		}
@@ -524,7 +432,7 @@ public class TextureHelper {
 	}
 
 	public static BufferTexture add(BufferTexture a, BufferTexture b) {
-		BufferTexture result = new BufferTexture(a.getWidth(), a.getHeight());
+		BufferTexture result = a.clone();
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -542,7 +450,7 @@ public class TextureHelper {
 	}
 
 	public static BufferTexture sub(BufferTexture a, BufferTexture b) {
-		BufferTexture result = new BufferTexture(a.getWidth(), a.getHeight());
+		BufferTexture result = a.clone();
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -559,7 +467,7 @@ public class TextureHelper {
 	}
 
 	public static BufferTexture offset(BufferTexture texture, int offsetX, int offsetY) {
-		BufferTexture result = new BufferTexture(texture.getWidth(), texture.getHeight());
+		BufferTexture result = texture.clone();
 		COLOR.forceRGB();
 		for (int x = 0; x < texture.getWidth(); x++) {
 			for (int y = 0; y < texture.getHeight(); y++) {
@@ -584,8 +492,24 @@ public class TextureHelper {
 		return texture;
 	}
 
+	public static BufferTexture upScale(BufferTexture texture, int scale) {
+		BufferTexture result = texture.clone();
+		result.scale(scale);
+
+		for (int x = 0; x < result.getWidth(); x++) {
+			int px = x * scale;
+			for (int y = 0; y < result.getHeight(); y++) {
+				int py = y * scale;
+				result.setPixel(x, y, getAverageColor(texture, px, py, scale, scale));
+			}
+		}
+		return result;
+	}
+
 	public static BufferTexture downScale(BufferTexture texture, int scale) {
-		BufferTexture result = new BufferTexture(texture.getWidth() / scale, texture.getHeight() / scale);
+		BufferTexture result = texture.clone();
+		result.scale(scale, false);
+
 		for (int x = 0; x < result.getWidth(); x++) {
 			int px = x * scale;
 			for (int y = 0; y < result.getHeight(); y++) {
