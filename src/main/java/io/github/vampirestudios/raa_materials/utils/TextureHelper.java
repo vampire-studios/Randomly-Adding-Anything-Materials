@@ -3,6 +3,7 @@ package io.github.vampirestudios.raa_materials.utils;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.math.Vector3f;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
+import io.github.vampirestudios.raa_materials.TextureTest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.resources.ResourceLocation;
@@ -10,6 +11,7 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.Mth;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 
@@ -387,6 +389,47 @@ public class TextureHelper {
 		return texture;
 	}
 
+	public static BufferTexture clampValue(BufferTexture texture, float[] levels) {
+		for (int x = 0; x < texture.getWidth(); x++) {
+			for (int y = 0; y < texture.getHeight(); y++) {
+				COLOR.set(texture.getPixel(x, y));
+				COLOR.switchToHSV();
+				float h = 0;
+				float s = 0;
+				float v = COLOR.getBrightness();
+				float clamped = 4f;
+				for (int i = 1; i < levels.length; i++) {
+					float temp = Mth.abs(v - levels[i-1]) < Mth.abs(v - levels[i]) ? levels[i-1] : levels[i];
+					clamped = Mth.abs(v-clamped) <= Mth.abs(v - temp)? clamped : temp;
+				}
+				v = clamped;
+				float a = COLOR.getAlpha();
+				COLOR.set(h, s, v, a);
+				COLOR.switchToRGB();
+				texture.setPixel(x, y, COLOR);
+			}
+		}
+		return texture;
+	}
+
+	public static float[] getValues(BufferTexture texture) {
+		ArrayList<Float> list = new ArrayList<>();
+		for (int x = 0; x < texture.getWidth(); x++) {
+			for (int y = 0; y < texture.getHeight(); y++) {
+				COLOR.set(texture.getPixel(x, y));
+				COLOR.switchToHSV();
+				float v = COLOR.getBrightness();
+				if(!list.contains(v))list.add(v);
+				COLOR.forceRGB();
+			}
+		}
+		float[] out = new float[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			out[i] = list.get(i);
+		}
+		return out;
+	}
+
 	public static BufferTexture distort(BufferTexture texture, BufferTexture distortion, float amount) {
 		BufferTexture result = texture.clone();
 		Vector3f dirX = new Vector3f();
@@ -419,7 +462,7 @@ public class TextureHelper {
 		for (int x = 0; x < texture.getWidth(); x++) {
 			for (int y = 0; y < texture.getHeight(); y++) {
 				COLOR.set(texture.getPixel(x, y));
-				texture.setPixel(x, y, gradient.getColor(COLOR.getRed()).setAlpha(COLOR.getAlpha()));
+				texture.setPixel(x, y, COLOR2.set(gradient.getColor(COLOR.getRed())).setAlpha(COLOR.getAlpha()));
 			}
 		}
 		return texture;

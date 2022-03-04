@@ -124,6 +124,11 @@ public class ProceduralTextures {
 		return TextureHelper.clamp(over, levels);
 	}
 
+	public static BufferTexture clampCoverWithOverlay(BufferTexture texture, BufferTexture overlay, float... levels) {
+		BufferTexture over = TextureHelper.cover(texture, overlay.clone());
+		return TextureHelper.clampValue(over, levels);
+	}
+
 	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture overlay, ColorGradient gradient) {
 		BufferTexture over = TextureHelper.applyGradient(overlay.clone(), gradient);
 		return TextureHelper.cover(texture, over);
