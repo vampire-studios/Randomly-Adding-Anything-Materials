@@ -55,33 +55,47 @@ public class TextureTest {
 
         this.gradient = ProceduralTextures.makeStonePalette(random);
 
+        float[] values;
+        // Texture Generation
+        ColorGradient palette = this.gradient;
+
         ResourceLocation stoneTexID = notTextureHelper.makeBlockTextureID(textureBaseName);
         BufferTexture texture = ProceduralTextures.makeStoneTexture(random);
-        BufferTexture variant = TextureHelper.applyGradient(texture, gradient);
+        float[] temp = TextureHelper.getValues(texture);
+        values = new float[temp.length+1];
+        System.arraycopy(temp, 0, values, 0, temp.length);
+        values[temp.length] = 0.9f;
+
+        BufferTexture variant = TextureHelper.applyGradient(texture.clone(), gradient);
         notInnerRegistry.registerTexture(stoneTexID, variant);
 
-//        texture = ProceduralTextures.makeBlurredTexture(texture);
-//
-//        BufferTexture overlayTexture = notTextureHelper.loadTexture(stoneFrame);
-//        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-//        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
-//        variant = TextureHelper.applyGradient(variant, gradient);
-//        ResourceLocation frameTexID = notTextureHelper.makeBlockTextureID("polished_" + textureBaseName);
-//        notInnerRegistry.registerTexture(frameTexID, variant);
-//
-//        overlayTexture = notTextureHelper.loadTexture(stoneBrick);
-//        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-//        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
-//        variant = TextureHelper.applyGradient(variant, gradient);
-//        ResourceLocation bricksTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_bricks");
-//        notInnerRegistry.registerTexture(bricksTexID, variant);
-//
-//        overlayTexture = notTextureHelper.loadTexture(stoneTile);
-//        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-//        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
-//        variant = TextureHelper.applyGradient(variant, gradient);
-//        ResourceLocation tilesTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
-//        notInnerRegistry.registerTexture(tilesTexID, variant);
+        texture = ProceduralTextures.makeBlurredTexture(texture);
+        //texture = TextureHelper.clampValue(texture, values);
+
+        BufferTexture overlayTexture = notTextureHelper.loadTexture(stoneFrame);
+        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
+
+        TextureHelper.applyGradient(variant, gradient);
+        ResourceLocation frameTexID = notTextureHelper.makeBlockTextureID("polished_" + textureBaseName);
+        notInnerRegistry.registerTexture(frameTexID, variant);
+
+        overlayTexture = notTextureHelper.loadTexture(stoneBrick);
+        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
+
+        TextureHelper.applyGradient(variant, gradient);
+        ResourceLocation bricksTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_bricks");
+        notInnerRegistry.registerTexture(bricksTexID, variant);
+
+        overlayTexture = notTextureHelper.loadTexture(stoneTile);
+        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
+
+        TextureHelper.applyGradient(variant, gradient);
+        ResourceLocation tilesTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
+        notInnerRegistry.registerTexture(tilesTexID, variant);
+
     }
 
     private static class notTextureHelper{
