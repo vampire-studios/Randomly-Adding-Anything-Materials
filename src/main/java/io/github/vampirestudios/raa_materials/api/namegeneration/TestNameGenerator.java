@@ -30,7 +30,7 @@ public class TestNameGenerator {
 
 	public static String generateOreName() {
 		String name = generate(Rands.chance(50) ? (Rands.chance(100) ? 2 : 3) : (Rands.chance(100) ? 3 : 4), Rands.chance(30) ? 20 : 12);
-		while(generatedNames.contains(name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|.|,", ""))) {
+		while(generatedNames.contains(name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", ""))) {
 			name = generate(Rands.chance(50) ? (Rands.chance(100) ? 2 : 3) : (Rands.chance(100) ? 3 : 4), Rands.chance(30) ? 20 : 12);
 		}
 		generatedNames.add(name);
@@ -39,7 +39,7 @@ public class TestNameGenerator {
 
 	public static String generateStoneName() {
 		String name = generate(5, 15);
-		while(generatedNames.contains(name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|.|,", ""))) {
+		while(generatedNames.contains(name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", ""))) {
 			name = generate(5, 15);
 		}
 		generatedNames.add(name);

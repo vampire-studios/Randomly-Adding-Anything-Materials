@@ -57,7 +57,7 @@ public class RAAMaterials implements RAAAddon {
 	public static GeneralConfig CONFIG;
 
 	public static ResourceLocation id(String name) {
-		return new ResourceLocation(MOD_ID, name.replaceAll("'|`|\\^| |´|£|&|\\(|\\)|¤|%|!|\\?|\\+|-|.|;|:|,", ""));
+		return new ResourceLocation(MOD_ID, name.replaceAll("'|`|\\^| |´|£|&|\\(|\\)|¤|%|!|\\?|\\+|-|;|:|,", ""));
 	}
 
 	public static ResourceLocation minecraftId(String name) {

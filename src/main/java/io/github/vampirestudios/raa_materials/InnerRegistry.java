@@ -92,12 +92,13 @@ public class InnerRegistry {
 
 	public static <T extends Block> T registerBlockAndItem(String name, T block, CreativeModeTab group) {
 		ResourceLocation id = RAAMaterials.id(name);
+
 		if (!Registry.BLOCK.containsKey(id)) {
 			registerBlock(id, block);
 			registerItem(id, new BlockItem(block, new Item.Properties().tab(group)));
 			return block;
 		} else {
-			return (T) Registry.BLOCK.get(id);
+			return (T)((Object)(Registry.BLOCK.get(id))); //honestly this can return null, material names are fucked if this gets called can there is no good way to cast it correctly
 		}
 	}
 
