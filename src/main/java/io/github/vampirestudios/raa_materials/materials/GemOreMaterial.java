@@ -11,6 +11,7 @@ import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 import java.util.Locale;
@@ -121,7 +122,7 @@ public class GemOreMaterial extends OreMaterial {
 		InnerRegistry.registerItemModel(this.storageBlock.asItem(), ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), String.format("%s Block", this.name));
 
-		makeColoredItemAssets(gemTexture, this.drop, gradient, this.registryName + "_gem", "%s Gem");
+		makeColoredItemAssets(gemTexture, this.droppedItem, gradient, this.registryName + "_gem", "%s Gem");
 
 	}
 

@@ -196,6 +196,7 @@ public class TextureHelper {
 
 	public static BufferTexture blend(BufferTexture a, BufferTexture b, float mix) {
 		BufferTexture result = a.clone();
+		if (!a.isSizeSame(b.getWidth(), b.getHeight())) a = TextureHelper.downScale(a, a.width / b.width);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -216,6 +217,7 @@ public class TextureHelper {
 
 	public static BufferTexture cover(BufferTexture a, BufferTexture b) {
 		BufferTexture result = a.clone();
+		if (!a.isSizeSame(b.getWidth(), b.getHeight())) a = TextureHelper.downScale(a, a.width / b.width);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -237,6 +239,7 @@ public class TextureHelper {
 
 	public static BufferTexture combine(BufferTexture a, BufferTexture b) {
 		BufferTexture result = a.clone();
+		if (!a.isSizeSame(b.getWidth(), b.getHeight())) a = TextureHelper.downScale(a, a.width / b.width);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -338,6 +341,7 @@ public class TextureHelper {
 
 	public static BufferTexture distort(BufferTexture texture, BufferTexture distortion, float amount) {
 		BufferTexture result = texture.clone();
+		if (!texture.isSizeSame(distortion.getWidth(), distortion.getHeight())) texture = TextureHelper.downScale(texture, texture.width / distortion.width);
 		Vector3f dirX = new Vector3f();
 		Vector3f dirY = new Vector3f();
 		COLOR.forceRGB();
@@ -462,6 +466,7 @@ public class TextureHelper {
 
 	public static BufferTexture add(BufferTexture a, BufferTexture b) {
 		BufferTexture result = a.clone();
+		if (!a.isSizeSame(b.getWidth(), b.getHeight())) a = TextureHelper.downScale(a, a.width / b.width);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -480,6 +485,7 @@ public class TextureHelper {
 
 	public static BufferTexture sub(BufferTexture a, BufferTexture b) {
 		BufferTexture result = a.clone();
+		if (!a.isSizeSame(b.getWidth(), b.getHeight())) a = TextureHelper.downScale(a, a.width / b.width);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -661,105 +667,6 @@ public class TextureHelper {
 				.setBrightness(colorEnd.getBrightness() + 0.3F);
 
 		return new ColorGradient(colorStart, colorEnd);
-	}
-
-	public static BufferTexture createOreTexture(ColorGradient gradient, Random random, NativeImage stone, NativeImage[] overlays) {
-		BufferTexture texture = new BufferTexture(16, 16);
-		NativeImage overlay = overlays[random.nextInt(overlays.length)];
-		for (int x = 0; x < 16; x++) {
-			for (int y = 0; y < 16; y++) {
-				CustomColor color = TextureHelper.getFromTexture(overlay, x, y);
-				float r = color.getRed();
-				float a = color.getAlpha();
-				color = TextureHelper.getFromTexture(stone, x, y);
-				if (a > 0) {
-					color = gradient.getColor(r);
-				}
-				texture.setPixel(x, y, color);
-			}
-		}
-		return texture;
-	}
-
-	public static BufferTexture createColoredBlockTextures(ColorGradient gradient, Random random, NativeImage[] blocks) {
-		BufferTexture texture = new BufferTexture(16, 16);
-		NativeImage block = blocks[random.nextInt(blocks.length)];
-		for (int x = 0; x < 16; x++) {
-			for (int y = 0; y < 16; y++) {
-				CustomColor color = TextureHelper.getFromTexture(block, x, y);
-				if (color.getAlpha() > 0) {
-					color = gradient.getColor(color.getRed());
-				}
-				texture.setPixel(x, y, color);
-			}
-		}
-		return texture;
-	}
-
-	public static BufferTexture createColoredItemTextures(ColorGradient gradient, Random random, NativeImage[] items) {
-		BufferTexture texture = new BufferTexture(16, 16);
-		NativeImage item = items[random.nextInt(items.length)];
-		for (int x = 0; x < 16; x++) {
-			for (int y = 0; y < 16; y++) {
-				CustomColor color = TextureHelper.getFromTexture(item, x, y);
-				if (color.getAlpha() > 0) {
-					color = gradient.getColor(color.getRed());
-				}
-				texture.setPixel(x, y, color);
-			}
-		}
-		return texture;
-	}
-
-	public static BufferTexture createColoredArmorTextures(ColorGradient gradient, NativeImage armor) {
-		BufferTexture texture = new BufferTexture(64, 32);
-		for (int x = 0; x < 64; x++) {
-			for (int y = 0; y < 32; y++) {
-				CustomColor color = TextureHelper.getFromTexture(armor, x, y);
-				if (color.getAlpha() > 0) {
-					color = gradient.getColor(color.getRed());
-				}
-				texture.setPixel(x, y, color);
-			}
-		}
-		return texture;
-	}
-
-	public static BufferTexture createColoredItemTexture(ColorGradient gradient, NativeImage item) {
-		BufferTexture texture = new BufferTexture(16, 16);
-		for (int x = 0; x < 16; x++) {
-			for (int y = 0; y < 16; y++) {
-				CustomColor color = TextureHelper.getFromTexture(item, x, y);
-				if (color.getAlpha() > 0) {
-					color = gradient.getColor(color.getRed());
-				}
-				texture.setPixel(x, y, color);
-			}
-		}
-		return texture;
-	}
-
-	public static BufferTexture createNonColoredItemTexture(NativeImage item) {
-		BufferTexture texture = new BufferTexture(16, 16);
-		for (int x = 0; x < 16; x++) {
-			for (int y = 0; y < 16; y++) {
-				CustomColor color = TextureHelper.getFromTexture(item, x, y);
-				texture.setPixel(x, y, color);
-			}
-		}
-		return texture;
-	}
-
-	public static BufferTexture createNonColoredItemTextures(Random random, NativeImage[] items) {
-		BufferTexture texture = new BufferTexture(16, 16);
-		NativeImage item = items[random.nextInt(items.length)];
-		for (int x = 0; x < 16; x++) {
-			for (int y = 0; y < 16; y++) {
-				CustomColor color = TextureHelper.getFromTexture(item, x, y);
-				texture.setPixel(x, y, color);
-			}
-		}
-		return texture;
 	}
 
 }

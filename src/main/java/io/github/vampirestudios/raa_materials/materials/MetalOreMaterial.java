@@ -190,7 +190,7 @@ public class MetalOreMaterial extends OreMaterial {
 //		}, grass);
 
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_raw_block_from_raw_recipe", this.rawMaterialBlock)
-				.addMaterial('r', this.rawItem)
+				.addMaterial('r', this.droppedItem)
 				.setShape("rrr", "rrr", "rrr")
 				.setGroup("raw_storage_blocks")
 				.setOutputCount(1)
@@ -203,7 +203,7 @@ public class MetalOreMaterial extends OreMaterial {
 				.setOutputCount(1)
 				.build();
 
-		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_raw_from_raw_block", this.rawItem)
+		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_raw_from_raw_block", this.droppedItem)
 				.setShape()
 				.addMaterial('r', rawMaterialBlock)
 				.setShape("r")
@@ -254,7 +254,7 @@ public class MetalOreMaterial extends OreMaterial {
 				.setOutputCount(1)
 				.build();
 
-		FurnaceRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_ingot_from_raw_material", rawItem, ingot)
+		FurnaceRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_ingot_from_raw_material", droppedItem, ingot)
 				.setCookTime(20)
 				.setXP(5)
 				.setGroup("raw_materials_to_cooked")
@@ -314,7 +314,7 @@ public class MetalOreMaterial extends OreMaterial {
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock("raw_" + this.registryName + "_block"),  String.format("Raw %s Block", this.name));
 
 		// Items
-		makeColoredItemAssets(rawItemTexture, rawItem, gradient, "raw_" + this.registryName, "Raw %s");
+		makeColoredItemAssets(rawItemTexture, droppedItem, gradient, "raw_" + this.registryName, "Raw %s");
 		makeColoredItemAssets(ingotTexture, ingot, gradient, this.registryName + "_ingot", "%s Ingot");
 		makeColoredItemAssets(nuggetTexture, nugget, gradient, this.registryName + "_nugget", "%s Nugget");
 

@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.text.WordUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
@@ -19,9 +20,13 @@ public class RAASimpleItem extends Item implements GeneratedItemName {
     }
 
     @Override
-    public Component getName(ItemStack stack) {
+    public Component getName(@NotNull ItemStack stack) {
         Object[] data = {WordUtils.capitalize(name), WordUtils.uncapitalize(name), WordUtils.uncapitalize(name).charAt(0), WordUtils.uncapitalize(name).charAt(name.length() - 1)};
-        return this.generateName("text.raa_materials.item." + getItemType().name().toLowerCase(Locale.ROOT), data);
+        return this.generateName("text.raa_materials.item." + getItemTypeName(), data);
+    }
+
+    public String getItemTypeName() {
+        return getItemType().name().toLowerCase(Locale.ENGLISH);
     }
 
     public SimpleItemType getItemType() {

@@ -1,6 +1,7 @@
 package io.github.vampirestudios.raa_materials.utils;
 
 import com.mojang.datafixers.util.Pair;
+import io.github.vampirestudios.raa_materials.RAAMaterials;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
@@ -107,7 +108,7 @@ public class ProceduralTextures {
 		BufferTexture texture = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.6F, 1.2F) / 4F);
 		BufferTexture distort = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.6F, 1.2F) / 4F);
 		BufferTexture additions = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.5F, 1.4F) / 4F);
-		BufferTexture result = TextureHelper.distort(texture, distort, Rands.randFloatRange(random, 0F, 5F));
+		BufferTexture result = TextureHelper.distort(texture, distort, Rands.randFloatRange(random, 0F, 8F));
 		BufferTexture pass = TextureHelper.heightPass(result, -1, -1);
 
 		pass = TextureHelper.normalize(pass);
@@ -124,8 +125,11 @@ public class ProceduralTextures {
 //		result = TextureHelper.blend(result, offseted1, 0.2F);
 //		result = TextureHelper.blend(result, offseted2, 0.2F);
 
-		result = TextureHelper.downScale(result, 2);
-		result = TextureHelper.normalize(result, 0.05F, 0.85F);
+		if (RAAMaterials.CONFIG.textureSize < result.width)
+			result = TextureHelper.downScale(result, result.width / RAAMaterials.CONFIG.textureSize);
+		else result = TextureHelper.upScale(result, RAAMaterials.CONFIG.textureSize / result.width);
+
+		result = TextureHelper.normalize(result, 0.1F, 0.7F);
 		result = TextureHelper.clampValue(result, values);
 
 //		result = TextureHelper.downScale(result, 4);

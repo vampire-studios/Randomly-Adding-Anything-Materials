@@ -73,8 +73,8 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 	public Target target;
 
+	public final Item droppedItem;
 	public final Item drop;
-	public final Item rawItem;
 	public final Item sword;
 	public final Item pickaxe;
 	public final Item axe;
@@ -119,10 +119,10 @@ public abstract class OreMaterial extends ComplexMaterial {
 		this.shovelHeadTexture = textureInformation.getShovelHead();
 		this.shovelStickTexture = textureInformation.getShovelStick();
 
-		this.rawItem = InnerRegistry.registerItem(rawType.apply(this.registryName), new RAASimpleItem(name.toLowerCase(Locale.ROOT), new Item.Properties().tab(RAAMaterials.RAA_RESOURCES), rawType));
-
 		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(target.block()).requiresTool().mapColor(MaterialColor.COLOR_GRAY);
-		ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new BaseDropBlock(material, rawItem), RAAMaterials.RAA_ORES);
+		this.droppedItem = InnerRegistry.registerItem(rawType.apply(this.registryName), new RAASimpleItem(this.registryName,
+				new Item.Properties().tab(RAAMaterials.RAA_RESOURCES), rawType));
+		ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new BaseDropBlock(material, this.droppedItem), RAAMaterials.RAA_ORES);
 		drop = ore.getDrop();
 		TagHelper.addTag(target.toolType(), ore);
 		TagHelper.addTag(switch (tier) {

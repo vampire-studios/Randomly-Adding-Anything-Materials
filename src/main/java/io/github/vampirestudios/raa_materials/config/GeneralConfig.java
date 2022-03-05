@@ -17,4 +17,7 @@ public class GeneralConfig implements ConfigData {
     @Comment("Amount of stone types to generate")
     public int stoneTypeAmount = 40;
 
+    @Comment("The size the stone textures will generate at. 16x16 is default, you can also do 32 for 32x32 and 48 for 48x48 and etc.")
+    public int textureSize = 16;
+
 }
