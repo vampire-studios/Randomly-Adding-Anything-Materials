@@ -52,6 +52,14 @@ public class Rands {
         return min + random.nextFloat() * (max - min);
     }
 
+    public static double randDoubleRange(double min, double max) {
+        return min + rand.nextDouble() * (max - min);
+    }
+
+    public static double randDoubleRange(Random random, double min, double max) {
+        return min + random.nextDouble() * (max - min);
+    }
+
     public static float randFloat(float bound) {
         return ((float) rand.nextInt((int) (bound * 10) + 1)) / 10;
     }

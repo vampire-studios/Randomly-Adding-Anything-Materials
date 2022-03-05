@@ -196,7 +196,8 @@ public class TextureHelper {
 
 	public static BufferTexture blend(BufferTexture a, BufferTexture b, float mix) {
 		BufferTexture result = a.clone();
-		if (!a.isSizeSame(b.getWidth(), b.getHeight())) a = TextureHelper.downScale(a, a.width / b.width);
+		if (a.width > b.width) a = TextureHelper.downScale(a, a.width / b.width);
+		if (a.width < b.width) a = TextureHelper.upScale(a, b.width / a.width);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -217,7 +218,8 @@ public class TextureHelper {
 
 	public static BufferTexture cover(BufferTexture a, BufferTexture b) {
 		BufferTexture result = a.clone();
-		if (!a.isSizeSame(b.getWidth(), b.getHeight())) a = TextureHelper.downScale(a, a.width / b.width);
+		if (a.width > b.width) a = TextureHelper.downScale(a, a.width / b.width);
+		if (a.width < b.width) a = TextureHelper.upScale(a, b.width / a.width);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -239,7 +241,8 @@ public class TextureHelper {
 
 	public static BufferTexture combine(BufferTexture a, BufferTexture b) {
 		BufferTexture result = a.clone();
-		if (!a.isSizeSame(b.getWidth(), b.getHeight())) a = TextureHelper.downScale(a, a.width / b.width);
+		if (a.width > b.width) a = TextureHelper.downScale(a, a.width / b.width);
+		if (a.width < b.width) a = TextureHelper.upScale(a, b.width / a.width);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -341,7 +344,8 @@ public class TextureHelper {
 
 	public static BufferTexture distort(BufferTexture texture, BufferTexture distortion, float amount) {
 		BufferTexture result = texture.clone();
-		if (!texture.isSizeSame(distortion.getWidth(), distortion.getHeight())) texture = TextureHelper.downScale(texture, texture.width / distortion.width);
+		if (texture.width > distortion.width) texture = TextureHelper.downScale(texture, texture.width / distortion.width);
+		if (texture.width < distortion.width) texture = TextureHelper.upScale(texture, distortion.width / texture.width);
 		Vector3f dirX = new Vector3f();
 		Vector3f dirY = new Vector3f();
 		COLOR.forceRGB();
@@ -466,7 +470,8 @@ public class TextureHelper {
 
 	public static BufferTexture add(BufferTexture a, BufferTexture b) {
 		BufferTexture result = a.clone();
-		if (!a.isSizeSame(b.getWidth(), b.getHeight())) a = TextureHelper.downScale(a, a.width / b.width);
+		if (a.width > b.width) a = TextureHelper.downScale(a, a.width / b.width);
+		if (a.width < b.width) a = TextureHelper.upScale(a, b.width / a.width);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {
@@ -485,7 +490,8 @@ public class TextureHelper {
 
 	public static BufferTexture sub(BufferTexture a, BufferTexture b) {
 		BufferTexture result = a.clone();
-		if (!a.isSizeSame(b.getWidth(), b.getHeight())) a = TextureHelper.downScale(a, a.width / b.width);
+		if (a.width > b.width) a = TextureHelper.downScale(a, a.width / b.width);
+		if (a.width < b.width) a = TextureHelper.upScale(a, b.width / a.width);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
 		for (int x = 0; x < a.getWidth(); x++) {

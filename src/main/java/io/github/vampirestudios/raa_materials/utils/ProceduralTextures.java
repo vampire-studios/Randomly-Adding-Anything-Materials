@@ -167,7 +167,8 @@ public class ProceduralTextures {
 	}
 
 	public static BufferTexture clampCoverWithOverlay(BufferTexture texture, BufferTexture overlay, float... levels) {
-		if (!texture.isSizeSame(overlay.getWidth(), overlay.getHeight())) texture = TextureHelper.downScale(texture, texture.width / overlay.width);
+		if (texture.width > overlay.width) texture = TextureHelper.downScale(texture, texture.width / overlay.width);
+		if (texture.width < overlay.width) texture = TextureHelper.upScale(texture, overlay.width / texture.width);
 		BufferTexture over = TextureHelper.cover(texture, overlay.clone());
 		return TextureHelper.clampValue(over, levels);
 	}

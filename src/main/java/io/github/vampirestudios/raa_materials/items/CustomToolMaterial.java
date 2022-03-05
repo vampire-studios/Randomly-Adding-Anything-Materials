@@ -47,7 +47,7 @@ public class CustomToolMaterial implements Tier {
 
     @Override
     public float getAttackDamageBonus() {
-        return finalTier.getAttackDamageBonus() + bonus;
+        return (finalTier.getAttackDamageBonus() + bonus) / 2;
     }
 
     @Override

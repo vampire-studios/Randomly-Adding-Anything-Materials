@@ -1,5 +1,7 @@
 package io.github.vampirestudios.raa_materials.materials;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
@@ -8,6 +10,7 @@ import io.github.vampirestudios.raa_materials.blocks.BaseDropBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.*;
+import io.github.vampirestudios.raa_materials.items.effects.MaterialEffects;
 import io.github.vampirestudios.raa_materials.utils.*;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -25,7 +28,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ShovelItem;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -38,7 +40,8 @@ import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
 import net.minecraft.world.level.material.MaterialColor;
 
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
@@ -144,7 +147,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		CustomToolMaterial toolMaterial = new CustomToolMaterial(id(this.registryName), metal, tier, bonus);
 
 		sword = InnerRegistry.registerItem(this.registryName + "_sword",
-				new SwordItem(toolMaterial, 3, toolMaterial.getSwordAttackSpeed(),
+				new CustomSwordItem(this, toolMaterial, 3, toolMaterial.getSwordAttackSpeed(),
 						new Item.Properties().tab(RAAMaterials.RAA_WEAPONS).stacksTo(1)));
 
 		pickaxe = InnerRegistry.registerItem(this.registryName + "_pickaxe",
@@ -182,6 +185,26 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 	public void setHiddenChance(float hiddenChance) {
 		this.hiddenChance = hiddenChance;
+	}
+
+	public Map<MaterialEffects, JsonElement> getSpecialEffects() {
+		Map<MaterialEffects, JsonElement> effects = new HashMap<>();
+
+		//50% of materials have an effect
+		if (Rands.chance(2)) {
+
+			//generate a few effects
+			for (int i = 0; i < Rands.randIntRange(1, 3); i++) {
+				JsonElement e = new JsonObject();
+
+				//get an effect from a weighted list
+				MaterialEffects effect = Utils.EFFECT_LIST.shuffle().stream().toList().get(Rands.randInt(Utils.EFFECT_LIST.stream().toList().size()));
+				effect.jsonConsumer.accept(e);
+				effects.put(effect, e);
+			}
+		}
+
+		return effects;
 	}
 
 	@Override
