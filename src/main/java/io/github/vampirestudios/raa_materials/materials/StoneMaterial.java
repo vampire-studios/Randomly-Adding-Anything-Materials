@@ -297,19 +297,19 @@ public class StoneMaterial extends ComplexMaterial {
 		// Registering models
 		ModelHelper.registerSimpleBlockModel(stone, stoneTexID);
 		NameGenerator.addTranslation("block." + mainName, name);
-		NameGenerator.addTranslation("block." + mainName + "_stairs", name + " Stairs");
-		NameGenerator.addTranslation("block." + mainName + "_slab", name + " Slab");
+		NameGenerator.addTranslation("block." + mainName + "_stairs", "block.stairs", name);
+		NameGenerator.addTranslation("block." + mainName + "_slab", "block.slab", name);
 
 		ModelHelper.registerSimpleBlockModel(polished, frameTexID);
-		NameGenerator.addTranslation("block.raa_materials." + "polished_" + textureBaseName, "Polished " + name);
+		NameGenerator.addTranslation("block.raa_materials." + "polished_" + textureBaseName, "block.polished", name);
 
 		ModelHelper.registerSimpleBlockModel(bricks, bricksTexID);
-		NameGenerator.addTranslation("block." + mainName + "_bricks", name + " Bricks");
-		NameGenerator.addTranslation("block." + mainName + "_brick_stairs", name + " Brick Stairs");
-		NameGenerator.addTranslation("block." + mainName + "_brick_slab", name + " Brick Slab");
+		NameGenerator.addTranslation("block." + mainName + "_bricks", "block.bricks", name);
+		NameGenerator.addTranslation("block." + mainName + "_brick_stairs", "block.brick_stairs", name);
+		NameGenerator.addTranslation("block." + mainName + "_brick_slab", "brick_slab", name);
 
 		ModelHelper.registerSimpleBlockModel(tiles, tilesTexID);
-		NameGenerator.addTranslation("block." + mainName + "_tiles", name + " Tiles");
+		NameGenerator.addTranslation("block." + mainName + "_tiles", "block.tiles", name);
 	}
 
 	static {

@@ -9,6 +9,13 @@
 
   "text.raa_materials.block.ore": "{0} Ore",
   "text.raa_materials.block.block": "{0} Block",
+  "text.raa_materials.block.stairs": "{0} Stairs",
+  "text.raa_materials.block.slab": "{0} Slab",
+  "text.raa_materials.block.bricks": "{0} Bricks",
+  "text.raa_materials.block.brick_stairs": "{0} Brick Stairs",
+  "text.raa_materials.block.brick_slab": "{0} Brick Slab",
+  "text.raa_materials.block.tiles": "{0} Tiles",
+
   "text.raa_materials.block.crystal": "{0} Crystal",
   "text.raa_materials.block.ball": "{0} Ball",
 

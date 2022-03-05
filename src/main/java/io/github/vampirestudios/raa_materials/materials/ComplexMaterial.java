@@ -31,8 +31,6 @@ public abstract class ComplexMaterial {
 				if (extraName.contains(string)) extraName = extraName.replace(string, stringStringPair.getFirst());
 			}
 		}
-		System.out.println(name);
-		System.out.println(extraName);
 		this.registryName = extraName.toLowerCase(Locale.ROOT);
 		this.gradient = gradient;
 	}

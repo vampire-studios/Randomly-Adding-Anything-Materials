@@ -123,8 +123,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		this.shovelStickTexture = textureInformation.getShovelStick();
 
 		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(target.block()).requiresTool().mapColor(MaterialColor.COLOR_GRAY);
-		this.droppedItem = InnerRegistry.registerItem(rawType.apply(this.registryName), new RAASimpleItem(this.registryName,
-				new Item.Properties().tab(RAAMaterials.RAA_RESOURCES), rawType));
+		this.droppedItem = RAASimpleItem.register(this.name, this.registryName, new Item.Properties().tab(RAAMaterials.RAA_RESOURCES), rawType);
 		ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new BaseDropBlock(material, this.droppedItem), RAAMaterials.RAA_ORES);
 		drop = ore.getDrop();
 		TagHelper.addTag(target.toolType(), ore);

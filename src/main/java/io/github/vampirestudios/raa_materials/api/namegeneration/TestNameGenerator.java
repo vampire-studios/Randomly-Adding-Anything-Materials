@@ -14,7 +14,7 @@ public class TestNameGenerator {
 			Pair.of("e", "\u00E9|\u00E8|\u00EB|\u00A3"),
 			Pair.of("c", "\u00E7"),
 			Pair.of("i", "\u00EF|\u026A"),
-			Pair.of("o", "\u00F6|\uA66E|\uA69A|\u2D32|\u00F8|\u03A9|\u2609|\u232C|\u23E3|\u263A|\u263B|\u263C|\u0278"),
+			Pair.of("o", "\u00F6|\uA66E|\u2D32|\u00F8|\u03A9|\u2609|\u232C|\u23E3|\u263A|\u263B|\u263C|\u0278"),
 			Pair.of("u", "\u00F9|\u00FC"),
 			Pair.of("w", "\u03C9|\u0270"),
 			Pair.of("v", "\u0076|\u2304"),

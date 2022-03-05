@@ -99,7 +99,7 @@ public class CrystalMaterial extends ComplexMaterial {
         block = InnerRegistry.registerBlockAndItem(this.registryName + "_block", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.AMETHYST_BLOCK)), RAA_ORES);
         tintedGlass = InnerRegistry.registerBlockAndItem("tinted_" + this.registryName + "_glass", new TintedGlassBlock(FabricBlockSettings.copyOf(Blocks.TINTED_GLASS)), RAA_ORES);
         buddingBlock = InnerRegistry.registerBlockAndItem("budding_" + this.registryName + "_block", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.BUDDING_AMETHYST)), RAA_ORES);
-        shard = InnerRegistry.registerItem(this.registryName + "_shard", new RAASimpleItem(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHARD));
+        shard = RAASimpleItem.register(this.name, this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHARD);
         crystal = InnerRegistry.registerBlockAndItem(this.registryName + "_crystal", new CustomCrystalClusterBlock(BlockBehaviour.Properties.copy(Blocks.AMETHYST_CLUSTER), shard), RAA_ORES);
 
         TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, block);
@@ -170,8 +170,8 @@ public class CrystalMaterial extends ComplexMaterial {
             case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
             default -> throw new IllegalStateException("Unexpected value: " + tier);
         }, storageBlock);
-        geodeCore = InnerRegistry.registerItem(this.registryName + "_geode_core", new RAASimpleItem(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEODE_CORE));
-        enrichedGeodeCore = InnerRegistry.registerItem(this.registryName + "_enriched_geode_core", new RAASimpleItem(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.ENRICHED_GEODE_CORE));
+        geodeCore = RAASimpleItem.register(this.name, this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEODE_CORE);
+        enrichedGeodeCore = RAASimpleItem.register(this.name, this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.ENRICHED_GEODE_CORE);
         /*LootTableLoadingCallback.EVENT.register((resourceManager, manager, id, supplier, setter) -> {
             if (crystal.getLootTableId().equals(id)) {
                 FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder()
