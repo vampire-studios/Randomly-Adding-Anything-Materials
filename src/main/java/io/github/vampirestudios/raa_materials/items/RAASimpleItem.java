@@ -21,7 +21,7 @@ public class RAASimpleItem extends Item implements GeneratedItemName {
     @Override
     public Component getName(ItemStack stack) {
         Object[] data = {WordUtils.capitalize(name), WordUtils.uncapitalize(name), WordUtils.uncapitalize(name).charAt(0), WordUtils.uncapitalize(name).charAt(name.length() - 1)};
-        return this.generateName("text.raa_materials.item." + getItemType().name().toLowerCase(Locale.ROOT), data);
+        return this.generateName("text.raa_materials.item." + getItemType().registryName(), data);
     }
 
     public SimpleItemType getItemType() {
@@ -29,18 +29,18 @@ public class RAASimpleItem extends Item implements GeneratedItemName {
     }
 
     public enum SimpleItemType {
-        GEM("","_gem"),
-        INGOT("","_ingot"),
-        NUGGET("","_nugget"),
-        SHARD("","_shard"),
-        RAW("raw_",""),
-        GEAR("","_gear"),
-        DUST("","_dust"),
-        SMALL_DUST("small_","_dust"),
-        PLATE("","_plate"),
-        GEODE_CORE("","_geode_core"),
-        ENRICHED_GEODE_CORE("","_enriched_geode_core"),
-        CRUSHED_ORE("crushed_","_ore");
+        GEM("","gem"),
+        INGOT("","ingot"),
+        NUGGET("","nugget"),
+        SHARD("","shard"),
+        RAW("raw",""),
+        GEAR("","gear"),
+        DUST("","dust"),
+        SMALL_DUST("small","dust"),
+        PLATE("","plate"),
+        GEODE_CORE("","geode_core"),
+        ENRICHED_GEODE_CORE("","enriched_geode_core"),
+        CRUSHED_ORE("crushed","ore");
 
         private final String prefix;
         private final String suffix;
@@ -50,7 +50,10 @@ public class RAASimpleItem extends Item implements GeneratedItemName {
             this.suffix = suffix;
         }
         public String apply(String text){
-            return this.prefix + text + this.suffix;
+            return this.prefix + (this.prefix.isEmpty()?"":"_") + text + (this.suffix.isEmpty()?"":"_") + this.suffix;
+        }
+        public String registryName(){
+            return this.prefix + (this.prefix.isEmpty()?"":this.suffix.isEmpty()?"":"_") + this.suffix;
         }
     }
 }

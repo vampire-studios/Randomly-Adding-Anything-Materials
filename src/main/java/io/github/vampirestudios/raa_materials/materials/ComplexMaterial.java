@@ -25,14 +25,16 @@ public abstract class ComplexMaterial {
 	protected ComplexMaterial(String name, ColorGradient gradient) {
 		MATERIALS.add(this);
 		this.name = name;
-		String extraName = name.toLowerCase(Locale.ROOT).replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", "");
+		String extraName = name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", "");
 		for (Pair<String, String> stringStringPair : TestNameGenerator.specialLettersTesting) {
 			String[] strings = stringStringPair.getSecond().split("\\|");
 			for (String string : strings) {
 				if (extraName.contains(string)) extraName = extraName.replace(string, stringStringPair.getFirst());
 			}
 		}
-		this.registryName = extraName;
+		System.out.println(name);
+		System.out.println(extraName);
+		this.registryName = extraName.toLowerCase(Locale.ROOT);
 		this.gradient = gradient;
 	}
 

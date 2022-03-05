@@ -254,7 +254,7 @@ public class StoneMaterial extends ComplexMaterial {
 
 	@Override
 	public void initClient(Random random) {
-		String textureBaseName = name.toLowerCase(Locale.ROOT);
+		String textureBaseName = registryName;
 		String mainName = RAAMaterials.MOD_ID + "." + textureBaseName;
 
 		float[] values = new float[]{0.13f,0.22f,0.34f,0.53f,0.60f,0.70f,0.85f,0.90f};
