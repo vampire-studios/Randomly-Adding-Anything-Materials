@@ -1,5 +1,6 @@
 package io.github.vampirestudios.raa_materials.materials;
 
+import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
@@ -49,7 +50,7 @@ public class GemOreMaterial extends OreMaterial {
 	}
 
 	public GemOreMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, int tier) {
-		super(name, gradient, textureInformation, targetIn, name.toLowerCase(Locale.ROOT) + "_gem", tier, false);
+		super(name, gradient, textureInformation, targetIn, RAASimpleItem.SimpleItemType.GEM, tier, false);
 
 		this.oreVeinTexture = textureInformation.oreOverlay();
 		this.storageBlockTexture = textureInformation.storageBlock();

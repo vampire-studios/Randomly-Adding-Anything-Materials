@@ -29,6 +29,28 @@ public class RAASimpleItem extends Item implements GeneratedItemName {
     }
 
     public enum SimpleItemType {
-        GEM, INGOT, NUGGET, SHARD, RAW, GEAR, DUST, SMALL_DUST, PLATE, GEODE_CORE, ENRICHED_GEODE_CORE, CRUSHED_ORE
+        GEM("","_gem"),
+        INGOT("","_ingot"),
+        NUGGET("","_nugget"),
+        SHARD("","_shard"),
+        RAW("raw_",""),
+        GEAR("","_gear"),
+        DUST("","_dust"),
+        SMALL_DUST("small_","_dust"),
+        PLATE("","_plate"),
+        GEODE_CORE("","_geode_core"),
+        ENRICHED_GEODE_CORE("","_enriched_geode_core"),
+        CRUSHED_ORE("crushed_","_ore");
+
+        private final String prefix;
+        private final String suffix;
+
+        SimpleItemType(String prefix, String suffix) {
+            this.prefix = prefix;
+            this.suffix = suffix;
+        }
+        public String apply(String text){
+            return this.prefix + text + this.suffix;
+        }
     }
 }

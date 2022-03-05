@@ -18,7 +18,7 @@ public class TestNameGenerator {
 			Pair.of("u", "\u00F9|\u00FC"),
 			Pair.of("w", "\u03C9|\u0270"),
 			Pair.of("v", "\u0076|\u2304"),
-			Pair.of("y", "\u26A7"),
+			Pair.of("Y", "\u26A7"),
 			Pair.of("f", "\u0283")
 	);
 
@@ -76,15 +76,21 @@ public class TestNameGenerator {
 
 		String finalName = name.toString();
 
-		if (Rands.chance(40)) {
+		if (Rands.chance(1)) {
 			String test = name.toString();
-			for (Pair<String, String> stringStringPair : specialLettersTesting) {
+			int tries = 3;
+			while (tries > 0){
+				int rng = Rands.randIntRange(1, specialLettersTesting.size());
+				Pair<String, String> stringStringPair = specialLettersTesting.get(rng-1);
 				String[] strings = stringStringPair.getSecond().split("\\|");
-				int rng = Rands.randIntRange(1, strings.length);
-				test = finalName.replace(stringStringPair.getFirst(), strings[rng - 1]);
+				rng = Rands.randIntRange(1, strings.length);
+				StringBuilder aaa = new StringBuilder(test);
+				if(aaa.indexOf(stringStringPair.getFirst())!=-1) aaa.setCharAt(aaa.indexOf(stringStringPair.getFirst()), strings[rng - 1].charAt(0));
+				test = aaa.toString();
+				tries--;
 			}
-			if(!test.equals(finalName)) System.out.println(test);
-//			finalName = test;
+			//if(!test.equals(finalName)) System.out.println(test);
+			finalName = test;
 		}
 		return finalName;
 	}

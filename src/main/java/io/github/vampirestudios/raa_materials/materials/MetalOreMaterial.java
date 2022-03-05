@@ -102,7 +102,7 @@ public class MetalOreMaterial extends OreMaterial {
 	}
 
 	public MetalOreMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
-		super(name, gradient, textureInformation, targetIn, "raw_" + name.toLowerCase(Locale.ROOT), tier, true);
+		super(name, gradient, textureInformation, targetIn, RAASimpleItem.SimpleItemType.RAW, tier, true);
 
 		this.oreVeinTexture = textureInformation.getOreOverlay();
 		this.storageBlockTexture = textureInformation.getStorageBlock();

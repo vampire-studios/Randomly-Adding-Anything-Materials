@@ -90,7 +90,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 	public int bonus;
 
-	protected OreMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, String rawItemName, int tier, boolean metal) {
+	protected OreMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, RAASimpleItem.SimpleItemType rawType, int tier, boolean metal) {
 		super(name, gradient);
 		target = targetIn;
 		this.tier = tier;
@@ -119,7 +119,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		this.shovelHeadTexture = textureInformation.getShovelHead();
 		this.shovelStickTexture = textureInformation.getShovelStick();
 
-		this.rawItem = InnerRegistry.registerItem(rawItemName, new RAASimpleItem(name.toLowerCase(Locale.ROOT), new Item.Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.RAW));
+		this.rawItem = InnerRegistry.registerItem(rawType.apply(this.registryName), new RAASimpleItem(name.toLowerCase(Locale.ROOT), new Item.Properties().tab(RAAMaterials.RAA_RESOURCES), rawType));
 
 		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(target.block()).requiresTool().mapColor(MaterialColor.COLOR_GRAY);
 		ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new BaseDropBlock(material, rawItem), RAAMaterials.RAA_ORES);
