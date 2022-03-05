@@ -257,33 +257,40 @@ public class StoneMaterial extends ComplexMaterial {
 		String textureBaseName = name.toLowerCase(Locale.ROOT);
 		String mainName = RAAMaterials.MOD_ID + "." + textureBaseName;
 
+		float[] values = new float[]{0.13f,0.22f,0.34f,0.53f,0.60f,0.70f,0.85f,0.90f};
+
 		ResourceLocation stoneTexID = TextureHelper.makeBlockTextureID(textureBaseName);
-		BufferTexture texture = ProceduralTextures.makeStoneTexture(random);
-		BufferTexture variant = TextureHelper.applyGradient(texture, gradient);
+		BufferTexture texture = ProceduralTextures.makeStoneTexture(values, random);
+		float[] temp = TextureHelper.getValues(texture);
+		values = new float[temp.length+1];
+		System.arraycopy(temp, 0, values, 0, temp.length);
+		values[temp.length] = 0.9f;
+
+		BufferTexture variant = TextureHelper.applyGradient(texture.clone(), gradient);
 		InnerRegistry.registerTexture(stoneTexID, variant);
 
 		texture = ProceduralTextures.makeBlurredTexture(texture);
-		//Only needed if texture is bigger than 16x16, 4x is for 64x64 textures
-//		texture = TextureHelper.downScale(texture, 4);
 
 		BufferTexture overlayTexture = TextureHelper.loadTexture(stoneFrame);
 		TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
-        variant = TextureHelper.applyGradient(variant, gradient);
+		variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
+
+		TextureHelper.applyGradient(variant, gradient);
 		ResourceLocation frameTexID = TextureHelper.makeBlockTextureID("polished_" + textureBaseName);
 		InnerRegistry.registerTexture(frameTexID, variant);
 
 		overlayTexture = TextureHelper.loadTexture(stoneBrick);
 		TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-		variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
-		variant = TextureHelper.applyGradient(variant, gradient);
+		variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
+		TextureHelper.applyGradient(variant, gradient);
 		ResourceLocation bricksTexID = TextureHelper.makeBlockTextureID(textureBaseName + "_bricks");
 		InnerRegistry.registerTexture(bricksTexID, variant);
 
 		overlayTexture = TextureHelper.loadTexture(stoneTile);
 		TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-		variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture,9);
-		variant = TextureHelper.applyGradient(variant, gradient);
+		variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
+
+		TextureHelper.applyGradient(variant, gradient);
 		ResourceLocation tilesTexID = TextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
 		InnerRegistry.registerTexture(tilesTexID, variant);
 

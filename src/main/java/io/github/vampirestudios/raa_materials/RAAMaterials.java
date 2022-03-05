@@ -60,6 +60,10 @@ public class RAAMaterials implements RAAAddon {
 		return new ResourceLocation(MOD_ID, name.replaceAll("'|`|\\^| |´|£|&|\\(|\\)|¤|%|!|\\?|\\+|-|.|;|:|,", ""));
 	}
 
+	public static ResourceLocation minecraftId(String name) {
+		return new ResourceLocation(name);
+	}
+
 	public static boolean isClient() {
 		return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
 	}
@@ -167,33 +171,34 @@ public class RAAMaterials implements RAAAddon {
 		AutoConfig.register(GeneralConfig.class, GsonConfigSerializer::new);
 		CONFIG = AutoConfig.getConfigHolder(GeneralConfig.class).getConfig();
 
-		Registry.register(TARGETS, id("stone"), OreMaterial.Target.STONE);
-		Registry.register(TARGETS, id("diorite"), OreMaterial.Target.DIORITE);
-		Registry.register(TARGETS, id("andesite"), OreMaterial.Target.ANDESITE);
-		Registry.register(TARGETS, id("granite"), OreMaterial.Target.GRANITE);
-		Registry.register(TARGETS, id("netherrack"), OreMaterial.Target.NETHERRACK);
-		Registry.register(TARGETS, id("end_stone"), OreMaterial.Target.END_STONE);
-		Registry.register(TARGETS, id("dirt"), OreMaterial.Target.DIRT);
-		Registry.register(TARGETS, id("sand"), OreMaterial.Target.SAND);
-		Registry.register(TARGETS, id("red_sand"), OreMaterial.Target.RED_SAND);
-		Registry.register(TARGETS, id("deepslate"), OreMaterial.Target.DEEPSLATE);
-		Registry.register(TARGETS, id("tuff"), OreMaterial.Target.TUFF);
-		Registry.register(TARGETS, id("soul_sand"), OreMaterial.Target.SOUL_SAND);
-		Registry.register(TARGETS, id("soul_soil"), OreMaterial.Target.SOUL_SOIL);
-		Registry.register(TARGETS, id("clay"), OreMaterial.Target.CLAY);
-		Registry.register(TARGETS, id("prismarine"), OreMaterial.Target.PRISMARINE);
-		Registry.register(TARGETS, id("calcite"), OreMaterial.Target.CALCITE);
-		Registry.register(TARGETS, id("smooth_basalt"), OreMaterial.Target.SMOOTH_BASALT);
+		Registry.register(TARGETS, minecraftId("stone"), OreMaterial.Target.STONE);
+		Registry.register(TARGETS, minecraftId("diorite"), OreMaterial.Target.DIORITE);
+		Registry.register(TARGETS, minecraftId("andesite"), OreMaterial.Target.ANDESITE);
+		Registry.register(TARGETS, minecraftId("granite"), OreMaterial.Target.GRANITE);
+		Registry.register(TARGETS, minecraftId("netherrack"), OreMaterial.Target.NETHERRACK);
+		Registry.register(TARGETS, minecraftId("end_stone"), OreMaterial.Target.END_STONE);
+		Registry.register(TARGETS, minecraftId("dirt"), OreMaterial.Target.DIRT);
+		Registry.register(TARGETS, minecraftId("sand"), OreMaterial.Target.SAND);
+		Registry.register(TARGETS, minecraftId("red_sand"), OreMaterial.Target.RED_SAND);
+		Registry.register(TARGETS, minecraftId("deepslate"), OreMaterial.Target.DEEPSLATE);
+		Registry.register(TARGETS, minecraftId("tuff"), OreMaterial.Target.TUFF);
+		Registry.register(TARGETS, minecraftId("soul_sand"), OreMaterial.Target.SOUL_SAND);
+		Registry.register(TARGETS, minecraftId("soul_soil"), OreMaterial.Target.SOUL_SOIL);
+		Registry.register(TARGETS, minecraftId("clay"), OreMaterial.Target.CLAY);
+		Registry.register(TARGETS, minecraftId("prismarine"), OreMaterial.Target.PRISMARINE);
+		Registry.register(TARGETS, minecraftId("calcite"), OreMaterial.Target.CALCITE);
+		Registry.register(TARGETS, minecraftId("smooth_basalt"), OreMaterial.Target.SMOOTH_BASALT);
 
-		Registry.register(TARGETS, id("sandstone"), OreMaterial.Target.SANDSTONE);
-		Registry.register(TARGETS, id("crimson_nylium"), OreMaterial.Target.CRIMSON_NYLIUM);
-		Registry.register(TARGETS, id("warped_nylium"), OreMaterial.Target.WARPED_NYLIUM);
-		Registry.register(TARGETS, id("blackstone"), OreMaterial.Target.BLACKSTONE);
-		Registry.register(TARGETS, id("basalt"), OreMaterial.Target.BASALT);
-		Registry.register(TARGETS, id("mycelium"), OreMaterial.Target.MYCELIUM);
-		Registry.register(TARGETS, id("podzol"), OreMaterial.Target.PODZOL);
+		Registry.register(TARGETS, minecraftId("sandstone"), OreMaterial.Target.SANDSTONE);
+		Registry.register(TARGETS, minecraftId("crimson_nylium"), OreMaterial.Target.CRIMSON_NYLIUM);
+		Registry.register(TARGETS, minecraftId("warped_nylium"), OreMaterial.Target.WARPED_NYLIUM);
+		Registry.register(TARGETS, minecraftId("blackstone"), OreMaterial.Target.BLACKSTONE);
+		Registry.register(TARGETS, minecraftId("basalt"), OreMaterial.Target.BASALT);
+		Registry.register(TARGETS, minecraftId("mycelium"), OreMaterial.Target.MYCELIUM);
+		Registry.register(TARGETS, minecraftId("podzol"), OreMaterial.Target.PODZOL);
 
-		LifeCycleAPI.onLevelLoad((world, seed, registry) -> onServerStart(world, world.getLevel().dimension().equals(Level.OVERWORLD)));
+		LifeCycleAPI.onLevelLoad((world, minecraftServer, executor, levelStorageAccess, serverLevelData, resourceKey, dimensionType,
+								  chunkProgressListener, chunkGenerator, bl, l, list, bl2) -> onServerStart(world, resourceKey.equals(Level.OVERWORLD)));
 
 		KeyMapping keyBinding = KeyBindingHelper.registerKeyBinding(new KeyMapping(
 				"key.raa_materials.fully_reload_assets", // The translation key of the keybinding's name

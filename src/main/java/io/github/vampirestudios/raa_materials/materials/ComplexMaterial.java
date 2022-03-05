@@ -1,7 +1,9 @@
 package io.github.vampirestudios.raa_materials.materials;
 
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
+import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
@@ -22,7 +24,14 @@ public abstract class ComplexMaterial {
 	protected ComplexMaterial(String name, ColorGradient gradient) {
 		MATERIALS.add(this);
 		this.name = name;
-		this.registryName = this.name.toLowerCase(Locale.ROOT).replaceAll("'|`|\\^| |´", "");
+		String extraName = name.toLowerCase(Locale.ROOT).replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|.|,", "");
+		for (Pair<String, String> stringStringPair : TestNameGenerator.specialLettersTesting) {
+			String[] strings = stringStringPair.getSecond().split("\\|");
+			for (String string : strings) {
+				if (extraName.contains(string)) extraName = extraName.replace(string, stringStringPair.getFirst());
+			}
+		}
+		this.registryName = extraName;
 		this.gradient = gradient;
 	}
 

@@ -2,6 +2,7 @@ package io.github.vampirestudios.raa_materials.utils;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.resources.metadata.animation.AnimationFrame;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 
@@ -83,14 +84,24 @@ public class BufferTexture {
 		this.buffer = new int[width * height];
 	}
 
-	public void scale(int scale) {
-		scale(scale, true);
+	public boolean isSizeSame(int size) {
+		return this.width == size && this.height == size;
 	}
 
-	public void scale(int scale, boolean increase) {
-		this.width = increase ? width * scale : width / scale;
-		this.height = increase ? height * scale : height / scale;
-		this.buffer = new int[width * height];
+	public Pair<Integer, Integer> sizeDifference(BufferTexture texture, BufferTexture texture2) {
+		return Pair.of(texture.width / texture2.width, texture.height / texture2.height);
+	}
+
+	public boolean isSizeSame(int width, int height) {
+		return this.width == width && this.height == height;
+	}
+
+	public void upscale(int scale) {
+		changeSize(width * scale, height * scale);
+	}
+
+	public void downscale(int scale) {
+		changeSize(width / scale, height / scale);
 	}
 
 	public AnimationMetadataSection getAnimation() {

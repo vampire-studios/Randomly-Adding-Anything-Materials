@@ -103,7 +103,7 @@ public class ProceduralTextures {
 		return TextureHelper.makeDistortedPalette(color, hue, sat, 0.7F);
 	}
 
-	public static BufferTexture makeStoneTexture(Random random) {
+	public static BufferTexture makeStoneTexture(float[] values, Random random) {
 		BufferTexture texture = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.6F, 1.2F) / 4F);
 		BufferTexture distort = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.6F, 1.2F) / 4F);
 		BufferTexture additions = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.5F, 1.4F) / 4F);
@@ -124,9 +124,9 @@ public class ProceduralTextures {
 //		result = TextureHelper.blend(result, offseted1, 0.2F);
 //		result = TextureHelper.blend(result, offseted2, 0.2F);
 
-		result = TextureHelper.downScale(result, 4);
+		result = TextureHelper.downScale(result, 2);
 		result = TextureHelper.normalize(result, 0.05F, 0.85F);
-		result = TextureHelper.clamp(result, 9);
+		result = TextureHelper.clampValue(result, values);
 
 //		result = TextureHelper.downScale(result, 4);
 //		result = TextureHelper.normalize(result, 0.15F, 0.85F);
@@ -163,6 +163,7 @@ public class ProceduralTextures {
 	}
 
 	public static BufferTexture clampCoverWithOverlay(BufferTexture texture, BufferTexture overlay, float... levels) {
+		if (!texture.isSizeSame(overlay.getWidth(), overlay.getHeight())) texture = TextureHelper.downScale(texture, texture.width / overlay.width);
 		BufferTexture over = TextureHelper.cover(texture, overlay.clone());
 		return TextureHelper.clampValue(over, levels);
 	}

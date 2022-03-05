@@ -34,15 +34,15 @@ public class TextureTest {
     static {
         stoneFrames = new String[2];
         for (int i = 0; i < stoneFrames.length; i++) {
-            stoneFrames[i] = ("textures/block/stone_frame_0" + (i+1) + ".png");
+            stoneFrames[i] = "textures/block/stone_frame_0" + (i+1) + ".png";
         }
-        stoneBricks = new String[6];
+        stoneBricks = new String[11];
         for (int i = 0; i < stoneBricks.length; i++) {
-            stoneBricks[i] = ("textures/block/stone_bricks_0" + (i+1) + ".png");
+            stoneBricks[i] = "textures/block/stone_bricks_0" + (i+1) + ".png";
         }
-        stoneTiles = new String[3];
+        stoneTiles = new String[4];
         for (int i = 0; i < stoneTiles.length; i++) {
-            stoneTiles[i] = ("textures/block/stone_tiles_0" + (i+1) + ".png");
+            stoneTiles[i] = "textures/block/stone_tiles_0" + (i+1) + ".png";
         }
     }
 
@@ -55,12 +55,10 @@ public class TextureTest {
 
         this.gradient = ProceduralTextures.makeStonePalette(random);
 
-        float[] values;
-        // Texture Generation
-        ColorGradient palette = this.gradient;
+        float[] values = new float[]{0.13f,0.22f,0.34f,0.53f,0.60f,0.70f,0.85f,0.90f};
 
         ResourceLocation stoneTexID = notTextureHelper.makeBlockTextureID(textureBaseName);
-        BufferTexture texture = ProceduralTextures.makeStoneTexture(random);
+        BufferTexture texture = ProceduralTextures.makeStoneTexture(values, random);
         float[] temp = TextureHelper.getValues(texture);
         values = new float[temp.length+1];
         System.arraycopy(temp, 0, values, 0, temp.length);
@@ -83,7 +81,6 @@ public class TextureTest {
         overlayTexture = notTextureHelper.loadTexture(stoneBrick);
         TextureHelper.normalize(overlayTexture, 0.1F, 1F);
         variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
-
         TextureHelper.applyGradient(variant, gradient);
         ResourceLocation bricksTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_bricks");
         notInnerRegistry.registerTexture(bricksTexID, variant);
@@ -95,10 +92,9 @@ public class TextureTest {
         TextureHelper.applyGradient(variant, gradient);
         ResourceLocation tilesTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
         notInnerRegistry.registerTexture(tilesTexID, variant);
-
     }
 
-    private static class notTextureHelper{
+    private static class notTextureHelper {
 
         public static ResourceLocation makeBlockTextureID(String name) {
             return new ResourceLocation("raa", ("block/" + name).replaceAll("'|`|\\^|/| |´", ""));

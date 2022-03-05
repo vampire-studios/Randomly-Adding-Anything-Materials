@@ -32,13 +32,15 @@ public class WoodTextureTest {
 
         this.gradient = ProceduralTextures.makeWoodPalette(random);
 
+        float[] values = new float[]{0.13f,0.22f,0.34f,0.53f,0.60f,0.70f,0.85f,0.90f};
+
         ResourceLocation stoneTexID = notTextureHelper.makeBlockTextureID(textureSideBaseName);
-        BufferTexture texture = ProceduralTextures.makeStoneTexture(random);
+        BufferTexture texture = ProceduralTextures.makeStoneTexture(values, random);
         BufferTexture variant = TextureHelper.applyGradient(texture, gradient.getFirst());
         notInnerRegistry.registerTexture(stoneTexID, variant);
 
         stoneTexID = notTextureHelper.makeBlockTextureID(textureTopBaseName);
-        texture = ProceduralTextures.makeStoneTexture(random);
+        texture = ProceduralTextures.makeStoneTexture(values, random);
         variant = TextureHelper.applyGradient(texture, gradient.getSecond());
         notInnerRegistry.registerTexture(stoneTexID, variant);
     }

@@ -3,7 +3,6 @@ package io.github.vampirestudios.raa_materials.utils;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.math.Vector3f;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
-import io.github.vampirestudios.raa_materials.TextureTest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.resources.ResourceLocation;
@@ -524,7 +523,7 @@ public class TextureHelper {
 
 	public static BufferTexture upScale(BufferTexture texture, int scale) {
 		BufferTexture result = texture.clone();
-		result.scale(scale);
+		result.upscale(scale);
 
 		for (int x = 0; x < result.getWidth(); x++) {
 			int px = x * scale;
@@ -538,7 +537,7 @@ public class TextureHelper {
 
 	public static BufferTexture downScale(BufferTexture texture, int scale) {
 		BufferTexture result = texture.clone();
-		result.scale(scale, false);
+		result.downscale(scale);
 
 		for (int x = 0; x < result.getWidth(); x++) {
 			int px = x * scale;
