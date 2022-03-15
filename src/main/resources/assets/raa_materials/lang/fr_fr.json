@@ -14,6 +14,7 @@
   "text.raa_materials.block.brick_stairs": "Escaliers en {2, select, other {de } a {d’} e {d’} i {d’} o {d’} u {d’} y {d’} h {d’} é {d’} è {d’} ê {d’} à {d’}}{1} taillé(e)",
   "text.raa_materials.block.brick_slab": "Dalle en {2, select, other {de } a {d’} e {d’} i {d’} o {d’} u {d’} y {d’} h {d’} é {d’} è {d’} ê {d’} à {d’}}{1} taillé(e)",
   "text.raa_materials.block.tiles": "Tuiles de {2, select, other {de } a {d’} e {d’} i {d’} o {d’} u {d’} y {d’} h {d’} é {d’} è {d’} ê {d’} à {d’}}{1}",
+  "text.raa_materials.block.polished": "Polished {0}",
   "text.raa_materials.block.crystal": "Crystal {2, select, other {de } a {d’} e {d’} i {d’} o {d’} u {d’} y {d’} h {d’} é {d’} è {d’} ê {d’} à {d’}}{1}",
   "text.raa_materials.block.ball": "Balle {2, select, other {de } a {d’} e {d’} i {d’} o {d’} u {d’} y {d’} h {d’} é {d’} è {d’} ê {d’} à {d’}}{1}",
   "text.raa_materials.item.gem": "{0}",
