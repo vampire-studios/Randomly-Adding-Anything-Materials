@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
+import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.blocks.BaseDropBlock;
@@ -17,6 +18,7 @@ import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.nbt.CompoundTag;
@@ -28,6 +30,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -40,9 +44,7 @@ import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
 import net.minecraft.world.level.material.MaterialColor;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 
@@ -213,8 +215,9 @@ public abstract class OreMaterial extends ComplexMaterial {
 				new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), size / 2, hiddenChance)
 		);
 		ResourceKey<PlacedFeature> placedFeatureCommonRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_pf"));
-		InnerRegistry.registerPlacedFeature(world, placedFeatureCommonRegistryKey, configuredFeatureCommon,
-				PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, CountPlacement.of(20), RarityFilter.onAverageOnceEvery(rarity * 2), InSquarePlacement.spread(), BiomeFilter.biome());
+		Holder<PlacedFeature> placedFeatureCommonHolder = InnerRegistry.registerPlacedFeature(world, placedFeatureCommonRegistryKey, configuredFeatureCommon,
+				PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, CountPlacement.of(20), InSquarePlacement.spread(), BiomeFilter.biome()//RarityFilter.onAverageOnceEvery(rarity * 2)
+		);
 
 		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureMiddleRareRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_ore_cf2"));
 		Holder<ConfiguredFeature<?, ?>> configuredFeatureMiddleRare = InnerRegistry.registerConfiguredFeature(world, configuredFeatureMiddleRareRegistryKey, Feature.ORE,
@@ -235,6 +238,31 @@ public abstract class OreMaterial extends ComplexMaterial {
 		ResourceKey<PlacedFeature> selectedKey = Rands.values(new ResourceKey[]{ placedFeatureCommonRegistryKey, placedFeatureMiddleRareRegistryKey, placedFeatureHugeRareRegistryKey });
 
 		BiomeModifications.addFeature(BiomeSelectors.all(), GenerationStep.Decoration.UNDERGROUND_ORES, placedFeatureCommonRegistryKey);
+
+
+		LifeCycleAPI.onLevelLoad((biomeWorld, seed, biomes) ->
+		{
+			List<ResourceKey<Biome>> keys = biomes.entrySet().stream()
+					.map(Map.Entry::getKey)
+					.sorted(Comparator.comparingInt(key -> biomes.getId(biomes.getOrThrow(key))))
+					.toList();
+
+			for (ResourceKey<Biome> key : keys) {
+				Biome biome = biomes.getOrThrow(key);
+				//Registry<PlacedFeature> features = biomeWorld.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY);
+
+				BiomeGenerationSettings aa = biome.getGenerationSettings();
+				aa.features = new ArrayList<>(aa.features);
+				int index = GenerationStep.Decoration.UNDERGROUND_ORES.ordinal();
+				while (index >= aa.features.size()) {
+					aa.features.add(HolderSet.direct(Collections.emptyList()));
+				}
+				List<Holder<PlacedFeature>> list = new ArrayList<>(aa.features.get(index).stream().toList());
+				list.add(selected);
+				aa.features.set(index, HolderSet.direct(list));
+			}
+		});
+
 	}
 
 	@Override

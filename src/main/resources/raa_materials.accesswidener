@@ -5,3 +5,5 @@ accessible field net/minecraft/world/level/biome/BiomeSource featuresPerStep Lja
 mutable field net/minecraft/world/level/biome/BiomeSource featuresPerStep Ljava/util/function/Supplier;
 accessible field net/minecraft/world/level/biome/BiomeSource possibleBiomes Ljava/util/Set;
 accessible method net/minecraft/world/level/biome/BiomeSource buildFeaturesPerStep (Ljava/util/List;Z)Ljava/util/List;
+accessible	field	net/minecraft/world/level/biome/BiomeGenerationSettings	features	Ljava/util/List;
+mutable	field	net/minecraft/world/level/biome/BiomeGenerationSettings	features	Ljava/util/List;
