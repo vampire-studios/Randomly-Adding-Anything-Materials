@@ -12,6 +12,7 @@ import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.*;
 import io.github.vampirestudios.raa_materials.items.effects.MaterialEffects;
+import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
 import io.github.vampirestudios.raa_materials.utils.*;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -251,15 +252,16 @@ public abstract class OreMaterial extends ComplexMaterial {
 				Biome biome = biomes.getOrThrow(key);
 				//Registry<PlacedFeature> features = biomeWorld.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY);
 
-				BiomeGenerationSettings aa = biome.getGenerationSettings();
-				aa.features = new ArrayList<>(aa.features);
+				BiomeGenerationSettings generationSettings = biome.getGenerationSettings();
+				List<HolderSet<PlacedFeature>> featureSteps = new ArrayList<>(((GenerationSettingsAccessor)generationSettings).raaGetFeatures());
 				int index = GenerationStep.Decoration.UNDERGROUND_ORES.ordinal();
-				while (index >= aa.features.size()) {
-					aa.features.add(HolderSet.direct(Collections.emptyList()));
+				while (index >= featureSteps.size()) {
+					featureSteps.add(HolderSet.direct(Collections.emptyList()));
 				}
-				List<Holder<PlacedFeature>> list = new ArrayList<>(aa.features.get(index).stream().toList());
-				list.add(selected);
-				aa.features.set(index, HolderSet.direct(list));
+				List<Holder<PlacedFeature>> list = new ArrayList<>(featureSteps.get(index).stream().toList());
+				list.add(placedFeatureCommonHolder);
+				featureSteps.set(index, HolderSet.direct(list));
+				((GenerationSettingsAccessor)generationSettings).raaSetFeatures(featureSteps);
 			}
 		});
 
