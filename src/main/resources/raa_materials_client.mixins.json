@@ -10,7 +10,8 @@
 	"ModelLoaderMixin",
 	"ModelManagerMixin",
 	"SpriteAtlasTextureMixin",
-	"TranslationStorageMixin"
+	"TranslationStorageMixin",
+    "LanguageManagerMixin"
   ],
   "injectors": {
 	"defaultRequire": 1

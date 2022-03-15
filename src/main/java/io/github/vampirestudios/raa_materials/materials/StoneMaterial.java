@@ -306,7 +306,7 @@ public class StoneMaterial extends ComplexMaterial {
 		ModelHelper.registerSimpleBlockModel(bricks, bricksTexID);
 		NameGenerator.addTranslation("block." + mainName + "_bricks", "block.bricks", name);
 		NameGenerator.addTranslation("block." + mainName + "_brick_stairs", "block.brick_stairs", name);
-		NameGenerator.addTranslation("block." + mainName + "_brick_slab", "brick_slab", name);
+		NameGenerator.addTranslation("block." + mainName + "_brick_slab", "block.brick_slab", name);
 
 		ModelHelper.registerSimpleBlockModel(tiles, tilesTexID);
 		NameGenerator.addTranslation("block." + mainName + "_tiles", "block.tiles", name);

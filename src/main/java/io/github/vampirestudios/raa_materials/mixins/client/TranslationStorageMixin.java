@@ -2,10 +2,14 @@ package io.github.vampirestudios.raa_materials.mixins.client;
 
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import net.minecraft.client.resources.language.ClientLanguage;
+import net.minecraft.client.resources.language.LanguageInfo;
+import net.minecraft.server.packs.resources.ResourceManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 @Mixin(ClientLanguage.class)
 public class TranslationStorageMixin {
@@ -28,4 +32,5 @@ public class TranslationStorageMixin {
 			}
 		}
 	}
+
 }

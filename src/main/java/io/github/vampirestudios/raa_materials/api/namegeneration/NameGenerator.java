@@ -10,6 +10,8 @@ import java.util.Map;
 
 public class NameGenerator {
 	private static final Map<String, String> NAMES = Maps.newHashMap();
+	private static final Map<String, String> BASEKEYS = Maps.newHashMap();
+	private static final Map<String, Object[]> BASENAMES = Maps.newHashMap();
 
 	public static void init() {}
 
@@ -19,8 +21,23 @@ public class NameGenerator {
 
 	public static void addTranslation(String raw, String rawBase, String base) {
 		Object[] data = {base, base.toLowerCase(), base.toLowerCase().charAt(0), base.toLowerCase().charAt(base.length() - 1)};
+		String prepedKey = raw.replaceAll("'|`|\\^| |´", "");
+		String baseKey = "text.raa_materials."+rawBase;
+		BASEKEYS.put(prepedKey, baseKey);
+		BASENAMES.put(prepedKey, data);
+		NAMES.put(prepedKey, generate(baseKey, data));
+	}
 
-		NAMES.put(raw.replaceAll("'|`|\\^| |´", ""), generate("text.raa_materials."+rawBase, data));
+	public static void regenerateTranslations() {
+		for (Map.Entry<String,String> name: NAMES.entrySet()) {
+			if(retranslatable(name.getKey())){
+				String transKey = name.getKey();
+				System.out.println(name.getKey());
+				System.out.println(name.getValue());
+				NAMES.replace(name.getKey(), generate(BASEKEYS.get(transKey), BASENAMES.get(transKey)));
+				System.out.println(NAMES.get(name.getKey()));
+			}
+		}
 	}
 
 	public static boolean hasTranslation(String raw) {
@@ -29,6 +46,10 @@ public class NameGenerator {
 
 	public static String getTranslation(String raw) {
 		return NAMES.get(raw);
+	}
+
+	public static boolean retranslatable(String raw) {
+		return BASEKEYS.containsKey(raw);
 	}
 
 	public static String makeRaw(String type, String name) {
