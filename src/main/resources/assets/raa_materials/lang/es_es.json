@@ -14,6 +14,7 @@
   "text.raa_materials.block.brick_stairs": "{0} Brick Stairs",
   "text.raa_materials.block.brick_slab": "{0} Brick Slab",
   "text.raa_materials.block.tiles": "{0} Tiles",
+  "text.raa_materials.block.polished": "Polished {0}",
   "text.raa_materials.block.crystal": "{0} Crystal",
   "text.raa_materials.block.ball": "{0} Ball",
   "text.raa_materials.item.gem": "Gema de {0}",
