@@ -1,7 +1,6 @@
 package io.github.vampirestudios.raa_materials.materials;
 
 import com.google.common.collect.ImmutableList;
-import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
@@ -11,9 +10,8 @@ import io.github.vampirestudios.raa_materials.blocks.CustomCrystalClusterBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
+import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
-import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
-import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.client.renderer.RenderType;
@@ -32,7 +30,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.TintedGlassBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.levelgen.*;
+import net.minecraft.world.level.levelgen.GeodeBlockSettings;
+import net.minecraft.world.level.levelgen.GeodeCrackSettings;
+import net.minecraft.world.level.levelgen.GeodeLayerSettings;
+import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.GeodeConfiguration;
@@ -528,8 +529,6 @@ public class CrystalMaterial extends ComplexMaterial {
                 HeightRangePlacement.uniform(VerticalAnchor.aboveBottom(10), VerticalAnchor.absolute(46)),
                 RarityFilter.onAverageOnceEvery(RAAMaterials.CONFIG.crystalTypeAmount * 100)
         );
-
-        BiomeModifications.addFeature(BiomeSelectors.all(), GenerationStep.Decoration.LOCAL_MODIFICATIONS, placedFeatureHugeRareRegistryKey);
     }
 
     static {
