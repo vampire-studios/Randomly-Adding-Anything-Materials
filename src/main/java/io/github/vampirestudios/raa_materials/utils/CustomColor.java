@@ -127,6 +127,11 @@ public class CustomColor {
 		return this;
 	}
 
+	public CustomColor copyMaxAlpha(CustomColor color) {
+		this.a = Math.max(this.a, color.a);
+		return this;
+	}
+
 	public float getRed() {
 		return x;
 	}

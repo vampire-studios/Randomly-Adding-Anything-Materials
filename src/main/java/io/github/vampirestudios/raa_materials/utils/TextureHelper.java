@@ -251,7 +251,7 @@ public class TextureHelper {
 				int pixelB = b.getPixel(x, y);
 				COLOR.set(pixelA);
 				COLOR2.set(pixelB);
-				COLOR.set(pixelA).mixWith(COLOR2.set(pixelB), COLOR2.getAlpha());
+				COLOR.set(pixelA).alphaBlend(COLOR2).copyMaxAlpha(COLOR2);
 				result.setPixel(x, y, COLOR);
 			}
 		}
