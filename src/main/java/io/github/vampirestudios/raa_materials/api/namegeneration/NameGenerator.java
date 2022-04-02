@@ -32,10 +32,7 @@ public class NameGenerator {
 		for (Map.Entry<String,String> name: NAMES.entrySet()) {
 			if(retranslatable(name.getKey())){
 				String transKey = name.getKey();
-				System.out.println(name.getKey());
-				System.out.println(name.getValue());
 				NAMES.replace(name.getKey(), generate(BASEKEYS.get(transKey), BASENAMES.get(transKey)));
-				System.out.println(NAMES.get(name.getKey()));
 			}
 		}
 	}
