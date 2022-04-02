@@ -48,6 +48,7 @@ public class InnerRegistry {
 	private static final Set<ResourceLocation> MODELED = Sets.newHashSet();
 	
 	public static void clear() {
+		clearRegistry(Registry.PLACED_FEATURE_REGISTRY, PLACED_FEATURES.keySet());
 		clearRegistry(Registry.BLOCK, BLOCKS.keySet());
 		clearRegistry(Registry.ITEM, ITEMS.keySet());
 

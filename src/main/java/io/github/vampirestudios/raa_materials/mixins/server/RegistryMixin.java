@@ -30,6 +30,9 @@ public class RegistryMixin<T> implements ChangeableRegistry {
 	private Map<ResourceKey<T>, Holder.Reference<T>> byKey;
 	@Final
 	@Shadow
+	private Map<T, Holder.Reference<T>> byValue;
+	@Final
+	@Shadow
 	private Map<T, Lifecycle> lifecycles;
 	@Shadow
 	private int nextId;
@@ -39,8 +42,14 @@ public class RegistryMixin<T> implements ChangeableRegistry {
 		T entry = byLocation.get(key).value();
 		if (entry != null) {
 			int rawID = toId.getInt(entry);
-			byId.set(rawID, null);
-			toId.removeInt(rawID);
+			//byId.set(rawID, null);
+			//toId.removeInt(rawID);
+			byId.remove(rawID);
+			toId.remove(entry,rawID);
+			for (T entr : toId.keySet()) {
+				int id = toId.getInt(entr);
+				toId.replace(entr, id > rawID ? id - 1 : id);
+			}
 			byLocation.remove(key);
 			ResourceKey<T> storageKey = null;
 			for (ResourceKey<T> searchKey: byKey.keySet()) {
@@ -54,6 +63,7 @@ public class RegistryMixin<T> implements ChangeableRegistry {
 			if (storageKey != null) {
 				byKey.remove(storageKey);
 			}
+			byValue.remove(entry);
 			lifecycles.remove(entry);
 		}
 	}
