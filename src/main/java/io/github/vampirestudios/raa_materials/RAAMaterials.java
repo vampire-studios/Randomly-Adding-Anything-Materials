@@ -83,7 +83,7 @@ public class RAAMaterials implements RAAAddon {
 				String nbtFile = "data/raa_materials.dat";
 				String materialCompoundName = "materials";
 				if (!world.getServer().getWorldPath(LevelResource.ROOT).resolve(nbtFile).toFile().exists()) {
-					InnerRegistry.clear();
+					InnerRegistry.clear(world);
 
 					if (CONFIG.stoneTypeAmount != 0) {
 						for (int i = 0; i < CONFIG.stoneTypeAmount; i++) {

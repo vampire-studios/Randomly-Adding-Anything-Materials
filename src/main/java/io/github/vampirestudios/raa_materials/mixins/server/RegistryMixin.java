@@ -39,11 +39,9 @@ public class RegistryMixin<T> implements ChangeableRegistry {
 
 	@Override
 	public void remove(ResourceLocation key) {
-		T entry = byLocation.get(key).value();
-		if (entry != null) {
+		if (byLocation != null && byLocation.get(key) != null && byLocation.get(key).isBound()) {
+			T entry = byLocation.get(key).value();
 			int rawID = toId.getInt(entry);
-			//byId.set(rawID, null);
-			//toId.removeInt(rawID);
 			byId.remove(rawID);
 			toId.remove(entry,rawID);
 			for (T entr : toId.keySet()) {
@@ -53,10 +51,12 @@ public class RegistryMixin<T> implements ChangeableRegistry {
 			byLocation.remove(key);
 			ResourceKey<T> storageKey = null;
 			for (ResourceKey<T> searchKey: byKey.keySet()) {
-				if (byKey.get(searchKey) != null) {
-					if (byKey.get(searchKey).value() == entry) {
-						storageKey = searchKey;
-						break;
+				if (byKey != null) {
+					if (byKey.get(searchKey) != null && byKey.get(searchKey).isBound()) {
+						if (byKey.get(searchKey).value() == entry) {
+							storageKey = searchKey;
+							break;
+						}
 					}
 				}
 			}

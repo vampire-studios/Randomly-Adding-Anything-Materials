@@ -214,7 +214,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 	public void generate(ServerLevel world) {
 		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureCommonRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_ore_cf"));
 		Holder<ConfiguredFeature<?, ?>> configuredFeatureCommon = InnerRegistry.registerConfiguredFeature(world, configuredFeatureCommonRegistryKey, Feature.ORE ,
-				new OreConfiguration(new BlockMatchTest(Blocks.STONE), Blocks.TERRACOTTA.defaultBlockState(), size, hiddenChance)
+				new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), (size / 2), hiddenChance)
 		);
 		ResourceKey<PlacedFeature> placedFeatureCommonRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_pf"));
 		Holder<PlacedFeature> placedFeatureCommonHolder = InnerRegistry.registerPlacedFeature(world, placedFeatureCommonRegistryKey, configuredFeatureCommon,
