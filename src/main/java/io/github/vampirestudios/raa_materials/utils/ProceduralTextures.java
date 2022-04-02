@@ -132,10 +132,6 @@ public class ProceduralTextures {
 		result = TextureHelper.normalize(result, 0.1F, 0.7F);
 		result = TextureHelper.clampValue(result, values);
 
-//		result = TextureHelper.downScale(result, 4);
-//		result = TextureHelper.normalize(result, 0.15F, 0.85F);
-//		result = TextureHelper.clamp(result, 9);
-
 		return result;
 	}
 

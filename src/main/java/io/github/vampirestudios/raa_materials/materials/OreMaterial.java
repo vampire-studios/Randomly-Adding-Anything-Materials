@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
+import io.github.vampirestudios.raa_materials.api.BiomeAPI;
+import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
 import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
@@ -12,14 +14,10 @@ import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.*;
 import io.github.vampirestudios.raa_materials.items.effects.MaterialEffects;
-import io.github.vampirestudios.raa_materials.mixins.server.GenerationSettingsAccessor;
 import io.github.vampirestudios.raa_materials.utils.*;
 import io.github.vampirestudios.vampirelib.utils.Rands;
-import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
-import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.nbt.CompoundTag;
@@ -31,8 +29,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -45,7 +43,10 @@ import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
 import net.minecraft.world.level.material.MaterialColor;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 
@@ -213,11 +214,11 @@ public abstract class OreMaterial extends ComplexMaterial {
 	public void generate(ServerLevel world) {
 		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureCommonRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_ore_cf"));
 		Holder<ConfiguredFeature<?, ?>> configuredFeatureCommon = InnerRegistry.registerConfiguredFeature(world, configuredFeatureCommonRegistryKey, Feature.ORE ,
-				new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), size / 2, hiddenChance)
+				new OreConfiguration(new BlockMatchTest(Blocks.STONE), Blocks.TERRACOTTA.defaultBlockState(), size, hiddenChance)
 		);
 		ResourceKey<PlacedFeature> placedFeatureCommonRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_pf"));
 		Holder<PlacedFeature> placedFeatureCommonHolder = InnerRegistry.registerPlacedFeature(world, placedFeatureCommonRegistryKey, configuredFeatureCommon,
-				PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, CountPlacement.of(20), InSquarePlacement.spread(), BiomeFilter.biome()//RarityFilter.onAverageOnceEvery(rarity * 2)
+				PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, CountPlacement.of(20), InSquarePlacement.spread()
 		);
 
 		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureMiddleRareRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_ore_cf2"));
@@ -225,43 +226,26 @@ public abstract class OreMaterial extends ComplexMaterial {
 				new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), size, hiddenChance)
 		);
 		ResourceKey<PlacedFeature> placedFeatureMiddleRareRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_pf2"));
-		InnerRegistry.registerPlacedFeature(world, placedFeatureMiddleRareRegistryKey, configuredFeatureMiddleRare,
+		Holder<PlacedFeature> placedFeatureMiddleRareHolder = InnerRegistry.registerPlacedFeature(world, placedFeatureMiddleRareRegistryKey, configuredFeatureMiddleRare,
 				PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, CountPlacement.of(6), RarityFilter.onAverageOnceEvery(rarity), InSquarePlacement.spread(), BiomeFilter.biome());
-
 
 		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureHugeRareRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_ore_cf3"));
 		Holder<ConfiguredFeature<?, ?>> configuredFeatureHugeRare = InnerRegistry.registerConfiguredFeature(world, configuredFeatureHugeRareRegistryKey, Feature.ORE,
 				new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), Mth.clamp(size * 2, 0, 64), hiddenChance)
 		);
 		ResourceKey<PlacedFeature> placedFeatureHugeRareRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_pf3"));
-		Holder<PlacedFeature> selected = InnerRegistry.registerPlacedFeature(world, placedFeatureHugeRareRegistryKey, configuredFeatureHugeRare,
+		Holder<PlacedFeature> placedFeatureHugeRareHolder = InnerRegistry.registerPlacedFeature(world, placedFeatureHugeRareRegistryKey, configuredFeatureHugeRare,
 				PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, CountPlacement.of(9), RarityFilter.onAverageOnceEvery(rarity / 2), InSquarePlacement.spread(), BiomeFilter.biome());
-		ResourceKey<PlacedFeature> selectedKey = Rands.values(new ResourceKey[]{ placedFeatureCommonRegistryKey, placedFeatureMiddleRareRegistryKey, placedFeatureHugeRareRegistryKey });
 
-		BiomeModifications.addFeature(BiomeSelectors.all(), GenerationStep.Decoration.UNDERGROUND_ORES, placedFeatureCommonRegistryKey);
+		List<Holder<PlacedFeature>> availableFeatures = List.of(placedFeatureCommonHolder, placedFeatureMiddleRareHolder, placedFeatureHugeRareHolder);
+		Holder<PlacedFeature> selectedFeatureHolder = Rands.list(availableFeatures);
 
-
-		LifeCycleAPI.onLevelLoad((biomeWorld, seed, biomes) ->
-		{
-			List<ResourceKey<Biome>> keys = biomes.entrySet().stream()
-					.map(Map.Entry::getKey)
-					.sorted(Comparator.comparingInt(key -> biomes.getId(biomes.getOrThrow(key))))
-					.toList();
-
-			for (ResourceKey<Biome> key : keys) {
-				Biome biome = biomes.getOrThrow(key);
-				//Registry<PlacedFeature> features = biomeWorld.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY);
-
-				BiomeGenerationSettings generationSettings = biome.getGenerationSettings();
-				List<HolderSet<PlacedFeature>> featureSteps = new ArrayList<>(((GenerationSettingsAccessor)generationSettings).raaGetFeatures());
-				int index = GenerationStep.Decoration.UNDERGROUND_ORES.ordinal();
-				while (index >= featureSteps.size()) {
-					featureSteps.add(HolderSet.direct(Collections.emptyList()));
+		LifeCycleAPI.onLevelLoad((biomeWorld, seed, biomes) -> {
+			if (biomeWorld.dimension().equals(Level.OVERWORLD)) {
+				for (Biome biome : biomes) {
+					BiomeAPI.addBiomeFeature(Holder.direct(biome), GenerationStep.Decoration.UNDERGROUND_ORES, List.of(selectedFeatureHolder));
 				}
-				List<Holder<PlacedFeature>> list = new ArrayList<>(featureSteps.get(index).stream().toList());
-				list.add(placedFeatureCommonHolder);
-				featureSteps.set(index, HolderSet.direct(list));
-				((GenerationSettingsAccessor)generationSettings).raaSetFeatures(featureSteps);
+				((BiomeSourceAccessor) biomeWorld.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
 			}
 		});
 

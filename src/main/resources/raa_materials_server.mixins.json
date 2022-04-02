@@ -13,7 +13,8 @@
 	"RegistryMixin",
 	"ServerLevelMixin",
 	"ServerWorldMixin",
-	"TagGroupLoaderMixin"
+	"TagGroupLoaderMixin",
+	"BiomeSourceMixin"
   ],
   "injectors": {
 	"defaultRequire": 1

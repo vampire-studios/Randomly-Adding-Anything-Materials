@@ -44,17 +44,12 @@ public class InnerRegistry {
 	private static final Map<ResourceLocation, BufferTexture> TEXTURES = Maps.newHashMap();
 	private static final Map<ResourceLocation, Block> BLOCKS = Maps.newHashMap();
 	private static final Map<ResourceLocation, Item> ITEMS = Maps.newHashMap();
-	private static final Map<ResourceLocation, ConfiguredFeature<?, ?>> CONFIGURED_FEATURES = Maps.newHashMap();
 	private static final Map<ResourceLocation, PlacedFeature> PLACED_FEATURES = Maps.newHashMap();
 	private static final Set<ResourceLocation> MODELED = Sets.newHashSet();
 	
-	public static void clear(ServerLevel level) {
+	public static void clear() {
 		clearRegistry(Registry.BLOCK, BLOCKS.keySet());
 		clearRegistry(Registry.ITEM, ITEMS.keySet());
-//		clearRegistry(BuiltinRegistries.CONFIGURED_FEATURE, CONFIGURED_FEATURES.keySet());
-//		clearRegistry(BuiltinRegistries.PLACED_FEATURE, PLACED_FEATURES.keySet());
-		clearRegistry(level.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY), CONFIGURED_FEATURES.keySet());
-		clearRegistry(level.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY), PLACED_FEATURES.keySet());
 
 		BLOCK_MODELS.clear();
 		ITEM_MODELS.clear();
@@ -72,6 +67,27 @@ public class InnerRegistry {
 		CrystalMaterial.resetMaterials();
 
 		TagHelper.clearTags();
+
+//		LifeCycleAPI.onLevelLoad((biomeWorld, seed, biomes) -> {
+//			if (biomeWorld.dimension().equals(Level.OVERWORLD)) {
+//				for (Biome biome : biomes) {
+//					BiomeGenerationSettings generationSettings = biome.getGenerationSettings();
+//					List<HolderSet<PlacedFeature>> featureSteps = new ArrayList<>(((GenerationSettingsAccessor)generationSettings).raa_getFeatures());
+//					int index = GenerationStep.Decoration.UNDERGROUND_ORES.ordinal();
+//					List<Holder<PlacedFeature>> features = new ArrayList<>(featureSteps.get(index).stream().toList());
+//
+//					if (features.removeIf(feature -> {
+//						if (feature.unwrapKey().isPresent()) {
+//							ResourceKey<PlacedFeature> key = feature.unwrapKey().get();
+//							return key.location().getNamespace().contains("raa_materials");
+//						} else return false;
+//					})) {
+//						featureSteps.set(index, HolderSet.direct(features));
+//					}
+//					((GenerationSettingsAccessor)generationSettings).raa_setFeatures(featureSteps);
+//				}
+//			}
+//		});
 	}
 	
 	private static <T> void clearRegistry(Registry<T> registry, Set<ResourceLocation> ids) {
@@ -138,7 +154,6 @@ public class InnerRegistry {
 		} else {
 			configuredFeatureHolder = BuiltinRegistries.registerExact(BuiltinRegistries.CONFIGURED_FEATURE, id.toString(), feature);
 		}
-		CONFIGURED_FEATURES.put(id, feature);
 		return configuredFeatureHolder;
 	}
 
@@ -148,29 +163,12 @@ public class InnerRegistry {
 
 	public static Holder<ConfiguredFeature<?, ?>> registerConfiguredFeature(ServerLevel serverLevel, ResourceKey<ConfiguredFeature<?, ?>> id, ConfiguredFeature<?, ?> feature) {
 		Holder<ConfiguredFeature<?, ?>> configuredFeatureHolder;
-		if (BuiltinRegistries.CONFIGURED_FEATURE.containsKey(id)) {
-			configuredFeatureHolder = Holder.direct(Objects.requireNonNull(BuiltinRegistries.CONFIGURED_FEATURE.get(id)));
-		} else if (serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).containsKey(id)) {
+		if (serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).containsKey(id)) {
 			configuredFeatureHolder = Holder.direct(Objects.requireNonNull(serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).get(id)));
 		} else {
-			Registry.register(serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY), id, feature);
-			configuredFeatureHolder = serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).getOrCreateHolder(id);
-			//configuredFeatureHolder = BuiltinRegistries.registerExact(BuiltinRegistries.CONFIGURED_FEATURE, id.location().toString(), feature);
+			Registry<ConfiguredFeature<?, ?>> registry = serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY);
+			configuredFeatureHolder = Holder.direct(Registry.register(registry, id.location(), feature));
 		}
-		CONFIGURED_FEATURES.put(id.location(), feature);
-		return configuredFeatureHolder;
-	}
-
-	public static Holder<PlacedFeature> registerPlacedFeature(ServerLevel serverLevel, ResourceLocation id, PlacedFeature block) {
-		Holder<PlacedFeature> configuredFeatureHolder;
-		if (BuiltinRegistries.PLACED_FEATURE.containsKey(id)) {
-			configuredFeatureHolder = Holder.direct(Objects.requireNonNull(BuiltinRegistries.PLACED_FEATURE.get(id)));
-		} else if (serverLevel.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY).containsKey(id)) {
-			configuredFeatureHolder = Holder.direct(Objects.requireNonNull(serverLevel.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY).get(id)));
-		} else {
-			configuredFeatureHolder = BuiltinRegistries.registerExact(BuiltinRegistries.PLACED_FEATURE, id.toString(), block);
-		}
-		PLACED_FEATURES.put(id, block);
 		return configuredFeatureHolder;
 	}
 
@@ -180,16 +178,12 @@ public class InnerRegistry {
 
 	public static Holder<PlacedFeature> registerPlacedFeature(ServerLevel serverLevel, ResourceKey<PlacedFeature> id, PlacedFeature feature) {
 		Holder<PlacedFeature> placedFeatureHolder;
-		if (BuiltinRegistries.PLACED_FEATURE.containsKey(id)) {
-			placedFeatureHolder = Holder.direct(Objects.requireNonNull(BuiltinRegistries.PLACED_FEATURE.get(id)));
-		} else if (serverLevel.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY).containsKey(id)) {
+		if (serverLevel.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY).containsKey(id)) {
 			placedFeatureHolder = Holder.direct(Objects.requireNonNull(serverLevel.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY).get(id)));
 		} else {
-			Registry.register(serverLevel.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY), id, feature);
-			placedFeatureHolder = serverLevel.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY).getOrCreateHolder(id);
-			//placedFeatureHolder = BuiltinRegistries.registerExact(BuiltinRegistries.PLACED_FEATURE, id.location().toString(), feature);
+			Registry<PlacedFeature> registry = serverLevel.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY);
+			placedFeatureHolder = Holder.direct(Registry.register(registry, id.location(), feature));
 		}
-		PLACED_FEATURES.put(id.location(), feature);
 		return placedFeatureHolder;
 	}
 

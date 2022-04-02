@@ -8,7 +8,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.SmallFireball;
+import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -36,16 +36,14 @@ public class ItemEffectHandler {
     }
 
     public static void spawnFireball(Level world, LivingEntity target, LivingEntity attacker, JsonElement config) {
-        if (world.getRandom().nextInt(config.getAsJsonObject().get("chance").getAsInt()) == 0) {
-            if (!world.isClientSide()) {
-                Vec3 vec3d = attacker.getViewVector(1.0F);
-                double f = target.getX() - (attacker.getX() + vec3d.x * 4.0D);
-                double g = target.getY(0.5D) - (0.5D + attacker.getY(0.5D));
-                double h = target.getZ() - (attacker.getZ() + vec3d.z * 4.0D);
+        if (!world.isClientSide()) {
+            Vec3 vec3d = attacker.getViewVector(1.0F);
+            double f = target.getX() - (attacker.getX() + vec3d.x * 4.0D);
+            double g = target.getY(0.5D) - (0.5D + attacker.getY(0.5D));
+            double h = target.getZ() - (attacker.getZ() + vec3d.z * 4.0D);
 
-                SmallFireball fireballEntity = new SmallFireball(world, f, g, h, 1D, 1D, 1D);
-                world.addFreshEntity(fireballEntity);
-            }
+            LargeFireball fireballEntity = new LargeFireball(world, target, f, g, h, 1);
+            world.addFreshEntity(fireballEntity);
         }
     }
 
