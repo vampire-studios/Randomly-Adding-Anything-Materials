@@ -243,7 +243,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		LifeCycleAPI.onLevelLoad((biomeWorld, seed, biomes) -> {
 			if (biomeWorld.dimension().equals(Level.OVERWORLD)) {
 				for (Biome biome : biomes) {
-					BiomeAPI.addBiomeFeature(Holder.direct(biome), GenerationStep.Decoration.UNDERGROUND_ORES, List.of(selectedFeatureHolder));
+					BiomeAPI.addBiomeFeature(biomes, biome, GenerationStep.Decoration.UNDERGROUND_ORES, List.of(selectedFeatureHolder));
 				}
 				((BiomeSourceAccessor) biomeWorld.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
 			}
