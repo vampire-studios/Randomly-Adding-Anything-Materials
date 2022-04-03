@@ -39,6 +39,7 @@ public class RegistryMixin<T> implements ChangeableRegistry {
 
 	@Override
 	public void remove(ResourceLocation key) {
+		System.out.println(byLocation.get(key));
 		if (byLocation != null && byLocation.get(key) != null && byLocation.get(key).isBound()) {
 			T entry = byLocation.get(key).value();
 			int rawID = toId.getInt(entry);

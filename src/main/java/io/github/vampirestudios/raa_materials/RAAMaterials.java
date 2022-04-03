@@ -3,6 +3,7 @@ package io.github.vampirestudios.raa_materials;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.vampirestudios.raa_core.api.RAAAddon;
+import io.github.vampirestudios.raa_materials.api.BiomeAPI;
 import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
@@ -83,6 +84,7 @@ public class RAAMaterials implements RAAAddon {
 				String nbtFile = "data/raa_materials.dat";
 				String materialCompoundName = "materials";
 				if (!world.getServer().getWorldPath(LevelResource.ROOT).resolve(nbtFile).toFile().exists()) {
+					BiomeAPI.clearFeatures();
 					InnerRegistry.clear(world);
 
 					if (CONFIG.stoneTypeAmount != 0) {
@@ -127,6 +129,8 @@ public class RAAMaterials implements RAAAddon {
 
 					materials.forEach(material -> material.generate(world));
 				} else {
+					BiomeAPI.clearFeatures();
+					InnerRegistry.clear(world);
 					CompoundTag compound;
 
 					try {

@@ -49,8 +49,8 @@ public class InnerRegistry {
 	private static final Set<ResourceLocation> MODELED = Sets.newHashSet();
 	
 	public static void clear(ServerLevel level) {
-		clearRegistry(level.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY), CONFIGURED_FEATURES.keySet());
-		clearRegistry(level.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY), PLACED_FEATURES.keySet());
+		//clearRegistry(level.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY), CONFIGURED_FEATURES.keySet());
+		//clearRegistry(level.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY), PLACED_FEATURES.keySet());
 		clearRegistry(Registry.BLOCK, BLOCKS.keySet());
 		clearRegistry(Registry.ITEM, ITEMS.keySet());
 
@@ -130,12 +130,11 @@ public class InnerRegistry {
 
 	public static Holder<ConfiguredFeature<?, ?>> registerConfiguredFeature(ServerLevel serverLevel, ResourceLocation id, ConfiguredFeature<?, ?> feature) {
 		Holder<ConfiguredFeature<?, ?>> configuredFeatureHolder;
-		if (BuiltinRegistries.CONFIGURED_FEATURE.containsKey(id)) {
-			configuredFeatureHolder = Holder.direct(Objects.requireNonNull(BuiltinRegistries.CONFIGURED_FEATURE.get(id)));
-		} else if (serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).containsKey(id)) {
+		if (serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).containsKey(id)) {
 			configuredFeatureHolder = Holder.direct(Objects.requireNonNull(serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).get(id)));
 		} else {
-			configuredFeatureHolder = BuiltinRegistries.registerExact(BuiltinRegistries.CONFIGURED_FEATURE, id.toString(), feature);
+			Registry<ConfiguredFeature<?, ?>> registry = serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY);
+			configuredFeatureHolder = Holder.direct(Registry.register(registry, id, feature));
 		}
 		CONFIGURED_FEATURES.put(id, feature);
 		return configuredFeatureHolder;

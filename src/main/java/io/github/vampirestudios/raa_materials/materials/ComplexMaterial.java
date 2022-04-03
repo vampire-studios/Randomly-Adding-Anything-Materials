@@ -42,7 +42,7 @@ public abstract class ComplexMaterial {
 		String name = compound.getString("name");
 		int tier = compound.getInt("tier");
 		int bonus = compound.getInt("bonus");
-		ResourceLocation targetName = RAAMaterials.id(compound.getString("target"));
+		ResourceLocation targetName = RAAMaterials.minecraftId(compound.getString("target"));
 		ComplexMaterial material;
 
 		CompoundTag colorGradientCompound = compound.getCompound("colorGradient");
