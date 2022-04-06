@@ -27,9 +27,11 @@ import java.util.Optional;
 
 public class BaseStoneButtonBlock extends StoneButtonBlock implements BlockModelProvider {
 	private final Block source;
+	private final ResourceLocation registryName;
 
-	public BaseStoneButtonBlock(Block source) {
+	public BaseStoneButtonBlock(ResourceLocation registryName, Block source) {
 		super(FabricBlockSettings.copyOf(source).noOcclusion());
+		this.registryName = registryName;
 		this.source = source;
 	}
 

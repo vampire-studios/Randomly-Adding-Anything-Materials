@@ -75,7 +75,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 	public TargetTextureInformation baseTexture;
 
-	public BaseDropBlock ore;
+	public Block ore;
 	public Block storageBlock;
 
 	public Target target;
@@ -102,13 +102,13 @@ public abstract class OreMaterial extends ComplexMaterial {
 		target = targetIn;
 		this.tier = tier;
 		this.size = Rands.randIntRange(3, Rands.chance(100) ? 64 : 28);
-		this.minHeight = Rands.randIntRange(-64, 256);
-		this.maxHeight = Rands.randIntRange(-64, 256);
+		this.minHeight = Rands.randIntRange(-64, 384);
+		this.maxHeight = Rands.randIntRange(-64, 384);
 		if (minHeight > maxHeight) {
-			this.minHeight = Rands.randIntRange(-64, 256);
+			this.minHeight = Rands.randIntRange(-64, 384);
 		}
 		if (maxHeight < minHeight) {
-			this.maxHeight = Rands.randIntRange(-64, 256);
+			this.maxHeight = Rands.randIntRange(-64, 384);
 		}
 		this.rarity = Rands.randIntRange(6, 18);
 		this.hiddenChance = Rands.randFloatRange(0.0F, Rands.chance(50) ? 0.8F : 0.4F);
@@ -129,7 +129,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(target.block()).requiresTool().mapColor(MaterialColor.COLOR_GRAY);
 		this.droppedItem = RAASimpleItem.register(this.name, this.registryName, new Item.Properties().tab(RAAMaterials.RAA_RESOURCES), rawType);
 		ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new BaseDropBlock(material, this.droppedItem), RAAMaterials.RAA_ORES);
-		drop = ore.getDrop();
+		drop = ((BaseDropBlock)ore).getDrop();
 		TagHelper.addTag(target.toolType(), ore);
 		TagHelper.addTag(switch (tier) {
 			case 1 -> BlockTags.NEEDS_STONE_TOOL;

@@ -5,16 +5,17 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
 	"BiomeMixin",
+	"BiomeSourceMixin",
 	"GenerationSettingsAccessor",
 	"MainMixin",
+	"MappedRegistryFreezingMixin",
 	"MappedRegistryMixin",
 	"RecipeManagerAccessor",
 	"RecipeManagerMixin",
 	"RegistryMixin",
 	"ServerLevelMixin",
 	"ServerWorldMixin",
-	"TagGroupLoaderMixin",
-	"BiomeSourceMixin"
+	"TagGroupLoaderMixin"
   ],
   "injectors": {
 	"defaultRequire": 1

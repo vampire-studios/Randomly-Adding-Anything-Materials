@@ -89,7 +89,6 @@ public class TestNameGenerator {
 				test = aaa.toString();
 				tries--;
 			}
-			//if(!test.equals(finalName)) System.out.println(test);
 			finalName = test;
 		}
 		return finalName;

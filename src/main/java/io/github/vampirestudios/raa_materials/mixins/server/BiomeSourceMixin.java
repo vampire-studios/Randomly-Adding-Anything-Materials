@@ -1,6 +1,5 @@
 package io.github.vampirestudios.raa_materials.mixins.server;
 
-import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;
@@ -24,7 +23,6 @@ public abstract class BiomeSourceMixin implements BiomeSourceAccessor {
 
 	@Override
 	public void raa_rebuildFeatures(){
-		RAAMaterials.LOGGER.info("Rebuilding features in BiomeSource " + this);
 		featuresPerStep = () -> buildFeaturesPerStep(this.possibleBiomes().stream().toList(), true);
 	}
 }

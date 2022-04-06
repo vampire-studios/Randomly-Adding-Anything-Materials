@@ -25,9 +25,11 @@ import java.util.Optional;
 
 public class BaseStonePressurePlateBlock extends PressurePlateBlock implements BlockModelProvider {
 	private final Block source;
+	private final ResourceLocation registryName;
 
-	public BaseStonePressurePlateBlock(Block source) {
+	public BaseStonePressurePlateBlock(ResourceLocation registryName, Block source) {
 		super(Sensitivity.MOBS, FabricBlockSettings.copyOf(source).noOcclusion());
+		this.registryName = registryName;
 		this.source = source;
 	}
 

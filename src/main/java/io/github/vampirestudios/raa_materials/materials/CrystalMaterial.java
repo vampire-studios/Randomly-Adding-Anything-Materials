@@ -3,6 +3,9 @@ package io.github.vampirestudios.raa_materials.materials;
 import com.google.common.collect.ImmutableList;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
+import io.github.vampirestudios.raa_materials.api.BiomeAPI;
+import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
+import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.CustomCrystalBlock;
@@ -26,14 +29,13 @@ import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.TintedGlassBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.levelgen.GeodeBlockSettings;
-import net.minecraft.world.level.levelgen.GeodeCrackSettings;
-import net.minecraft.world.level.levelgen.GeodeLayerSettings;
-import net.minecraft.world.level.levelgen.VerticalAnchor;
+import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.GeodeConfiguration;
@@ -212,60 +214,6 @@ public class CrystalMaterial extends ComplexMaterial {
 
         this.crystalLampOverlayTextureInt = crystalLampOverlayTextureInt;
         this.crystalOreTextureInt = crystalOreTextureInt;
-
-//        EnumProperty<EdenBlockProperties.EdenPortalState> portalProperty = EdenBlockProperties.EDEN_PORTAL;
-//        BlockState portal = EdenBlocks.PORTAL_BLOCK.defaultBlockState();
-//        BlockState pillarBottom = portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.PILLAR_BOTTOM);
-//        BlockState pillarTop = portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.PILLAR_TOP);
-//        EdenPortalAccessor.getPORTAL().put(new BlockPos(-2, -1, -2), pillarBottom);
-//        EdenPortalAccessor.getPORTAL().put(new BlockPos(-2, 0, -2), pillarTop);
-//        EdenPortalAccessor.getPORTAL().put(new BlockPos(2, -1, -2), pillarBottom);
-//        EdenPortalAccessor.getPORTAL().put(new BlockPos(2, 0, -2), pillarTop);
-//        EdenPortalAccessor.getPORTAL().put(new BlockPos(-2, -1, 2), pillarBottom);
-//        EdenPortalAccessor.getPORTAL().put(new BlockPos(-2, 0, 2), pillarTop);
-//        EdenPortalAccessor.getPORTAL().put(new BlockPos(2, -1, 2), pillarBottom);
-//        EdenPortalAccessor.getPORTAL().put(new BlockPos(2, 0, 2), pillarTop);
-//        EdenPortalAccessor.getPORTAL().put(BlockPos.ZERO, EdenBlocks.PORTAL_CENTER.defaultBlockState());
-//        BlockPos below = new BlockPos(0, -1, 0);
-//        EdenPortalAccessor.getPORTAL().put(below, portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_MIDDLE));
-//        EdenPortalAccessor.getPORTAL().put(below.north(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_N));
-//        EdenPortalAccessor.getPORTAL().put(below.north().east(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_NE));
-//        EdenPortalAccessor.getPORTAL().put(below.east(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_E));
-//        EdenPortalAccessor.getPORTAL().put(below.south().east(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_SE));
-//        EdenPortalAccessor.getPORTAL().put(below.south(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_S));
-//        EdenPortalAccessor.getPORTAL().put(below.south().west(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_SW));
-//        EdenPortalAccessor.getPORTAL().put(below.west(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_W));
-//        EdenPortalAccessor.getPORTAL().put(below.north().west(), portal.setValue(portalProperty, EdenBlockProperties.EdenPortalState.CENTER_NW));
-//        DirectionProperty facing = HorizontalDirectionalBlock.FACING;
-//        BlockState stairs = Blocks.WAXED_CUT_COPPER_STAIRS.defaultBlockState();
-//
-//        for(int i = -1; i < 2; ++i) {
-//            EdenPortalAccessor.getPORTAL().put(below.north(2).east(i), stairs.setValue(facing, Direction.SOUTH));
-//            EdenPortalAccessor.getPORTAL().put(below.south(2).east(i), stairs.setValue(facing, Direction.NORTH));
-//            EdenPortalAccessor.getPORTAL().put(below.east(2).north(i), stairs.setValue(facing, Direction.WEST));
-//            EdenPortalAccessor.getPORTAL().put(below.west(2).north(i), stairs.setValue(facing, Direction.EAST));
-//        }
-//
-//        BlockPos above = new BlockPos(0, 1, 0);
-//        facing = BlockStateProperties.FACING;
-//        BlockState amethystCluster = crystal.defaultBlockState().setValue(facing, Direction.UP);
-//        EdenPortalAccessor.getPORTAL().put(above.north(2).west(2), amethystCluster);
-//        EdenPortalAccessor.getPORTAL().put(above.north(2).east(2), amethystCluster);
-//        EdenPortalAccessor.getPORTAL().put(above.south(2).west(2), amethystCluster);
-//        EdenPortalAccessor.getPORTAL().put(above.south(2).east(2), amethystCluster);
-//        BlockState copperBlock = Blocks.WAXED_COPPER_BLOCK.defaultBlockState();
-//        BlockState amethystBlock = block.defaultBlockState();
-//        EdenPortalAccessor.getPORTAL().forEach((pos, state) -> {
-//            if (pos.getY() < 0) {
-//                EdenPortalAccessor.getPRE_PORTAL().put(pos, state.is(EdenBlocks.PORTAL_BLOCK) ? copperBlock : state);
-//            } else if (state.is(EdenBlocks.PORTAL_BLOCK)) {
-//                EdenPortalAccessor.getPRE_PORTAL().put(pos, amethystBlock);
-//            } else if (state.is(Blocks.AMETHYST_CLUSTER)) {
-//                EdenPortalAccessor.getPRE_PORTAL().put(pos, state);
-//            }
-//
-//        });
-//        EdenPortalAccessor.getPRE_PORTAL().put(below, Blocks.DIAMOND_BLOCK.defaultBlockState());
     }
 
     @Override
@@ -492,7 +440,8 @@ public class CrystalMaterial extends ComplexMaterial {
                 )
         );
 
-        Holder<ConfiguredFeature<?, ?>> geodeCf = InnerRegistry.registerConfiguredFeature(world, id(this.registryName + "_geode"),
+        ResourceKey<ConfiguredFeature<?, ?>> resourceKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_geode"));
+        Holder<ConfiguredFeature<?, ?>> geodeCf = InnerRegistry.registerConfiguredFeature(world, resourceKey,
                 Feature.GEODE, new GeodeConfiguration(
                                 new GeodeBlockSettings(
                                         BlockStateProvider.simple(Blocks.AIR),
@@ -525,10 +474,19 @@ public class CrystalMaterial extends ComplexMaterial {
                         )
                 );
         ResourceKey<PlacedFeature> placedFeatureHugeRareRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_geode"));
-        InnerRegistry.registerPlacedFeature(world, placedFeatureHugeRareRegistryKey, geodeCf,
+        Holder<PlacedFeature> placedFeatureHolder = InnerRegistry.registerPlacedFeature(world, placedFeatureHugeRareRegistryKey, geodeCf,
                 HeightRangePlacement.uniform(VerticalAnchor.aboveBottom(10), VerticalAnchor.absolute(46)),
                 RarityFilter.onAverageOnceEvery(RAAMaterials.CONFIG.crystalTypeAmount * 100)
         );
+
+        LifeCycleAPI.onLevelLoad((biomeWorld, seed, biomes) -> {
+            if (biomeWorld.dimension().equals(Level.OVERWORLD)) {
+                for (Biome biome : biomes) {
+                    BiomeAPI.addBiomeFeature(biomes, biome, GenerationStep.Decoration.UNDERGROUND_ORES, List.of(placedFeatureHolder));
+                }
+                ((BiomeSourceAccessor) biomeWorld.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
+            }
+        });
     }
 
     static {

@@ -51,7 +51,6 @@ public class BiomeAPI {
 				aaa.add(feature);
 			}
 			added.put(step.name(), aaa);
-			//added.get(step.name()).addAll(additionalFeatures);
 		} else{
 			added.put(step.name(), CollectionsUtil.getMutable(additionalFeatures));
 		}
@@ -86,7 +85,6 @@ public class BiomeAPI {
 	 * Clears out added features on existing biomes.
 	 */
 	public static void clearFeatures() {
-
 		for (Map.Entry<String, Map<String, List<Holder<PlacedFeature>>>> biomemap : MODIFIED_STEPS.entrySet()) {
 			Biome biome = MODIFIED_BIOMES.get(biomemap.getKey());
 

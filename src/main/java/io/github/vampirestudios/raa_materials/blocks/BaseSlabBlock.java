@@ -27,9 +27,11 @@ import java.util.Optional;
 
 public class BaseSlabBlock extends SlabBlock implements BlockModelProvider {
 	private final Block source;
+	private final ResourceLocation registryName;
 
-	public BaseSlabBlock(Block source) {
+	public BaseSlabBlock(ResourceLocation registryName, Block source) {
 		super(FabricBlockSettings.copyOf(source));
+		this.registryName = registryName;
 		this.source = source;
 	}
 
@@ -42,7 +44,7 @@ public class BaseSlabBlock extends SlabBlock implements BlockModelProvider {
 	@Override
 	@Environment(EnvType.CLIENT)
 	public BlockModel getItemModel(ResourceLocation resourceLocation) {
-		return getBlockModel(resourceLocation, defaultBlockState());
+		return ModelsHelper.fromPattern(PatternsHelper.createJson(BasePatterns.BLOCK_BASE, new ResourceLocation("block/stone")));
 	}
 
 	@Override
@@ -52,8 +54,7 @@ public class BaseSlabBlock extends SlabBlock implements BlockModelProvider {
 		Optional<String> pattern;
 		if (blockState.getValue(TYPE) == SlabType.DOUBLE) {
 			pattern = PatternsHelper.createBlockSimple(parentId);
-		}
-		else {
+		} else {
 			pattern = PatternsHelper.createJson(BasePatterns.BLOCK_SLAB, parentId);
 		}
 		return ModelsHelper.fromPattern(pattern);

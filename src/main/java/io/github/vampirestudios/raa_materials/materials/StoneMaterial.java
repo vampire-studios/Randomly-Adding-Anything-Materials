@@ -2,6 +2,9 @@ package io.github.vampirestudios.raa_materials.materials;
 
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
+import io.github.vampirestudios.raa_materials.api.BiomeAPI;
+import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
+import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.*;
@@ -9,18 +12,34 @@ import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
+import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
+import net.minecraft.world.level.levelgen.placement.CountPlacement;
+import net.minecraft.world.level.levelgen.placement.InSquarePlacement;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.levelgen.placement.RarityFilter;
+import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 import net.minecraft.world.level.material.MaterialColor;
 
-import java.util.Locale;
+import java.util.List;
 import java.util.Random;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
@@ -35,23 +54,23 @@ public class StoneMaterial extends ComplexMaterial {
 	private final ResourceLocation stoneTile;
 
 	public final Block stone;
-	public final Block stairs;
-	public final Block slab;
-	public final Block pressure_plate;
-	public final Block button;
-	public final Block wall;
+//	public final Block stairs;
+//	public final Block slab;
+//	public final Block pressure_plate;
+//	public final Block button;
+//	public final Block wall;
 
 	public final Block polished;
-	public final Block polished_wall;
+//	public final Block polished_wall;
 
 	public final Block tiles;
 
 	public final Block bricks;
-	public final Block brick_stairs;
-	public final Block brick_slab;
-	public final Block brick_pressure_plate;
-	public final Block brick_button;
-	public final Block brick_wall;
+//	public final Block brick_stairs;
+//	public final Block brick_slab;
+//	public final Block brick_pressure_plate;
+//	public final Block brick_button;
+//	public final Block brick_wall;
 
 	public StoneMaterial(Random random) {
 		this(TestNameGenerator.generateStoneName(), ProceduralTextures.makeStonePalette(random),
@@ -71,88 +90,89 @@ public class StoneMaterial extends ComplexMaterial {
 
 		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(Blocks.STONE).color(MaterialColor.COLOR_GRAY);
 
+		ResourceLocation blockRegistryName = RAAMaterials.id(this.registryName);
 		stone = InnerRegistry.registerBlockAndItem(this.registryName, new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
-		stairs = InnerRegistry.registerBlockAndItem(this.registryName + "_stairs", new BaseStairsBlock(stone), RAAMaterials.RAA_STONE_TYPES);
-		slab = InnerRegistry.registerBlockAndItem(this.registryName + "_slab", new BaseSlabBlock(stone), RAAMaterials.RAA_STONE_TYPES);
-		pressure_plate = InnerRegistry.registerBlockAndItem(this.registryName + "_pressure_plate", new BaseStonePressurePlateBlock(stone), RAAMaterials.RAA_STONE_TYPES);
-		button = InnerRegistry.registerBlockAndItem(this.registryName + "_button", new BaseStoneButtonBlock(stone), RAAMaterials.RAA_STONE_TYPES);
-		wall = InnerRegistry.registerBlockAndItem(this.registryName + "_wall", new BaseWallBlock(stone), RAAMaterials.RAA_STONE_TYPES);
+//		stairs = InnerRegistry.registerBlockAndItem(this.registryName + "_stairs", new BaseStairsBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
+//		slab = InnerRegistry.registerBlockAndItem(this.registryName + "_slab", new BaseSlabBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
+//		pressure_plate = InnerRegistry.registerBlockAndItem(this.registryName + "_pressure_plate", new BaseStonePressurePlateBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
+//		button = InnerRegistry.registerBlockAndItem(this.registryName + "_button", new BaseStoneButtonBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
+//		wall = InnerRegistry.registerBlockAndItem(this.registryName + "_wall", new BaseWallBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
 
 		polished = InnerRegistry.registerBlockAndItem("polished_" + this.registryName, new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
-		polished_wall = InnerRegistry.registerBlockAndItem(this.registryName + "_wall", new BaseWallBlock(stone), RAAMaterials.RAA_STONE_TYPES);
+//		polished_wall = InnerRegistry.registerBlockAndItem(this.registryName + "_wall", new BaseWallBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
 
 		tiles = InnerRegistry.registerBlockAndItem(this.registryName + "_tiles", new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
 
 		bricks = InnerRegistry.registerBlockAndItem(this.registryName + "_bricks", new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
-		brick_stairs = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_stairs", new BaseStairsBlock(bricks), RAAMaterials.RAA_STONE_TYPES);
-		brick_slab = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_slab", new BaseSlabBlock(bricks), RAAMaterials.RAA_STONE_TYPES);
-		brick_pressure_plate = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_pressure_plate", new BaseStonePressurePlateBlock(bricks), RAAMaterials.RAA_STONE_TYPES);
-		brick_button = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_button", new BaseStoneButtonBlock(bricks), RAAMaterials.RAA_STONE_TYPES);
-		brick_wall = InnerRegistry.registerBlockAndItem(this.registryName + "_wall", new BaseWallBlock(stone), RAAMaterials.RAA_STONE_TYPES);
+//		brick_stairs = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_stairs", new BaseStairsBlock(blockRegistryName, bricks), RAAMaterials.RAA_STONE_TYPES);
+//		brick_slab = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_slab", new BaseSlabBlock(blockRegistryName, bricks), RAAMaterials.RAA_STONE_TYPES);
+//		brick_pressure_plate = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_pressure_plate", new BaseStonePressurePlateBlock(blockRegistryName, bricks), RAAMaterials.RAA_STONE_TYPES);
+//		brick_button = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_button", new BaseStoneButtonBlock(blockRegistryName, bricks), RAAMaterials.RAA_STONE_TYPES);
+//		brick_wall = InnerRegistry.registerBlockAndItem(this.registryName + "_wall", new BaseWallBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
 
-		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_stairs"), stairs)
-				.setOutputCount(4)
-				.addMaterial('#', stone)
-				.setShape("#  ", "## ", "###")
-				.build();
-		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_slab"), slab)
-				.setOutputCount(6)
-				.addMaterial('#', stone)
-				.setShape("###")
-				.build();
-		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_pressure_plate"), pressure_plate)
-				.addMaterial('#', stone)
-				.setShape("##")
-				.build();
-		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_button"), button)
-				.addMaterial('#', stone)
-				.setShape("##")
-				.build();
-		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_wall"), wall)
-				.setOutputCount(6)
-				.addMaterial('#', stone)
-				.setShape("###", "###")
-				.build();
+//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_stairs"), stairs)
+//				.setOutputCount(4)
+//				.addMaterial('#', stone)
+//				.setShape("#  ", "## ", "###")
+//				.build();
+//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_slab"), slab)
+//				.setOutputCount(6)
+//				.addMaterial('#', stone)
+//				.setShape("###")
+//				.build();
+//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_pressure_plate"), pressure_plate)
+//				.addMaterial('#', stone)
+//				.setShape("##")
+//				.build();
+//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_button"), button)
+//				.addMaterial('#', stone)
+//				.setShape("##")
+//				.build();
+//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_wall"), wall)
+//				.setOutputCount(6)
+//				.addMaterial('#', stone)
+//				.setShape("###", "###")
+//				.build();
 
 		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, "polished_" + this.registryName), polished)
 				.setOutputCount(2)
 				.addMaterial('#', stone)
 				.setShape("##", "##")
 				.build();
-		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, "polished_" + this.registryName + "_wall"), polished_wall)
-				.setOutputCount(6)
-				.addMaterial('#', polished)
-				.setShape("###", "###")
-				.build();
+//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, "polished_" + this.registryName + "_wall"), polished_wall)
+//				.setOutputCount(6)
+//				.addMaterial('#', polished)
+//				.setShape("###", "###")
+//				.build();
 
 		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_bricks"), bricks)
 				.setOutputCount(4)
 				.addMaterial('#', polished)
 				.setShape("##", "##")
 				.build();
-		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_stairs"), brick_stairs)
-				.setOutputCount(4)
-				.addMaterial('#', bricks)
-				.setShape("#  ", "## ", "###")
-				.build();
-		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_slab"), brick_slab)
-				.setOutputCount(6)
-				.addMaterial('#', bricks)
-				.setShape("###")
-				.build();
-		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_pressure_plate"), brick_pressure_plate)
-				.addMaterial('#', bricks)
-				.setShape("##")
-				.build();
-		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_button"), brick_button)
-				.addMaterial('#', bricks)
-				.setShape("##")
-				.build();
-		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_wall"), brick_wall)
-				.setOutputCount(6)
-				.addMaterial('#', bricks)
-				.setShape("###", "###")
-				.build();
+//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_stairs"), brick_stairs)
+//				.setOutputCount(4)
+//				.addMaterial('#', bricks)
+//				.setShape("#  ", "## ", "###")
+//				.build();
+//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_slab"), brick_slab)
+//				.setOutputCount(6)
+//				.addMaterial('#', bricks)
+//				.setShape("###")
+//				.build();
+//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_pressure_plate"), brick_pressure_plate)
+//				.addMaterial('#', bricks)
+//				.setShape("##")
+//				.build();
+//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_button"), brick_button)
+//				.addMaterial('#', bricks)
+//				.setShape("##")
+//				.build();
+//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_wall"), brick_wall)
+//				.setOutputCount(6)
+//				.addMaterial('#', bricks)
+//				.setShape("###", "###")
+//				.build();
 
 		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_tiles"), tiles)
 				.setOutputCount(2)
@@ -180,22 +200,22 @@ public class StoneMaterial extends ComplexMaterial {
 		});*/
 
 		// Item Tags //
-		TagHelper.addTag(ItemTags.SLABS, slab, brick_slab);
+//		TagHelper.addTag(ItemTags.SLABS, slab, brick_slab);
 		TagHelper.addTag(ItemTags.STONE_BRICKS, bricks);
-		TagHelper.addTag(ItemTags.STONE_CRAFTING_MATERIALS, stone, stairs, slab, pressure_plate, button, wall, bricks,
-				brick_stairs, brick_slab, brick_pressure_plate, brick_button, brick_wall, polished, polished_wall, tiles);
-		TagHelper.addTag(ItemTags.STONE_TOOL_MATERIALS, stone, stairs, slab, pressure_plate, button, wall, bricks,
-				brick_stairs, brick_slab, brick_pressure_plate, brick_button, brick_wall, polished, polished_wall, tiles);
+		TagHelper.addTag(ItemTags.STONE_CRAFTING_MATERIALS, stone/*, stairs, slab, pressure_plate, button, wall*/, bricks,
+				/*brick_stairs, brick_slab, brick_pressure_plate, brick_button, brick_wall, */polished/*, polished_wall*/, tiles);
+		TagHelper.addTag(ItemTags.STONE_TOOL_MATERIALS, stone, /*stairs, slab, pressure_plate, button, wall, */bricks,
+				/*brick_stairs, brick_slab, brick_pressure_plate, brick_button, brick_wall, */polished/*, polished_wall*/, tiles);
 
 		// Block Tags //
 		TagHelper.addTag(BlockTags.BASE_STONE_OVERWORLD, stone);
 		TagHelper.addTag(BlockTags.STONE_BRICKS, bricks);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, stone, stairs, slab, pressure_plate, button, wall, bricks,
-				brick_stairs, brick_slab, brick_pressure_plate, brick_button, brick_wall, polished, polished_wall, tiles);
-		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, stone, stairs, slab, pressure_plate, button, wall, bricks,
-				brick_stairs, brick_slab, brick_pressure_plate, brick_button, brick_wall, polished, polished_wall, tiles);
-		TagHelper.addTag(BlockTags.SLABS, slab, brick_slab);
-		TagHelper.addTag(BlockTags.WALLS, wall, brick_wall, polished_wall);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, stone/*, stairs, slab, pressure_plate, button, wall*/, bricks,
+				/*brick_stairs, brick_slab, brick_pressure_plate, brick_button, brick_wall, */polished/*, polished_wall*/, tiles);
+		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, stone/*, stairs, slab, pressure_plate, button, wall*/, bricks,
+				/*brick_stairs, brick_slab, brick_pressure_plate, brick_button, brick_wall, */polished/*, polished_wall*/, tiles);
+//		TagHelper.addTag(BlockTags.SLABS, slab, brick_slab);
+//		TagHelper.addTag(BlockTags.WALLS, wall, brick_wall, polished_wall);
 	}
 
 	@Override
@@ -221,35 +241,44 @@ public class StoneMaterial extends ComplexMaterial {
 
 	@Override
 	public void generate(ServerLevel world) {
-//		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_stone_cf"));
-//		ConfiguredFeature<?, ?> configuredFeature = BiomeUtils.newConfiguredFeature(configuredFeatureRegistryKey, Feature.ORE
-//				.configured(new OreConfiguration(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.defaultBlockState(), 64))
-//				.range(new RangeConfiguration(UniformHeight.of(VerticalAnchor.bottom(), VerticalAnchor.top())))
-//				.spreadHorizontally()
-//				.repeatRandomly(2));
-//
-//		ResourceKey<ConfiguredFeature<?, ?>> configuredFeature2RegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_stone_cf2"));
-//		ConfiguredFeature<?, ?> configuredFeature2 = BiomeUtils.newConfiguredFeature(configuredFeature2RegistryKey, Feature.ORE
-//				.configured(new OreConfiguration(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.defaultBlockState(), 32))
-//				.range(new RangeConfiguration(UniformHeight.of(VerticalAnchor.bottom(), VerticalAnchor.top())))
-//				.spreadHorizontally()
-//				.repeatRandomly(4));
-//
-//		ResourceKey<ConfiguredFeature<?, ?>> configuredFeature3RegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_stone_cf3"));
-//		ConfiguredFeature<?, ?> configuredFeature3 = BiomeUtils.newConfiguredFeature(configuredFeature3RegistryKey, Feature.ORE
-//				.configured(new OreConfiguration(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, stone.defaultBlockState(), 16))
-//				.range(new RangeConfiguration(UniformHeight.of(VerticalAnchor.bottom(), VerticalAnchor.top())))
-//				.spreadHorizontally()
-//				.repeatRandomly(10));
+		ResourceKey<ConfiguredFeature<?, ?>> largeConfiguredStonePatchResourceKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id("configured_large_" + this.registryName + "_stone_patch"));
+		Holder<ConfiguredFeature<?, ?>> largeConfiguredStonePatchHolder = InnerRegistry.registerConfiguredFeature(world, largeConfiguredStonePatchResourceKey, Feature.ORE,
+				new OreConfiguration(new TagMatchTest(BlockTags.BASE_STONE_OVERWORLD), stone.defaultBlockState(), 64)
+		);
+		ResourceKey<PlacedFeature> largeStonePatchResourceKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id("large_" + this.registryName + "_stone_patch"));
+		Holder<PlacedFeature> largeStonePatchHolder = InnerRegistry.registerPlacedFeature(world, largeStonePatchResourceKey, largeConfiguredStonePatchHolder,
+				PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, InSquarePlacement.spread(), CountPlacement.of(3), RarityFilter.onAverageOnceEvery(10)
+		);
 
-//		world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).forEach(biome -> {
-//			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
-//			List<List<Supplier<ConfiguredFeature<?, ?>>>> preFeatures = accessor.raaGetFeatures();
-//			List<List<Supplier<ConfiguredFeature<?, ?>>>> features = new ArrayList<>(preFeatures.size());
-//			preFeatures.forEach((list) -> { features.add(Lists.newArrayList(list)); });
-//			addFeature(Rands.values(new ConfiguredFeature[]{ configuredFeature, configuredFeature2, configuredFeature3 }), features);
-//			accessor.raaSetFeatures(features);
-//		});
+		ResourceKey<ConfiguredFeature<?, ?>> middleConfiguredStonePatchResourceKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id("configured_middle_" + this.registryName + "_stone_patch"));
+		Holder<ConfiguredFeature<?, ?>> middleConfiguredStonePatchHolder = InnerRegistry.registerConfiguredFeature(world, middleConfiguredStonePatchResourceKey, Feature.ORE,
+				new OreConfiguration(new TagMatchTest(BlockTags.BASE_STONE_OVERWORLD), stone.defaultBlockState(), 32)
+		);
+		ResourceKey<PlacedFeature> middleStonePatchResourceKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id("middle_" + this.registryName + "_stone_patch"));
+		Holder<PlacedFeature> middleStonePatchHolder = InnerRegistry.registerPlacedFeature(world, middleStonePatchResourceKey, middleConfiguredStonePatchHolder,
+				PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, InSquarePlacement.spread(), CountPlacement.of(3), RarityFilter.onAverageOnceEvery(10)
+		);
+
+		ResourceKey<ConfiguredFeature<?, ?>> smallConfiguredStonePatchResourceKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id("configured_small_" + this.registryName + "_stone_patch"));
+		Holder<ConfiguredFeature<?, ?>> smallConfiguredStonePatchHolder = InnerRegistry.registerConfiguredFeature(world, smallConfiguredStonePatchResourceKey, Feature.ORE,
+				new OreConfiguration(new TagMatchTest(BlockTags.BASE_STONE_OVERWORLD), stone.defaultBlockState(), 16)
+		);
+		ResourceKey<PlacedFeature> smallStonePatchResourceKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id("small_" + this.registryName + "_stone_patch"));
+		Holder<PlacedFeature> smallStonePatchHolder = InnerRegistry.registerPlacedFeature(world, smallStonePatchResourceKey, smallConfiguredStonePatchHolder,
+				PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT, InSquarePlacement.spread(), CountPlacement.of(6), RarityFilter.onAverageOnceEvery(10)
+		);
+
+		List<Holder<PlacedFeature>> availableFeatures = List.of(smallStonePatchHolder, middleStonePatchHolder, largeStonePatchHolder);
+		Holder<PlacedFeature> selectedFeatureHolder = Rands.list(availableFeatures);
+
+		LifeCycleAPI.onLevelLoad((biomeWorld, seed, biomes) -> {
+			if (biomeWorld.dimension().equals(Level.OVERWORLD)) {
+				for (Biome biome : biomes) {
+					BiomeAPI.addBiomeFeature(biomes, biome, GenerationStep.Decoration.UNDERGROUND_ORES, List.of(selectedFeatureHolder));
+				}
+				((BiomeSourceAccessor) biomeWorld.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
+			}
+		});
 	}
 
 	@Override
@@ -297,16 +326,16 @@ public class StoneMaterial extends ComplexMaterial {
 		// Registering models
 		ModelHelper.registerSimpleBlockModel(stone, stoneTexID);
 		NameGenerator.addTranslation("block." + mainName, name);
-		NameGenerator.addTranslation("block." + mainName + "_stairs", "block.stairs", name);
-		NameGenerator.addTranslation("block." + mainName + "_slab", "block.slab", name);
+//		NameGenerator.addTranslation("block." + mainName + "_stairs", "block.stairs", name);
+//		NameGenerator.addTranslation("block." + mainName + "_slab", "block.slab", name);
 
 		ModelHelper.registerSimpleBlockModel(polished, frameTexID);
 		NameGenerator.addTranslation("block.raa_materials." + "polished_" + textureBaseName, "block.polished", name);
 
 		ModelHelper.registerSimpleBlockModel(bricks, bricksTexID);
-		NameGenerator.addTranslation("block." + mainName + "_bricks", "block.bricks", name);
-		NameGenerator.addTranslation("block." + mainName + "_brick_stairs", "block.brick_stairs", name);
-		NameGenerator.addTranslation("block." + mainName + "_brick_slab", "block.brick_slab", name);
+//		NameGenerator.addTranslation("block." + mainName + "_bricks", "block.bricks", name);
+//		NameGenerator.addTranslation("block." + mainName + "_brick_stairs", "block.brick_stairs", name);
+//		NameGenerator.addTranslation("block." + mainName + "_brick_slab", "block.brick_slab", name);
 
 		ModelHelper.registerSimpleBlockModel(tiles, tilesTexID);
 		NameGenerator.addTranslation("block." + mainName + "_tiles", "block.tiles", name);

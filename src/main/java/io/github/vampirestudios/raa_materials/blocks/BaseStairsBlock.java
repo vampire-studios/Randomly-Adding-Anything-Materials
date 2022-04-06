@@ -29,9 +29,11 @@ import java.util.Optional;
 
 public class BaseStairsBlock extends StairBlock implements BlockModelProvider {
 	private final Block source;
+	private final ResourceLocation registryName;
 
-	public BaseStairsBlock(Block source) {
+	public BaseStairsBlock(ResourceLocation registryName, Block source) {
 		super(source.defaultBlockState(), FabricBlockSettings.copyOf(source));
+		this.registryName = registryName;
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(HALF, Half.BOTTOM).setValue(SHAPE, StairsShape.STRAIGHT).setValue(WATERLOGGED, false));
 		this.source = source;
 	}

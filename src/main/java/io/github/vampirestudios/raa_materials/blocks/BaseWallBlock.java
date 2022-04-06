@@ -27,9 +27,11 @@ import java.util.Optional;
 
 public class BaseWallBlock extends WallBlock implements BlockModelProvider {
 	private final Block parent;
+	private final ResourceLocation registryName;
 	
-	public BaseWallBlock(Block source) {
+	public BaseWallBlock(ResourceLocation registryName, Block source) {
 		super(FabricBlockSettings.copyOf(source).noOcclusion());
+		this.registryName = registryName;
 		this.parent = source;
 	}
 	
