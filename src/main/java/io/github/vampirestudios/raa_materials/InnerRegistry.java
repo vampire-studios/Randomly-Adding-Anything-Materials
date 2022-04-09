@@ -12,6 +12,7 @@ import io.github.vampirestudios.raa_materials.materials.StoneMaterial;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import io.github.vampirestudios.raa_materials.utils.ChangeableRegistry;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
+import net.fabricmc.fabric.api.event.registry.RegistryEntryRemovedCallback;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.UnbakedModel;
@@ -64,6 +65,7 @@ public class InnerRegistry {
 		PLACED_FEATURES.clear();
 		BLOCKS.clear();
 		MODELED.clear();
+
 
 		if (isClient()) {
 			ModelHelper.clearModels();

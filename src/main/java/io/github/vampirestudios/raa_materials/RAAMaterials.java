@@ -83,7 +83,7 @@ public class RAAMaterials implements RAAAddon {
 				String nbtFile = "data/raa_materials.dat";
 				String materialCompoundName = "materials";
 				if (!world.getServer().getWorldPath(LevelResource.ROOT).resolve(nbtFile).toFile().exists()) {
-					InnerRegistry.clear(world);
+					//InnerRegistry.clear(world);
 
 					if (CONFIG.stoneTypeAmount != 0) {
 						for (int i = 0; i < CONFIG.stoneTypeAmount; i++) {
@@ -127,7 +127,7 @@ public class RAAMaterials implements RAAAddon {
 
 					materials.forEach(material -> material.generate(world));
 				} else {
-					InnerRegistry.clear(world);
+					//InnerRegistry.clear(world);
 					CompoundTag compound;
 
 					try {
