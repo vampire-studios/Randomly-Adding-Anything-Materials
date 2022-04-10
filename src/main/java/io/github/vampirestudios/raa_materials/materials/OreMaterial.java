@@ -297,7 +297,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		ResourceLocation textureID = TextureHelper.makeItemTextureID(this.registryName + "_sword_blade");
 		InnerRegistry.registerTexture(textureID, texture);
 		ResourceLocation texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_sword_handle");
-		BufferTexture texture2 = ProceduralTextures.nonColored(swordHandleTexture);
+		BufferTexture texture2 = ProceduralTextures.randomColored(swordHandleTexture, gradient);
 		InnerRegistry.registerTexture(texture2ID, texture2);
 		InnerRegistry.registerItemModel(this.sword, ModelHelper.makeThreeLayerTool(textureID, texture2ID, TextureHelper.makeItemTextureID("tools/sword/stick")));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_sword"),  String.format("%s Sword", this.name));
