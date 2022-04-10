@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials.mixins.client;
 
 import com.mojang.datafixers.util.Pair;
-import io.github.vampirestudios.raa_materials.InnerRegistry;
+import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import net.fabricmc.fabric.impl.client.texture.FabricSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -20,13 +20,13 @@ import java.util.Set;
 public class SpriteAtlasTextureMixin {
 	@Inject(method = "getBasicSpriteInfos", at = @At("HEAD"))
 	private void loadSpritesStart(ResourceManager resourceManager, Set<ResourceLocation> ids, CallbackInfoReturnable<Collection<TextureAtlasSprite.Info>> info) {
-		ids.removeAll(InnerRegistry.getTextureIDs());
+		ids.removeAll(InnerRegistryClient.getTextureIDs());
 	}
 	
 	@Inject(method = "getBasicSpriteInfos", at = @At("RETURN"), cancellable = true)
 	private void loadSpritesEnd(ResourceManager resourceManager, Set<ResourceLocation> ids, CallbackInfoReturnable<Collection<TextureAtlasSprite.Info>> info) {
 		Collection<TextureAtlasSprite.Info> result = info.getReturnValue();
-		InnerRegistry.iterateTextures((id, img) -> {
+		InnerRegistryClient.iterateTextures((id, img) -> {
 			Pair<Integer, Integer> pair = img.getAnimation().getFrameSize(img.getWidth(), img.getHeight());
 			TextureAtlasSprite.Info spriteInfo = new TextureAtlasSprite.Info(id, pair.getFirst(), pair.getSecond(), img.getAnimation());
 			result.add(spriteInfo);
@@ -36,7 +36,7 @@ public class SpriteAtlasTextureMixin {
 	
 	@Inject(method = "load(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite$Info;IIIII)Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;", at = @At("HEAD"), cancellable = true)
 	private void loadSprite(ResourceManager container, TextureAtlasSprite.Info info, int atlasWidth, int atlasHeight, int maxLevel, int x, int y, CallbackInfoReturnable<TextureAtlasSprite> callbackInfo) {
-		BufferTexture texture = InnerRegistry.getTexture(info.name());
+		BufferTexture texture = InnerRegistryClient.getTexture(info.name());
 		if (texture != null) {
 			try {
 				TextureAtlas atlas = TextureAtlas.class.cast(this);

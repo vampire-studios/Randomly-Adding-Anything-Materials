@@ -7,9 +7,11 @@ import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerat
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.biome.Biome;
 
 import java.util.List;
 import java.util.Locale;
@@ -138,6 +140,6 @@ public abstract class ComplexMaterial {
 		MATERIALS.clear();
 	}
 
-	public abstract void generate(ServerLevel world);
+	public abstract void generate(ServerLevel world, Registry<Biome> biomeRegistry);
 
 }

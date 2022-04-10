@@ -1,13 +1,13 @@
 package io.github.vampirestudios.raa_materials.materials;
 
 import io.github.vampirestudios.raa_materials.InnerRegistry;
+import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.BiomeAPI;
 import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
-import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
-import io.github.vampirestudios.raa_materials.blocks.*;
+import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
@@ -23,7 +23,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -240,7 +239,7 @@ public class StoneMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public void generate(ServerLevel world) {
+	public void generate(ServerLevel world, Registry<Biome> biomeRegistry) {
 		ResourceKey<ConfiguredFeature<?, ?>> largeConfiguredStonePatchResourceKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id("configured_large_" + this.registryName + "_stone_patch"));
 		Holder<ConfiguredFeature<?, ?>> largeConfiguredStonePatchHolder = InnerRegistry.registerConfiguredFeature(world, largeConfiguredStonePatchResourceKey, Feature.ORE,
 				new OreConfiguration(new TagMatchTest(BlockTags.BASE_STONE_OVERWORLD), stone.defaultBlockState(), 64)
@@ -271,14 +270,11 @@ public class StoneMaterial extends ComplexMaterial {
 		List<Holder<PlacedFeature>> availableFeatures = List.of(smallStonePatchHolder, middleStonePatchHolder, largeStonePatchHolder);
 		Holder<PlacedFeature> selectedFeatureHolder = Rands.list(availableFeatures);
 
-		LifeCycleAPI.onLevelLoad((biomeWorld, seed, biomes) -> {
-			if (biomeWorld.dimension().equals(Level.OVERWORLD)) {
-				for (Biome biome : biomes) {
-					BiomeAPI.addBiomeFeature(biomes, biome, GenerationStep.Decoration.UNDERGROUND_ORES, List.of(selectedFeatureHolder));
-				}
-				((BiomeSourceAccessor) biomeWorld.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
-			}
-		});
+		for (Biome biome : biomeRegistry) {
+			BiomeAPI.addBiomeFeature(biomeRegistry, Holder.direct(biome),
+					GenerationStep.Decoration.UNDERGROUND_ORES, List.of(selectedFeatureHolder));
+		}
+		((BiomeSourceAccessor) world.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
 	}
 
 	@Override
@@ -296,7 +292,7 @@ public class StoneMaterial extends ComplexMaterial {
 		values[temp.length] = 0.9f;
 
 		BufferTexture variant = TextureHelper.applyGradient(texture.clone(), gradient);
-		InnerRegistry.registerTexture(stoneTexID, variant);
+		InnerRegistryClient.registerTexture(stoneTexID, variant);
 
 		texture = ProceduralTextures.makeBlurredTexture(texture);
 
@@ -306,14 +302,14 @@ public class StoneMaterial extends ComplexMaterial {
 
 		TextureHelper.applyGradient(variant, gradient);
 		ResourceLocation frameTexID = TextureHelper.makeBlockTextureID("polished_" + textureBaseName);
-		InnerRegistry.registerTexture(frameTexID, variant);
+		InnerRegistryClient.registerTexture(frameTexID, variant);
 
 		overlayTexture = TextureHelper.loadTexture(stoneBrick);
 		TextureHelper.normalize(overlayTexture, 0.1F, 1F);
 		variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
 		TextureHelper.applyGradient(variant, gradient);
 		ResourceLocation bricksTexID = TextureHelper.makeBlockTextureID(textureBaseName + "_bricks");
-		InnerRegistry.registerTexture(bricksTexID, variant);
+		InnerRegistryClient.registerTexture(bricksTexID, variant);
 
 		overlayTexture = TextureHelper.loadTexture(stoneTile);
 		TextureHelper.normalize(overlayTexture, 0.1F, 1F);
@@ -321,36 +317,32 @@ public class StoneMaterial extends ComplexMaterial {
 
 		TextureHelper.applyGradient(variant, gradient);
 		ResourceLocation tilesTexID = TextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
-		InnerRegistry.registerTexture(tilesTexID, variant);
+		InnerRegistryClient.registerTexture(tilesTexID, variant);
 
 		// Registering models
 		ModelHelper.registerSimpleBlockModel(stone, stoneTexID);
 		NameGenerator.addTranslation("block." + mainName, name);
-//		NameGenerator.addTranslation("block." + mainName + "_stairs", "block.stairs", name);
-//		NameGenerator.addTranslation("block." + mainName + "_slab", "block.slab", name);
 
 		ModelHelper.registerSimpleBlockModel(polished, frameTexID);
 		NameGenerator.addTranslation("block.raa_materials." + "polished_" + textureBaseName, "block.polished", name);
 
 		ModelHelper.registerSimpleBlockModel(bricks, bricksTexID);
-//		NameGenerator.addTranslation("block." + mainName + "_bricks", "block.bricks", name);
-//		NameGenerator.addTranslation("block." + mainName + "_brick_stairs", "block.brick_stairs", name);
-//		NameGenerator.addTranslation("block." + mainName + "_brick_slab", "block.brick_slab", name);
+		NameGenerator.addTranslation("block." + mainName + "_bricks", "block.bricks", name);
 
 		ModelHelper.registerSimpleBlockModel(tiles, tilesTexID);
 		NameGenerator.addTranslation("block." + mainName + "_tiles", "block.tiles", name);
 	}
 
 	static {
-		stoneFrames = new ResourceLocation[2];
+		stoneFrames = new ResourceLocation[5];
 		for (int i = 0; i < stoneFrames.length; i++) {
 			stoneFrames[i] = id("textures/block/stone_frame_0" + (i+1) + ".png");
 		}
-		stoneBricks = new ResourceLocation[6];
+		stoneBricks = new ResourceLocation[11];
 		for (int i = 0; i < stoneBricks.length; i++) {
 			stoneBricks[i] = id("textures/block/stone_bricks_0" + (i+1) + ".png");
 		}
-		stoneTiles = new ResourceLocation[3];
+		stoneTiles = new ResourceLocation[6];
 		for (int i = 0; i < stoneTiles.length; i++) {
 			stoneTiles[i] = id("textures/block/stone_tiles_0" + (i+1) + ".png");
 		}

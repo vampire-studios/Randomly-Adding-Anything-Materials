@@ -1,20 +1,18 @@
 package io.github.vampirestudios.raa_materials.materials;
 
-import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
-import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
-import io.github.vampirestudios.raa_materials.InnerRegistry;
+import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
+import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
+import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
-import java.util.Locale;
 import java.util.Random;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
@@ -116,14 +114,13 @@ public class GemOreMaterial extends OreMaterial {
 
 		ResourceLocation textureID = TextureHelper.makeItemTextureID(this.registryName + "_block");
 		BufferTexture texture = ProceduralTextures.randomColored(storageBlockTexture, gradient);
-		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistryClient.registerTexture(textureID, texture);
 
-		InnerRegistry.registerBlockModel(this.storageBlock, ModelHelper.makeCube(textureID));
-		InnerRegistry.registerItemModel(this.storageBlock.asItem(), ModelHelper.makeCube(textureID));
+		InnerRegistryClient.registerBlockModel(this.storageBlock, ModelHelper.makeCube(textureID));
+		InnerRegistryClient.registerItemModel(this.storageBlock.asItem(), ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), String.format("%s Block", this.name));
 
 		makeColoredItemAssets(gemTexture, this.droppedItem, gradient, this.registryName + "_gem", "%s Gem");
-
 	}
 
 	static {
@@ -132,7 +129,7 @@ public class GemOreMaterial extends OreMaterial {
 			oreVeinTextures[i] = id("textures/block/ores/gems/ore_" + (i+1) + ".png");
 		}
 
-		storageBlockTextures = new ResourceLocation[11];
+		storageBlockTextures = new ResourceLocation[14];
 		for (int i = 0; i < storageBlockTextures.length; i++) {
 			storageBlockTextures[i] = id("textures/block/storage_blocks/gems/gem_" + (i+1) + ".png");
 		}

@@ -24,10 +24,12 @@
 
 package io.github.vampirestudios.raa_materials.utils;
 
+import io.github.vampirestudios.raa_materials.api.ExtendedRegistry;
 import io.github.vampirestudios.raa_materials.items.RAABlockItem;
 import io.github.vampirestudios.raa_materials.items.RAABlockItemAlt;
 import net.minecraft.core.Registry;
 import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -41,7 +43,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.BlockEntityType.Builder;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 public class RegistryUtils {
+    public static final List<ResourceKey<?>> REGISTERED_KEYS = new ArrayList<>();
 
     public static Block register(Block block, ResourceLocation name, CreativeModeTab itemGroup, String upperCaseName, RAABlockItem.BlockType blockType) {
         if (Registry.BLOCK.get(name) == Blocks.AIR) {
@@ -102,5 +109,34 @@ public class RegistryUtils {
         BlockEntityType<T> blockEntityType = builder.build(null);
         Registry.register(Registry.BLOCK_ENTITY_TYPE, name, blockEntityType);
         return blockEntityType;
+    }
+
+    public static void unfreeze(Registry<?> registry) {
+        ((ExtendedRegistry<?>) registry).dynreg$unfreeze();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> void remove(ResourceKey<T> key) {
+        if (getRegistryOf(key).isPresent()) {
+            ((ExtendedRegistry<T>) getRegistryOf(key).get()).dynreg$remove(key);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void remove(Registry<?> registry, ResourceLocation id) {
+        ((ExtendedRegistry<Object>) registry).dynreg$remove(ResourceKey.create((ResourceKey<? extends Registry<Object>>) registry.key(), id));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Optional<Registry<T>> getRegistryOf(ResourceKey<T> key) {
+        return (Optional<Registry<T>>) Registry.REGISTRY.getOptional(key.registry());
+    }
+
+    public static void addRegisteredKey(ResourceLocation registryId, ResourceLocation entryId) {
+        REGISTERED_KEYS.add(ResourceKey.create(ResourceKey.createRegistryKey(registryId), entryId));
+    }
+
+    public static void removeRegisteredKey(ResourceLocation registryId, ResourceLocation entryId) {
+        REGISTERED_KEYS.add(ResourceKey.create(ResourceKey.createRegistryKey(registryId), entryId));
     }
 }

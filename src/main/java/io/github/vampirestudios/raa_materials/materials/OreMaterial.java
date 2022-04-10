@@ -3,10 +3,10 @@ package io.github.vampirestudios.raa_materials.materials;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
+import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.BiomeAPI;
 import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
-import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.blocks.BaseDropBlock;
@@ -29,7 +29,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ShovelItem;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -127,7 +126,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		this.shovelStickTexture = textureInformation.getShovelStick();
 
 		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(target.block()).requiresTool().mapColor(MaterialColor.COLOR_GRAY);
-		this.droppedItem = RAASimpleItem.register(this.name, this.registryName, new Item.Properties().tab(RAAMaterials.RAA_RESOURCES), rawType);
+		this.droppedItem = RAASimpleItem.register(this.registryName, new Item.Properties().tab(RAAMaterials.RAA_RESOURCES), rawType);
 		ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new BaseDropBlock(material, this.droppedItem), RAAMaterials.RAA_ORES);
 		drop = ((BaseDropBlock)ore).getDrop();
 		TagHelper.addTag(target.toolType(), ore);
@@ -211,7 +210,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public void generate(ServerLevel world) {
+	public void generate(ServerLevel world, Registry<Biome> biomeRegistry) {
 		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureCommonRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_ore_cf"));
 		Holder<ConfiguredFeature<?, ?>> configuredFeatureCommon = InnerRegistry.registerConfiguredFeature(world, configuredFeatureCommonRegistryKey, Feature.ORE ,
 				new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), (size / 2), hiddenChance)
@@ -240,15 +239,11 @@ public abstract class OreMaterial extends ComplexMaterial {
 		List<Holder<PlacedFeature>> availableFeatures = List.of(placedFeatureCommonHolder, placedFeatureMiddleRareHolder, placedFeatureHugeRareHolder);
 		Holder<PlacedFeature> selectedFeatureHolder = Rands.list(availableFeatures);
 
-		LifeCycleAPI.onLevelLoad((biomeWorld, seed, biomes) -> {
-			if (biomeWorld.dimension().equals(Level.OVERWORLD)) {
-				for (Biome biome : biomes) {
-					BiomeAPI.addBiomeFeature(biomes, biome, GenerationStep.Decoration.UNDERGROUND_ORES, List.of(selectedFeatureHolder));
-				}
-				((BiomeSourceAccessor) biomeWorld.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
-			}
-		});
-
+		for (Biome biome : biomeRegistry) {
+			BiomeAPI.addBiomeFeature(biomeRegistry, Holder.direct(biome),
+					GenerationStep.Decoration.UNDERGROUND_ORES, List.of(selectedFeatureHolder));
+		}
+		((BiomeSourceAccessor) world.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
 	}
 
 	@Override
@@ -295,50 +290,50 @@ public abstract class OreMaterial extends ComplexMaterial {
 		// Swords
 		BufferTexture texture = ProceduralTextures.randomColored(swordBladeTexture, gradient);
 		ResourceLocation textureID = TextureHelper.makeItemTextureID(this.registryName + "_sword_blade");
-		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistryClient.registerTexture(textureID, texture);
 		ResourceLocation texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_sword_handle");
 		BufferTexture texture2 = ProceduralTextures.randomColored(swordHandleTexture, gradient);
-		InnerRegistry.registerTexture(texture2ID, texture2);
-		InnerRegistry.registerItemModel(this.sword, ModelHelper.makeThreeLayerTool(textureID, texture2ID, TextureHelper.makeItemTextureID("tools/sword/stick")));
+		InnerRegistryClient.registerTexture(texture2ID, texture2);
+		InnerRegistryClient.registerItemModel(this.sword, ModelHelper.makeThreeLayerTool(textureID, texture2ID, TextureHelper.makeItemTextureID("tools/sword/stick")));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_sword"),  String.format("%s Sword", this.name));
 
 		// Pickaxes
 		texture = ProceduralTextures.randomColored(pickaxeHeadTexture, gradient);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_pickaxe_head");
-		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistryClient.registerTexture(textureID, texture);
 		texture2 = ProceduralTextures.nonColored(pickaxeStickTexture);
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_pickaxe_stick");
-		InnerRegistry.registerTexture(texture2ID, texture2);
-		InnerRegistry.registerItemModel(this.pickaxe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
+		InnerRegistryClient.registerTexture(texture2ID, texture2);
+		InnerRegistryClient.registerItemModel(this.pickaxe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_pickaxe"),  String.format("%s Pickaxe", this.name));
 
 		// Axes
 		texture = ProceduralTextures.randomColored(axeHeadTexture, gradient);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_axe_head");
-		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistryClient.registerTexture(textureID, texture);
 		texture2 = ProceduralTextures.nonColored(axeStickTexture);
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_axe_stick");
-		InnerRegistry.registerTexture(texture2ID, texture2);
-		InnerRegistry.registerItemModel(this.axe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
+		InnerRegistryClient.registerTexture(texture2ID, texture2);
+		InnerRegistryClient.registerItemModel(this.axe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_axe"),  String.format("%s Axe", this.name));
 
 		// Hoes
 		texture = ProceduralTextures.randomColored(hoeHeadTexture, gradient);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_hoe_head");
-		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistryClient.registerTexture(textureID, texture);
 		texture2 = ProceduralTextures.nonColored(hoeStickTexture);
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_hoe_stick");
-		InnerRegistry.registerTexture(texture2ID, texture2);
-		InnerRegistry.registerItemModel(this.hoe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
+		InnerRegistryClient.registerTexture(texture2ID, texture2);
+		InnerRegistryClient.registerItemModel(this.hoe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_hoe"),  String.format("%s Hoe", this.name));
 
 		texture = ProceduralTextures.randomColored(shovelHeadTexture, gradient);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_shovel_head");
-		InnerRegistry.registerTexture(textureID, texture);
+		InnerRegistryClient.registerTexture(textureID, texture);
 		texture2 = ProceduralTextures.nonColored(shovelStickTexture);
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_shovel_stick");
-		InnerRegistry.registerTexture(texture2ID, texture2);
-		InnerRegistry.registerItemModel(this.shovel, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
+		InnerRegistryClient.registerTexture(texture2ID, texture2);
+		InnerRegistryClient.registerItemModel(this.shovel, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shovel"), String.format("%s Shovel", this.name));
 	}
 
@@ -351,8 +346,10 @@ public abstract class OreMaterial extends ComplexMaterial {
 	public void makeColoredItemAssets(ResourceLocation bufferTexture, Item item, ColorGradient gradient, String regName, String name) {
 		BufferTexture texture = ProceduralTextures.randomColored(bufferTexture, gradient);
 		ResourceLocation textureID = TextureHelper.makeItemTextureID(regName);
-		InnerRegistry.registerTexture(textureID, texture);
-		InnerRegistry.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
+		InnerRegistryClient.registerTexture(textureID, texture);
+		InnerRegistryClient.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
+		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)item).getItemType().apply(registryName),"item." +
+				((RAASimpleItem)item).getItemType().registryName(), name);
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName), String.format(name, this.name));
 	}
 

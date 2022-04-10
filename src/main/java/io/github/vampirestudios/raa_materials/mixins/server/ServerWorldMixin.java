@@ -13,16 +13,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftServer.class)
 public class ServerWorldMixin {
-
 	@Inject(method = "stopServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;saveAllChunks(ZZZ)Z"))
-	private void aaaaaa(CallbackInfo ci){
-
-		for(ServerLevel serverLevel : ((MinecraftServer) (Object) this).getAllLevels()) {
-			if(serverLevel.dimension().equals(Level.OVERWORLD)){
-				InnerRegistry.clear(serverLevel);
+	private void aaaaaa(CallbackInfo ci) {
+		for (ServerLevel serverLevel : ((MinecraftServer) (Object) this).getAllLevels()) {
+			if (serverLevel.dimension().equals(Level.OVERWORLD)) {
+				InnerRegistry.clear();
 				RAAMaterials.LOGGER.info("AAAAAAAA, Clearing registries hopefully");
 			}
 		}
 	}
-
 }

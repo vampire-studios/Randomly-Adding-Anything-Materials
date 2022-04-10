@@ -9,6 +9,7 @@ import io.github.vampirestudios.raa_materials.utils.CollectionsUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -22,8 +23,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class BiomeAPI {
-	private static final Map<String, Map<String, List<Holder<PlacedFeature>>>> MODIFIED_STEPS = Maps.newHashMap();
-	private static final Map<String, Biome> MODIFIED_BIOMES = Maps.newHashMap();
+	private static final Map<ResourceLocation, Map<String, List<Holder<PlacedFeature>>>> MODIFIED_STEPS = Maps.newHashMap();
+	private static final Map<ResourceLocation, Holder<Biome>> MODIFIED_BIOMES = Maps.newHashMap();
 
 	/**
 	 * Adds new features to existing biome.
@@ -31,12 +32,12 @@ public class BiomeAPI {
 	 * @param step a {@link GenerationStep.Decoration} step for the feature.
 	 * @param additionalFeatures List of {@link ConfiguredFeature} to add.
 	 */
-	public static void addBiomeFeature(Registry<Biome> biomeRegistry, Biome biome, GenerationStep.Decoration step, List<Holder<PlacedFeature>> additionalFeatures) {
-		GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
-		List<HolderSet<PlacedFeature>> allFeatures = CollectionsUtil.getMutable(accessor.raa_getFeatures());
+	public static void addBiomeFeature(Registry<Biome> biomeRegistry, Holder<Biome> biome, GenerationStep.Decoration step, List<Holder<PlacedFeature>> additionalFeatures) {
+		GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.value().getGenerationSettings();
+		List<HolderSet<PlacedFeature>> allFeatures = CollectionsUtil.getMutable(biome.value().getGenerationSettings().features());
 		List<Holder<PlacedFeature>> features = getFeaturesListCopy(allFeatures, step);
 
-		String biomekey = biomeRegistry.getKey(biome).toString();
+		ResourceLocation biomekey = biomeRegistry.getKey(biome.value());
 		MODIFIED_BIOMES.put(biomekey, biome);
 		Map<String, List<Holder<PlacedFeature>>> added;
 		if (MODIFIED_STEPS.containsKey(biomekey)){
@@ -85,11 +86,11 @@ public class BiomeAPI {
 	 * Clears out added features on existing biomes.
 	 */
 	public static void clearFeatures() {
-		for (Map.Entry<String, Map<String, List<Holder<PlacedFeature>>>> biomemap : MODIFIED_STEPS.entrySet()) {
-			Biome biome = MODIFIED_BIOMES.get(biomemap.getKey());
+		for (Map.Entry<ResourceLocation, Map<String, List<Holder<PlacedFeature>>>> biomemap : MODIFIED_STEPS.entrySet()) {
+			Holder<Biome> biome = MODIFIED_BIOMES.get(biomemap.getKey());
 
-			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.getGenerationSettings();
-			List<HolderSet<PlacedFeature>> allFeatures = CollectionsUtil.getMutable(accessor.raa_getFeatures());
+			GenerationSettingsAccessor accessor = (GenerationSettingsAccessor) biome.value().getGenerationSettings();
+			List<HolderSet<PlacedFeature>> allFeatures = CollectionsUtil.getMutable(biome.value().getGenerationSettings().features());
 
 			for (Map.Entry<String, List<Holder<PlacedFeature>>> aa : biomemap.getValue().entrySet()){
 				GenerationStep.Decoration step = GenerationStep.Decoration.valueOf(aa.getKey());
@@ -98,12 +99,7 @@ public class BiomeAPI {
 				for (Holder<PlacedFeature> feature : aa.getValue()){
 					features.remove(feature);
 				}
-				for (Holder<PlacedFeature> feature : features) {
-					System.out.println(feature.value().toString());
-					if(feature.value() == null){
-						features.remove(feature);
-					}
-				}
+				features.removeIf(feature -> feature.value() == null);
 
 				allFeatures.set(step.ordinal(), HolderSet.direct(features));
 				accessor.raa_setFeatures(allFeatures);

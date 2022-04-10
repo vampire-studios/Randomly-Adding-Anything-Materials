@@ -1,21 +1,14 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.mojang.serialization.Lifecycle;
 import io.github.vampirestudios.raa_materials.api.BiomeAPI;
-import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.materials.CrystalMaterial;
 import io.github.vampirestudios.raa_materials.materials.GemOreMaterial;
 import io.github.vampirestudios.raa_materials.materials.MetalOreMaterial;
 import io.github.vampirestudios.raa_materials.materials.StoneMaterial;
-import io.github.vampirestudios.raa_materials.utils.BufferTexture;
-import io.github.vampirestudios.raa_materials.utils.ChangeableRegistry;
+import io.github.vampirestudios.raa_materials.utils.RegistryUtils;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
-import net.fabricmc.fabric.api.event.registry.RegistryEntryRemovedCallback;
-import net.minecraft.client.renderer.block.BlockModelShaper;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.MappedRegistry;
@@ -28,48 +21,40 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 
-import java.util.*;
-import java.util.function.BiConsumer;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
 
+import static io.github.vampirestudios.raa_materials.RAAMaterials.LOGGER;
 import static io.github.vampirestudios.raa_materials.RAAMaterials.isClient;
+import static io.github.vampirestudios.raa_materials.utils.RegistryUtils.REGISTERED_KEYS;
 
 public class InnerRegistry {
-	private static final Map<BlockState, UnbakedModel> BLOCK_MODELS = Maps.newHashMap();
-	private static final Map<Item, BlockModel> ITEM_MODELS = Maps.newHashMap();
-	private static final Map<ResourceLocation, BlockModel> FREE_MODELS = Maps.newHashMap();
-	private static final Map<ResourceLocation, BufferTexture> TEXTURES = Maps.newHashMap();
+
 	private static final Map<ResourceLocation, Block> BLOCKS = Maps.newHashMap();
 	private static final Map<ResourceLocation, Item> ITEMS = Maps.newHashMap();
 	private static final Map<ResourceLocation, ConfiguredFeature<?, ?>> CONFIGURED_FEATURES = Maps.newHashMap();
 	private static final Map<ResourceLocation, PlacedFeature> PLACED_FEATURES = Maps.newHashMap();
-	private static final Set<ResourceLocation> MODELED = Sets.newHashSet();
 	
-	public static void clear(ServerLevel level) {
+	public static void clear() {
 		BiomeAPI.clearFeatures();
-		clearRegistry(level.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY), CONFIGURED_FEATURES.keySet());
-		clearRegistry(level.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY), PLACED_FEATURES.keySet());
-		clearRegistry(Registry.BLOCK, BLOCKS.keySet());
-		clearRegistry(Registry.ITEM, ITEMS.keySet());
+//		clearRegistry(level.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY), CONFIGURED_FEATURES.keySet());
+//		clearRegistry(level.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY), PLACED_FEATURES.keySet());
+//		clearRegistry(Registry.BLOCK, BLOCKS.keySet());
+//		clearRegistry(Registry.ITEM, ITEMS.keySet());
 
-		BLOCK_MODELS.clear();
-		ITEM_MODELS.clear();
-		TEXTURES.clear();
+		if (isClient()) InnerRegistryClient.clearClient();
+
 		CONFIGURED_FEATURES.clear();
 		PLACED_FEATURES.clear();
 		BLOCKS.clear();
-		MODELED.clear();
-
-
-		if (isClient()) {
-			ModelHelper.clearModels();
-		}
+		ITEMS.clear();
 
 		StoneMaterial.resetMaterials();
 		MetalOreMaterial.resetMaterials();
@@ -77,11 +62,22 @@ public class InnerRegistry {
 		CrystalMaterial.resetMaterials();
 
 		TagHelper.clearTags();
-	}
-	
-	private static <T> void clearRegistry(Registry<T> registry, Set<ResourceLocation> ids) {
-		ids.forEach(((ChangeableRegistry) registry)::remove);
-		((ChangeableRegistry) registry).recalculateLastID();
+
+		if (REGISTERED_KEYS.size() > 0) {
+			for (var key : REGISTERED_KEYS) {
+				try {
+					if (key != null) RegistryUtils.remove(key);
+				} catch (Exception e) {
+					LOGGER.error("Couldn't remove {}", key, e);
+				}
+			}
+			REGISTERED_KEYS.clear();
+		}
+
+		BLOCKS.forEach((resourceLocation, block) -> RegistryUtils.removeRegisteredKey(Registry.BLOCK.key().location(), resourceLocation));
+		ITEMS.forEach((resourceLocation, item) -> RegistryUtils.removeRegisteredKey(Registry.ITEM.key().location(), resourceLocation));
+		CONFIGURED_FEATURES.forEach((resourceLocation, configuredFeature) -> RegistryUtils.removeRegisteredKey(Registry.CONFIGURED_FEATURE_REGISTRY.location(), resourceLocation));
+		PLACED_FEATURES.forEach((resourceLocation, placedFeature) -> RegistryUtils.removeRegisteredKey(Registry.PLACED_FEATURE_REGISTRY.location(), resourceLocation));
 	}
 
 	private static <T> T replace(DefaultedRegistry<T> registry, ResourceLocation id, T replacement) {
@@ -126,6 +122,7 @@ public class InnerRegistry {
 			Registry.register(Registry.BLOCK, id, block);
 		}
 		BLOCKS.put(id, block);
+		RegistryUtils.addRegisteredKey(Registry.BLOCK.key().location(), id);
 	}
 	
 	public static Item registerItem(ResourceLocation id, Item item) {
@@ -135,6 +132,7 @@ public class InnerRegistry {
 			Registry.register(Registry.ITEM, id, item);
 		}
 		ITEMS.put(id, item);
+		RegistryUtils.addRegisteredKey(Registry.ITEM.key().location(), id);
 		return item;
 	}
 
@@ -155,6 +153,7 @@ public class InnerRegistry {
 			configuredFeatureHolder = BuiltinRegistries.register(registry, id.location(), feature);
 		}
 		CONFIGURED_FEATURES.put(id.location(), feature);
+		RegistryUtils.addRegisteredKey(registry.key().location(), id.location());
 		return configuredFeatureHolder;
 	}
 
@@ -171,73 +170,8 @@ public class InnerRegistry {
 			placedFeatureHolder = BuiltinRegistries.register(registry, id.location(), feature);
 		}
 		PLACED_FEATURES.put(id.location(), feature);
+		RegistryUtils.addRegisteredKey(registry.key().location(), id.location());
 		return placedFeatureHolder;
-	}
-
-	public static void registerTexture(ResourceLocation id, BufferTexture image) {
-		TEXTURES.put(id, image);
-	}
-
-	public static void registerBlockModel(BlockState state, String json) {
-		BlockModel model = BlockModel.fromString(json);
-		registerBlockModel(state, model);
-	}
-
-	public static void registerBlockModel(BlockState state, UnbakedModel model) {
-		ResourceLocation id = Registry.BLOCK.getKey(state.getBlock());
-		if (model instanceof BlockModel) {
-			((BlockModel) model).name = BlockModelShaper.stateToModelLocation(id, state).toString();
-		}
-		BLOCK_MODELS.put(state, model);
-		MODELED.add(id);
-	}
-	
-	public static void registerBlockModel(Block block, String json) {
-		BlockModel model = BlockModel.fromString(json);
-		BlockState state = block.defaultBlockState();
-		registerBlockModel(state, model);
-	}
-
-	public static void registerModel(ResourceLocation id, String json) {
-		BlockModel model = BlockModel.fromString(json);
-		model.name = id.toString();
-		FREE_MODELS.put(id, model);
-	}
-	
-	public static void registerItemModel(Item item, String json) {
-		BlockModel model = BlockModel.fromString(json);
-		ResourceLocation id = Registry.ITEM.getKey(item);
-		model.name = id.getNamespace() + ":item/" + id.getPath();
-		ITEM_MODELS.put(item, model);
-		MODELED.add(id);
-	}
-	
-	public static Collection<ResourceLocation> getTextureIDs() {
-		return TEXTURES.keySet();
-	}
-	
-	public static BufferTexture getTexture(ResourceLocation id) {
-		return TEXTURES.get(id);
-	}
-	
-	public static UnbakedModel getModel(BlockState state) {
-		return BLOCK_MODELS.get(state);
-	}
-
-	public static BlockModel getModel(ResourceLocation id) {
-		return FREE_MODELS.get(id);
-	}
-
-	public static BlockModel getModel(Item item) {
-		return ITEM_MODELS.get(item);
-	}
-	
-	public static void iterateTextures(BiConsumer<? super ResourceLocation, ? super BufferTexture> consumer) {
-		TEXTURES.forEach(consumer);
-	}
-	
-	public static boolean hasCustomModel(ResourceLocation id) {
-		return MODELED.contains(id);
 	}
 
 	public static <T> T register(Registry<T> registry, ResourceLocation name, T idk) {

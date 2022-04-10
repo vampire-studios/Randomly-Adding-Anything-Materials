@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials.mixins.client;
 
 import io.github.vampirestudios.raa_core.RAACore;
-import io.github.vampirestudios.raa_materials.InnerRegistry;
+import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BlockModel;
@@ -37,7 +37,7 @@ public class ModelLoaderMixin {
 
 	@Inject(method = "loadBlockModel", at = @At("HEAD"), cancellable = true)
 	private void procmcLoadModelFromJson(ResourceLocation id, CallbackInfoReturnable<BlockModel> info) throws IOException {
-		BlockModel model = InnerRegistry.getModel(id);
+		BlockModel model = InnerRegistryClient.getModel(id);
 		if (model != null) {
 			info.setReturnValue(model);
 			info.cancel();
@@ -49,7 +49,7 @@ public class ModelLoaderMixin {
 		String path = id.getPath();
 		if (path.startsWith("item/")) {
 			Item item = Registry.ITEM.get(new ResourceLocation(id.getNamespace(), path.substring(path.lastIndexOf('/') + 1)));
-			BlockModel model = InnerRegistry.getModel(item);
+			BlockModel model = InnerRegistryClient.getModel(item);
 			if (model != null) {
 				model.name = id.toString();
 				info.setReturnValue(model);
@@ -62,10 +62,10 @@ public class ModelLoaderMixin {
 	private void loadModel(ResourceLocation id, CallbackInfo info) {
 		if (id instanceof ModelResourceLocation modelID) {
 			ResourceLocation cleanID = new ResourceLocation(id.getNamespace(), id.getPath());
-			if (InnerRegistry.hasCustomModel(cleanID)) {
+			if (InnerRegistryClient.hasCustomModel(cleanID)) {
 				if (modelID.getVariant().equals("inventory")) {
 					Item item = Registry.ITEM.get(cleanID);
-					BlockModel model = InnerRegistry.getModel(item);
+					BlockModel model = InnerRegistryClient.getModel(item);
 					if (model != null) {
 						ModelHelper.MODELS.put(Registry.ITEM.get(cleanID), modelID);
 						ResourceLocation identifier2 = new ResourceLocation(id.getNamespace(), "item/" + id.getPath());
@@ -94,20 +94,8 @@ public class ModelLoaderMixin {
 							.filter(state -> modelID.equals(BlockModelShaper.stateToModelLocation(cleanID, state)))
 							.findFirst();
 					if (possibleState.isPresent()) {
-						UnbakedModel model = InnerRegistry.getModel(possibleState.get());
+						UnbakedModel model = InnerRegistryClient.getModel(possibleState.get());
 						if (model != null) {
-							/*if (model instanceof MultiPart) {
-								possibleStates.forEach(state -> {
-									Identifier stateId = BlockModels.getModelId(
-											cleanID,
-											state
-									);
-									putModel(stateId, model);
-								});
-							}
-							else {
-								putModel(modelID, model);
-							}*/
 							possibleStates.forEach(state -> {
 								ResourceLocation stateId = BlockModelShaper.stateToModelLocation(cleanID, state);
 								cacheAndQueueDependencies(stateId, model);
