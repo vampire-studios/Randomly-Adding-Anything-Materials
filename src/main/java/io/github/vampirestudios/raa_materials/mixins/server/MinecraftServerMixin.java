@@ -32,4 +32,9 @@ public class MinecraftServerMixin {
 		accessor.raa_setRecipesByName(CustomRecipeManager.getMapByName(accessor.raa_getRecipesByName()));
 		accessor.raa_setRecipes(CustomRecipeManager.getMap(accessor.raa_getRecipes()));
 	}
+
+	@Inject(method = "onServerExit", at = @At(value = "RETURN"))
+	private void procmcOnExit(CallbackInfo info) {
+//		RAAMaterials.onServerStop((MinecraftServer) (Object) this);
+	}
 }

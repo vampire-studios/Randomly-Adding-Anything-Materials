@@ -7,6 +7,9 @@ import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
 import io.github.vampirestudios.raa_materials.materials.*;
+import io.github.vampirestudios.raa_materials.utils.BlockFixer;
+import io.github.vampirestudios.raa_materials.utils.ItemFixer;
+import io.github.vampirestudios.raa_materials.utils.RegistryUtils;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
@@ -19,17 +22,20 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.LevelResource;
 import org.lwjgl.glfw.GLFW;
@@ -68,8 +74,7 @@ public class RAAMaterials implements RAAAddon {
 		return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
 	}
 
-	public static void onServerStart(final ServerLevel world, boolean overworld) {
-		long seed = world.getSeed();
+	public static void onServerStart(final ServerLevel world, long seed, Registry<Biome> biomeRegistry, boolean overworld) {
 		Random random = Rands.getRandom();
 		random.setSeed(seed);
 
@@ -83,7 +88,8 @@ public class RAAMaterials implements RAAAddon {
 				String nbtFile = "data/raa_materials.dat";
 				String materialCompoundName = "materials";
 				if (!world.getServer().getWorldPath(LevelResource.ROOT).resolve(nbtFile).toFile().exists()) {
-					//InnerRegistry.clear(world);
+					InnerRegistry.clear();
+					LOGGER.info("Creating new materials");
 
 					if (CONFIG.stoneTypeAmount != 0) {
 						for (int i = 0; i < CONFIG.stoneTypeAmount; i++) {
@@ -125,9 +131,11 @@ public class RAAMaterials implements RAAAddon {
 						e.printStackTrace();
 					}
 
-					materials.forEach(material -> material.generate(world));
+					materials.forEach(material -> material.generate(world, biomeRegistry));
 				} else {
-					//InnerRegistry.clear(world);
+					InnerRegistry.clear();
+					LOGGER.info("Loading materials");
+
 					CompoundTag compound;
 
 					try {
@@ -142,7 +150,7 @@ public class RAAMaterials implements RAAAddon {
 						list.forEach(nbtElement -> materials.add(ComplexMaterial.readFromNbt((CompoundTag) nbtElement)));
 					}
 
-					materials.forEach(material -> material.generate(world));
+					materials.forEach(material -> material.generate(world, biomeRegistry));
 				}
 
 				world.getServer().reloadResources(world.getServer().getPackRepository().getSelectedIds());
@@ -198,24 +206,10 @@ public class RAAMaterials implements RAAAddon {
 		Registry.register(TARGETS, minecraftId("mycelium"), OreMaterial.Target.MYCELIUM);
 		Registry.register(TARGETS, minecraftId("podzol"), OreMaterial.Target.PODZOL);
 
-		LifeCycleAPI.onLevelLoad((world, minecraftServer, executor, levelStorageAccess, serverLevelData, resourceKey, dimensionType,
-								  chunkProgressListener, chunkGenerator, bl, l, list, bl2) -> onServerStart(world, resourceKey.equals(Level.OVERWORLD)));
+		ItemFixer.init();
+		BlockFixer.init();
 
-		KeyMapping keyBinding = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-				"key.raa_materials.fully_reload_assets", // The translation key of the keybinding's name
-				InputConstants.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
-				GLFW.GLFW_KEY_R, // The keycode of the key
-				"category.raa_materials" // The translation key of the keybinding's category.
-		));
-
-		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			while (keyBinding.consumeClick()) {
-				assert client.player != null;
-				client.player.displayClientMessage(new TextComponent("Reloading assets fully!"), false);
-				Minecraft.getInstance().delayTextureReload().thenRun(() ->
-						Minecraft.getInstance().getItemRenderer().getItemModelShaper().rebuildCache());
-			}
-		});
+		LifeCycleAPI.onLevelLoad((biomeWorld, seed, biomes) -> onServerStart(biomeWorld, seed, biomes, biomeWorld.dimension().equals(Level.OVERWORLD)));
 	}
 
 }

@@ -1,6 +1,5 @@
 package io.github.vampirestudios.raa_materials.api;
 
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;

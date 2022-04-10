@@ -2,10 +2,10 @@ package io.github.vampirestudios.raa_materials.materials;
 
 import com.google.common.collect.ImmutableList;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
+import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.BiomeAPI;
 import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
-import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.CustomCrystalBlock;
@@ -29,7 +29,6 @@ import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -102,7 +101,7 @@ public class CrystalMaterial extends ComplexMaterial {
         block = InnerRegistry.registerBlockAndItem(this.registryName + "_block", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.AMETHYST_BLOCK)), RAA_ORES);
         tintedGlass = InnerRegistry.registerBlockAndItem("tinted_" + this.registryName + "_glass", new TintedGlassBlock(FabricBlockSettings.copyOf(Blocks.TINTED_GLASS)), RAA_ORES);
         buddingBlock = InnerRegistry.registerBlockAndItem("budding_" + this.registryName + "_block", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.BUDDING_AMETHYST)), RAA_ORES);
-        shard = RAASimpleItem.register(this.name, this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHARD);
+        shard = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHARD);
         crystal = InnerRegistry.registerBlockAndItem(this.registryName + "_crystal", new CustomCrystalClusterBlock(BlockBehaviour.Properties.copy(Blocks.AMETHYST_CLUSTER), shard), RAA_ORES);
 
         TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, block);
@@ -173,8 +172,8 @@ public class CrystalMaterial extends ComplexMaterial {
             case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
             default -> throw new IllegalStateException("Unexpected value: " + tier);
         }, storageBlock);
-        geodeCore = RAASimpleItem.register(this.name, this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEODE_CORE);
-        enrichedGeodeCore = RAASimpleItem.register(this.name, this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.ENRICHED_GEODE_CORE);
+        geodeCore = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEODE_CORE);
+        enrichedGeodeCore = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.ENRICHED_GEODE_CORE);
         /*LootTableLoadingCallback.EVENT.register((resourceManager, manager, id, supplier, setter) -> {
             if (crystal.getLootTableId().equals(id)) {
                 FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder()
@@ -248,39 +247,41 @@ public class CrystalMaterial extends ComplexMaterial {
 
         ResourceLocation textureID = TextureHelper.makeBlockTextureID(this.registryName + "_block");
         BufferTexture texture = ProceduralTextures.randomColored(crystalBlockTexture, gradient);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
 
-        InnerRegistry.registerBlockModel(this.block, ModelHelper.makeCube(textureID));
-        InnerRegistry.registerItemModel(this.block.asItem(), ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerBlockModel(this.block, ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerItemModel(this.block.asItem(), ModelHelper.makeCube(textureID));
         NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), String.format("%s Block", this.name));
 
         textureID = TextureHelper.makeBlockTextureID("budding_" + this.registryName + "_block");
         texture = ProceduralTextures.randomColored(buddingCrystalBlock, gradient);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
 
-        InnerRegistry.registerBlockModel(this.buddingBlock, ModelHelper.makeCube(textureID));
-        InnerRegistry.registerItemModel(this.buddingBlock.asItem(), ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerBlockModel(this.buddingBlock, ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerItemModel(this.buddingBlock.asItem(), ModelHelper.makeCube(textureID));
         NameGenerator.addTranslation(NameGenerator.makeRawBlock("budding_" + this.registryName + "_block"), String.format("Budding %s Block", this.name));
 
         textureID = TextureHelper.makeBlockTextureID("tinted_" + this.registryName + "_glass");
         texture = ProceduralTextures.randomColored(tintedGlassTexture, gradient);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
 
-        InnerRegistry.registerBlockModel(this.tintedGlass, ModelHelper.makeCube(textureID));
-        InnerRegistry.registerItemModel(this.tintedGlass.asItem(), ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerBlockModel(this.tintedGlass, ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerItemModel(this.tintedGlass.asItem(), ModelHelper.makeCube(textureID));
         NameGenerator.addTranslation(NameGenerator.makeRawBlock("tinted_" + this.registryName + "_glass"), String.format("Tinted %s Glass", this.name));
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), this.tintedGlass);
 
         textureID = TextureHelper.makeBlockTextureID(this.registryName + "_crystal");
         texture = ProceduralTextures.randomColored(TextureHelper.loadTexture(crystalTexture), gradient);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
         NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_crystal"), String.format("%s Crystal", this.name));
 
         textureID = TextureHelper.makeItemTextureID(this.registryName + "_shard");
         texture = ProceduralTextures.randomColored(TextureHelper.loadTexture(shardTexture), gradient);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
 
-        InnerRegistry.registerItemModel(this.shard, ModelHelper.makeFlatItem(textureID));
+        InnerRegistryClient.registerItemModel(this.shard, ModelHelper.makeFlatItem(textureID));
+        NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)this.shard).getItemType().apply(registryName),"item." +
+                ((RAASimpleItem)this.shard).getItemType().registryName(), name);
         NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shard"), String.format("%s Shard", this.name));
 
         BlockRenderLayerMap.INSTANCE.putBlock(this.crystal, RenderType.cutout());
@@ -309,92 +310,96 @@ public class CrystalMaterial extends ComplexMaterial {
         ResourceLocation textureID = TextureHelper.makeItemTextureID(registryName + "_basalt_lamp");
         BufferTexture texture = ProceduralTextures.randomColored(lampOverlayTexture, gradient);
         texture = TextureHelper.combine(basaltLampTexture, texture);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
 
-        InnerRegistry.registerBlockModel(basaltLamp, ModelHelper.makeCube(textureID));
-        InnerRegistry.registerItemModel(basaltLamp.asItem(), ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerBlockModel(basaltLamp, ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerItemModel(basaltLamp.asItem(), ModelHelper.makeCube(textureID));
         NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_basalt_lamp"), String.format("%s Basalt Lamp", name));
 
         //Calcite Lamp
         textureID = TextureHelper.makeItemTextureID(registryName + "_calcite_lamp");
         texture = ProceduralTextures.randomColored(lampOverlayTexture, gradient);
         texture = TextureHelper.combine(calciteLampTexture, texture);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
 
-        InnerRegistry.registerBlockModel(calciteLamp, ModelHelper.makeCube(textureID));
-        InnerRegistry.registerItemModel(calciteLamp.asItem(), ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerBlockModel(calciteLamp, ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerItemModel(calciteLamp.asItem(), ModelHelper.makeCube(textureID));
         NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_calcite_lamp"), String.format("%s Calcite Lamp", name));
 
         //Chiseled Basalt
         textureID = TextureHelper.makeItemTextureID(registryName + "_chiseled_basalt");
         texture = ProceduralTextures.randomColored(chiseledOverlayTexture, gradient);
         texture = TextureHelper.combine(chiseledBasaltTexture, texture);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
 
-        InnerRegistry.registerBlockModel(chiseledBasalt, ModelHelper.makeCube(textureID));
-        InnerRegistry.registerItemModel(chiseledBasalt.asItem(), ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerBlockModel(chiseledBasalt, ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerItemModel(chiseledBasalt.asItem(), ModelHelper.makeCube(textureID));
         NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_chiseled_basalt"), String.format("%s Chiseled Basalt", name));
 
         //Chiseled Calcite
         textureID = TextureHelper.makeItemTextureID(registryName + "_chiseled_calcite");
         texture = ProceduralTextures.randomColored(chiseledOverlayTexture, gradient);
         texture = TextureHelper.combine(chiseledCalciteTexture, texture);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
 
-        InnerRegistry.registerBlockModel(chiseledCalcite, ModelHelper.makeCube(textureID));
-        InnerRegistry.registerItemModel(chiseledCalcite.asItem(), ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerBlockModel(chiseledCalcite, ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerItemModel(chiseledCalcite.asItem(), ModelHelper.makeCube(textureID));
         NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_chiseled_calcite"), String.format("%s Chiseled Calcite", name));
 
         //Ore
         textureID = TextureHelper.makeItemTextureID(registryName + "_ore");
         texture = ProceduralTextures.randomColored(oreOverlay2Texture, gradient);
         texture = TextureHelper.combine(oreTexture, texture);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
 
-        InnerRegistry.registerBlockModel(ore, ModelHelper.makeCube(textureID));
-        InnerRegistry.registerItemModel(ore.asItem(), ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerBlockModel(ore, ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerItemModel(ore.asItem(), ModelHelper.makeCube(textureID));
         NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), String.format("%s Ore", name));
 
         //Deepslate Ore
         textureID = TextureHelper.makeItemTextureID(registryName + "_deepslate_ore");
         texture = ProceduralTextures.randomColored(oreOverlayTexture, gradient);
         texture = TextureHelper.combine(deepslateOreTexture, texture);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
 
-        InnerRegistry.registerBlockModel(deepslateOre, ModelHelper.makeCube(textureID));
-        InnerRegistry.registerItemModel(deepslateOre.asItem(), ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerBlockModel(deepslateOre, ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerItemModel(deepslateOre.asItem(), ModelHelper.makeCube(textureID));
         NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_deepslate_ore"), String.format("%s Deepslate Ore", name));
 
         //Storage Block
         textureID = TextureHelper.makeItemTextureID(registryName + "_storage_block");
         texture = ProceduralTextures.randomColored(storageBlockTexture, gradient);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
 
-        InnerRegistry.registerBlockModel(storageBlock, ModelHelper.makeCube(textureID));
-        InnerRegistry.registerItemModel(storageBlock.asItem(), ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerBlockModel(storageBlock, ModelHelper.makeCube(textureID));
+        InnerRegistryClient.registerItemModel(storageBlock.asItem(), ModelHelper.makeCube(textureID));
         NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_storage_block"), String.format("%s Storage Block", name));
 
         //Geode Core
         textureID = TextureHelper.makeItemTextureID(this.registryName + "_geode_core");
         texture = ProceduralTextures.randomColored(geodeCoreOverlayTexture, gradient);
         texture = TextureHelper.combine(geodeCoreTexture, texture);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
 
-        InnerRegistry.registerItemModel(this.geodeCore, ModelHelper.makeFlatItem(textureID));
+        InnerRegistryClient.registerItemModel(this.geodeCore, ModelHelper.makeFlatItem(textureID));
+        NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)this.geodeCore).getItemType().apply(registryName),"item." +
+                ((RAASimpleItem)this.geodeCore).getItemType().registryName(), name);
         NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_geode_core"), String.format("%s Geode Core", this.name));
 
         //Enriched Geode Core
         textureID = TextureHelper.makeItemTextureID(this.registryName + "_enriched_geode_core");
         texture = ProceduralTextures.randomColored(geodeCoreOverlayTexture, gradient);
         texture = TextureHelper.combine(enrichedGeodeCoreTexture, texture);
-        InnerRegistry.registerTexture(textureID, texture);
+        InnerRegistryClient.registerTexture(textureID, texture);
 
-        InnerRegistry.registerItemModel(this.enrichedGeodeCore, ModelHelper.makeFlatItem(textureID));
+        InnerRegistryClient.registerItemModel(this.enrichedGeodeCore, ModelHelper.makeFlatItem(textureID));
+        NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)this.enrichedGeodeCore).getItemType().apply(registryName),"item." +
+                ((RAASimpleItem)this.enrichedGeodeCore).getItemType().registryName(), name);
         NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_enriched_geode_core"), String.format("%s Enriched Geode Core", this.name));
     }
 
     @Override
-    public void generate(ServerLevel world) {
+    public void generate(ServerLevel world, Registry<Biome> biomeRegistry) {
         List<GeodeLayerSettings> geodeLayerThicknessConfigs = List.of(
                 new GeodeLayerSettings(
                         0.6D,
@@ -479,14 +484,11 @@ public class CrystalMaterial extends ComplexMaterial {
                 RarityFilter.onAverageOnceEvery(RAAMaterials.CONFIG.crystalTypeAmount * 100)
         );
 
-        LifeCycleAPI.onLevelLoad((biomeWorld, seed, biomes) -> {
-            if (biomeWorld.dimension().equals(Level.OVERWORLD)) {
-                for (Biome biome : biomes) {
-                    BiomeAPI.addBiomeFeature(biomes, biome, GenerationStep.Decoration.UNDERGROUND_ORES, List.of(placedFeatureHolder));
-                }
-                ((BiomeSourceAccessor) biomeWorld.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
-            }
-        });
+        for (Biome biome : biomeRegistry) {
+            BiomeAPI.addBiomeFeature(biomeRegistry, Holder.direct(biome),
+                    GenerationStep.Decoration.UNDERGROUND_ORES, List.of(placedFeatureHolder));
+        }
+        ((BiomeSourceAccessor) world.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
     }
 
     static {

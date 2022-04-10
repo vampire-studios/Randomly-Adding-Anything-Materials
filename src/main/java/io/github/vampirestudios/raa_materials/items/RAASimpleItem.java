@@ -2,7 +2,6 @@ package io.github.vampirestudios.raa_materials.items;
 
 import io.github.vampirestudios.raa_core.api.name_generation.GeneratedItemName;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
-import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import net.minecraft.world.item.Item;
 
 
@@ -14,9 +13,8 @@ public class RAASimpleItem extends Item implements GeneratedItemName {
         this.itemType = itemType;
     }
 
-    public static Item register(String name, String registryName, Properties properties, SimpleItemType itemType){
+    public static Item register(String registryName, Properties properties, SimpleItemType itemType){
         RAASimpleItem temp = new RAASimpleItem(properties, itemType);
-        NameGenerator.addTranslation("item.raa_materials." + itemType.apply(registryName),"item." + temp.getItemType().registryName(), name);
         return InnerRegistry.registerItem(itemType.apply(registryName), temp);
     }
 

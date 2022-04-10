@@ -5,3 +5,15 @@ accessible field net/minecraft/world/level/biome/BiomeSource featuresPerStep Lja
 mutable field net/minecraft/world/level/biome/BiomeSource featuresPerStep Ljava/util/function/Supplier;
 accessible field net/minecraft/world/level/biome/BiomeSource possibleBiomes Ljava/util/Set;
 accessible method net/minecraft/world/level/biome/BiomeSource buildFeaturesPerStep (Ljava/util/List;Z)Ljava/util/List;
+
+accessible field net/minecraft/world/level/block/DispenserBlock DISPENSER_REGISTRY Ljava/util/Map;
+accessible field net/minecraft/world/level/block/InfestedBlock HOST_TO_INFESTED_STATES Ljava/util/Map;
+accessible field net/minecraft/world/level/block/InfestedBlock INFESTED_TO_HOST_STATES Ljava/util/Map;
+accessible field net/minecraft/world/item/AxeItem STRIPPABLES Ljava/util/Map;
+mutable field net/minecraft/world/item/AxeItem STRIPPABLES Ljava/util/Map;
+accessible field net/minecraft/world/item/crafting/FireworkStarRecipe SHAPE_BY_ITEM Ljava/util/Map;
+accessible field net/minecraft/world/item/HoeItem TILLABLES Ljava/util/Map;
+accessible field net/minecraft/world/item/ShovelItem FLATTENABLES Ljava/util/Map;
+accessible field net/minecraft/world/level/block/CandleCakeBlock BY_CANDLE Ljava/util/Map;
+accessible field net/minecraft/world/level/block/FlowerPotBlock POTTED_BY_CONTENT Ljava/util/Map;
+accessible field net/minecraft/world/item/SpawnEggItem BY_ID Ljava/util/Map;
