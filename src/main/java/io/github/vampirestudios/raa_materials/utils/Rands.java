@@ -30,10 +30,14 @@ import java.util.*;
 
 public class Rands {
 
-    private static final Random rand = new Random();
+    private static Random rand = new Random();
 
     public static Random getRandom() {
         return rand;
+    }
+
+    public static void setRand(Random rand) {
+        Rands.rand = rand;
     }
 
     public static int randInt(int bound) {

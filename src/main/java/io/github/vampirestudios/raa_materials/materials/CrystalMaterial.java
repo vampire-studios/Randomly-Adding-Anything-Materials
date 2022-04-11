@@ -82,7 +82,7 @@ public class CrystalMaterial extends ComplexMaterial {
     public int tier;
 
     public CrystalMaterial(Random random) {
-        this(TestNameGenerator.generateOreName(), ProceduralTextures.makeCrystalPalette(random),
+        this(TestNameGenerator.generateOreName(random), ProceduralTextures.makeCrystalPalette(random),
                 TextureInformation.builder()
                         .crystalBlock(crystalBlocks[random.nextInt(crystalBlocks.length)])
                         .buddingCrystalBlock(buddingCrystalBlocks[random.nextInt(buddingCrystalBlocks.length)])

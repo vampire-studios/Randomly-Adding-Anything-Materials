@@ -27,7 +27,7 @@ public class GemOreMaterial extends OreMaterial {
 	private final ResourceLocation gemTexture;
 
 	public GemOreMaterial(Target target, Random random) {
-		this(TestNameGenerator.generateOreName(),
+		this(TestNameGenerator.generateOreName(random),
 			ProceduralTextures.makeGemPalette(random),
 			TextureInformation.builder()
 				.oreOverlay(oreVeinTextures[random.nextInt(oreVeinTextures.length)])

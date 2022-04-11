@@ -72,7 +72,7 @@ public class StoneMaterial extends ComplexMaterial {
 //	public final Block brick_wall;
 
 	public StoneMaterial(Random random) {
-		this(TestNameGenerator.generateStoneName(), ProceduralTextures.makeStonePalette(random),
+		this(TestNameGenerator.generateStoneName(random), ProceduralTextures.makeStonePalette(random),
 				TextureInformation.builder()
 						.stoneBricks(stoneBricks[random.nextInt(stoneBricks.length)])
 						.stoneFrame(stoneFrames[random.nextInt(stoneFrames.length)])
@@ -89,7 +89,6 @@ public class StoneMaterial extends ComplexMaterial {
 
 		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(Blocks.STONE).color(MaterialColor.COLOR_GRAY);
 
-		ResourceLocation blockRegistryName = RAAMaterials.id(this.registryName);
 		stone = InnerRegistry.registerBlockAndItem(this.registryName, new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
 //		stairs = InnerRegistry.registerBlockAndItem(this.registryName + "_stairs", new BaseStairsBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
 //		slab = InnerRegistry.registerBlockAndItem(this.registryName + "_slab", new BaseSlabBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);

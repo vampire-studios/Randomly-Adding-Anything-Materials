@@ -105,10 +105,11 @@ public class ProceduralTextures {
 	}
 
 	public static BufferTexture makeStoneTexture(float[] values, Random random) {
-		BufferTexture texture = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.6F, 1.2F) / 4F);
-		BufferTexture distort = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.6F, 1.2F) / 4F);
-		BufferTexture additions = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(random, 0.5F, 1.4F) / 4F);
-		BufferTexture result = TextureHelper.distort(texture, distort, Rands.randFloatRange(random, 0F, 8F));
+		Rands.setRand(random);
+		BufferTexture texture = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(0.6F, 1.2F) / 4F);
+		BufferTexture distort = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(0.6F, 1.2F) / 4F);
+		BufferTexture additions = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(0.5F, 1.4F) / 4F);
+		BufferTexture result = TextureHelper.distort(texture, distort, Rands.randFloatRange(0F, 8F));
 		BufferTexture pass = TextureHelper.heightPass(result, -1, -1);
 
 		pass = TextureHelper.normalize(pass);

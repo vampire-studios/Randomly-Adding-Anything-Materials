@@ -74,7 +74,7 @@ public class MetalOreMaterial extends OreMaterial {
 
 	public MetalOreMaterial(Target target, Random random) {
 		this(
-				TestNameGenerator.generateOreName(),
+				TestNameGenerator.generateOreName(random),
 				ProceduralTextures.makeMetalPalette(random),
 				TextureInformation.builder()
 					.oreOverlay(Rands.values(oreVeinTextures))
