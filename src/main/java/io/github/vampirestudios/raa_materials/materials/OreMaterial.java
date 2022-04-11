@@ -288,13 +288,14 @@ public abstract class OreMaterial extends ComplexMaterial {
 		loadStaticImages();
 
 		// Swords
-		BufferTexture texture = ProceduralTextures.randomColored(swordBladeTexture, gradient);
+		BufferTexture texture = TextureHelper.loadTexture(swordBladeTexture);
+		BufferTexture texture2 = TextureHelper.loadTexture(swordHandleTexture);
 		ResourceLocation textureID = TextureHelper.makeItemTextureID(this.registryName + "_sword_blade");
+		texture = TextureHelper.combine(texture,texture2);
+		texture = ProceduralTextures.randomColored(texture, gradient);
 		InnerRegistryClient.registerTexture(textureID, texture);
-		ResourceLocation texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_sword_handle");
-		BufferTexture texture2 = ProceduralTextures.randomColored(swordHandleTexture, gradient);
-		InnerRegistryClient.registerTexture(texture2ID, texture2);
-		InnerRegistryClient.registerItemModel(this.sword, ModelHelper.makeThreeLayerTool(textureID, texture2ID, TextureHelper.makeItemTextureID("tools/sword/stick")));
+
+		InnerRegistryClient.registerItemModel(this.sword, ModelHelper.makeTwoLayerTool(textureID, TextureHelper.makeItemTextureID("tools/sword/stick")));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_sword"),  String.format("%s Sword", this.name));
 
 		// Pickaxes
@@ -302,7 +303,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_pickaxe_head");
 		InnerRegistryClient.registerTexture(textureID, texture);
 		texture2 = ProceduralTextures.nonColored(pickaxeStickTexture);
-		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_pickaxe_stick");
+		ResourceLocation texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_pickaxe_stick");
 		InnerRegistryClient.registerTexture(texture2ID, texture2);
 		InnerRegistryClient.registerItemModel(this.pickaxe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_pickaxe"),  String.format("%s Pickaxe", this.name));
