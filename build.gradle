@@ -51,7 +51,7 @@ dependencies {
 
 	modImplementation "io.github.vampirestudios:Randomly-Adding-Anything-Core:${project.core_version}"
 
-	modImplementation "paulevs.edenring:EdenRing-master:0.4.0"
+	modImplementation fileTree(dir: 'libs', include: '*.jar')
 	modImplementation "com.github.paulevsGitch:BCLib:1.4.3"
 	modImplementation "com.simibubi:Create:mc1.18.2_v0.4.1+500"
 }
