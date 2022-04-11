@@ -15,9 +15,9 @@ public class ProceduralTextures {
 				.setSaturation(Rands.randFloatRange( 0.07f, 0.4f))
 				.setBrightness(Rands.randFloatRange( 0.3F, 0.8F));
 		return TextureHelper.makeDualDistPalette(color,
-				Rands.randFloatRange(-0.2f, 0.2f),
-				Rands.randFloatRange(0.4f, -0.5f),
-				Rands.randFloatRange(0.3f, 0.6f),
+				Rands.randFloatRange(-0.15f, 0.15f),
+				Rands.randFloatRange(0.2f, -0.3f),
+				Rands.randFloatRange(0.4f, 0.6f),
 				Rands.randFloatRange(-0.1f, 0.2f),
 				Rands.randFloatRange(-0.1f, -0.3f),
 				Rands.randFloatRange(0.2f, 0.4f)
