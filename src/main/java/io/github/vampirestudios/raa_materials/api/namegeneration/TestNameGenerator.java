@@ -1,11 +1,12 @@
 package io.github.vampirestudios.raa_materials.api.namegeneration;
 
 import com.mojang.datafixers.util.Pair;
-import io.github.vampirestudios.vampirelib.utils.Rands;
+import io.github.vampirestudios.raa_materials.utils.Rands;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 public class TestNameGenerator {
 	private static final List<String> generatedNames = new ArrayList<>();
@@ -24,29 +25,32 @@ public class TestNameGenerator {
 
 	public static void main(String[] args) {
 		for (int i = 0; i < 10000; i++) {
-			generateOreName();
+			System.out.println(generateOreName(new Random()));
 		}
 	}
 
-	public static String generateOreName() {
-		String name = generate(Rands.chance(50) ? (Rands.chance(100) ? 2 : 3) : (Rands.chance(100) ? 3 : 4), Rands.chance(30) ? 20 : 12);
+	public static String generateOreName(Random random) {
+		Rands.setRand(random);
+		String name = generate(random, Rands.chance(50) ? (Rands.chance(100) ? 2 : 3) : (Rands.chance(100) ? 3 : 4), Rands.chance(30) ? 20 : 12);
 		while(generatedNames.contains(name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", ""))) {
-			name = generate(Rands.chance(50) ? (Rands.chance(100) ? 2 : 3) : (Rands.chance(100) ? 3 : 4), Rands.chance(30) ? 20 : 12);
+			name = generate(random, Rands.chance(50) ? (Rands.chance(100) ? 2 : 3) : (Rands.chance(100) ? 3 : 4), Rands.chance(30) ? 20 : 12);
 		}
 		generatedNames.add(name);
 		return name;
 	}
 
-	public static String generateStoneName() {
-		String name = generate(5, 15);
+	public static String generateStoneName(Random random) {
+		Rands.setRand(random);
+		String name = generate(random, 5, 15);
 		while(generatedNames.contains(name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", ""))) {
-			name = generate(5, 15);
+			name = generate(random, 5, 15);
 		}
 		generatedNames.add(name);
 		return name;
 	}
 
-	public static String generate(int min, int max) {
+	public static String generate(Random random, int min, int max) {
+		Rands.setRand(random);
 		String vowels = "aeiou", characters = "qwrtypsdfghjklzxcvbnm", mutations = "'`^ ´&¤%!?+-.,";
 		StringBuilder name = new StringBuilder();
 		for (int i = 1; i < Rands.randIntRange(min, max); i++) {
@@ -76,10 +80,10 @@ public class TestNameGenerator {
 
 		String finalName = name.toString();
 
-		if (Rands.chance(1)) {
+		if (Rands.chance(20)) {
 			String test = name.toString();
 			int tries = 3;
-			while (tries > 0){
+			while (tries > 0) {
 				int rng = Rands.randIntRange(1, specialLettersTesting.size());
 				Pair<String, String> stringStringPair = specialLettersTesting.get(rng-1);
 				String[] strings = stringStringPair.getSecond().split("\\|");

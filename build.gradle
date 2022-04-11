@@ -21,8 +21,8 @@ repositories {
 	maven { url = "https://maven.parchmentmc.org" }
 	maven { url = "https://jitpack.io" }
 	maven { url = "https://cursemaven.com" }
-	maven { url = "https://maven.devos.community/releases/" }
-	maven { url = "https://maven.devos.community/snapshots/" }
+	maven { url = "https://mvn.devos.one/releases/" }
+	maven { url = "https://mvn.devos.one/snapshots/" }
 	maven { url = "https://api.modrinth.com/maven" }
 	maven { url = "https://aperlambda.github.io/maven" }
 	maven { url = "https://maven.cafeteria.dev" }
@@ -45,14 +45,15 @@ dependencies {
 			setNameSyntheticMembers(false)
 		}
 	}
-//	modImplementation("com.simibubi:Create-Refabricated:mc1.18.1_v0.4b")
+
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	modImplementation "io.github.vampirestudios:Randomly-Adding-Anything-Core:${project.core_version}"
 
-//	modImplementation "paulevs.edenring:EdenRing-master:0.3.0"
-//	modImplementation "com.github.paulevsGitch:BCLib:1.2.5"
+	modImplementation fileTree(dir: 'libs', include: '*.jar')
+	modImplementation "com.github.paulevsGitch:BCLib:1.4.3"
+	modImplementation "com.simibubi:Create:mc1.18.2_v0.4.1+500"
 }
 
 processResources {

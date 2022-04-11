@@ -144,6 +144,10 @@ public class InnerRegistry {
 		return registerConfiguredFeature(serverLevel, id, new ConfiguredFeature<>(feature, featureConfig));
 	}
 
+	public static <FC extends FeatureConfiguration> Holder<ConfiguredFeature<?, ?>> registerConfiguredFeature(ServerLevel serverLevel, ResourceLocation id, Feature<FC> feature, FC featureConfig) {
+		return registerConfiguredFeature(serverLevel, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id), new ConfiguredFeature<>(feature, featureConfig));
+	}
+
 	public static Holder<ConfiguredFeature<?, ?>> registerConfiguredFeature(ServerLevel serverLevel, ResourceKey<ConfiguredFeature<?, ?>> id, ConfiguredFeature<?, ?> feature) {
 		Holder<ConfiguredFeature<?, ?>> configuredFeatureHolder;
 		Registry<ConfiguredFeature<?, ?>> registry = serverLevel.registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY);
@@ -159,6 +163,10 @@ public class InnerRegistry {
 
 	public static Holder<PlacedFeature> registerPlacedFeature(ServerLevel serverLevel, ResourceKey<PlacedFeature> id, Holder<ConfiguredFeature<?, ?>> configuredFeature, PlacementModifier... placementModifiers) {
 		return registerPlacedFeature(serverLevel, id, new PlacedFeature(configuredFeature, Arrays.stream(placementModifiers).toList()));
+	}
+
+	public static Holder<PlacedFeature> registerPlacedFeature(ServerLevel serverLevel, ResourceLocation id, Holder<ConfiguredFeature<?, ?>> configuredFeature, PlacementModifier... placementModifiers) {
+		return registerPlacedFeature(serverLevel, ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id), new PlacedFeature(configuredFeature, Arrays.stream(placementModifiers).toList()));
 	}
 
 	public static Holder<PlacedFeature> registerPlacedFeature(ServerLevel serverLevel, ResourceKey<PlacedFeature> id, PlacedFeature feature) {

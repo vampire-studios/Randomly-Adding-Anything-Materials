@@ -311,22 +311,8 @@ public class ModelHelper {
     public static void generateOreAssets(Block ore, ResourceLocation oreVeinTexture, String registryName, String name, ColorGradient gradient, OreMaterial.Target target) {
 		OreMaterial.TargetTextureInformation textureInformation = target.textureInformation();
 
-		if (target == OreMaterial.Target.BASALT || target == OreMaterial.Target.BLACKSTONE) {
-			BufferTexture topTexture = TextureHelper.loadTexture(textureInformation.top());
-
-			ResourceLocation textureID = TextureHelper.makeBlockTextureID(registryName + "_ore");
-			BufferTexture texture = ProceduralTextures.randomColored(oreVeinTexture, gradient);
-			texture = TextureHelper.cover(topTexture, texture);
-			BufferTexture outline = TextureHelper.outline(texture, target.darkOutline(), target.lightOutline(), 0, 1);
-			texture = TextureHelper.cover(texture, outline);
-			InnerRegistryClient.registerTexture(textureID, texture);
-
-			InnerRegistryClient.registerBlockModel(ore, ModelHelper.makeCubeTopBottom(textureInformation.side(), textureID, new ResourceLocation(textureInformation.top().getNamespace(), textureInformation.top().getPath().replace("textures/", "").replace(".png", ""))));
-			InnerRegistryClient.registerItemModel(ore.asItem(), ModelHelper.makeCubeTopBottom(textureInformation.side(), textureID, new ResourceLocation(textureInformation.top().getNamespace(), textureInformation.top().getPath().replace("textures/", "").replace(".png", ""))));
-			NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), String.format("%s Ore", name));
-		} else if(target == OreMaterial.Target.CRIMSON_NYLIUM
-				|| target == OreMaterial.Target.WARPED_NYLIUM || target == OreMaterial.Target.PODZOL
-				|| target == OreMaterial.Target.MYCELIUM || target == OreMaterial.Target.SANDSTONE) {
+		if(target == OreMaterial.Target.CRIMSON_NYLIUM || target == OreMaterial.Target.WARPED_NYLIUM ||
+				target == OreMaterial.Target.PODZOL || target == OreMaterial.Target.MYCELIUM) {
 			BufferTexture topTexture = TextureHelper.loadTexture(textureInformation.top());
 
 			ResourceLocation textureID = TextureHelper.makeBlockTextureID(registryName + "_ore");
@@ -342,37 +328,7 @@ public class ModelHelper {
 			InnerRegistryClient.registerBlockModel(ore, ModelHelper.makeCubeTopBottom(textureInformation.side(), textureID, bottom));
 			InnerRegistryClient.registerItemModel(ore.asItem(), ModelHelper.makeCubeTopBottom(textureInformation.side(), textureID, bottom));
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), String.format("%s Ore", name));
-		}/* else if(target == OreMaterial.Target.GRASS_BLOCK) {
-			Identifier topTextureId = TextureHelper.makeBlockTextureID(registryName + "_grass_top");
-			BufferTexture topTexture = TextureHelper.loadTexture(textureInformation.top());
-			topTexture = ProceduralTextures.randomColored(topTexture, new ColorGradient(new CustomColor(GrassColors.getColor(0.5D, 1.0D)), new CustomColor(GrassColors.getColor(0.8D, 1.0D))));
-			InnerRegistry.registerTexture(topTextureId, topTexture);
-
-			Identifier textureID = TextureHelper.makeBlockTextureID(registryName + "_ore");
-			BufferTexture texture = ProceduralTextures.randomColored(oreVeinTexture, gradient);
-			BufferTexture outline = TextureHelper.outline(texture, target.darkOutline(), target.lightOutline(), 0, 1);
-			texture = TextureHelper.add(topTexture, texture);
-			texture = TextureHelper.cover(texture, outline);
-			InnerRegistry.registerTexture(textureID, texture);
-			Identifier bottom;
-			if (textureInformation.bottom() == null) bottom = textureInformation.top();
-			else bottom = textureInformation.bottom();
-
-			Identifier sideTextureBaseId = TextureHelper.makeBlockTextureID(registryName + "_grass_side_base");
-			BufferTexture sideTextureBase = TextureHelper.loadTexture(textureInformation.side());
-			InnerRegistry.registerTexture(sideTextureBaseId, sideTextureBase);
-			Identifier sideTextureBaseOverlayId = TextureHelper.makeBlockTextureID(registryName + "_grass_side_base_overlay");
-			BufferTexture sideTextureBaseOverlay = TextureHelper.loadTexture(textureInformation.sideOverlay());
-			sideTextureBaseOverlay = ProceduralTextures.randomColored(sideTextureBaseOverlay, new ColorGradient(new CustomColor(GrassColors.getColor(0.5D, 1.0D)), new CustomColor(GrassColors.getColor(0.8D, 1.0D))));
-			InnerRegistry.registerTexture(sideTextureBaseOverlayId, sideTextureBaseOverlay);
-			Identifier sideTextureId = TextureHelper.makeBlockTextureID(registryName + "_grass_side");
-			BufferTexture sideTexture = ProceduralTextures.coverWithOverlay(sideTextureBase, sideTextureBaseOverlay);
-			InnerRegistry.registerTexture(sideTextureId, sideTexture);
-
-			InnerRegistry.registerBlockModel(ore, ModelHelper.makeCubeTopBottom(sideTextureId, textureID, bottom));
-			InnerRegistry.registerItemModel(ore.asItem(), ModelHelper.makeCubeTopBottom(sideTextureId, textureID, bottom));
-			NameGenerator.addTranslation(NameGenerator.makeRawBlock(registryName + "_ore"), String.format("%s Ore", name));
-		}*/ else {
+		} else {
 			BufferTexture baseTexture = TextureHelper.loadTexture(textureInformation.all());
 
 			ResourceLocation textureID = TextureHelper.makeItemTextureID(registryName + "_ore");
