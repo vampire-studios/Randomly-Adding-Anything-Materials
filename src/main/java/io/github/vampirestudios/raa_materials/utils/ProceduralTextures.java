@@ -10,18 +10,18 @@ import java.util.Random;
 public class ProceduralTextures {
 	public static ColorGradient makeStonePalette(Random random) {
 		Rands.setRand(random);
-		CustomColor color = new CustomColor(
-				random.nextFloat(),
-				random.nextFloat(),
-				random.nextFloat()
+		CustomColor color = new CustomColor(true)
+				.setHue(Rands.randFloatRange( 0F, 1f))
+				.setSaturation(Rands.randFloatRange( 0.07f, 0.4f))
+				.setBrightness(Rands.randFloatRange( 0.3F, 0.8F));
+		return TextureHelper.makeDualDistPalette(color,
+				Rands.randFloatRange(-0.2f, 0.2f),
+				Rands.randFloatRange(0.4f, -0.5f),
+				Rands.randFloatRange(0.3f, 0.6f),
+				Rands.randFloatRange(-0.1f, 0.2f),
+				Rands.randFloatRange(-0.1f, -0.3f),
+				Rands.randFloatRange(0.2f, 0.4f)
 		);
-		float sat = Rands.randFloatRange(0, 0.2F);
-		float val = Rands.randFloatRange(0.3F, 0.7F);
-		color.switchToHSV().setSaturation(sat).setBrightness(val);
-		float hue = Rands.randFloatRange(0, 0.3F);
-		sat = random.nextFloat() * 0.3F;
-		val = Rands.randFloatRange(0.3F, 0.5F);
-		return TextureHelper.makeDistortedPalette(color, hue, sat, val);
 	}
 
 	public static ColorGradient makeDirtPalette(Random random) {

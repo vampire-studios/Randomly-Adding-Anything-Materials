@@ -19,7 +19,7 @@ public class PaletteTest {
         BufferedImage img = new BufferedImage(paletteSize * 32, palettes * 32, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = img.createGraphics();
         for(int y = 0; y < palettes; y++) {
-            mat = ProceduralTextures.makeCrystalPalette(random);
+            mat = ProceduralTextures.makeStonePalette(random);
             for (int i = 0; i < paletteSize; i++) {
                 int x = i * 32;
                 g2d.setColor(new Color(mat.getColor((float) i / paletteSize).getAsInt()));

@@ -580,7 +580,7 @@ public class TextureHelper {
 		return new ColorGradient(colorStart, colorMid, colorEnd);
 	}
 
-	public static ColorGradient makeDualDistPalette(CustomColor color, float backHue, float forHue, float backSat, float forSat, float backVal, float forVal) {
+	public static ColorGradient makeDualDistPalette(CustomColor color, float backHue, float backSat, float backVal, float forHue, float forSat, float forVal) {
 		CustomColor colorStart = new CustomColor().set(color).switchToHSV();
 		colorStart
 				.setHue(colorStart.getHue() - backHue)

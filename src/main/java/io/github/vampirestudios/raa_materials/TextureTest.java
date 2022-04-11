@@ -32,7 +32,7 @@ public class TextureTest {
     protected static final String[] stoneTiles;
 
     static {
-        stoneFrames = new String[2];
+        stoneFrames = new String[5];
         for (int i = 0; i < stoneFrames.length; i++) {
             stoneFrames[i] = "textures/block/stone_frame_0" + (i+1) + ".png";
         }
@@ -40,7 +40,7 @@ public class TextureTest {
         for (int i = 0; i < stoneBricks.length; i++) {
             stoneBricks[i] = "textures/block/stone_bricks_0" + (i+1) + ".png";
         }
-        stoneTiles = new String[4];
+        stoneTiles = new String[6];
         for (int i = 0; i < stoneTiles.length; i++) {
             stoneTiles[i] = "textures/block/stone_tiles_0" + (i+1) + ".png";
         }
@@ -58,7 +58,7 @@ public class TextureTest {
         float[] values = new float[]{0.13f,0.22f,0.34f,0.53f,0.60f,0.70f,0.85f,0.90f};
 
         ResourceLocation stoneTexID = notTextureHelper.makeBlockTextureID(textureBaseName);
-        BufferTexture texture = ProceduralTextures.makeStoneTexture(values, random);
+        BufferTexture texture = makeStoneTexture(values, random); //from procedural texture
         float[] temp = TextureHelper.getValues(texture);
         values = new float[temp.length+1];
         System.arraycopy(temp, 0, values, 0, temp.length);
@@ -92,6 +92,38 @@ public class TextureTest {
         TextureHelper.applyGradient(variant, gradient);
         ResourceLocation tilesTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
         notInnerRegistry.registerTexture(tilesTexID, variant);
+    }
+
+    public static BufferTexture makeStoneTexture(float[] values, Random random) {
+        Rands.setRand(random);
+        BufferTexture texture = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(0.6F, 1.2F) / 4F);
+        BufferTexture distort = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(0.6F, 1.2F) / 4F);
+        BufferTexture additions = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(0.5F, 1.4F) / 4F);
+        BufferTexture result = TextureHelper.distort(texture, distort, Rands.randFloatRange(0F, 8F));
+        BufferTexture pass = TextureHelper.heightPass(result, -1, -1);
+
+        pass = TextureHelper.normalize(pass);
+        result = TextureHelper.clamp(result, 9);
+        result = TextureHelper.normalize(result);
+        result = TextureHelper.blend(result, pass, 0.3F);
+        result = TextureHelper.add(result, pass);
+        result = TextureHelper.blend(result, additions, 0.3F);
+        result = TextureHelper.normalize(result);
+        result = TextureHelper.clamp(result, 8);
+
+//		BufferTexture offseted1 = TextureHelper.offset(texture, -1, 0);
+//		BufferTexture offseted2 = TextureHelper.offset(texture, 0, -1);
+//		result = TextureHelper.blend(result, offseted1, 0.2F);
+//		result = TextureHelper.blend(result, offseted2, 0.2F);
+
+        if (16 < result.getWidth())
+            result = TextureHelper.downScale(result, result.getWidth() / 16);
+        else result = TextureHelper.upScale(result, 16 / result.getWidth());
+
+        result = TextureHelper.normalize(result, 0.1F, 0.7F);
+        result = TextureHelper.clampValue(result, values);
+
+        return result;
     }
 
     private static class notTextureHelper {
