@@ -9,17 +9,18 @@ import java.util.Random;
 
 public class ProceduralTextures {
 	public static ColorGradient makeStonePalette(Random random) {
+		Rands.setRand(random);
 		CustomColor color = new CustomColor(
 				random.nextFloat(),
 				random.nextFloat(),
 				random.nextFloat()
 		);
-		float sat = Rands.randFloatRange(random, 0, 0.2F);
-		float val = Rands.randFloatRange(random, 0.3F, 0.7F);
+		float sat = Rands.randFloatRange(0, 0.2F);
+		float val = Rands.randFloatRange(0.3F, 0.7F);
 		color.switchToHSV().setSaturation(sat).setBrightness(val);
-		float hue = Rands.randFloatRange(random, 0, 0.3F);
+		float hue = Rands.randFloatRange(0, 0.3F);
 		sat = random.nextFloat() * 0.3F;
-		val = Rands.randFloatRange(random, 0.3F, 0.5F);
+		val = Rands.randFloatRange(0.3F, 0.5F);
 		return TextureHelper.makeDistortedPalette(color, hue, sat, val);
 	}
 

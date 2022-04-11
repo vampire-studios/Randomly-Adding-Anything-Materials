@@ -128,7 +128,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(target.block()).requiresTool().mapColor(MaterialColor.COLOR_GRAY);
 		this.droppedItem = RAASimpleItem.register(this.registryName, new Item.Properties().tab(RAAMaterials.RAA_RESOURCES), rawType);
 		ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new BaseDropBlock(material, this.droppedItem), RAAMaterials.RAA_ORES);
-		drop = ((BaseDropBlock)ore).getDrop();
+		drop = ((BaseDropBlock)ore).drop;
 		TagHelper.addTag(target.toolType(), ore);
 		TagHelper.addTag(switch (tier) {
 			case 1 -> BlockTags.NEEDS_STONE_TOOL;
@@ -470,12 +470,12 @@ public abstract class OreMaterial extends ComplexMaterial {
 		public static final Target PRISMARINE = new Target(Blocks.PRISMARINE, "prismarine", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/prismarine_base.png")).build(), new CustomColor(0x1b2632), new CustomColor(0x9bcbbf), BlockTags.MINEABLE_WITH_PICKAXE);
 		public static final Target CALCITE = new Target(Blocks.CALCITE, "calcite", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/calcite.png")).build(), new CustomColor(0xc9c9c4), new CustomColor(0XFFFFFF), BlockTags.MINEABLE_WITH_PICKAXE);
 		public static final Target SMOOTH_BASALT = new Target(Blocks.SMOOTH_BASALT, "smooth_basalt", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/smooth_basalt.png")).build(), new CustomColor(0x1b2632), new CustomColor(0x696969), BlockTags.MINEABLE_WITH_PICKAXE);
+		public static final Target BLACKSTONE = new Target(Blocks.BLACKSTONE, "blackstone", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/blackstone_top.png")).build(), new CustomColor(0x20131c), new CustomColor(0x4e4b54), BlockTags.MINEABLE_WITH_PICKAXE);
+		public static final Target SANDSTONE = new Target(Blocks.SANDSTONE, "sandstone", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/sandstone_top.png")).build(), new CustomColor(0xc6ae71), new CustomColor(0xedebcb), BlockTags.MINEABLE_WITH_PICKAXE);
+		public static final Target BASALT = new Target(Blocks.BASALT, "basalt", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/basalt_top.png")).build(), new CustomColor(0x353641), new CustomColor(0x898989), BlockTags.MINEABLE_WITH_PICKAXE);
 
-		public static final Target SANDSTONE = new Target(Blocks.SANDSTONE, "sandstone", TargetTextureInformation.builder().top(new ResourceLocation("textures/block/sandstone_top.png")).side(new ResourceLocation("block/sandstone")).bottom(new ResourceLocation("block/sandstone_bottom")).build(), new CustomColor(0xc6ae71), new CustomColor(0xedebcb), BlockTags.MINEABLE_WITH_PICKAXE);
 		public static final Target CRIMSON_NYLIUM = new Target(Blocks.CRIMSON_NYLIUM, "crimson_nylium", TargetTextureInformation.builder().top(new ResourceLocation("textures/block/crimson_nylium.png")).bottom(new ResourceLocation("block/netherrack")).side(new ResourceLocation("block/crimson_nylium_side")).build(), new CustomColor(0x352922), new CustomColor(0x6a5244), BlockTags.MINEABLE_WITH_PICKAXE);
 		public static final Target WARPED_NYLIUM = new Target(Blocks.WARPED_NYLIUM, "warped_nylium", TargetTextureInformation.builder().top(new ResourceLocation("textures/block/warped_nylium.png")).bottom(new ResourceLocation("block/netherrack")).side(new ResourceLocation("block/warped_nylium_side")).build(), new CustomColor(0x352922), new CustomColor(0x6a5244), BlockTags.MINEABLE_WITH_PICKAXE);
-		public static final Target BLACKSTONE = new Target(Blocks.BLACKSTONE, "blackstone", TargetTextureInformation.builder().top(new ResourceLocation("textures/block/blackstone_top.png")).side(new ResourceLocation("block/blackstone")).build(), new CustomColor(0x20131c), new CustomColor(0x4e4b54), BlockTags.MINEABLE_WITH_PICKAXE);
-		public static final Target BASALT = new Target(Blocks.BASALT, "basalt", TargetTextureInformation.builder().top(new ResourceLocation("textures/block/basalt_top.png")).side(new ResourceLocation("block/basalt_side")).build(), new CustomColor(0x353641), new CustomColor(0x898989), BlockTags.MINEABLE_WITH_PICKAXE);
 		public static final Target MYCELIUM = new Target(Blocks.MYCELIUM, "mycelium", TargetTextureInformation.builder().top(new ResourceLocation("textures/block/mycelium_top.png")).bottom(new ResourceLocation("block/dirt")).side(new ResourceLocation("block/mycelium_side")).build(), new CustomColor(0x5a5952), new CustomColor(0x8b7173), BlockTags.MINEABLE_WITH_SHOVEL);
 		public static final Target PODZOL = new Target(Blocks.PODZOL, "podzol", TargetTextureInformation.builder().top(new ResourceLocation("textures/block/podzol_top.png")).bottom(new ResourceLocation("block/dirt")).side(new ResourceLocation("block/podzol_side")).build(), new CustomColor(0x4a3018), new CustomColor(0xac6520), BlockTags.MINEABLE_WITH_SHOVEL);
 	}

@@ -52,7 +52,7 @@ public class TextureHelper {
 	}
 
 	public static ResourceLocation makeArmorTextureID(String name) {
-		return RAAMaterials.id("models/misc/armor/" + name);
+		return new ResourceLocation("models/armor/" + name);
 	}
 	
 	public static CustomColor getFromTexture(NativeImage img, int x, int y) {

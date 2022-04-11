@@ -1,7 +1,6 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.InputConstants;
 import io.github.vampirestudios.raa_core.api.RAAAddon;
 import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
@@ -9,27 +8,20 @@ import io.github.vampirestudios.raa_materials.config.GeneralConfig;
 import io.github.vampirestudios.raa_materials.materials.*;
 import io.github.vampirestudios.raa_materials.utils.BlockFixer;
 import io.github.vampirestudios.raa_materials.utils.ItemFixer;
-import io.github.vampirestudios.raa_materials.utils.RegistryUtils;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.EnvType;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
-import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -38,7 +30,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.LevelResource;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,7 +138,7 @@ public class RAAMaterials implements RAAAddon {
 
 					if (compound.contains(materialCompoundName)) {
 						ListTag list = compound.getList(materialCompoundName, Tag.TAG_COMPOUND);
-						list.forEach(nbtElement -> materials.add(ComplexMaterial.readFromNbt((CompoundTag) nbtElement)));
+						list.forEach(nbtElement -> materials.add(ComplexMaterial.readFromNbt(random, (CompoundTag) nbtElement)));
 					}
 
 					materials.forEach(material -> material.generate(world, biomeRegistry));
@@ -197,12 +188,12 @@ public class RAAMaterials implements RAAAddon {
 		Registry.register(TARGETS, minecraftId("prismarine"), OreMaterial.Target.PRISMARINE);
 		Registry.register(TARGETS, minecraftId("calcite"), OreMaterial.Target.CALCITE);
 		Registry.register(TARGETS, minecraftId("smooth_basalt"), OreMaterial.Target.SMOOTH_BASALT);
-
+		Registry.register(TARGETS, minecraftId("blackstone"), OreMaterial.Target.BLACKSTONE);
 		Registry.register(TARGETS, minecraftId("sandstone"), OreMaterial.Target.SANDSTONE);
+		Registry.register(TARGETS, minecraftId("basalt"), OreMaterial.Target.BASALT);
+
 		Registry.register(TARGETS, minecraftId("crimson_nylium"), OreMaterial.Target.CRIMSON_NYLIUM);
 		Registry.register(TARGETS, minecraftId("warped_nylium"), OreMaterial.Target.WARPED_NYLIUM);
-		Registry.register(TARGETS, minecraftId("blackstone"), OreMaterial.Target.BLACKSTONE);
-		Registry.register(TARGETS, minecraftId("basalt"), OreMaterial.Target.BASALT);
 		Registry.register(TARGETS, minecraftId("mycelium"), OreMaterial.Target.MYCELIUM);
 		Registry.register(TARGETS, minecraftId("podzol"), OreMaterial.Target.PODZOL);
 

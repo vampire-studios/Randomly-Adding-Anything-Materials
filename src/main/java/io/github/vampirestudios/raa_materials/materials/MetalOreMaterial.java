@@ -3,6 +3,8 @@ package io.github.vampirestudios.raa_materials.materials;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
+import io.github.vampirestudios.raa_materials.api.BiomeAPI;
+import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
@@ -11,8 +13,10 @@ import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.recipes.FurnaceRecipe;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
@@ -23,7 +27,18 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
+import net.minecraft.world.level.levelgen.placement.BiomeFilter;
+import net.minecraft.world.level.levelgen.placement.CountOnEveryLayerPlacement;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.levelgen.placement.RarityFilter;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RandomBlockMatchTest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class MetalOreMaterial extends OreMaterial {
@@ -416,33 +431,51 @@ public class MetalOreMaterial extends OreMaterial {
 
 	@Override
 	public void generate(ServerLevel world, Registry<Biome> biomeRegistry) {
-		/*if (this.hasOreVein) {
+		if (this.hasOreVein) {
 			List<OreConfiguration.TargetBlockState> blockStates = new ArrayList<>();
-			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.3F), ore.defaultBlockState()));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.2F), ore.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.01F), rawMaterialBlock.defaultBlockState()));
-			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.25F), rawMaterialBlock.defaultBlockState()));
-			ConfiguredFeature<?, ?> oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein"), Feature.ORE
-					.configured(new OreConfiguration(blockStates, 32)));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.05F), rawMaterialBlock.defaultBlockState()));
+			Holder<ConfiguredFeature<?, ?>> oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein"), Feature.ORE,
+					new OreConfiguration(blockStates, 16));
 
 			ResourceKey<PlacedFeature> oreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, RAAMaterials.id(this.registryName + "_ore_vein_pf"));
-			InnerRegistry.registerPlacedFeature(world, oreVeinKey, oreVein
-					.placed(CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(32), BiomeFilter.biome()));
+			Holder<PlacedFeature> oreVeinHolder = InnerRegistry.registerPlacedFeature(world, oreVeinKey, oreVein, CountOnEveryLayerPlacement.of(2),
+					RarityFilter.onAverageOnceEvery(16), BiomeFilter.biome());
 
-			List<OreConfiguration.TargetBlockState> hugeOreVeinBlockStates = new ArrayList<>();
+			blockStates = new ArrayList<>();
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.3F), ore.defaultBlockState()));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.03F), rawMaterialBlock.defaultBlockState()));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.1F), rawMaterialBlock.defaultBlockState()));
+			oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein"), Feature.ORE,
+					new OreConfiguration(blockStates, 32));
+
+			oreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, RAAMaterials.id(this.registryName + "_ore_vein_pf"));
+			Holder<PlacedFeature> mediumOreVeinHolder = InnerRegistry.registerPlacedFeature(world, oreVeinKey, oreVein, CountOnEveryLayerPlacement.of(2),
+					RarityFilter.onAverageOnceEvery(32), BiomeFilter.biome());
+
+			blockStates = new ArrayList<>();
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.5F), ore.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.05F), rawMaterialBlock.defaultBlockState()));
-			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.35F), rawMaterialBlock.defaultBlockState()));
-			ConfiguredFeature<?, ?> hugeOreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein_huge"), Feature.ORE
-					.configured(new OreConfiguration(hugeOreVeinBlockStates, 64)));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.25F), rawMaterialBlock.defaultBlockState()));
+			oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein_huge"), Feature.ORE,
+					new OreConfiguration(blockStates, 64));
 
 			ResourceKey<PlacedFeature> placedHugeOreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, RAAMaterials.id(this.registryName + "_ore_vein_huge_pf"));
-			InnerRegistry.registerPlacedFeature(world, placedHugeOreVeinKey, hugeOreVein
-					.placed(CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(64), BiomeFilter.biome()));
-			BiomeModifications.addFeature(BiomeSelectors.all(), GenerationStep.Decoration.UNDERGROUND_ORES, oreVeinKey);
+			Holder<PlacedFeature> largeOreVeinHolder = InnerRegistry.registerPlacedFeature(world, placedHugeOreVeinKey, oreVein, CountOnEveryLayerPlacement.of(2),
+					RarityFilter.onAverageOnceEvery(64), BiomeFilter.biome());
+
+			List<Holder<PlacedFeature>> availableFeatures = List.of(oreVeinHolder, mediumOreVeinHolder, largeOreVeinHolder);
+			Holder<PlacedFeature> selectedFeatureHolder = io.github.vampirestudios.vampirelib.utils.Rands.list(availableFeatures);
+
+			for (Biome biome : biomeRegistry) {
+				BiomeAPI.addBiomeFeature(biomeRegistry, Holder.direct(biome),
+						GenerationStep.Decoration.UNDERGROUND_ORES, List.of(selectedFeatureHolder));
+			}
+			((BiomeSourceAccessor) world.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
 		} else {
-			super.generate(world);
-		}*/
-		super.generate(world, biomeRegistry);
+			super.generate(world, biomeRegistry);
+		}
 	}
 
 	static {

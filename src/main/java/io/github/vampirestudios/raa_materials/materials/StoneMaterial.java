@@ -12,7 +12,6 @@ import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
-import io.github.vampirestudios.vampirelib.utils.Rands;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -53,26 +52,15 @@ public class StoneMaterial extends ComplexMaterial {
 	private final ResourceLocation stoneTile;
 
 	public final Block stone;
-//	public final Block stairs;
-//	public final Block slab;
-//	public final Block pressure_plate;
-//	public final Block button;
-//	public final Block wall;
 
 	public final Block polished;
-//	public final Block polished_wall;
 
 	public final Block tiles;
 
 	public final Block bricks;
-//	public final Block brick_stairs;
-//	public final Block brick_slab;
-//	public final Block brick_pressure_plate;
-//	public final Block brick_button;
-//	public final Block brick_wall;
 
 	public StoneMaterial(Random random) {
-		this(TestNameGenerator.generateStoneName(random), ProceduralTextures.makeStonePalette(random),
+		this(random, TestNameGenerator.generateStoneName(random), ProceduralTextures.makeStonePalette(random),
 				TextureInformation.builder()
 						.stoneBricks(stoneBricks[random.nextInt(stoneBricks.length)])
 						.stoneFrame(stoneFrames[random.nextInt(stoneFrames.length)])
@@ -80,97 +68,38 @@ public class StoneMaterial extends ComplexMaterial {
 						.build());
 	}
 
-	public StoneMaterial(String name, ColorGradient colorGradient, TextureInformation textureInformation) {
+	public StoneMaterial(Random random, String name, ColorGradient colorGradient, TextureInformation textureInformation) {
 		super(name, colorGradient);
+		Rands.setRand(random);
 
 		this.stoneFrame = textureInformation.getStoneFrame();
 		this.stoneBrick = textureInformation.getStoneBricks();
 		this.stoneTile = textureInformation.getStoneTiles();
 
-		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(Blocks.STONE).color(MaterialColor.COLOR_GRAY);
+		Block[] baseBlocks = {Blocks.STONE, Blocks.DEEPSLATE, Blocks.NETHERRACK};
+
+		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(Rands.values(baseBlocks)).hardness(Rands.randFloatRange(1.0F, 5.0F))
+				.slipperiness(Rands.randFloatRange(0.6F, 1.0F)).resistance(Rands.randFloatRange(1.0F, 5.0F)).color(MaterialColor.COLOR_GRAY);
 
 		stone = InnerRegistry.registerBlockAndItem(this.registryName, new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
-//		stairs = InnerRegistry.registerBlockAndItem(this.registryName + "_stairs", new BaseStairsBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
-//		slab = InnerRegistry.registerBlockAndItem(this.registryName + "_slab", new BaseSlabBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
-//		pressure_plate = InnerRegistry.registerBlockAndItem(this.registryName + "_pressure_plate", new BaseStonePressurePlateBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
-//		button = InnerRegistry.registerBlockAndItem(this.registryName + "_button", new BaseStoneButtonBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
-//		wall = InnerRegistry.registerBlockAndItem(this.registryName + "_wall", new BaseWallBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
 
 		polished = InnerRegistry.registerBlockAndItem("polished_" + this.registryName, new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
-//		polished_wall = InnerRegistry.registerBlockAndItem(this.registryName + "_wall", new BaseWallBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
 
 		tiles = InnerRegistry.registerBlockAndItem(this.registryName + "_tiles", new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
 
 		bricks = InnerRegistry.registerBlockAndItem(this.registryName + "_bricks", new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
-//		brick_stairs = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_stairs", new BaseStairsBlock(blockRegistryName, bricks), RAAMaterials.RAA_STONE_TYPES);
-//		brick_slab = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_slab", new BaseSlabBlock(blockRegistryName, bricks), RAAMaterials.RAA_STONE_TYPES);
-//		brick_pressure_plate = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_pressure_plate", new BaseStonePressurePlateBlock(blockRegistryName, bricks), RAAMaterials.RAA_STONE_TYPES);
-//		brick_button = InnerRegistry.registerBlockAndItem(this.registryName + "_brick_button", new BaseStoneButtonBlock(blockRegistryName, bricks), RAAMaterials.RAA_STONE_TYPES);
-//		brick_wall = InnerRegistry.registerBlockAndItem(this.registryName + "_wall", new BaseWallBlock(blockRegistryName, stone), RAAMaterials.RAA_STONE_TYPES);
-
-//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_stairs"), stairs)
-//				.setOutputCount(4)
-//				.addMaterial('#', stone)
-//				.setShape("#  ", "## ", "###")
-//				.build();
-//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_slab"), slab)
-//				.setOutputCount(6)
-//				.addMaterial('#', stone)
-//				.setShape("###")
-//				.build();
-//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_pressure_plate"), pressure_plate)
-//				.addMaterial('#', stone)
-//				.setShape("##")
-//				.build();
-//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_button"), button)
-//				.addMaterial('#', stone)
-//				.setShape("##")
-//				.build();
-//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_wall"), wall)
-//				.setOutputCount(6)
-//				.addMaterial('#', stone)
-//				.setShape("###", "###")
-//				.build();
 
 		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, "polished_" + this.registryName), polished)
 				.setOutputCount(2)
 				.addMaterial('#', stone)
 				.setShape("##", "##")
 				.build();
-//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, "polished_" + this.registryName + "_wall"), polished_wall)
-//				.setOutputCount(6)
-//				.addMaterial('#', polished)
-//				.setShape("###", "###")
-//				.build();
 
 		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_bricks"), bricks)
 				.setOutputCount(4)
 				.addMaterial('#', polished)
 				.setShape("##", "##")
 				.build();
-//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_stairs"), brick_stairs)
-//				.setOutputCount(4)
-//				.addMaterial('#', bricks)
-//				.setShape("#  ", "## ", "###")
-//				.build();
-//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_slab"), brick_slab)
-//				.setOutputCount(6)
-//				.addMaterial('#', bricks)
-//				.setShape("###")
-//				.build();
-//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_pressure_plate"), brick_pressure_plate)
-//				.addMaterial('#', bricks)
-//				.setShape("##")
-//				.build();
-//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_button"), brick_button)
-//				.addMaterial('#', bricks)
-//				.setShape("##")
-//				.build();
-//		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_brick_wall"), brick_wall)
-//				.setOutputCount(6)
-//				.addMaterial('#', bricks)
-//				.setShape("###", "###")
-//				.build();
 
 		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, this.registryName + "_tiles"), tiles)
 				.setOutputCount(2)
@@ -178,42 +107,16 @@ public class StoneMaterial extends ComplexMaterial {
 				.setShape("##", "##")
 				.build();
 
-		// Recipes //
-		/*RecipeManagerHelper.registerDynamicRecipes(handler -> {
-			handler.register(new Identifier(RAAMaterials.MOD_ID, "polished_" + this.registryName),
-					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"##", "##"})
-							.ingredient('#', bricks)
-							.output(new ItemStack(polished, 4))
-							.build(RAAMaterials.id("polished_" + this.registryName), "polished"));
-			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_tiles"),
-					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"##", "##"})
-							.ingredient('#', polished)
-							.output(new ItemStack(tiles, 4))
-							.build(RAAMaterials.id(this.registryName + "_tiles"), "tiles"));
-			handler.register(new Identifier(RAAMaterials.MOD_ID, this.registryName + "_bricks"),
-					id -> VanillaRecipeBuilders.shapedRecipe(new String[] {"##", "##"})
-							.ingredient('#', stone)
-							.output(new ItemStack(bricks, 4))
-							.build(RAAMaterials.id(this.registryName + "_bricks"), "bricks"));
-		});*/
-
 		// Item Tags //
-//		TagHelper.addTag(ItemTags.SLABS, slab, brick_slab);
 		TagHelper.addTag(ItemTags.STONE_BRICKS, bricks);
-		TagHelper.addTag(ItemTags.STONE_CRAFTING_MATERIALS, stone/*, stairs, slab, pressure_plate, button, wall*/, bricks,
-				/*brick_stairs, brick_slab, brick_pressure_plate, brick_button, brick_wall, */polished/*, polished_wall*/, tiles);
-		TagHelper.addTag(ItemTags.STONE_TOOL_MATERIALS, stone, /*stairs, slab, pressure_plate, button, wall, */bricks,
-				/*brick_stairs, brick_slab, brick_pressure_plate, brick_button, brick_wall, */polished/*, polished_wall*/, tiles);
+		TagHelper.addTag(ItemTags.STONE_CRAFTING_MATERIALS, stone, bricks, polished, tiles);
+		TagHelper.addTag(ItemTags.STONE_TOOL_MATERIALS, stone, polished, tiles);
 
 		// Block Tags //
 		TagHelper.addTag(BlockTags.BASE_STONE_OVERWORLD, stone);
 		TagHelper.addTag(BlockTags.STONE_BRICKS, bricks);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, stone/*, stairs, slab, pressure_plate, button, wall*/, bricks,
-				/*brick_stairs, brick_slab, brick_pressure_plate, brick_button, brick_wall, */polished/*, polished_wall*/, tiles);
-		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, stone/*, stairs, slab, pressure_plate, button, wall*/, bricks,
-				/*brick_stairs, brick_slab, brick_pressure_plate, brick_button, brick_wall, */polished/*, polished_wall*/, tiles);
-//		TagHelper.addTag(BlockTags.SLABS, slab, brick_slab);
-//		TagHelper.addTag(BlockTags.WALLS, wall, brick_wall, polished_wall);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, stone, bricks, polished, tiles);
+		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, stone, bricks, polished, tiles);
 	}
 
 	@Override
@@ -286,7 +189,7 @@ public class StoneMaterial extends ComplexMaterial {
 		ResourceLocation stoneTexID = TextureHelper.makeBlockTextureID(textureBaseName);
 		BufferTexture texture = ProceduralTextures.makeStoneTexture(values, random);
 		float[] temp = TextureHelper.getValues(texture);
-		values = new float[temp.length+1];
+		values = new float[temp.length + 1];
 		System.arraycopy(temp, 0, values, 0, temp.length);
 		values[temp.length] = 0.9f;
 

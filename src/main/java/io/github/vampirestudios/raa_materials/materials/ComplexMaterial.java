@@ -39,7 +39,7 @@ public abstract class ComplexMaterial {
 
 	public abstract CompoundTag writeToNbt(CompoundTag materialCompound);
 
-	public static ComplexMaterial readFromNbt(CompoundTag compound) {
+	public static ComplexMaterial readFromNbt(Random random, CompoundTag compound) {
 		String type = compound.getString("materialType");
 		String name = compound.getString("name");
 		int tier = compound.getInt("tier");
@@ -128,7 +128,7 @@ public abstract class ComplexMaterial {
 				oreMaterial.setRarity(rarity);
 				oreMaterial.setHiddenChance(hiddenChance);
 			}
-			default -> material = new StoneMaterial(name, gradient, textureInformation);
+			default -> material = new StoneMaterial(random, name, gradient, textureInformation);
 		}
 
 		return material;
