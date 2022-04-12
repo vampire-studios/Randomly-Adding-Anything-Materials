@@ -39,8 +39,8 @@ public class TestNameGenerator {
 				if (registryName.contains(string)) registryName = registryName.replace(string, stringStringPair.getKey());
 			}
 		}
-		generatedNames.put(name, registryName);
-		return Pair.of(name, registryName);
+		generatedNames.put(name, registryName.toLowerCase());
+		return Pair.of(name, registryName.toLowerCase());
 	}
 
 	public static Pair<String, String> generateStoneName(Random random) {
@@ -56,8 +56,8 @@ public class TestNameGenerator {
 				if (extraName.contains(string)) extraName = extraName.replace(string, stringStringPair.getKey());
 			}
 		}
-		generatedNames.put(name, extraName);
-		return Pair.of(name, extraName);
+		generatedNames.put(name, extraName.toLowerCase());
+		return Pair.of(name, extraName.toLowerCase());
 	}
 
 	public static String generate(Random random, int min, int max) {

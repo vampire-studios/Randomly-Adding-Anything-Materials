@@ -11,9 +11,9 @@ public class ColorGradient {
 	}
 
 	public ColorGradient(CustomColor start, CustomColor mid, CustomColor end) {
-		this.start = start;
-		this.midpoint = mid;
-		this.end = end;
+		this.start = start.switchToHSV();
+		this.midpoint = mid.switchToHSV();
+		this.end = end.switchToHSV();
 	}
 
 	public CustomColor getColor(float value) {
@@ -28,5 +28,19 @@ public class ColorGradient {
 		} else {
 			return VALUE.set(midpoint).mixWith(end, (value-0.5f)*2);
 		}
+	}
+
+	public ColorGradient switchToHSV(){
+		start.switchToHSV();
+		midpoint.switchToHSV();
+		end.switchToHSV();
+		return this;
+	}
+
+	public ColorGradient switchToRGB(){
+		start.switchToRGB();
+		midpoint.switchToRGB();
+		end.switchToRGB();
+		return this;
 	}
 }

@@ -47,6 +47,13 @@ public abstract class ComplexMaterial {
 				new CustomColor(colorGradientCompound.getInt("endColor"))
 		);
 
+		colorGradientCompound = compound.getCompound("corrosionGradient");
+		ColorGradient corrodedGradient = new ColorGradient(
+				new CustomColor(colorGradientCompound.getInt("startColor")),
+				new CustomColor(colorGradientCompound.getInt("midColor")),
+				new CustomColor(colorGradientCompound.getInt("endColor"))
+		);
+
 		OreMaterial.Target target = RAAMaterials.TARGETS.get(targetName);
 
 		CompoundTag generationCompound = compound.getCompound("generation");
@@ -114,7 +121,7 @@ public abstract class ComplexMaterial {
 			}
 			case "crystal" -> material = new CrystalMaterial(parsedName, gradient, textureInformation, tier, crystalLampOverlayTextureInt, crystalOreTextureInt);
 			case "metal" -> {
-				material = new MetalOreMaterial(parsedName, gradient, textureInformation, target, tier, hasOreVein);
+				material = new MetalOreMaterial(parsedName, gradient, corrodedGradient, textureInformation, target, tier, hasOreVein);
 				OreMaterial oreMaterial = (OreMaterial) material;
 				oreMaterial.setBonus(bonus);
 				oreMaterial.setSize(size);

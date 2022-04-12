@@ -103,10 +103,13 @@ public class MetalOreMaterial extends OreMaterial {
 
 	public boolean hasOreVein;
 
+	public ColorGradient corrodedGradient;
+
 	public MetalOreMaterial(Target target, Random random) {
 		this(
 				TestNameGenerator.generateOreName(random),
-				ProceduralTextures.makeMetalPalette(random),
+				ProceduralTextures.makeMetalPalette(random).gradient1(),
+				ProceduralTextures.makeMetalPalette(random).gradient2(),
 				TextureInformation.builder()
 					.oreOverlay(Rands.values(oreVeinTextures))
 					.storageBlock(Rands.values(storageBlockTextures))
@@ -134,7 +137,7 @@ public class MetalOreMaterial extends OreMaterial {
 		);
 	}
 
-	public MetalOreMaterial(Pair<String, String> name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
+	public MetalOreMaterial(Pair<String, String> name, ColorGradient gradient, ColorGradient corrodedGradient, TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
 		super(name, gradient, textureInformation, targetIn, RAASimpleItem.SimpleItemType.RAW, tier, true);
 
 		this.oreVeinTexture = textureInformation.oreOverlay();
@@ -150,6 +153,7 @@ public class MetalOreMaterial extends OreMaterial {
 		this.crushedOreTexture = textureInformation.crushedOre();
 
 		this.hasOreVein = hasOreVein;
+		this.corrodedGradient = corrodedGradient;
 
 		rawMaterialBlock = InnerRegistry.registerBlockAndItem("raw_" + this.registryName + "_block", new Block(BlockBehaviour.Properties.copy(Blocks.RAW_IRON_BLOCK)), RAAMaterials.RAA_ORES);
 		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, rawMaterialBlock);
@@ -322,6 +326,12 @@ public class MetalOreMaterial extends OreMaterial {
 		texturesCompound.putString("smallDustTexture", smallDustTexture.toString());
 		texturesCompound.putString("crushedOreTexture", crushedOreTexture.toString());
 
+		CompoundTag colorGradientCompound = new CompoundTag();
+		colorGradientCompound.putInt("startColor", this.gradient.getColor(0.0F).getAsInt());
+		colorGradientCompound.putInt("midColor", this.gradient.getColor(0.5F).getAsInt());
+		colorGradientCompound.putInt("endColor", this.gradient.getColor(1.0F).getAsInt());
+		materialCompound.put("corrosionGradient", colorGradientCompound);
+
 		return materialCompound;
 	}
 
@@ -329,7 +339,7 @@ public class MetalOreMaterial extends OreMaterial {
 	public void initClient(Random random) {
 		super.initClient(random);
 
-		ModelHelper.generateOreAssets(this.ore, oreVeinTexture, registryName, name, gradient, target);
+		ModelHelper.generateOreAssets(this.ore, oreVeinTexture, registryName, name, corrodedGradient, target);
 
 		// Storage Block
 		ResourceLocation textureID = TextureHelper.makeBlockTextureID(this.registryName + "_block");
@@ -340,14 +350,14 @@ public class MetalOreMaterial extends OreMaterial {
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"),  String.format("%s Block", this.name));
 
 		textureID = TextureHelper.makeBlockTextureID("raw_" + this.registryName + "_block");
-		texture = ProceduralTextures.randomColored(rawMaterialBlockTexture, gradient);
+		texture = ProceduralTextures.randomColored(rawMaterialBlockTexture, corrodedGradient);
 		InnerRegistryClient.registerTexture(textureID, texture);
 		InnerRegistryClient.registerItemModel(this.rawMaterialBlock.asItem(), ModelHelper.makeCube(textureID));
 		InnerRegistryClient.registerBlockModel(this.rawMaterialBlock, ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock("raw_" + this.registryName + "_block"),  String.format("Raw %s Block", this.name));
 
 		// Items
-		makeColoredItemAssets(rawItemTexture, droppedItem, gradient, "raw_" + this.registryName, "Raw %s");
+		makeColoredItemAssets(rawItemTexture, droppedItem, corrodedGradient, "raw_" + this.registryName, "Raw %s");
 		makeColoredItemAssets(ingotTexture, ingot, gradient, this.registryName + "_ingot", "%s Ingot");
 		makeColoredItemAssets(nuggetTexture, nugget, gradient, this.registryName + "_nugget", "%s Nugget");
 
