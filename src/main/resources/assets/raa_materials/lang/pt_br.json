@@ -15,6 +15,8 @@
   "text.raa_materials.block.brick_slab": "{0} Brick Slab",
   "text.raa_materials.block.tiles": "{0} Tiles",
   "text.raa_materials.block.polished": "Polished {0}",
+  "text.raa_materials.block.cobbled": "Cobbled {0}",
+  "text.raa_materials.block.chiseled": "Chiseled {0}",
   "text.raa_materials.block.crystal": "{0} Crystal",
   "text.raa_materials.block.ball": "{0} Ball",
   "text.raa_materials.item.gem": "Jóia de {0}",
