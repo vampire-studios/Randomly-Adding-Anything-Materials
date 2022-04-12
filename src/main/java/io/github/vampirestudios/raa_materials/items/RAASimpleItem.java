@@ -43,10 +43,10 @@ public class RAASimpleItem extends Item implements GeneratedItemName {
             this.prefix = prefix;
             this.suffix = suffix;
         }
-        public String apply(String text){
+        public String apply(String text) {
             return this.prefix + (this.prefix.isEmpty()?"":"_") + text + (this.suffix.isEmpty()?"":"_") + this.suffix;
         }
-        public String registryName(){
+        public String registryName() {
             return this.prefix + (this.prefix.isEmpty()?"":this.suffix.isEmpty()?"":"_") + this.suffix;
         }
     }

@@ -1,9 +1,7 @@
 package io.github.vampirestudios.raa_materials.materials;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Pair;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
-import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
@@ -12,9 +10,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 
 public abstract class ComplexMaterial {
@@ -23,17 +21,10 @@ public abstract class ComplexMaterial {
 	public String registryName;
 	public ColorGradient gradient;
 
-	protected ComplexMaterial(String name, ColorGradient gradient) {
+	protected ComplexMaterial(Pair<String, String> name, ColorGradient gradient) {
 		MATERIALS.add(this);
-		this.name = name;
-		String extraName = name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", "");
-		for (Pair<String, String> stringStringPair : TestNameGenerator.specialLettersTesting) {
-			String[] strings = stringStringPair.getSecond().split("\\|");
-			for (String string : strings) {
-				if (extraName.contains(string)) extraName = extraName.replace(string, stringStringPair.getFirst());
-			}
-		}
-		this.registryName = extraName.toLowerCase(Locale.ROOT);
+		this.name = name.getKey();
+		this.registryName = name.getValue();
 		this.gradient = gradient;
 	}
 
@@ -42,6 +33,8 @@ public abstract class ComplexMaterial {
 	public static ComplexMaterial readFromNbt(Random random, CompoundTag compound) {
 		String type = compound.getString("materialType");
 		String name = compound.getString("name");
+		String registryName = compound.getString("registryName");
+		Pair<String, String> parsedName = Pair.of(name, registryName);
 		int tier = compound.getInt("tier");
 		int bonus = compound.getInt("bonus");
 		ResourceLocation targetName = RAAMaterials.minecraftId(compound.getString("target"));
@@ -101,6 +94,8 @@ public abstract class ComplexMaterial {
 		textureInformationBuilder.stoneTiles(ResourceLocation.tryParse(texturesCompound.getString("stoneTileTexture")));
 		textureInformationBuilder.stoneBricks(ResourceLocation.tryParse(texturesCompound.getString("stoneBrickTexture")));
 		textureInformationBuilder.stoneFrame(ResourceLocation.tryParse(texturesCompound.getString("stoneFrameTexture")));
+		textureInformationBuilder.stoneCobbled(ResourceLocation.tryParse(texturesCompound.getString("stoneCobbledTexture")));
+		textureInformationBuilder.stoneChiseled(ResourceLocation.tryParse(texturesCompound.getString("stoneChiseledTexture")));
 		int crystalLampOverlayTextureInt = texturesCompound.getInt("crystalLampOverlayTextureInt");
 		int crystalOreTextureInt = texturesCompound.getInt("crystalOreTextureInt");
 
@@ -108,7 +103,7 @@ public abstract class ComplexMaterial {
 
 		switch (type) {
 			case "gem" -> {
-				material = new GemOreMaterial(name, gradient, textureInformation, target, tier);
+				material = new GemOreMaterial(parsedName, gradient, textureInformation, target, tier);
 				OreMaterial oreMaterial = (OreMaterial) material;
 				oreMaterial.setBonus(bonus);
 				oreMaterial.setSize(size);
@@ -117,9 +112,9 @@ public abstract class ComplexMaterial {
 				oreMaterial.setRarity(rarity);
 				oreMaterial.setHiddenChance(hiddenChance);
 			}
-			case "crystal" -> material = new CrystalMaterial(name, gradient, textureInformation, tier, crystalLampOverlayTextureInt, crystalOreTextureInt);
+			case "crystal" -> material = new CrystalMaterial(parsedName, gradient, textureInformation, tier, crystalLampOverlayTextureInt, crystalOreTextureInt);
 			case "metal" -> {
-				material = new MetalOreMaterial(name, gradient, textureInformation, target, tier, hasOreVein);
+				material = new MetalOreMaterial(parsedName, gradient, textureInformation, target, tier, hasOreVein);
 				OreMaterial oreMaterial = (OreMaterial) material;
 				oreMaterial.setBonus(bonus);
 				oreMaterial.setSize(size);
@@ -128,7 +123,14 @@ public abstract class ComplexMaterial {
 				oreMaterial.setRarity(rarity);
 				oreMaterial.setHiddenChance(hiddenChance);
 			}
-			default -> material = new StoneMaterial(random, name, gradient, textureInformation);
+			default -> {
+				material = new StoneMaterial(random, parsedName, gradient, textureInformation);
+				StoneMaterial stoneMaterial = (StoneMaterial) material;
+				stoneMaterial.setSize(size);
+				stoneMaterial.setMinHeight(minHeight);
+				stoneMaterial.setMaxHeight(maxHeight);
+				stoneMaterial.setRarity(rarity);
+			}
 		}
 
 		return material;

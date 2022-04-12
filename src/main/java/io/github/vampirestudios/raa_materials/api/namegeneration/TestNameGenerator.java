@@ -1,15 +1,12 @@
 package io.github.vampirestudios.raa_materials.api.namegeneration;
 
-import com.mojang.datafixers.util.Pair;
 import io.github.vampirestudios.raa_materials.utils.Rands;
+import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
+import java.util.*;
 
 public class TestNameGenerator {
-	private static final List<String> generatedNames = new ArrayList<>();
+	private static final Map<String, String> generatedNames = new HashMap<>();
 	public static final List<Pair<String, String>> specialLettersTesting = List.of(
 			Pair.of("a", "\u00E0|\u00E4|\u00E6|\u00E5|\u0152|\u0153"),
 			Pair.of("e", "\u00E9|\u00E8|\u00EB|\u00A3"),
@@ -29,24 +26,38 @@ public class TestNameGenerator {
 		}
 	}
 
-	public static String generateOreName(Random random) {
+	public static Pair<String, String> generateOreName(Random random) {
 		Rands.setRand(random);
 		String name = generate(random, Rands.chance(50) ? (Rands.chance(100) ? 2 : 3) : (Rands.chance(100) ? 3 : 4), Rands.chance(30) ? 20 : 12);
-		while(generatedNames.contains(name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", ""))) {
+		while(generatedNames.containsKey(name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", ""))) {
 			name = generate(random, Rands.chance(50) ? (Rands.chance(100) ? 2 : 3) : (Rands.chance(100) ? 3 : 4), Rands.chance(30) ? 20 : 12);
 		}
-		generatedNames.add(name);
-		return name;
+		String registryName = name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", "");
+		for (Pair<String, String> stringStringPair : specialLettersTesting) {
+			String[] strings = stringStringPair.getValue().split("\\|");
+			for (String string : strings) {
+				if (registryName.contains(string)) registryName = registryName.replace(string, stringStringPair.getKey());
+			}
+		}
+		generatedNames.put(name, registryName);
+		return Pair.of(name, registryName);
 	}
 
-	public static String generateStoneName(Random random) {
+	public static Pair<String, String> generateStoneName(Random random) {
 		Rands.setRand(random);
 		String name = generate(random, 5, 15);
-		while(generatedNames.contains(name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", ""))) {
+		while(generatedNames.containsKey(name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", ""))) {
 			name = generate(random, 5, 15);
 		}
-		generatedNames.add(name);
-		return name;
+		String extraName = name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", "");
+		for (Pair<String, String> stringStringPair : specialLettersTesting) {
+			String[] strings = stringStringPair.getValue().split("\\|");
+			for (String string : strings) {
+				if (extraName.contains(string)) extraName = extraName.replace(string, stringStringPair.getKey());
+			}
+		}
+		generatedNames.put(name, extraName);
+		return Pair.of(name, extraName);
 	}
 
 	public static String generate(Random random, int min, int max) {
@@ -86,10 +97,10 @@ public class TestNameGenerator {
 			while (tries > 0) {
 				int rng = Rands.randIntRange(1, specialLettersTesting.size());
 				Pair<String, String> stringStringPair = specialLettersTesting.get(rng-1);
-				String[] strings = stringStringPair.getSecond().split("\\|");
+				String[] strings = stringStringPair.getRight().split("\\|");
 				rng = Rands.randIntRange(1, strings.length);
 				StringBuilder aaa = new StringBuilder(test);
-				if(aaa.indexOf(stringStringPair.getFirst())!=-1) aaa.setCharAt(aaa.indexOf(stringStringPair.getFirst()), strings[rng - 1].charAt(0));
+				if(aaa.indexOf(stringStringPair.getLeft())!=-1) aaa.setCharAt(aaa.indexOf(stringStringPair.getLeft()), strings[rng - 1].charAt(0));
 				test = aaa.toString();
 				tries--;
 			}

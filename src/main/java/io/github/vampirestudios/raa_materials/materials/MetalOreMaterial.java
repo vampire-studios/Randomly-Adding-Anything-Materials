@@ -1,5 +1,11 @@
 package io.github.vampirestudios.raa_materials.materials;
 
+import com.simibubi.create.content.contraptions.base.CasingBlock;
+import com.simibubi.create.content.contraptions.relays.encased.EncasedCTBehaviour;
+import com.simibubi.create.content.logistics.block.inventories.CrateBlock;
+import com.simibubi.create.foundation.block.connected.CTSpriteShiftEntry;
+import com.simibubi.create.foundation.block.connected.CTSpriteShifter;
+import com.simibubi.create.foundation.data.CreateRegistrate;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
@@ -13,6 +19,10 @@ import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.recipes.FurnaceRecipe;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -23,19 +33,25 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
-import net.minecraft.world.level.levelgen.placement.BiomeFilter;
 import net.minecraft.world.level.levelgen.placement.CountOnEveryLayerPlacement;
+import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.RarityFilter;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RandomBlockMatchTest;
+import net.minecraft.world.level.material.MaterialColor;
+import org.apache.commons.lang3.tuple.Pair;
+import paulevs.edenring.blocks.BrainTreeBlock;
+import paulevs.edenring.blocks.OverlayPlantBlock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,8 +98,8 @@ public class MetalOreMaterial extends OreMaterial {
 	public final Item small_dust;
 	public final Item plate;
 
-//	public final Block brainTreeBlock;
-//	public final Block grass;
+	public final Block brainTreeBlock;
+	public final Block grass;
 
 	public boolean hasOreVein;
 
@@ -118,20 +134,20 @@ public class MetalOreMaterial extends OreMaterial {
 		);
 	}
 
-	public MetalOreMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
+	public MetalOreMaterial(Pair<String, String> name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
 		super(name, gradient, textureInformation, targetIn, RAASimpleItem.SimpleItemType.RAW, tier, true);
 
-		this.oreVeinTexture = textureInformation.getOreOverlay();
-		this.storageBlockTexture = textureInformation.getStorageBlock();
-		this.rawItemTexture = textureInformation.getRawItem();
-		this.rawMaterialBlockTexture = textureInformation.getRawMaterialBlock();
-		this.ingotTexture = textureInformation.getIngot();
-		this.nuggetTexture = textureInformation.getNugget();
-		this.gearTexture = textureInformation.getGear();
-		this.plateTexture = textureInformation.getPlate();
-		this.dustTexture = textureInformation.getDust();
-		this.smallDustTexture = textureInformation.getSmallDust();
-		this.crushedOreTexture = textureInformation.getCrushedOre();
+		this.oreVeinTexture = textureInformation.oreOverlay();
+		this.storageBlockTexture = textureInformation.storageBlock();
+		this.rawItemTexture = textureInformation.rawItem();
+		this.rawMaterialBlockTexture = textureInformation.rawMaterialBlock();
+		this.ingotTexture = textureInformation.ingot();
+		this.nuggetTexture = textureInformation.nugget();
+		this.gearTexture = textureInformation.gear();
+		this.plateTexture = textureInformation.plate();
+		this.dustTexture = textureInformation.dust();
+		this.smallDustTexture = textureInformation.smallDust();
+		this.crushedOreTexture = textureInformation.crushedOre();
 
 		this.hasOreVein = hasOreVein;
 
@@ -144,7 +160,7 @@ public class MetalOreMaterial extends OreMaterial {
 			default -> throw new IllegalStateException("Unexpected value: " + tier);
 		}, rawMaterialBlock);
 
-		woodenCasing = InnerRegistry.registerBlockAndItem(this.registryName + "_wooden_casing", new Block(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)), RAAMaterials.RAA_CREATE);
+		woodenCasing = InnerRegistry.registerBlockAndItem(this.registryName + "_wooden_casing", new CasingBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)), RAAMaterials.RAA_CREATE);
 		TagHelper.addTag(BlockTags.MINEABLE_WITH_AXE, woodenCasing);
 		TagHelper.addTag(switch (tier) {
 			case 1 -> BlockTags.NEEDS_STONE_TOOL;
@@ -153,7 +169,7 @@ public class MetalOreMaterial extends OreMaterial {
 			default -> throw new IllegalStateException("Unexpected value: " + tier);
 		}, woodenCasing);
 
-		casing = InnerRegistry.registerBlockAndItem(this.registryName + "_casing", new Block(BlockBehaviour.Properties.copy(Blocks.STONE)), RAAMaterials.RAA_CREATE);
+		casing = InnerRegistry.registerBlockAndItem(this.registryName + "_casing", new CasingBlock(BlockBehaviour.Properties.copy(Blocks.STONE)), RAAMaterials.RAA_CREATE);
 		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, casing);
 		TagHelper.addTag(switch (tier) {
 			case 1 -> BlockTags.NEEDS_STONE_TOOL;
@@ -162,7 +178,7 @@ public class MetalOreMaterial extends OreMaterial {
 			default -> throw new IllegalStateException("Unexpected value: " + tier);
 		}, casing);
 
-		woodenCrate = InnerRegistry.registerBlockAndItem(this.registryName + "_wooden_crate", new Block(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion()), RAAMaterials.RAA_CREATE);
+		woodenCrate = InnerRegistry.registerBlockAndItem(this.registryName + "_wooden_crate", new CrateBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion()), RAAMaterials.RAA_CREATE);
 		TagHelper.addTag(BlockTags.MINEABLE_WITH_AXE, woodenCrate);
 		TagHelper.addTag(switch (tier) {
 			case 1 -> BlockTags.NEEDS_STONE_TOOL;
@@ -171,7 +187,7 @@ public class MetalOreMaterial extends OreMaterial {
 			default -> throw new IllegalStateException("Unexpected value: " + tier);
 		}, woodenCrate);
 
-		crate = InnerRegistry.registerBlockAndItem(this.registryName + "_crate", new Block(BlockBehaviour.Properties.copy(Blocks.STONE).noOcclusion()), RAAMaterials.RAA_CREATE);
+		crate = InnerRegistry.registerBlockAndItem(this.registryName + "_crate", new CrateBlock(BlockBehaviour.Properties.copy(Blocks.STONE).noOcclusion()), RAAMaterials.RAA_CREATE);
 		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, crate);
 		TagHelper.addTag(switch (tier) {
 			case 1 -> BlockTags.NEEDS_STONE_TOOL;
@@ -188,23 +204,23 @@ public class MetalOreMaterial extends OreMaterial {
 		plate = RAASimpleItem.register(this.registryName,  new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.PLATE);
 		crushedOre = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_CREATE), RAASimpleItem.SimpleItemType.CRUSHED_ORE);
 
-//		brainTreeBlock = InnerRegistry.registerBlockAndItem(this.registryName + "_brain_tree_block", new BrainTreeBlock(MaterialColor.GOLD), RAAMaterials.RAA_ORES);
-//		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, brainTreeBlock);
-//		TagHelper.addTag(switch (tier) {
-//			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-//			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-//			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-//			default -> throw new IllegalStateException("Unexpected value: " + tier);
-//		}, brainTreeBlock);
+		brainTreeBlock = InnerRegistry.registerBlockAndItem(this.registryName + "_brain_tree_block", new BrainTreeBlock(MaterialColor.GOLD), RAAMaterials.RAA_ORES);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, brainTreeBlock);
+		TagHelper.addTag(switch (tier) {
+			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+			default -> throw new IllegalStateException("Unexpected value: " + tier);
+		}, brainTreeBlock);
 
-//		grass = InnerRegistry.registerBlockAndItem(this.registryName + "_grass", new OverlayPlantBlock(true), RAAMaterials.RAA_ORES);
-//		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, grass);
-//		TagHelper.addTag(switch (tier) {
-//			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-//			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-//			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-//			default -> throw new IllegalStateException("Unexpected value: " + tier);
-//		}, grass);
+		grass = InnerRegistry.registerBlockAndItem(this.registryName + "_grass", new OverlayPlantBlock(true), RAAMaterials.RAA_ORES);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, grass);
+		TagHelper.addTag(switch (tier) {
+			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+			default -> throw new IllegalStateException("Unexpected value: " + tier);
+		}, grass);
 
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_raw_block_from_raw_recipe", this.rawMaterialBlock)
 				.addMaterial('r', this.droppedItem)
@@ -421,11 +437,20 @@ public class MetalOreMaterial extends OreMaterial {
 		InnerRegistryClient.registerBlockModel(this.crate, ModelHelper.makeCrate(crateTexture, casingTexture));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_crate"),  String.format("%s Crate", this.name));
 
-//		ColorProviderRegistry.BLOCK.register((blockState, blockAndTintGetter, blockPos, i) -> blockAndTintGetter != null && blockPos != null ?
-//				BiomeColors.getAverageGrassColor(blockAndTintGetter, blockPos) : GrassColor.get(0.5D, 1.0D), grass);
-//		ColorProviderRegistry.ITEM.register((itemStack, i) -> i == 1 ? GrassColor.get(0.5D, 1.0D) :
-//				ColorUtil.color(255, 255, 255), grass);
-//		BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutoutMipped(), grass);
+		CTSpriteShiftEntry ct = CTSpriteShifter.getCT(CTSpriteShifter.CTType.OMNIDIRECTIONAL, TextureHelper.makeBlockTextureID(this.registryName +
+				"_casing"), TextureHelper.makeBlockTextureID(this.registryName + "_casing_connected"));
+		CreateRegistrate.connectedTextures(() -> new EncasedCTBehaviour(ct)).accept(this.casing);
+		CreateRegistrate.casingConnectivity((block, cc) -> cc.makeCasing(block, ct)).accept(this.casing);
+
+		CTSpriteShiftEntry ct2 = CTSpriteShifter.getCT(CTSpriteShifter.CTType.OMNIDIRECTIONAL, TextureHelper.makeBlockTextureID(this.registryName +
+				"_wooden_casing_connected"), TextureHelper.makeBlockTextureID(this.registryName));
+		CreateRegistrate.casingConnectivity((block, cc) -> cc.makeCasing(block, ct2)).accept(this.woodenCasing);
+
+		ColorProviderRegistry.BLOCK.register((blockState, blockAndTintGetter, blockPos, i) -> blockAndTintGetter != null && blockPos != null ?
+				BiomeColors.getAverageGrassColor(blockAndTintGetter, blockPos) : GrassColor.get(0.5D, 1.0D), grass);
+		ColorProviderRegistry.ITEM.register((itemStack, i) -> i == 1 ? GrassColor.get(0.5D, 1.0D) :
+				ColorUtil.rgb(255, 255, 255), grass);
+		BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutoutMipped(), grass);
 
 	}
 
@@ -437,33 +462,36 @@ public class MetalOreMaterial extends OreMaterial {
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.01F), rawMaterialBlock.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.05F), rawMaterialBlock.defaultBlockState()));
 			Holder<ConfiguredFeature<?, ?>> oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein"), Feature.ORE,
-					new OreConfiguration(blockStates, 16));
+					new OreConfiguration(blockStates, size));
 
 			ResourceKey<PlacedFeature> oreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, RAAMaterials.id(this.registryName + "_ore_vein_pf"));
-			Holder<PlacedFeature> oreVeinHolder = InnerRegistry.registerPlacedFeature(world, oreVeinKey, oreVein, CountOnEveryLayerPlacement.of(2),
-					RarityFilter.onAverageOnceEvery(16), BiomeFilter.biome());
+			Holder<PlacedFeature> oreVeinHolder = InnerRegistry.registerPlacedFeature(world, oreVeinKey, oreVein,
+					HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)),
+					CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(rarity));
 
 			blockStates = new ArrayList<>();
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.3F), ore.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.03F), rawMaterialBlock.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.1F), rawMaterialBlock.defaultBlockState()));
 			oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein"), Feature.ORE,
-					new OreConfiguration(blockStates, 32));
+					new OreConfiguration(blockStates, size * 2));
 
 			oreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, RAAMaterials.id(this.registryName + "_ore_vein_pf"));
-			Holder<PlacedFeature> mediumOreVeinHolder = InnerRegistry.registerPlacedFeature(world, oreVeinKey, oreVein, CountOnEveryLayerPlacement.of(2),
-					RarityFilter.onAverageOnceEvery(32), BiomeFilter.biome());
+			Holder<PlacedFeature> mediumOreVeinHolder = InnerRegistry.registerPlacedFeature(world, oreVeinKey, oreVein,
+					HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)),
+					CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(rarity * 2));
 
 			blockStates = new ArrayList<>();
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.5F), ore.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.05F), rawMaterialBlock.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.25F), rawMaterialBlock.defaultBlockState()));
 			oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein_huge"), Feature.ORE,
-					new OreConfiguration(blockStates, 64));
+					new OreConfiguration(blockStates, size * 4));
 
 			ResourceKey<PlacedFeature> placedHugeOreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, RAAMaterials.id(this.registryName + "_ore_vein_huge_pf"));
-			Holder<PlacedFeature> largeOreVeinHolder = InnerRegistry.registerPlacedFeature(world, placedHugeOreVeinKey, oreVein, CountOnEveryLayerPlacement.of(2),
-					RarityFilter.onAverageOnceEvery(64), BiomeFilter.biome());
+			Holder<PlacedFeature> largeOreVeinHolder = InnerRegistry.registerPlacedFeature(world, placedHugeOreVeinKey, oreVein,
+					HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)),
+					CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(rarity * 4));
 
 			List<Holder<PlacedFeature>> availableFeatures = List.of(oreVeinHolder, mediumOreVeinHolder, largeOreVeinHolder);
 			Holder<PlacedFeature> selectedFeatureHolder = io.github.vampirestudios.vampirelib.utils.Rands.list(availableFeatures);

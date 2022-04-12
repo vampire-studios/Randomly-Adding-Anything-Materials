@@ -30,19 +30,29 @@ public class TextureTest {
     protected static final String[] stoneFrames;
     protected static final String[] stoneBricks;
     protected static final String[] stoneTiles;
+    protected static final String[] cobbled;
+    protected static final String[] chiseled;
 
     static {
-        stoneFrames = new String[5];
+        stoneFrames = new String[10];
         for (int i = 0; i < stoneFrames.length; i++) {
             stoneFrames[i] = "textures/block/stone_frame_0" + (i+1) + ".png";
         }
-        stoneBricks = new String[11];
+        stoneBricks = new String[16];
         for (int i = 0; i < stoneBricks.length; i++) {
             stoneBricks[i] = "textures/block/stone_bricks_0" + (i+1) + ".png";
         }
-        stoneTiles = new String[6];
+        stoneTiles = new String[8];
         for (int i = 0; i < stoneTiles.length; i++) {
             stoneTiles[i] = "textures/block/stone_tiles_0" + (i+1) + ".png";
+        }
+        cobbled = new String[7];
+        for (int i = 0; i < cobbled.length; i++) {
+            cobbled[i] = "textures/block/stone_cobbled_0" + (i+1) + ".png";
+        }
+        chiseled = new String[3];
+        for (int i = 0; i < chiseled.length; i++) {
+            chiseled[i] = "textures/block/stone_chiseled_0" + (i+1) + ".png";
         }
     }
 
@@ -50,6 +60,8 @@ public class TextureTest {
         String stoneFrame = stoneFrames[id % stoneFrames.length];
         String stoneBrick = stoneBricks[id % stoneBricks.length];
         String stoneTile = stoneTiles[id % stoneTiles.length];
+        String stoneCobbled = cobbled[id % cobbled.length];
+        String stoneChiseled = chiseled[id % chiseled.length];
 
         String textureBaseName = "test_" + id + "_";
 
@@ -64,7 +76,7 @@ public class TextureTest {
         System.arraycopy(temp, 0, values, 0, temp.length);
         values[temp.length] = 0.9f;
 
-        BufferTexture variant = TextureHelper.applyGradient(texture.clone(), gradient);
+        BufferTexture variant = TextureHelper.applyGradient(texture.cloneTexture(), gradient);
         notInnerRegistry.registerTexture(stoneTexID, variant);
 
         texture = ProceduralTextures.makeBlurredTexture(texture);
@@ -92,6 +104,22 @@ public class TextureTest {
         TextureHelper.applyGradient(variant, gradient);
         ResourceLocation tilesTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
         notInnerRegistry.registerTexture(tilesTexID, variant);
+
+        overlayTexture = notTextureHelper.loadTexture(stoneCobbled);
+        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
+
+        TextureHelper.applyGradient(variant, gradient);
+        ResourceLocation cobbledTexID = notTextureHelper.makeBlockTextureID("cobbled_" + textureBaseName);
+        notInnerRegistry.registerTexture(cobbledTexID, variant);
+
+        overlayTexture = notTextureHelper.loadTexture(stoneChiseled);
+        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
+
+        TextureHelper.applyGradient(variant, gradient);
+        ResourceLocation chiseledTexID = notTextureHelper.makeBlockTextureID("chiseled_" + textureBaseName);
+        notInnerRegistry.registerTexture(chiseledTexID, variant);
     }
 
     public static BufferTexture makeStoneTexture(float[] values, Random random) {
@@ -110,11 +138,6 @@ public class TextureTest {
         result = TextureHelper.blend(result, additions, 0.3F);
         result = TextureHelper.normalize(result);
         result = TextureHelper.clamp(result, 8);
-
-//		BufferTexture offseted1 = TextureHelper.offset(texture, -1, 0);
-//		BufferTexture offseted2 = TextureHelper.offset(texture, 0, -1);
-//		result = TextureHelper.blend(result, offseted1, 0.2F);
-//		result = TextureHelper.blend(result, offseted2, 0.2F);
 
         if (16 < result.getWidth())
             result = TextureHelper.downScale(result, result.getWidth() / 16);

@@ -46,11 +46,6 @@ public class BufferTexture {
 				texture.animation.isInterpolatedFrames());
 	}
 
-	public void setPixel(int x, int y, int r, int g, int b) {
-		int color = TextureHelper.color(r, g, b);
-		buffer[y * width + x] = color;
-	}
-	
 	public void setPixel(int x, int y, CustomColor color) {
 		buffer[y * width + x] = color.getAsInt();
 	}
@@ -83,10 +78,6 @@ public class BufferTexture {
 		this.buffer = new int[width * height];
 	}
 
-	public boolean isSizeSame(int width, int height) {
-		return this.width == width && this.height == height;
-	}
-
 	public void upscale(int scale) {
 		changeSize(width * scale, height * scale);
 	}
@@ -99,11 +90,7 @@ public class BufferTexture {
 		return animation;
 	}
 
-	public void setAnimation(AnimationMetadataSection animation) {
-		 this.animation = animation;
-	}
-
-	public BufferTexture clone() {
+	public BufferTexture cloneTexture() {
 		return new BufferTexture(this);
 	}
 }

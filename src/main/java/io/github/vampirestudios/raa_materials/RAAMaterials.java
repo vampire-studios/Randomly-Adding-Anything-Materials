@@ -70,7 +70,6 @@ public class RAAMaterials implements RAAAddon {
 		random.setSeed(seed);
 
 		List<OreMaterial.Target> targets = new ArrayList<>();
-		TARGETS.forEach(targets::add);
 
 		synchronized (world) {
             List<ComplexMaterial> materials = Lists.newArrayList();
@@ -88,6 +87,8 @@ public class RAAMaterials implements RAAAddon {
 							materials.add(material);
 						}
 					}
+
+					TARGETS.forEach(targets::add);
 
 					if (CONFIG.metalMaterialAmount != 0) {
 						for (int i = 0; i < CONFIG.metalMaterialAmount; i++) {

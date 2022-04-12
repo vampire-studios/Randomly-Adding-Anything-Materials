@@ -12,6 +12,7 @@ import io.github.vampirestudios.raa_materials.utils.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Random;
 
@@ -48,7 +49,7 @@ public class GemOreMaterial extends OreMaterial {
 		);
 	}
 
-	public GemOreMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, int tier) {
+	public GemOreMaterial(Pair<String, String> name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, int tier) {
 		super(name, gradient, textureInformation, targetIn, RAASimpleItem.SimpleItemType.GEM, tier, false);
 
 		this.oreVeinTexture = textureInformation.oreOverlay();

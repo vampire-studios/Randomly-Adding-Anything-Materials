@@ -6,6 +6,7 @@ import io.github.vampirestudios.raa_materials.api.BasePatterns;
 import io.github.vampirestudios.raa_materials.api.BlockModelProvider;
 import io.github.vampirestudios.raa_materials.api.ModelsHelper;
 import io.github.vampirestudios.raa_materials.api.PatternsHelper;
+import io.github.vampirestudios.raa_materials.utils.Rands;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.block.model.BlockModel;
@@ -15,11 +16,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.AmethystClusterBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -28,24 +32,31 @@ import java.util.Map;
 import java.util.Optional;
 
 public class CustomCrystalClusterBlock extends AmethystClusterBlock implements SimpleWaterloggedBlock, BlockModelProvider {
-	private Item drop;
+	public final Item drop;
+	private boolean dropsSelf = false;
 
 	public CustomCrystalClusterBlock(BlockBehaviour.Properties settings, Item drop) {
 		super(7, 3, settings);
-		this.drop = drop;
-		this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, false).setValue(FACING, Direction.UP));
-	}
-
-	public Item getDrop() {
-		if (this.drop == null) {
+		if (drop == null) {
 			this.drop = this.asItem();
+			this.dropsSelf = true;
+		} else {
+			this.drop = drop;
 		}
-		return drop;
+		this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, false).setValue(FACING, Direction.UP));
 	}
 
 	@Override
 	public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
-		return Collections.singletonList(new ItemStack(getDrop()));
+		int amount = 1;
+		if (!this.dropsSelf) {
+			ItemStack stack = builder.getOptionalParameter(LootContextParams.TOOL);
+			if (stack != null) {
+				int fortuneLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, stack);
+				amount = Rands.randIntRange(1, 1 + fortuneLevel);
+			}
+		}
+		return Collections.singletonList(new ItemStack(this.drop, amount));
 	}
 
 	@Override

@@ -42,8 +42,10 @@ import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvi
 import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.RarityFilter;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.RAA_ORES;
@@ -95,7 +97,7 @@ public class CrystalMaterial extends ComplexMaterial {
         );
     }
 
-    public CrystalMaterial(String name, ColorGradient gradient, TextureInformation textureInformation, int tier, int crystalLampOverlayTextureInt, int crystalOreTextureInt) {
+    public CrystalMaterial(Pair<String, String> name, ColorGradient gradient, TextureInformation textureInformation, int tier, int crystalLampOverlayTextureInt, int crystalOreTextureInt) {
         super(name, gradient);
         this.tier = tier;
         block = InnerRegistry.registerBlockAndItem(this.registryName + "_block", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.AMETHYST_BLOCK)), RAA_ORES);
@@ -174,22 +176,6 @@ public class CrystalMaterial extends ComplexMaterial {
         }, storageBlock);
         geodeCore = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEODE_CORE);
         enrichedGeodeCore = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.ENRICHED_GEODE_CORE);
-        /*LootTableLoadingCallback.EVENT.register((resourceManager, manager, id, supplier, setter) -> {
-            if (crystal.getLootTableId().equals(id)) {
-                FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder()
-                        .rolls(ConstantLootNumberProvider.create(4))
-                        .with(((LeafEntry.Builder) ItemEntry.builder(shard).apply(SetCountLootFunction
-                                .builder(ConstantLootNumberProvider.create(4.0F))))
-                                .apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
-                                .conditionally(MatchToolLootCondition
-                                        .builder(ItemPredicate.Builder.create()
-                                                .tag(ItemTags.CLUSTER_MAX_HARVESTABLES)))
-                                .alternatively(applyExplosionDecay(crystal, ItemEntry.builder(shard)
-                                        .apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))));
-
-                supplier.pool(poolBuilder);
-            }
-        });*/
 
         GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crystal_block", block)
                 .setGroup("crystal_blocks")
@@ -206,10 +192,10 @@ public class CrystalMaterial extends ComplexMaterial {
                 .setOutputCount(1)
                 .build();
 
-        this.crystalBlock = textureInformation.getCrystalBlock();
-        this.buddingCrystalBlock = textureInformation.getBuddingCrystalBlock();
-        this.crystalTexture = textureInformation.getCrystal();
-        this.shardTexture = textureInformation.getShard();
+        this.crystalBlock = textureInformation.crystalBlock();
+        this.buddingCrystalBlock = textureInformation.buddingCrystalBlock();
+        this.crystalTexture = textureInformation.crystal();
+        this.shardTexture = textureInformation.shard();
 
         this.crystalLampOverlayTextureInt = crystalLampOverlayTextureInt;
         this.crystalOreTextureInt = crystalOreTextureInt;
@@ -242,8 +228,10 @@ public class CrystalMaterial extends ComplexMaterial {
 
     @Override
     public void initClient(Random random) {
+        Rands.setRand(random);
+
         BufferTexture crystalBlockTexture = TextureHelper.loadTexture(crystalBlock);
-        BufferTexture tintedGlassTexture = TextureHelper.loadTexture("textures/block/tinted_glass.png");
+        BufferTexture tintedGlassTexture = TextureHelper.loadTexture("textures/block/tinted_glass_" + Rands.randIntRange(1, 2) + ".png");
 
         ResourceLocation textureID = TextureHelper.makeBlockTextureID(this.registryName + "_block");
         BufferTexture texture = ProceduralTextures.randomColored(crystalBlockTexture, gradient);

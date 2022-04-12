@@ -138,7 +138,7 @@ public class ProceduralTextures {
 	}
 
 	public static BufferTexture makeBlurredTexture(BufferTexture texture) {
-		BufferTexture result = texture.clone();
+		BufferTexture result = texture.cloneTexture();
 		BufferTexture b1 = TextureHelper.offset(texture,  1,  0);
 		BufferTexture b2 = TextureHelper.offset(texture, -1,  0);
 		BufferTexture b3 = TextureHelper.offset(texture,  0,  1);
@@ -151,11 +151,11 @@ public class ProceduralTextures {
 	}
 
 	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture overlay) {
-		return TextureHelper.cover(texture, overlay.clone());
+		return TextureHelper.cover(texture, overlay.cloneTexture());
 	}
 
 	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture[] overlay, Random random, ColorGradient gradient) {
-		BufferTexture over = TextureHelper.applyGradient(overlay[random.nextInt(overlay.length)].clone(), gradient);
+		BufferTexture over = TextureHelper.applyGradient(overlay[random.nextInt(overlay.length)].cloneTexture(), gradient);
 		return TextureHelper.cover(texture, over);
 	}
 
@@ -167,57 +167,57 @@ public class ProceduralTextures {
 	public static BufferTexture clampCoverWithOverlay(BufferTexture texture, BufferTexture overlay, float... levels) {
 		if (texture.width > overlay.width) texture = TextureHelper.downScale(texture, texture.width / overlay.width);
 		if (texture.width < overlay.width) texture = TextureHelper.upScale(texture, overlay.width / texture.width);
-		BufferTexture over = TextureHelper.cover(texture, overlay.clone());
+		BufferTexture over = TextureHelper.cover(texture, overlay.cloneTexture());
 		return TextureHelper.clampValue(over, levels);
 	}
 
 	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture overlay, ColorGradient gradient) {
-		BufferTexture over = TextureHelper.applyGradient(overlay.clone(), gradient);
+		BufferTexture over = TextureHelper.applyGradient(overlay.cloneTexture(), gradient);
 		return TextureHelper.cover(texture, over);
 	}
 
 	public static BufferTexture coverWithOverlayAndBlend(BufferTexture texture, BufferTexture overlay) {
-		return TextureHelper.blend(texture, overlay.clone(), 0.5F);
+		return TextureHelper.blend(texture, overlay.cloneTexture(), 0.5F);
 	}
 
 	public static BufferTexture coverWithOverlayAndBlend(BufferTexture texture, BufferTexture[] overlay, Random random, ColorGradient gradient) {
-		BufferTexture over = TextureHelper.applyGradient(overlay[random.nextInt(overlay.length)].clone(), gradient);
+		BufferTexture over = TextureHelper.applyGradient(overlay[random.nextInt(overlay.length)].cloneTexture(), gradient);
 		return TextureHelper.blend(texture, over, 0.5F);
 	}
 
 	public static BufferTexture coverWithOverlayAndBlend(BufferTexture texture, BufferTexture overlay, ColorGradient gradient) {
-		BufferTexture over = TextureHelper.applyGradient(overlay.clone(), gradient);
+		BufferTexture over = TextureHelper.applyGradient(overlay.cloneTexture(), gradient);
 		return TextureHelper.blend(texture, over, 0.5F);
 	}
 
 	public static BufferTexture randomColored(BufferTexture[] textures, ColorGradient gradient, Random random) {
-		return TextureHelper.applyGradient(textures[random.nextInt(textures.length)].clone(), gradient);
+		return TextureHelper.applyGradient(textures[random.nextInt(textures.length)].cloneTexture(), gradient);
 	}
 
 	public static BufferTexture randomColored(ResourceLocation texture, ColorGradient gradient) {
 		BufferTexture textures = TextureHelper.loadTexture(texture);
 		TextureHelper.normalize(textures, 0.35F, 1F);
-		return TextureHelper.applyGradient(textures.clone(), gradient);
+		return TextureHelper.applyGradient(textures.cloneTexture(), gradient);
 	}
 
 	public static BufferTexture randomColored(ResourceLocation texture, ColorGradient gradient, float min, float max) {
 		BufferTexture textures = TextureHelper.loadTexture(texture);
 		TextureHelper.normalize(textures, min, max);
-		return TextureHelper.applyGradient(textures.clone(), gradient);
+		return TextureHelper.applyGradient(textures.cloneTexture(), gradient);
 	}
 
 	public static BufferTexture randomColoredNoNormalize(ResourceLocation texture, ColorGradient gradient) {
 		BufferTexture textures = TextureHelper.loadTexture(texture);
-		return TextureHelper.applyGradient(textures.clone(), gradient);
+		return TextureHelper.applyGradient(textures.cloneTexture(), gradient);
 	}
 
 	public static BufferTexture randomColoredNoNormalize(BufferTexture texture, ColorGradient gradient) {
-		return TextureHelper.applyGradient(texture.clone(), gradient);
+		return TextureHelper.applyGradient(texture.cloneTexture(), gradient);
 	}
 
 	public static BufferTexture randomColored(BufferTexture textures, ColorGradient gradient) {
 		TextureHelper.normalize(textures, 0.35F, 1F);
-		return TextureHelper.applyGradient(textures.clone(), gradient);
+		return TextureHelper.applyGradient(textures.cloneTexture(), gradient);
 	}
 
 	public static BufferTexture nonColored(BufferTexture[] textures, Random random) {
