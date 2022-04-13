@@ -51,15 +51,6 @@ public class InnerRegistry {
 
 		if (isClient()) InnerRegistryClient.clearClient();
 
-		BLOCKS.forEach((resourceLocation, block) -> RegistryUtils.removeRegisteredKey(Registry.BLOCK.key().location(), resourceLocation));
-		ITEMS.forEach((resourceLocation, item) -> RegistryUtils.removeRegisteredKey(Registry.ITEM.key().location(), resourceLocation));
-		CONFIGURED_FEATURES.forEach((resourceLocation, configuredFeature) -> RegistryUtils.removeRegisteredKey(Registry.CONFIGURED_FEATURE_REGISTRY.location(), resourceLocation));
-		PLACED_FEATURES.forEach((resourceLocation, placedFeature) -> RegistryUtils.removeRegisteredKey(Registry.PLACED_FEATURE_REGISTRY.location(), resourceLocation));
-
-		CONFIGURED_FEATURES.clear();
-		PLACED_FEATURES.clear();
-		BLOCKS.clear();
-		ITEMS.clear();
 
 		StoneMaterial.resetMaterials();
 		MetalOreMaterial.resetMaterials();
@@ -79,6 +70,15 @@ public class InnerRegistry {
 			REGISTERED_KEYS.clear();
 		}
 
+		BLOCKS.forEach((resourceLocation, block) -> RegistryUtils.removeRegisteredKey(Registry.BLOCK.key().location(), resourceLocation));
+		ITEMS.forEach((resourceLocation, item) -> RegistryUtils.removeRegisteredKey(Registry.ITEM.key().location(), resourceLocation));
+		CONFIGURED_FEATURES.forEach((resourceLocation, configuredFeature) -> RegistryUtils.removeRegisteredKey(Registry.CONFIGURED_FEATURE_REGISTRY.location(), resourceLocation));
+		PLACED_FEATURES.forEach((resourceLocation, placedFeature) -> RegistryUtils.removeRegisteredKey(Registry.PLACED_FEATURE_REGISTRY.location(), resourceLocation));
+
+		CONFIGURED_FEATURES.clear();
+		PLACED_FEATURES.clear();
+		BLOCKS.clear();
+		ITEMS.clear();
 	}
 
 	private static <T> T replace(DefaultedRegistry<T> registry, ResourceLocation id, T replacement) {

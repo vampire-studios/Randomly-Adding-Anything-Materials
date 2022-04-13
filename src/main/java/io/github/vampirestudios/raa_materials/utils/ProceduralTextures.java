@@ -89,17 +89,22 @@ public class ProceduralTextures {
 		CustomColor intersect = new CustomColor().set(grad.getColor(0.5f)).switchToHSV();
 		CustomColor end = new CustomColor().set(grad.getColor(1f)).switchToHSV();
 
-		start.setSaturation(start.getSaturation() * 0.5f + 0.4f)
-				.setBrightness((start.getBrightness() - intersect.getBrightness()) / 1.1f + start.getBrightness());
-		float hue = (start.getHue() - intersect.getHue());
-		hue = (0.0f - (hue / Math.abs(hue))) * Math.max(Math.abs(hue), 0.3f) + start.getHue();
+		start.setSaturation(start.getSaturation() * 0.5f + 0.45f)
+			.setBrightness((start.getBrightness() - intersect.getBrightness()) / 1.1f + intersect.getBrightness());
+		float hue = (intersect.getHue() - start.getHue());
+		hue = (0.0f - (hue / Math.abs(hue))) * Math.max(Math.abs(hue), 0.35f) * 2f + intersect.getHue();
+		hue += 0.2f;
 		start.setHue(hue);
 
 		end.setSaturation(end.getSaturation() * 0.5f + 0.15f)
-				.setBrightness((end.getBrightness() - intersect.getBrightness()) / 1.04f + intersect.getBrightness());
+			.setBrightness((end.getBrightness() - intersect.getBrightness()) / 1.04f + intersect.getBrightness());
 		hue = (end.getHue() - intersect.getHue());
-		hue = (0.0f - (hue / Math.abs(hue))) * Math.max(Math.abs(hue), 0.35f) + intersect.getHue();
+		hue = (0.0f - (hue / Math.abs(hue))) * Math.max(Math.abs(hue), 0.35f) * 1.6f + intersect.getHue();
+		hue -= 0.2f;
 		end.setHue(hue);
+
+		intersect.setHue(intersect.getHue()*2.4f).setSaturation(intersect.getSaturation() * 0.5f + 0.5f)
+			.switchToRGB().mixWith(grad.getColor(0.5f).switchToRGB(),0.5f);
 
 		ColorGradient corrosion = new ColorGradient(start, intersect, end).switchToRGB();
 

@@ -13,6 +13,7 @@ import io.github.vampirestudios.raa_materials.api.BiomeAPI;
 import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
+import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
@@ -37,6 +38,7 @@ import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
@@ -81,6 +83,7 @@ public class MetalOreMaterial extends OreMaterial {
 	private final ResourceLocation crushedOreTexture;
 
 	public final Block rawMaterialBlock;
+	public Block oxidizedStorageBlock;
 
 	//Create Support
 	public final Block woodenCasing;
@@ -104,12 +107,12 @@ public class MetalOreMaterial extends OreMaterial {
 	public boolean hasOreVein;
 
 	public ColorGradient corrodedGradient;
+	public ColorGradient oreGradient;
 
 	public MetalOreMaterial(Target target, Random random) {
 		this(
 				TestNameGenerator.generateOreName(random),
-				ProceduralTextures.makeMetalPalette(random).gradient1(),
-				ProceduralTextures.makeMetalPalette(random).gradient2(),
+				ProceduralTextures.makeMetalPalette(random),
 				TextureInformation.builder()
 					.oreOverlay(Rands.values(oreVeinTextures))
 					.storageBlock(Rands.values(storageBlockTextures))
@@ -137,8 +140,8 @@ public class MetalOreMaterial extends OreMaterial {
 		);
 	}
 
-	public MetalOreMaterial(Pair<String, String> name, ColorGradient gradient, ColorGradient corrodedGradient, TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
-		super(name, gradient, textureInformation, targetIn, RAASimpleItem.SimpleItemType.RAW, tier, true);
+	public MetalOreMaterial(Pair<String, String> name, ColorDualGradient gradient, TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
+		super(name, gradient.gradient1(), textureInformation, targetIn, RAASimpleItem.SimpleItemType.RAW, tier, true);
 
 		this.oreVeinTexture = textureInformation.oreOverlay();
 		this.storageBlockTexture = textureInformation.storageBlock();
@@ -153,7 +156,17 @@ public class MetalOreMaterial extends OreMaterial {
 		this.crushedOreTexture = textureInformation.crushedOre();
 
 		this.hasOreVein = hasOreVein;
-		this.corrodedGradient = corrodedGradient;
+		this.corrodedGradient = gradient.gradient2();
+		this.oreGradient = gradient.getIntermedaryGradient(0.5f);
+
+		this.oxidizedStorageBlock = InnerRegistry.registerBlockAndItem("oxidized_" + this.registryName + "_block", new Block(BlockBehaviour.Properties.copy(Blocks.OXIDIZED_COPPER)), RAAMaterials.RAA_ORES);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, this.oxidizedStorageBlock);
+		TagHelper.addTag(switch (tier) {
+			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+			default -> throw new IllegalStateException("Unexpected value: " + tier);
+		}, this.oxidizedStorageBlock);
 
 		rawMaterialBlock = InnerRegistry.registerBlockAndItem("raw_" + this.registryName + "_block", new Block(BlockBehaviour.Properties.copy(Blocks.RAW_IRON_BLOCK)), RAAMaterials.RAA_ORES);
 		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, rawMaterialBlock);
@@ -327,9 +340,9 @@ public class MetalOreMaterial extends OreMaterial {
 		texturesCompound.putString("crushedOreTexture", crushedOreTexture.toString());
 
 		CompoundTag colorGradientCompound = new CompoundTag();
-		colorGradientCompound.putInt("startColor", this.gradient.getColor(0.0F).getAsInt());
-		colorGradientCompound.putInt("midColor", this.gradient.getColor(0.5F).getAsInt());
-		colorGradientCompound.putInt("endColor", this.gradient.getColor(1.0F).getAsInt());
+		colorGradientCompound.putInt("startColor", this.corrodedGradient.getColor(0.0F).getAsInt());
+		colorGradientCompound.putInt("midColor", this.corrodedGradient.getColor(0.5F).getAsInt());
+		colorGradientCompound.putInt("endColor", this.corrodedGradient.getColor(1.0F).getAsInt());
 		materialCompound.put("corrosionGradient", colorGradientCompound);
 
 		return materialCompound;
@@ -339,7 +352,7 @@ public class MetalOreMaterial extends OreMaterial {
 	public void initClient(Random random) {
 		super.initClient(random);
 
-		ModelHelper.generateOreAssets(this.ore, oreVeinTexture, registryName, name, corrodedGradient, target);
+		ModelHelper.generateOreAssets(this.ore, oreVeinTexture, registryName, name, oreGradient, target);
 
 		// Storage Block
 		ResourceLocation textureID = TextureHelper.makeBlockTextureID(this.registryName + "_block");
@@ -349,15 +362,22 @@ public class MetalOreMaterial extends OreMaterial {
 		InnerRegistryClient.registerBlockModel(this.storageBlock, ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"),  String.format("%s Block", this.name));
 
+		textureID = TextureHelper.makeBlockTextureID("oxidized_" + this.registryName + "_block");
+		texture = ProceduralTextures.randomColored(storageBlockTexture, corrodedGradient);
+		InnerRegistryClient.registerTexture(textureID, texture);
+		InnerRegistryClient.registerItemModel(this.oxidizedStorageBlock.asItem(), ModelHelper.makeCube(textureID));
+		InnerRegistryClient.registerBlockModel(this.oxidizedStorageBlock, ModelHelper.makeCube(textureID));
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock("oxidized_" + this.registryName + "_block"),  String.format("Oxidized %s Block", this.name));
+
 		textureID = TextureHelper.makeBlockTextureID("raw_" + this.registryName + "_block");
-		texture = ProceduralTextures.randomColored(rawMaterialBlockTexture, corrodedGradient);
+		texture = ProceduralTextures.randomColored(rawMaterialBlockTexture, oreGradient);
 		InnerRegistryClient.registerTexture(textureID, texture);
 		InnerRegistryClient.registerItemModel(this.rawMaterialBlock.asItem(), ModelHelper.makeCube(textureID));
 		InnerRegistryClient.registerBlockModel(this.rawMaterialBlock, ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock("raw_" + this.registryName + "_block"),  String.format("Raw %s Block", this.name));
 
 		// Items
-		makeColoredItemAssets(rawItemTexture, droppedItem, corrodedGradient, "raw_" + this.registryName, "Raw %s");
+		makeColoredItemAssets(rawItemTexture, droppedItem, oreGradient, "raw_" + this.registryName, "Raw %s");
 		makeColoredItemAssets(ingotTexture, ingot, gradient, this.registryName + "_ingot", "%s Ingot");
 		makeColoredItemAssets(nuggetTexture, nugget, gradient, this.registryName + "_nugget", "%s Nugget");
 
@@ -365,7 +385,7 @@ public class MetalOreMaterial extends OreMaterial {
 		makeColoredItemAssets(smallDustTexture, small_dust, gradient, "small_" + this.registryName + "_dust", "Small %s Dust");
 		makeColoredItemAssets(gearTexture, gear, gradient, this.registryName + "_gear", "%s Gear");
 		makeColoredItemAssets(dustTexture, dust, gradient, this.registryName + "_dust", "%s Dust");
-		makeColoredItemAssets(crushedOreTexture, crushedOre, gradient, "crushed_" + this.registryName + "_ore", "Crushed %s Ore");
+		makeColoredItemAssets(crushedOreTexture, crushedOre, oreGradient, "crushed_" + this.registryName + "_ore", "Crushed %s Ore");
 
 		initClientModded();
 	}
