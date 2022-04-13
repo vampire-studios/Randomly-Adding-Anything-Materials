@@ -96,8 +96,9 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 	public int bonus;
 
-	protected OreMaterial(Pair<String, String> name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, RAASimpleItem.SimpleItemType rawType, int tier, boolean metal) {
+	protected OreMaterial(Pair<String, String> name, Random random, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, RAASimpleItem.SimpleItemType rawType, int tier, boolean metal) {
 		super(name, gradient);
+		Rands.setRand(random);
 		this.textureInformation = textureInformation;
 		this.target = targetIn;
 
@@ -292,6 +293,8 @@ public abstract class OreMaterial extends ComplexMaterial {
 	public void initClient(Random random) {
 		Rands.setRand(random);
 
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), "block.storage_block", this.name);
+
 		// Swords
 		BufferTexture texture = TextureHelper.loadTexture(swordBladeTexture);
 		BufferTexture texture2 = TextureHelper.loadTexture(swordHandleTexture);
@@ -301,7 +304,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		InnerRegistryClient.registerTexture(textureID, texture);
 
 		InnerRegistryClient.registerItemModel(this.sword, ModelHelper.makeTwoLayerTool(textureID, TextureHelper.makeItemTextureID("tools/sword/stick")));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_sword"),  String.format("%s Sword", this.name));
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_sword"),  "item.sword", this.name);
 
 		// Pickaxes
 		texture = ProceduralTextures.randomColored(pickaxeHeadTexture, gradient);
@@ -311,7 +314,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		ResourceLocation texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_pickaxe_stick");
 		InnerRegistryClient.registerTexture(texture2ID, texture2);
 		InnerRegistryClient.registerItemModel(this.pickaxe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_pickaxe"),  String.format("%s Pickaxe", this.name));
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_pickaxe"),  "item.pickaxe", this.name);
 
 		// Axes
 		texture = ProceduralTextures.randomColored(axeHeadTexture, gradient);
@@ -321,7 +324,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_axe_stick");
 		InnerRegistryClient.registerTexture(texture2ID, texture2);
 		InnerRegistryClient.registerItemModel(this.axe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_axe"),  String.format("%s Axe", this.name));
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_axe"),  "item.axe", this.name);
 
 		// Hoes
 		texture = ProceduralTextures.randomColored(hoeHeadTexture, gradient);
@@ -331,7 +334,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_hoe_stick");
 		InnerRegistryClient.registerTexture(texture2ID, texture2);
 		InnerRegistryClient.registerItemModel(this.hoe, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_hoe"),  String.format("%s Hoe", this.name));
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_hoe"),  "item.hoe", this.name);
 
 		texture = ProceduralTextures.randomColored(shovelHeadTexture, gradient);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_shovel_head");
@@ -340,17 +343,15 @@ public abstract class OreMaterial extends ComplexMaterial {
 		texture2ID = TextureHelper.makeItemTextureID(this.registryName + "_shovel_stick");
 		InnerRegistryClient.registerTexture(texture2ID, texture2);
 		InnerRegistryClient.registerItemModel(this.shovel, ModelHelper.makeTwoLayerTool(textureID, texture2ID));
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shovel"), String.format("%s Shovel", this.name));
+		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shovel"), "item.shovel", this.name);
 	}
 
-	public void makeColoredItemAssets(ResourceLocation bufferTexture, Item item, ColorGradient gradient, String regName, String name) {
+	public void makeColoredItemAssets(ResourceLocation bufferTexture, Item item, ColorGradient gradient, String regName, String translatableName) {
 		BufferTexture texture = ProceduralTextures.randomColored(bufferTexture, gradient);
 		ResourceLocation textureID = TextureHelper.makeItemTextureID(regName);
 		InnerRegistryClient.registerTexture(textureID, texture);
 		InnerRegistryClient.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
-		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)item).getItemType().apply(registryName),"item." +
-				((RAASimpleItem)item).getItemType().registryName(), this.name);
-		NameGenerator.addTranslation(NameGenerator.makeRawItem(regName), String.format(name, this.name));
+		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)item).getItemType().apply(registryName), translatableName, this.name);
 	}
 
 	static {
@@ -454,7 +455,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		public static final Target NETHERRACK = new Target(Blocks.NETHERRACK, "netherrack", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/netherrack.png")).build(), new CustomColor(80, 27, 27), new CustomColor(133, 66, 66), BlockTags.MINEABLE_WITH_PICKAXE);
 		public static final Target END_STONE = new Target(Blocks.END_STONE, "end_stone", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/end_stone.png")).build(), new CustomColor(205, 198, 139), new CustomColor(222, 230, 164), BlockTags.MINEABLE_WITH_PICKAXE);
 		public static final Target DIRT = new Target(Blocks.DIRT, "dirt", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/dirt.png")).build(), new CustomColor(121, 85, 58), new CustomColor(185, 133, 92), BlockTags.MINEABLE_WITH_SHOVEL);
-		public static final Target SAND = new Target(Blocks.SAND, "sand", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/sand.png")).build(), new CustomColor(209, 186, 138), new CustomColor(231, 228, 187), BlockTags.MINEABLE_WITH_SHOVEL);
+		public static final Target SAND = new Target(Blocks.SAND, "sand", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/sand.png")).build(), new CustomColor(0xc6af81), new CustomColor(0xf6f5e4), BlockTags.MINEABLE_WITH_SHOVEL);
 		public static final Target RED_SAND = new Target(Blocks.RED_SAND, "red_sand", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/red_sand.png")).build(), new CustomColor(178, 96, 31), new CustomColor(210, 117, 43), BlockTags.MINEABLE_WITH_SHOVEL);
 		public static final Target DEEPSLATE = new Target(Blocks.DEEPSLATE, "deepslate", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/deepslate.png")).build(), new CustomColor(61, 61, 67), new CustomColor(121, 121, 121), BlockTags.MINEABLE_WITH_PICKAXE);
 		public static final Target TUFF = new Target(Blocks.TUFF, "tuff", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/tuff.png")).build(), new CustomColor(77, 80, 70), new CustomColor(160, 162, 151), BlockTags.MINEABLE_WITH_PICKAXE);
@@ -466,7 +467,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		public static final Target SMOOTH_BASALT = new Target(Blocks.SMOOTH_BASALT, "smooth_basalt", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/smooth_basalt.png")).build(), new CustomColor(0x1b2632), new CustomColor(0x696969), BlockTags.MINEABLE_WITH_PICKAXE);
 		public static final Target BLACKSTONE = new Target(Blocks.BLACKSTONE, "blackstone", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/blackstone_top.png")).build(), new CustomColor(0x20131c), new CustomColor(0x4e4b54), BlockTags.MINEABLE_WITH_PICKAXE);
 		public static final Target SANDSTONE = new Target(Blocks.SANDSTONE, "sandstone", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/sandstone_top.png")).build(), new CustomColor(0xc6ae71), new CustomColor(0xedebcb), BlockTags.MINEABLE_WITH_PICKAXE);
-		public static final Target BASALT = new Target(Blocks.BASALT, "basalt", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/basalt_top.png")).build(), new CustomColor(0x353641), new CustomColor(0x898989), BlockTags.MINEABLE_WITH_PICKAXE);
+		public static final Target BASALT = new Target(Blocks.BASALT, "basalt", TargetTextureInformation.builder().all(new ResourceLocation("textures/block/basalt_top.png")).build(), new CustomColor(0x10171f), new CustomColor(0x959494), BlockTags.MINEABLE_WITH_PICKAXE);
 
 		public static final Target CRIMSON_NYLIUM = new Target(Blocks.CRIMSON_NYLIUM, "crimson_nylium", TargetTextureInformation.builder().top(new ResourceLocation("textures/block/crimson_nylium.png")).bottom(new ResourceLocation("block/netherrack")).side(new ResourceLocation("block/crimson_nylium_side")).build(), new CustomColor(0x352922), new CustomColor(0x6a5244), BlockTags.MINEABLE_WITH_PICKAXE);
 		public static final Target WARPED_NYLIUM = new Target(Blocks.WARPED_NYLIUM, "warped_nylium", TargetTextureInformation.builder().top(new ResourceLocation("textures/block/warped_nylium.png")).bottom(new ResourceLocation("block/netherrack")).side(new ResourceLocation("block/warped_nylium_side")).build(), new CustomColor(0x352922), new CustomColor(0x6a5244), BlockTags.MINEABLE_WITH_PICKAXE);

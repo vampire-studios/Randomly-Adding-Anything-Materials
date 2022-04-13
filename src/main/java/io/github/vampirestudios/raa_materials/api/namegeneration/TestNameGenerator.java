@@ -39,8 +39,8 @@ public class TestNameGenerator {
 				if (registryName.contains(string)) registryName = registryName.replace(string, stringStringPair.getKey());
 			}
 		}
-		generatedNames.put(name, registryName.toLowerCase());
-		return Pair.of(name, registryName.toLowerCase());
+		generatedNames.put(name, registryName.toLowerCase(Locale.ROOT));
+		return Pair.of(name, registryName.toLowerCase(Locale.ROOT));
 	}
 
 	public static Pair<String, String> generateStoneName(Random random) {
@@ -49,15 +49,15 @@ public class TestNameGenerator {
 		while(generatedNames.containsKey(name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", ""))) {
 			name = generate(random, 5, 15);
 		}
-		String extraName = name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", "");
+		String registryName = name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", "");
 		for (Pair<String, String> stringStringPair : specialLettersTesting) {
 			String[] strings = stringStringPair.getValue().split("\\|");
 			for (String string : strings) {
-				if (extraName.contains(string)) extraName = extraName.replace(string, stringStringPair.getKey());
+				if (registryName.contains(string)) registryName = registryName.replace(string, stringStringPair.getKey());
 			}
 		}
-		generatedNames.put(name, extraName.toLowerCase());
-		return Pair.of(name, extraName.toLowerCase());
+		generatedNames.put(name, registryName.toLowerCase(Locale.ROOT));
+		return Pair.of(name, registryName.toLowerCase(Locale.ROOT));
 	}
 
 	public static String generate(Random random, int min, int max) {

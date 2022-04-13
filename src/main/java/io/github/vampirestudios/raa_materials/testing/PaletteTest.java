@@ -1,4 +1,4 @@
-package io.github.vampirestudios.raa_materials;
+package io.github.vampirestudios.raa_materials.testing;
 
 import io.github.vampirestudios.raa_materials.utils.ColorDualGradient;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;

@@ -89,8 +89,8 @@ public class ModelHelper {
 
 			ResourceLocation textureID = TextureHelper.makeBlockTextureID(registryName + "_ore");
 			BufferTexture texture = ProceduralTextures.randomColored(oreVeinTexture, gradient);
-			texture = TextureHelper.cover(topTexture, texture);
 			BufferTexture outline = TextureHelper.outline(texture, target.darkOutline(), target.lightOutline(), 0, 1);
+			texture = TextureHelper.cover(topTexture, texture);
 			texture = TextureHelper.cover(texture, outline);
 			InnerRegistryClient.registerTexture(textureID, texture);
 			ResourceLocation bottom;

@@ -28,7 +28,7 @@ public class GemOreMaterial extends OreMaterial {
 	private final ResourceLocation gemTexture;
 
 	public GemOreMaterial(Target target, Random random) {
-		this(TestNameGenerator.generateOreName(random),
+		this(TestNameGenerator.generateOreName(random), random,
 			ProceduralTextures.makeGemPalette(random),
 			TextureInformation.builder()
 				.oreOverlay(oreVeinTextures[random.nextInt(oreVeinTextures.length)])
@@ -49,8 +49,9 @@ public class GemOreMaterial extends OreMaterial {
 		);
 	}
 
-	public GemOreMaterial(Pair<String, String> name, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, int tier) {
-		super(name, gradient, textureInformation, targetIn, RAASimpleItem.SimpleItemType.GEM, tier, false);
+	public GemOreMaterial(Pair<String, String> name, Random random, ColorGradient gradient, TextureInformation textureInformation, Target targetIn, int tier) {
+		super(name, random, gradient, textureInformation, targetIn, RAASimpleItem.SimpleItemType.GEM, tier, false);
+		Rands.setRand(random);
 
 		this.oreVeinTexture = textureInformation.oreOverlay();
 		this.storageBlockTexture = textureInformation.storageBlock();
@@ -119,9 +120,8 @@ public class GemOreMaterial extends OreMaterial {
 
 		InnerRegistryClient.registerBlockModel(this.storageBlock, ModelHelper.makeCube(textureID));
 		InnerRegistryClient.registerItemModel(this.storageBlock.asItem(), ModelHelper.makeCube(textureID));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), String.format("%s Block", this.name));
 
-		makeColoredItemAssets(gemTexture, this.droppedItem, gradient, this.registryName + "_gem", "%s Gem");
+		makeColoredItemAssets(gemTexture, this.droppedItem, gradient, this.registryName + "_gem", "item.gem");
 	}
 
 	static {

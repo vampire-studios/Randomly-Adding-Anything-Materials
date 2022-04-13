@@ -29,6 +29,9 @@ repositories {
 	maven { url = "https://maven.jamieswhiteshirt.com/libs-release" }
 	maven { url = "https://aperlambda.github.io/maven" }
 	maven { url = "https://maven.tterrag.com/" }
+	maven { url = "https://maven.blamejared.com" }
+	maven { url = "https://maven.wispforest.io/" }
+	maven { url = "https://ladysnake.jfrog.io/artifactory/mods" }
 }
 
 loom {
@@ -54,6 +57,7 @@ dependencies {
 	modImplementation fileTree(dir: 'libs', include: '*.jar')
 	modImplementation "com.github.paulevsGitch:BCLib:1.4.3"
 	modImplementation "com.simibubi:Create:mc1.18.2_v0.4.1+500"
+	modImplementation "com.github.DaFuqs:Spectrum:1.18.2-SNAPSHOT"
 }
 
 processResources {

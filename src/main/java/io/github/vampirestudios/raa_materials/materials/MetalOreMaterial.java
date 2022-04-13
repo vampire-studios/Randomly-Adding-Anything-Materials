@@ -1,11 +1,5 @@
 package io.github.vampirestudios.raa_materials.materials;
 
-import com.simibubi.create.content.contraptions.base.CasingBlock;
-import com.simibubi.create.content.contraptions.relays.encased.EncasedCTBehaviour;
-import com.simibubi.create.content.logistics.block.inventories.CrateBlock;
-import com.simibubi.create.foundation.block.connected.CTSpriteShiftEntry;
-import com.simibubi.create.foundation.block.connected.CTSpriteShifter;
-import com.simibubi.create.foundation.data.CreateRegistrate;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
@@ -19,10 +13,6 @@ import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.recipes.FurnaceRecipe;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
-import net.minecraft.client.renderer.BiomeColors;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -33,7 +23,6 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -48,15 +37,26 @@ import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.RarityFilter;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RandomBlockMatchTest;
-import net.minecraft.world.level.material.MaterialColor;
 import org.apache.commons.lang3.tuple.Pair;
-import paulevs.edenring.blocks.BrainTreeBlock;
-import paulevs.edenring.blocks.OverlayPlantBlock;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+//0.0 -> 1.0
+//Normal Block -> Ore/Raw
+
+//0.0 -> 0.5 -> 1.0
+//Normal Block -> Ore/Raw -> Oxidized Block
+
+//0.0 -> 0.5 -> 1.0
+//Normal Block -> Ore/Raw and Exposed/Weathered Block -> Oxidized Block
+
+//0.0 -> 0.25(with 0.75 overlay) -> 0.5 -> 0.75(with 0.25 overlay) -> 1.0
+//Normal Block -> Exposed Block -> Ore/Raw -> Weathered Block -> Oxidized Block
+
+//0.0 -> 0.25(with 0.75 overlay) -> 0.5(with 0.25 and 0.75 overlay) -> 0.75(with 0.25 overlay) -> 1.0
+//Normal Block -> Exposed Block -> Ore/Raw and Worn Block -> Weathered Block -> Oxidized Block
 public class MetalOreMaterial extends OreMaterial {
 	private static final ResourceLocation[] oreVeinTextures;
 	private static final ResourceLocation[] rawMaterialTextures;
@@ -81,33 +81,27 @@ public class MetalOreMaterial extends OreMaterial {
 	private final ResourceLocation crushedOreTexture;
 
 	public final Block rawMaterialBlock;
+	public final Block metalShingles;
+	public final Block metalPlate;
 
-	//Create Support
-	public final Block woodenCasing;
-	public final Block casing;
-	public final Block woodenCrate;
-	public final Block crate;
+	//TODO: Create Support
+//	public final Block woodenCasing;
+//	public final Block casing;
+
 	public final Item crushedOre;
-
 	public final Item ingot;
-
 	public final Item nugget;
-
 	public final Item gear;
 	public final Item dust;
 	public final Item small_dust;
 	public final Item plate;
-
-	public final Block brainTreeBlock;
-	public final Block grass;
 
 	public boolean hasOreVein;
 
 	public ColorGradient corrodedGradient;
 
 	public MetalOreMaterial(Target target, Random random) {
-		this(
-				TestNameGenerator.generateOreName(random),
+		this(TestNameGenerator.generateOreName(random), random,
 				ProceduralTextures.makeMetalPalette(random).gradient1(),
 				ProceduralTextures.makeMetalPalette(random).gradient2(),
 				TextureInformation.builder()
@@ -137,8 +131,9 @@ public class MetalOreMaterial extends OreMaterial {
 		);
 	}
 
-	public MetalOreMaterial(Pair<String, String> name, ColorGradient gradient, ColorGradient corrodedGradient, TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
-		super(name, gradient, textureInformation, targetIn, RAASimpleItem.SimpleItemType.RAW, tier, true);
+	public MetalOreMaterial(Pair<String, String> name, Random random, ColorGradient gradient, ColorGradient corrodedGradient, TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
+		super(name, random, gradient, textureInformation, targetIn, RAASimpleItem.SimpleItemType.RAW, tier, true);
+		Rands.setRand(random);
 
 		this.oreVeinTexture = textureInformation.oreOverlay();
 		this.storageBlockTexture = textureInformation.storageBlock();
@@ -164,41 +159,41 @@ public class MetalOreMaterial extends OreMaterial {
 			default -> throw new IllegalStateException("Unexpected value: " + tier);
 		}, rawMaterialBlock);
 
-		woodenCasing = InnerRegistry.registerBlockAndItem(this.registryName + "_wooden_casing", new CasingBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)), RAAMaterials.RAA_CREATE);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_AXE, woodenCasing);
+		this.metalShingles = InnerRegistry.registerBlockAndItem(this.registryName + "_shingles", new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)), RAAMaterials.RAA_ORES);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, metalShingles);
 		TagHelper.addTag(switch (tier) {
 			case 1 -> BlockTags.NEEDS_STONE_TOOL;
 			case 2 -> BlockTags.NEEDS_IRON_TOOL;
 			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
 			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, woodenCasing);
+		}, metalShingles);
 
-		casing = InnerRegistry.registerBlockAndItem(this.registryName + "_casing", new CasingBlock(BlockBehaviour.Properties.copy(Blocks.STONE)), RAAMaterials.RAA_CREATE);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, casing);
+		this.metalPlate = InnerRegistry.registerBlockAndItem("raw_" + this.registryName + "_plate", new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)), RAAMaterials.RAA_ORES);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, metalPlate);
 		TagHelper.addTag(switch (tier) {
 			case 1 -> BlockTags.NEEDS_STONE_TOOL;
 			case 2 -> BlockTags.NEEDS_IRON_TOOL;
 			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
 			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, casing);
+		}, metalPlate);
 
-		woodenCrate = InnerRegistry.registerBlockAndItem(this.registryName + "_wooden_crate", new CrateBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion()), RAAMaterials.RAA_CREATE);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_AXE, woodenCrate);
-		TagHelper.addTag(switch (tier) {
-			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, woodenCrate);
-
-		crate = InnerRegistry.registerBlockAndItem(this.registryName + "_crate", new CrateBlock(BlockBehaviour.Properties.copy(Blocks.STONE).noOcclusion()), RAAMaterials.RAA_CREATE);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, crate);
-		TagHelper.addTag(switch (tier) {
-			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, crate);
+//		woodenCasing = InnerRegistry.registerBlockAndItem(this.registryName + "_wooden_casing", new Block(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)), RAAMaterials.RAA_CREATE);
+//		TagHelper.addTag(BlockTags.MINEABLE_WITH_AXE, woodenCasing);
+//		TagHelper.addTag(switch (tier) {
+//			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+//			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+//			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+//			default -> throw new IllegalStateException("Unexpected value: " + tier);
+//		}, woodenCasing);
+//
+//		casing = InnerRegistry.registerBlockAndItem(this.registryName + "_casing", new Block(BlockBehaviour.Properties.copy(Blocks.STONE)), RAAMaterials.RAA_CREATE);
+//		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, casing);
+//		TagHelper.addTag(switch (tier) {
+//			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+//			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+//			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+//			default -> throw new IllegalStateException("Unexpected value: " + tier);
+//		}, casing);
 
 		ingot = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.INGOT);
 		nugget = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.NUGGET);
@@ -208,23 +203,23 @@ public class MetalOreMaterial extends OreMaterial {
 		plate = RAASimpleItem.register(this.registryName,  new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.PLATE);
 		crushedOre = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_CREATE), RAASimpleItem.SimpleItemType.CRUSHED_ORE);
 
-		brainTreeBlock = InnerRegistry.registerBlockAndItem(this.registryName + "_brain_tree_block", new BrainTreeBlock(MaterialColor.GOLD), RAAMaterials.RAA_ORES);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, brainTreeBlock);
-		TagHelper.addTag(switch (tier) {
-			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, brainTreeBlock);
-
-		grass = InnerRegistry.registerBlockAndItem(this.registryName + "_grass", new OverlayPlantBlock(true), RAAMaterials.RAA_ORES);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, grass);
-		TagHelper.addTag(switch (tier) {
-			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, grass);
+//		brainTreeBlock = InnerRegistry.registerBlockAndItem(this.registryName + "_brain_tree_block", new BrainTreeBlock(MaterialColor.GOLD), RAAMaterials.RAA_ORES);
+//		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, brainTreeBlock);
+//		TagHelper.addTag(switch (tier) {
+//			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+//			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+//			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+//			default -> throw new IllegalStateException("Unexpected value: " + tier);
+//		}, brainTreeBlock);
+//
+//		grass = InnerRegistry.registerBlockAndItem(this.registryName + "_grass", new OverlayPlantBlock(true), RAAMaterials.RAA_ORES);
+//		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, grass);
+//		TagHelper.addTag(switch (tier) {
+//			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+//			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+//			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+//			default -> throw new IllegalStateException("Unexpected value: " + tier);
+//		}, grass);
 
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_raw_block_from_raw_recipe", this.rawMaterialBlock)
 				.addMaterial('r', this.droppedItem)
@@ -303,6 +298,20 @@ public class MetalOreMaterial extends OreMaterial {
 				.setGroup("raw_materials_to_cooked")
 				.setOutputCount(1)
 				.buildWithBlasting();
+
+		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_shingles", this.metalShingles)
+				.addMaterial('r', this.storageBlock)
+				.setShape("rr", "rr")
+				.setGroup("shingles")
+				.setOutputCount(2)
+				.build();
+
+		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_plate", this.metalPlate)
+				.addMaterial('r', this.droppedItem)
+				.setShape("rr", "rr")
+				.setGroup("plates")
+				.setOutputCount(4)
+				.build();
 	}
 
 	@Override
@@ -338,6 +347,8 @@ public class MetalOreMaterial extends OreMaterial {
 	@Override
 	public void initClient(Random random) {
 		super.initClient(random);
+		BufferTexture metalShinglesTexture = TextureHelper.loadTexture("textures/block/metal_shingles.png");
+		BufferTexture metalPlateTexture = TextureHelper.loadTexture("textures/block/metal_plate.png");
 
 		ModelHelper.generateOreAssets(this.ore, oreVeinTexture, registryName, name, corrodedGradient, target);
 
@@ -345,27 +356,41 @@ public class MetalOreMaterial extends OreMaterial {
 		ResourceLocation textureID = TextureHelper.makeBlockTextureID(this.registryName + "_block");
 		BufferTexture texture = ProceduralTextures.randomColored(storageBlockTexture, gradient);
 		InnerRegistryClient.registerTexture(textureID, texture);
-		InnerRegistryClient.registerItemModel(this.storageBlock.asItem(), ModelHelper.makeCube(textureID));
 		InnerRegistryClient.registerBlockModel(this.storageBlock, ModelHelper.makeCube(textureID));
+		InnerRegistryClient.registerItemModel(this.storageBlock.asItem(), ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"),  String.format("%s Block", this.name));
 
 		textureID = TextureHelper.makeBlockTextureID("raw_" + this.registryName + "_block");
 		texture = ProceduralTextures.randomColored(rawMaterialBlockTexture, corrodedGradient);
 		InnerRegistryClient.registerTexture(textureID, texture);
-		InnerRegistryClient.registerItemModel(this.rawMaterialBlock.asItem(), ModelHelper.makeCube(textureID));
 		InnerRegistryClient.registerBlockModel(this.rawMaterialBlock, ModelHelper.makeCube(textureID));
+		InnerRegistryClient.registerItemModel(this.rawMaterialBlock.asItem(), ModelHelper.makeCube(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock("raw_" + this.registryName + "_block"),  String.format("Raw %s Block", this.name));
 
-		// Items
-		makeColoredItemAssets(rawItemTexture, droppedItem, corrodedGradient, "raw_" + this.registryName, "Raw %s");
-		makeColoredItemAssets(ingotTexture, ingot, gradient, this.registryName + "_ingot", "%s Ingot");
-		makeColoredItemAssets(nuggetTexture, nugget, gradient, this.registryName + "_nugget", "%s Nugget");
+		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_shingles");
+		texture = ProceduralTextures.randomColored(metalShinglesTexture, corrodedGradient);
+		InnerRegistryClient.registerTexture(textureID, texture);
+		InnerRegistryClient.registerBlockModel(this.metalShingles, ModelHelper.makeCube(textureID));
+		InnerRegistryClient.registerItemModel(this.metalShingles.asItem(), ModelHelper.makeCube(textureID));
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_shingles"),  "block.shingles", this.name);
 
-		makeColoredItemAssets(plateTexture, plate, gradient, this.registryName + "_plate", "%s Plate");
-		makeColoredItemAssets(smallDustTexture, small_dust, gradient, "small_" + this.registryName + "_dust", "Small %s Dust");
-		makeColoredItemAssets(gearTexture, gear, gradient, this.registryName + "_gear", "%s Gear");
-		makeColoredItemAssets(dustTexture, dust, gradient, this.registryName + "_dust", "%s Dust");
-		makeColoredItemAssets(crushedOreTexture, crushedOre, gradient, "crushed_" + this.registryName + "_ore", "Crushed %s Ore");
+		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_plate");
+		texture = ProceduralTextures.randomColored(metalPlateTexture, corrodedGradient);
+		InnerRegistryClient.registerTexture(textureID, texture);
+		InnerRegistryClient.registerBlockModel(this.metalPlate, ModelHelper.makeCube(textureID));
+		InnerRegistryClient.registerItemModel(this.metalPlate.asItem(), ModelHelper.makeCube(textureID));
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_plate"),  "block.plate", this.name);
+
+		// Items
+		makeColoredItemAssets(rawItemTexture, droppedItem, corrodedGradient, "raw_" + this.registryName, "item.raw");
+		makeColoredItemAssets(ingotTexture, ingot, gradient, this.registryName + "_ingot", "item.ingot");
+		makeColoredItemAssets(nuggetTexture, nugget, gradient, this.registryName + "_nugget", "item.nugget");
+
+		makeColoredItemAssets(plateTexture, plate, gradient, this.registryName + "_plate", "item.plate");
+		makeColoredItemAssets(smallDustTexture, small_dust, gradient, "small_" + this.registryName + "_dust", "item.small_dust");
+		makeColoredItemAssets(gearTexture, gear, gradient, this.registryName + "_gear", "item.gear");
+		makeColoredItemAssets(dustTexture, dust, gradient, this.registryName + "_dust", "item.dust");
+		makeColoredItemAssets(crushedOreTexture, crushedOre, gradient, "crushed_" + this.registryName + "_ore", "item.crushed_ore");
 
 		initClientModded();
 	}
@@ -403,65 +428,35 @@ public class MetalOreMaterial extends OreMaterial {
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock( this.registryName + "_grass"),  String.format("%s Grass", this.name));
 
 		// Wooden Casing
-		ResourceLocation woodenCasingTexture = TextureHelper.makeBlockTextureID(this.registryName + "_wooden_casing");
-		textureID = woodenCasingTexture;
-		texture = ProceduralTextures.randomColored(woodenCasing, gradient);
-		texture = TextureHelper.combine(woodenCasingInside, texture);
-		InnerRegistryClient.registerTexture(textureID, texture);
-		InnerRegistryClient.registerItemModel(this.woodenCasing.asItem(), ModelHelper.makeCube(textureID));
-		InnerRegistryClient.registerBlockModel(this.woodenCasing, ModelHelper.makeCube(textureID));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_wooden_casing"),  String.format("%s Wooden Casing", this.name));
+//		ResourceLocation woodenCasingTexture = TextureHelper.makeBlockTextureID(this.registryName + "_wooden_casing");
+//		textureID = woodenCasingTexture;
+//		texture = ProceduralTextures.randomColored(woodenCasing, gradient);
+//		texture = TextureHelper.combine(woodenCasingInside, texture);
+//		InnerRegistryClient.registerTexture(textureID, texture);
+//		InnerRegistryClient.registerItemModel(this.woodenCasing.asItem(), ModelHelper.makeCube(textureID));
+//		InnerRegistryClient.registerBlockModel(this.woodenCasing, ModelHelper.makeCube(textureID));
+//		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_wooden_casing"),  String.format("%s Wooden Casing", this.name));
 
 		// Casing
-		ResourceLocation casingTexture = TextureHelper.makeBlockTextureID(this.registryName + "_casing");
-		textureID = casingTexture;
-		texture = ProceduralTextures.randomColored(casing, gradient);
-		texture = TextureHelper.combine(casingInside, texture);
-		InnerRegistryClient.registerTexture(textureID, texture);
-		InnerRegistryClient.registerItemModel(this.casing.asItem(), ModelHelper.makeCube(textureID));
-		InnerRegistryClient.registerBlockModel(this.casing, ModelHelper.makeCube(textureID));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_casing"),  String.format("%s Casing", this.name));
+//		ResourceLocation casingTexture = TextureHelper.makeBlockTextureID(this.registryName + "_casing");
+//		textureID = casingTexture;
+//		texture = ProceduralTextures.randomColored(casing, gradient);
+//		texture = TextureHelper.combine(casingInside, texture);
+//		InnerRegistryClient.registerTexture(textureID, texture);
+//		InnerRegistryClient.registerItemModel(this.casing.asItem(), ModelHelper.makeCube(textureID));
+//		InnerRegistryClient.registerBlockModel(this.casing, ModelHelper.makeCube(textureID));
+//		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_casing"),  String.format("%s Casing", this.name));
+//
+//		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_casing_connected");
+//		texture = ProceduralTextures.randomColored(casingConnected, gradient);
+//		texture = TextureHelper.combine(casingInsideConnected, texture);
+//		InnerRegistryClient.registerTexture(textureID, texture);
 
-		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_casing_connected");
-		texture = ProceduralTextures.randomColored(casingConnected, gradient);
-		texture = TextureHelper.combine(casingInsideConnected, texture);
-		InnerRegistryClient.registerTexture(textureID, texture);
-
-		// Wooden Crate
-		ResourceLocation woodenCrateTexture = TextureHelper.makeBlockTextureID(this.registryName + "_wooden_crate");
-		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_wooden_crate");
-		texture = ProceduralTextures.randomColored(woodenCrate, gradient);
-		texture = TextureHelper.combine(woodenCrateInside, texture);
-		InnerRegistryClient.registerTexture(textureID, texture);
-		InnerRegistryClient.registerItemModel(this.woodenCrate.asItem(), ModelHelper.makeCrate(woodenCrateTexture, woodenCasingTexture));
-		InnerRegistryClient.registerBlockModel(this.woodenCrate, ModelHelper.makeCrate(woodenCrateTexture, woodenCasingTexture));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_wooden_crate"),  String.format("%s Wooden Crate", this.name));
-
-		// Crate
-		ResourceLocation crateTexture = TextureHelper.makeBlockTextureID(this.registryName + "_crate");
-		textureID = crateTexture;
-		texture = ProceduralTextures.randomColored(crate, gradient);
-		texture = TextureHelper.combine(crateInside, texture);
-		InnerRegistryClient.registerTexture(textureID, texture);
-		InnerRegistryClient.registerItemModel(this.crate.asItem(), ModelHelper.makeCrate(crateTexture, casingTexture));
-		InnerRegistryClient.registerBlockModel(this.crate, ModelHelper.makeCrate(crateTexture, casingTexture));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_crate"),  String.format("%s Crate", this.name));
-
-		CTSpriteShiftEntry ct = CTSpriteShifter.getCT(CTSpriteShifter.CTType.OMNIDIRECTIONAL, TextureHelper.makeBlockTextureID(this.registryName +
-				"_casing"), TextureHelper.makeBlockTextureID(this.registryName + "_casing_connected"));
-		CreateRegistrate.connectedTextures(() -> new EncasedCTBehaviour(ct)).accept(this.casing);
-		CreateRegistrate.casingConnectivity((block, cc) -> cc.makeCasing(block, ct)).accept(this.casing);
-
-		CTSpriteShiftEntry ct2 = CTSpriteShifter.getCT(CTSpriteShifter.CTType.OMNIDIRECTIONAL, TextureHelper.makeBlockTextureID(this.registryName +
-				"_wooden_casing_connected"), TextureHelper.makeBlockTextureID(this.registryName));
-		CreateRegistrate.casingConnectivity((block, cc) -> cc.makeCasing(block, ct2)).accept(this.woodenCasing);
-
-		ColorProviderRegistry.BLOCK.register((blockState, blockAndTintGetter, blockPos, i) -> blockAndTintGetter != null && blockPos != null ?
-				BiomeColors.getAverageGrassColor(blockAndTintGetter, blockPos) : GrassColor.get(0.5D, 1.0D), grass);
-		ColorProviderRegistry.ITEM.register((itemStack, i) -> i == 1 ? GrassColor.get(0.5D, 1.0D) :
-				ColorUtil.rgb(255, 255, 255), grass);
-		BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutoutMipped(), grass);
-
+//		ColorProviderRegistry.BLOCK.register((blockState, blockAndTintGetter, blockPos, i) -> blockAndTintGetter != null && blockPos != null ?
+//				BiomeColors.getAverageGrassColor(blockAndTintGetter, blockPos) : GrassColor.get(0.5D, 1.0D), grass);
+//		ColorProviderRegistry.ITEM.register((itemStack, i) -> i == 1 ? GrassColor.get(0.5D, 1.0D) :
+//				ColorUtil.rgb(255, 255, 255), grass);
+//		BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutoutMipped(), grass);
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package io.github.vampirestudios.raa_materials;
+package io.github.vampirestudios.raa_materials.testing;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.vampirestudios.raa_materials.utils.*;

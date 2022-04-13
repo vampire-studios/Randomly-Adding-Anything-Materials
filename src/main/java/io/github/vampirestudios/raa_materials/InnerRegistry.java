@@ -13,6 +13,7 @@ import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -38,6 +39,7 @@ import static io.github.vampirestudios.raa_materials.utils.RegistryUtils.REGISTE
 public class InnerRegistry {
 
 	private static final Map<ResourceLocation, Block> BLOCKS = Maps.newHashMap();
+	private static final Map<ResourceLocation, ParticleType<?>> PARTICLE_TYPES = Maps.newHashMap();
 	private static final Map<ResourceLocation, Item> ITEMS = Maps.newHashMap();
 	private static final Map<ResourceLocation, ConfiguredFeature<?, ?>> CONFIGURED_FEATURES = Maps.newHashMap();
 	private static final Map<ResourceLocation, PlacedFeature> PLACED_FEATURES = Maps.newHashMap();
@@ -51,15 +53,16 @@ public class InnerRegistry {
 
 		if (isClient()) InnerRegistryClient.clearClient();
 
-		BLOCKS.forEach((resourceLocation, block) -> RegistryUtils.removeRegisteredKey(Registry.BLOCK.key().location(), resourceLocation));
-		ITEMS.forEach((resourceLocation, item) -> RegistryUtils.removeRegisteredKey(Registry.ITEM.key().location(), resourceLocation));
-		CONFIGURED_FEATURES.forEach((resourceLocation, configuredFeature) -> RegistryUtils.removeRegisteredKey(Registry.CONFIGURED_FEATURE_REGISTRY.location(), resourceLocation));
-		PLACED_FEATURES.forEach((resourceLocation, placedFeature) -> RegistryUtils.removeRegisteredKey(Registry.PLACED_FEATURE_REGISTRY.location(), resourceLocation));
+//		BLOCKS.forEach((resourceLocation, block) -> RegistryUtils.removeRegisteredKey(Registry.BLOCK.key().location(), resourceLocation));
+//		ITEMS.forEach((resourceLocation, item) -> RegistryUtils.removeRegisteredKey(Registry.ITEM.key().location(), resourceLocation));
+//		CONFIGURED_FEATURES.forEach((resourceLocation, configuredFeature) -> RegistryUtils.removeRegisteredKey(Registry.CONFIGURED_FEATURE_REGISTRY.location(), resourceLocation));
+//		PLACED_FEATURES.forEach((resourceLocation, placedFeature) -> RegistryUtils.removeRegisteredKey(Registry.PLACED_FEATURE_REGISTRY.location(), resourceLocation));
 
 		CONFIGURED_FEATURES.clear();
 		PLACED_FEATURES.clear();
 		BLOCKS.clear();
 		ITEMS.clear();
+		PARTICLE_TYPES.clear();
 
 		StoneMaterial.resetMaterials();
 		MetalOreMaterial.resetMaterials();
@@ -124,6 +127,17 @@ public class InnerRegistry {
 		}
 		BLOCKS.put(id, block);
 		RegistryUtils.addRegisteredKey(Registry.BLOCK.key().location(), id);
+	}
+
+	public static <T extends ParticleType> T registerParticle(ResourceLocation id, T particleType) {
+		if (Registry.PARTICLE_TYPE.containsKey(id)) {
+			particleType = (T) Registry.PARTICLE_TYPE.get(id);
+		} else {
+			Registry.register(Registry.PARTICLE_TYPE, id, particleType);
+		}
+		PARTICLE_TYPES.put(id, particleType);
+		RegistryUtils.addRegisteredKey(Registry.PARTICLE_TYPE.key().location(), id);
+		return particleType;
 	}
 	
 	public static Item registerItem(ResourceLocation id, Item item) {

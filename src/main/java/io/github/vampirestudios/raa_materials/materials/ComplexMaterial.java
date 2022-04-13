@@ -105,12 +105,13 @@ public abstract class ComplexMaterial {
 		textureInformationBuilder.stoneChiseled(ResourceLocation.tryParse(texturesCompound.getString("stoneChiseledTexture")));
 		int crystalLampOverlayTextureInt = texturesCompound.getInt("crystalLampOverlayTextureInt");
 		int crystalOreTextureInt = texturesCompound.getInt("crystalOreTextureInt");
+		int chiseledVariantInt = texturesCompound.getInt("chiseledVariantInt");
 
 		TextureInformation textureInformation = textureInformationBuilder.build();
 
 		switch (type) {
 			case "gem" -> {
-				material = new GemOreMaterial(parsedName, gradient, textureInformation, target, tier);
+				material = new GemOreMaterial(parsedName, random, gradient, textureInformation, target, tier);
 				OreMaterial oreMaterial = (OreMaterial) material;
 				oreMaterial.setBonus(bonus);
 				oreMaterial.setSize(size);
@@ -119,9 +120,9 @@ public abstract class ComplexMaterial {
 				oreMaterial.setRarity(rarity);
 				oreMaterial.setHiddenChance(hiddenChance);
 			}
-			case "crystal" -> material = new CrystalMaterial(parsedName, gradient, textureInformation, tier, crystalLampOverlayTextureInt, crystalOreTextureInt);
+			case "crystal" -> material = new CrystalMaterial(parsedName, random, gradient, textureInformation, tier, crystalLampOverlayTextureInt, crystalOreTextureInt, chiseledVariantInt);
 			case "metal" -> {
-				material = new MetalOreMaterial(parsedName, gradient, corrodedGradient, textureInformation, target, tier, hasOreVein);
+				material = new MetalOreMaterial(parsedName, random, gradient, corrodedGradient, textureInformation, target, tier, hasOreVein);
 				OreMaterial oreMaterial = (OreMaterial) material;
 				oreMaterial.setBonus(bonus);
 				oreMaterial.setSize(size);

@@ -86,19 +86,30 @@ public class StoneMaterial extends ComplexMaterial {
 		if (maxHeight < minHeight) {
 			this.maxHeight = Rands.randIntRange(-64, 384);
 		}
-		this.rarity = Rands.randIntRange(6, 18);
+		this.rarity = Rands.randIntRange(20, 60);
 
-		Block[] baseBlocks = {Blocks.STONE, Blocks.DEEPSLATE, Blocks.NETHERRACK};
+		Block[] baseBlocks = {Blocks.STONE, Blocks.DEEPSLATE, Blocks.NETHERRACK, Blocks.TUFF, Blocks.CALCITE, Blocks.BASALT};
+		Block[] cobbledBlocks = {Blocks.COBBLESTONE, Blocks.COBBLED_DEEPSLATE, Blocks.NETHERRACK, Blocks.TUFF, Blocks.CALCITE, Blocks.BASALT};
+		Block[] brickBlocks = {Blocks.STONE_BRICKS, Blocks.DEEPSLATE_BRICKS, Blocks.NETHER_BRICKS, Blocks.TUFF, Blocks.CALCITE, Blocks.POLISHED_BASALT};
+		Block[] tileBlocks = {Blocks.STONE_BRICKS, Blocks.DEEPSLATE_TILES, Blocks.NETHER_BRICKS, Blocks.TUFF, Blocks.CALCITE, Blocks.POLISHED_BASALT};
 
-		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(Rands.values(baseBlocks)).hardness(Rands.randFloatRange(1.0F, 5.0F))
+		int number = Rands.randInt(baseBlocks.length);
+
+		BlockBehaviour.Properties baseBlockProperties = FabricBlockSettings.copyOf(baseBlocks[number]).hardness(Rands.randFloatRange(1.0F, 5.0F))
+				.slipperiness(Rands.randFloatRange(0.6F, 1.0F)).resistance(Rands.randFloatRange(1.0F, 5.0F)).color(MaterialColor.COLOR_GRAY);
+		BlockBehaviour.Properties cobbledProperties = FabricBlockSettings.copyOf(cobbledBlocks[number]).hardness(Rands.randFloatRange(1.0F, 5.0F))
+				.slipperiness(Rands.randFloatRange(0.6F, 1.0F)).resistance(Rands.randFloatRange(1.0F, 5.0F)).color(MaterialColor.COLOR_GRAY);
+		BlockBehaviour.Properties brickProperties = FabricBlockSettings.copyOf(brickBlocks[number]).hardness(Rands.randFloatRange(1.0F, 5.0F))
+				.slipperiness(Rands.randFloatRange(0.6F, 1.0F)).resistance(Rands.randFloatRange(1.0F, 5.0F)).color(MaterialColor.COLOR_GRAY);
+		BlockBehaviour.Properties tileProperties = FabricBlockSettings.copyOf(tileBlocks[number]).hardness(Rands.randFloatRange(1.0F, 5.0F))
 				.slipperiness(Rands.randFloatRange(0.6F, 1.0F)).resistance(Rands.randFloatRange(1.0F, 5.0F)).color(MaterialColor.COLOR_GRAY);
 
-		stone = InnerRegistry.registerBlockAndItem(this.registryName, new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
-		cobbled = InnerRegistry.registerBlockAndItem("cobbled_" + this.registryName, new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
-		chiseled = InnerRegistry.registerBlockAndItem("chiseled_" + this.registryName, new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
-		polished = InnerRegistry.registerBlockAndItem("polished_" + this.registryName, new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
-		tiles = InnerRegistry.registerBlockAndItem(this.registryName + "_tiles", new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
-		bricks = InnerRegistry.registerBlockAndItem(this.registryName + "_bricks", new BaseBlock(material), RAAMaterials.RAA_STONE_TYPES);
+		stone = InnerRegistry.registerBlockAndItem(this.registryName, new BaseBlock(baseBlockProperties), RAAMaterials.RAA_STONE_TYPES);
+		cobbled = InnerRegistry.registerBlockAndItem("cobbled_" + this.registryName, new BaseBlock(cobbledProperties), RAAMaterials.RAA_STONE_TYPES);
+		chiseled = InnerRegistry.registerBlockAndItem("chiseled_" + this.registryName, new BaseBlock(brickProperties), RAAMaterials.RAA_STONE_TYPES);
+		polished = InnerRegistry.registerBlockAndItem("polished_" + this.registryName, new BaseBlock(baseBlockProperties), RAAMaterials.RAA_STONE_TYPES);
+		tiles = InnerRegistry.registerBlockAndItem(this.registryName + "_tiles", new BaseBlock(tileProperties), RAAMaterials.RAA_STONE_TYPES);
+		bricks = InnerRegistry.registerBlockAndItem(this.registryName + "_bricks", new BaseBlock(brickProperties), RAAMaterials.RAA_STONE_TYPES);
 
 		GridRecipe.make(new ResourceLocation(RAAMaterials.MOD_ID, "polished_" + this.registryName), polished)
 				.setOutputCount(2)
