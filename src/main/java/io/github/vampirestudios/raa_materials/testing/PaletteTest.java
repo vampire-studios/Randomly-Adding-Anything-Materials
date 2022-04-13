@@ -18,17 +18,18 @@ public class PaletteTest {
 
         //ColorGradient mat;
         ColorDualGradient mat;
-        BufferedImage img = new BufferedImage(paletteSize * 32, palettes * 3 * 32, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage img = new BufferedImage(palettes/2 * paletteSize * 32, palettes/2 * 3 * 32, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = img.createGraphics();
-        for(int y = 0; y < palettes; y++) {
-            mat = ProceduralTextures.makeMetalPalette(random);
-            for (int i = 0; i < paletteSize; i++) {
-                int x = i * 32;
-                for(int z = 0; z < 3; z++){
-                g2d.setColor(new Color(mat.getColor((float) i / paletteSize, (float) z/2).getAsInt()));
-                g2d.fillRect(x, (y*3+z)*32, 32, 32);
+        for(int y = 0; y < palettes/2; y++) {
+            for(int c = 0; c < palettes/2; c++) {
+                mat = ProceduralTextures.makeMetalPalette(random);
+                for (int i = 0; i < paletteSize; i++) {
+                    int x = (paletteSize * c + i ) * 32;
+                    for (int z = 0; z < 3; z++) {
+                        g2d.setColor(new Color(mat.getColor((float) i / paletteSize, (float) z / 2).getAsInt()));
+                        g2d.fillRect(x, (y * 3 + z) * 32, 32, 32);
+                    }
                 }
-                //System.out.println(ColorUtil.toHexString(palette[i]));
             }
         }
         ImageIO.write(img, "PNG", new File("./test/palette.png"));

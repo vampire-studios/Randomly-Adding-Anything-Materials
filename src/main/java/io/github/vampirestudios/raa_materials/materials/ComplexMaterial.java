@@ -3,6 +3,7 @@ package io.github.vampirestudios.raa_materials.materials;
 import com.google.common.collect.Lists;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
+import io.github.vampirestudios.raa_materials.utils.ColorDualGradient;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
 import net.minecraft.core.Registry;
@@ -122,7 +123,8 @@ public abstract class ComplexMaterial {
 			}
 			case "crystal" -> material = new CrystalMaterial(parsedName, random, gradient, textureInformation, tier, crystalLampOverlayTextureInt, crystalOreTextureInt, chiseledVariantInt);
 			case "metal" -> {
-				material = new MetalOreMaterial(parsedName, random, gradient, corrodedGradient, textureInformation, target, tier, hasOreVein);
+				ColorDualGradient metalicGradient = new ColorDualGradient(gradient, corrodedGradient);
+				material = new MetalOreMaterial(parsedName, random, metalicGradient, textureInformation, target, tier, hasOreVein);
 				OreMaterial oreMaterial = (OreMaterial) material;
 				oreMaterial.setBonus(bonus);
 				oreMaterial.setSize(size);
