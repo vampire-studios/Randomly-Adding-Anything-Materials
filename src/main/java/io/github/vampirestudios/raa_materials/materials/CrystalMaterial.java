@@ -1,6 +1,14 @@
 package io.github.vampirestudios.raa_materials.materials;
 
 import com.google.common.collect.ImmutableList;
+import de.dafuqs.spectrum.blocks.PlayerOnlyGlassBlock;
+import de.dafuqs.spectrum.blocks.conditional.GemstoneOreBlock;
+import de.dafuqs.spectrum.blocks.decoration.DecoStoneBlock;
+import de.dafuqs.spectrum.blocks.decoration.GemGlassBlock;
+import de.dafuqs.spectrum.blocks.decoration.GemstoneChimeBlock;
+import de.dafuqs.spectrum.blocks.pedestal.PedestalBlock;
+import de.dafuqs.spectrum.enums.GemstoneColor;
+import de.dafuqs.spectrum.registries.SpectrumBlocks;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
@@ -17,14 +25,17 @@ import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.Item;
@@ -48,6 +59,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.List;
 import java.util.Random;
 
+import static de.dafuqs.spectrum.particle.SpectrumParticleFactories.registerColoredRisingParticle;
 import static io.github.vampirestudios.raa_materials.RAAMaterials.RAA_ORES;
 import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 
@@ -80,19 +92,19 @@ public class CrystalMaterial extends ComplexMaterial {
     public Block ore;
     public Block deepslateOre;
     public Block storageBlock;
-//    public Block chime;
-//    public Block decostone;
-//    public Block glass;
-//    public Block playerOnlyGlass;
-//    public Block basicPedestal;
+    public Block chime;
+    public Block decostone;
+    public Block glass;
+    public Block playerOnlyGlass;
+    public Block basicPedestal;
 
     public Item geodeCore;
     public Item enrichedGeodeCore;
 
     public int tier;
 
-//    private CustomColor particleColor;
-//    public SimpleParticleType risingParticle;
+    private CustomColor particleColor;
+    public SimpleParticleType risingParticle;
 
     public CrystalMaterial(Random random) {
         this(TestNameGenerator.generateOreName(random), random,
@@ -110,7 +122,7 @@ public class CrystalMaterial extends ComplexMaterial {
     public CrystalMaterial(Pair<String, String> name, Random random, ColorGradient gradient, TextureInformation textureInformation, int tier, int crystalLampOverlayTextureInt,
                            int crystalOreTextureInt, int chiseledVariantInt, int tintedGlassVariantInt) {
         super(name, gradient);
-//        this.particleColor = this.gradient.getColor(0.5F).switchToRGB();
+        this.particleColor = this.gradient.getColor(0.5F).switchToRGB();
         this.tier = tier;
 
         Rands.setRand(random);
@@ -138,20 +150,20 @@ public class CrystalMaterial extends ComplexMaterial {
         }, crystal);
 
         if (FabricLoader.getInstance().isModLoaded("spectrum")) {
-//            this.risingParticle = InnerRegistry.registerParticle(RAAMaterials.id(this.name + "_sparkle_rising"), FabricParticleTypes.simple(false));
+            this.risingParticle = InnerRegistry.registerParticle(RAAMaterials.id(this.name + "_sparkle_rising"), FabricParticleTypes.simple(false));
 
-            this.basaltLamp = InnerRegistry.registerBlockAndItem(this.registryName + "_basalt_lamp", new Block(FabricBlockSettings.copyOf(/*SpectrumBlocks.AMETHYST_BASALT_LAMP*/Blocks.SMOOTH_BASALT)), RAA_ORES);
-            this.calciteLamp = InnerRegistry.registerBlockAndItem(this.registryName + "_calcite_lamp", new Block(FabricBlockSettings.copyOf(/*SpectrumBlocks.AMETHYST_CALCITE_LAMP*/Blocks.CALCITE)), RAA_ORES);
-            this.chiseledBasalt = InnerRegistry.registerBlockAndItem(this.registryName + "_chiseled_basalt", new Block(FabricBlockSettings.copyOf(/*SpectrumBlocks.AMETHYST_CHISELED_BASALT*/Blocks.SMOOTH_BASALT)), RAA_ORES);
-            this.chiseledCalcite = InnerRegistry.registerBlockAndItem(this.registryName + "_chiseled_calcite", new Block(FabricBlockSettings.copyOf(/*SpectrumBlocks.AMETHYST_CHISELED_CALCITE*/Blocks.CALCITE)), RAA_ORES);
-            this.ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new Block(FabricBlockSettings.copyOf(/*SpectrumBlocks.AMETHYST_ORE*/Blocks.IRON_ORE)), RAA_ORES);
-            this.deepslateOre = InnerRegistry.registerBlockAndItem(this.registryName + "_deepslate_ore", new Block(FabricBlockSettings.copyOf(/*SpectrumBlocks.DEEPSLATE_AMETHYST_ORE*/Blocks.DEEPSLATE_IRON_ORE)), RAA_ORES);
-            this.storageBlock = InnerRegistry.registerBlockAndItem(this.registryName + "_storage_block", new Block(FabricBlockSettings.copyOf(/*SpectrumBlocks.AMETHYST_STORAGE_BLOCK*/Blocks.AMETHYST_BLOCK)), RAA_ORES);
-//            this.chime = InnerRegistry.registerBlockAndItem(this.registryName + "_chime", new GemstoneChimeBlock(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_CHIME), SoundEvents.AMETHYST_BLOCK_CHIME, risingParticle), RAA_ORES);
-//            this.decostone = InnerRegistry.registerBlockAndItem(this.registryName + "_decostone", new DecoStoneBlock(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_DECOSTONE)), RAA_ORES);
-//            this.glass = InnerRegistry.registerBlockAndItem(this.registryName + "_glass", new GemGlassBlock(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_GLASS)), RAA_ORES);
-//            this.playerOnlyGlass = InnerRegistry.registerBlockAndItem(this.registryName + "_player_only_glass", new PlayerOnlyGlassBlock(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_PLAYER_ONLY_GLASS), false), RAA_ORES);
-//            this.basicPedestal = InnerRegistry.registerBlockAndItem("pedestal_basic_" + this.registryName, new PedestalBlock(FabricBlockSettings.copyOf(SpectrumBlocks.PEDESTAL_BASIC_AMETHYST), PedestalBlock.PedestalVariant.BASIC_AMETHYST), RAA_ORES);
+            this.basaltLamp = InnerRegistry.registerBlockAndItem(this.registryName + "_basalt_lamp", new Block(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_BASALT_LAMP)), RAA_ORES);
+            this.calciteLamp = InnerRegistry.registerBlockAndItem(this.registryName + "_calcite_lamp", new Block(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_CALCITE_LAMP)), RAA_ORES);
+            this.chiseledBasalt = InnerRegistry.registerBlockAndItem(this.registryName + "_chiseled_basalt", new Block(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_CHISELED_BASALT)), RAA_ORES);
+            this.chiseledCalcite = InnerRegistry.registerBlockAndItem(this.registryName + "_chiseled_calcite", new Block(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_CHISELED_CALCITE)), RAA_ORES);
+            this.ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new GemstoneOreBlock(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_ORE), UniformInt.of(1, 4), GemstoneColor.MAGENTA, false), RAA_ORES);
+            this.deepslateOre = InnerRegistry.registerBlockAndItem(this.registryName + "_deepslate_ore", new GemstoneOreBlock(FabricBlockSettings.copyOf(SpectrumBlocks.DEEPSLATE_AMETHYST_ORE), UniformInt.of(1, 4), GemstoneColor.MAGENTA, true), RAA_ORES);
+            this.storageBlock = InnerRegistry.registerBlockAndItem(this.registryName + "_storage_block", new Block(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_STORAGE_BLOCK)), RAA_ORES);
+            this.chime = InnerRegistry.registerBlockAndItem(this.registryName + "_chime", new GemstoneChimeBlock(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_CHIME), SoundEvents.AMETHYST_BLOCK_CHIME, risingParticle), RAA_ORES);
+            this.decostone = InnerRegistry.registerBlockAndItem(this.registryName + "_decostone", new DecoStoneBlock(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_DECOSTONE)), RAA_ORES);
+            this.glass = InnerRegistry.registerBlockAndItem(this.registryName + "_glass", new GemGlassBlock(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_GLASS)), RAA_ORES);
+            this.playerOnlyGlass = InnerRegistry.registerBlockAndItem(this.registryName + "_player_only_glass", new PlayerOnlyGlassBlock(FabricBlockSettings.copyOf(SpectrumBlocks.AMETHYST_PLAYER_ONLY_GLASS), false), RAA_ORES);
+            this.basicPedestal = InnerRegistry.registerBlockAndItem("pedestal_basic_" + this.registryName, new PedestalBlock(FabricBlockSettings.copyOf(SpectrumBlocks.PEDESTAL_BASIC_AMETHYST), PedestalBlock.PedestalVariant.BASIC_AMETHYST), RAA_ORES);
 
             TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, basaltLamp);
             TagHelper.addTag(switch (tier) {
@@ -334,7 +346,7 @@ public class CrystalMaterial extends ComplexMaterial {
         BufferTexture geodeCoreOverlayTexture = TextureHelper.loadTexture("textures/item/geode_core_overlay.png");
 
         if (FabricLoader.getInstance().isModLoaded("spectrum")) {
-//            registerColoredRisingParticle(this.risingParticle, particleColor.getRed(), particleColor.getGreen(), particleColor.getBlue());
+            registerColoredRisingParticle(this.risingParticle, particleColor.getRed(), particleColor.getGreen(), particleColor.getBlue());
 
             //Basalt Lamp
             ResourceLocation textureID = TextureHelper.makeItemTextureID(registryName + "_basalt_lamp");

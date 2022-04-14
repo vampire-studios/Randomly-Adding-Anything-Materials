@@ -164,10 +164,6 @@ public class TextureTest {
             return new ResourceLocation("raa", ("block/" + name).replaceAll("'|`|\\^|/| |´", ""));
         }
 
-        public static ResourceLocation makeItemTextureID(String name) {
-            return new ResourceLocation("raa", ("item/" + name).replaceAll("'|`|\\^|/| |´", ""));
-        }
-
         private static BufferedImage loadImage(String name) {
             try {
                 InputStream input = new FileInputStream("src/main/resources/assets/raa_materials/"+name);
