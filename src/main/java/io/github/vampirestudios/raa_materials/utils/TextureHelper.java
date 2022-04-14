@@ -364,6 +364,82 @@ public class TextureHelper {
 		return result;
 	}
 
+	public static BufferTexture simpleTileable(BufferTexture texture) {
+		BufferTexture tex = texture.cloneTexture();
+
+		BufferTexture result = offset(tex, tex.getWidth()/2, tex.getHeight()/2);
+		result = blend(tex, result, 0.5f);
+
+		return result;
+	}
+
+	public static BufferTexture edgeTileable(BufferTexture texture, int edgeSize) { // todo use some sorta blur on the edges
+		BufferTexture tex = offset(texture.cloneTexture(), texture.getWidth()/2, texture.getHeight()/2);
+		BufferTexture alpha;
+		BufferTexture result = texture.cloneTexture();
+
+		COLOR.forceRGB();
+		for (int x = 0; x < texture.getWidth(); x++) {
+			for (int y = 0; y < texture.getHeight(); y++) {
+				if(x < edgeSize || x > texture.getWidth() - edgeSize-1 || y < edgeSize || y > texture.getHeight() - edgeSize - 1){
+					result.setPixel(x, y, COLOR.set(tex.getPixel(x,y)));
+				}
+			}
+		}
+		result = offset(result, texture.getWidth()/2, texture.getHeight()/2);
+		return result;
+	}
+
+	/*
+	 * Very slightly faster way of blurring textures than ProceduralTextures.MakeBlurredTexture(BufferTexture texture, float strength, int steps)
+	 * Effectively the same when steps are low, exponentially faster for each blur step;
+	 */
+	public static BufferTexture blur(BufferTexture texture, float strength, int steps) {
+		BufferTexture tex;
+		BufferTexture result = texture.cloneTexture();
+		float cr = 0f;
+		float cg = 0f;
+		float cb = 0f;
+		float ca = 0f;
+
+		COLOR.forceRGB();
+		COLOR2.forceRGB();
+		for (int i = 0; i < steps; i++) {
+			tex = result.cloneTexture();
+			for (int x = 0; x < tex.getWidth(); x++) {
+				for (int y = 0; y < tex.getHeight(); y++) {
+					COLOR.set(tex.getPixel(MHelper.wrap(x-1, tex.getWidth()), MHelper.wrap(y, tex.getHeight())));
+					cr += COLOR.getRed();
+					cg += COLOR.getGreen();
+					cb += COLOR.getBlue();
+					ca += COLOR.getAlpha();
+					COLOR.set(tex.getPixel(MHelper.wrap(x, tex.getWidth()), MHelper.wrap(y-1, tex.getHeight())));
+					cr += COLOR.getRed();
+					cg += COLOR.getGreen();
+					cb += COLOR.getBlue();
+					ca += COLOR.getAlpha();
+					COLOR.set(tex.getPixel(MHelper.wrap(x+1, tex.getWidth()), MHelper.wrap(y, tex.getHeight())));
+					cr += COLOR.getRed();
+					cg += COLOR.getGreen();
+					cb += COLOR.getBlue();
+					ca += COLOR.getAlpha();
+					COLOR.set(tex.getPixel(MHelper.wrap(x, tex.getWidth()), MHelper.wrap(y+1, tex.getHeight())));
+					cr += COLOR.getRed();
+					cg += COLOR.getGreen();
+					cb += COLOR.getBlue();
+					ca += COLOR.getAlpha();
+
+					result.setPixel(x, y, COLOR.set(tex.getPixel(x,y)).mixWith(COLOR2.set(cr/4, cg/4, cb/4, ca/4),strength));
+					cr = 0f;
+					cg = 0f;
+					cb = 0f;
+					ca = 0f;
+				}
+			}
+		}
+		return result;
+	}
+
 	public static BufferTexture normalize(BufferTexture texture) {
 		float minR = 1;
 		float minG = 1;
@@ -503,9 +579,9 @@ public class TextureHelper {
 		result.upscale(scale);
 
 		for (int x = 0; x < result.getWidth(); x++) {
-			int px = x * scale;
+			int px = x / scale;
 			for (int y = 0; y < result.getHeight(); y++) {
-				int py = y * scale;
+				int py = y / scale;
 				result.setPixel(x, y, getAverageColor(texture, px, py, scale, scale));
 			}
 		}
@@ -521,6 +597,18 @@ public class TextureHelper {
 			for (int y = 0; y < result.getHeight(); y++) {
 				int py = y * scale;
 				result.setPixel(x, y, getAverageColor(texture, px, py, scale, scale));
+			}
+		}
+		return result;
+	}
+
+	public static BufferTexture downScaleCrop(BufferTexture texture, int scale) {
+		BufferTexture result = texture.cloneTexture();
+		result.downscale(scale);
+
+		for (int x = 0; x < result.getWidth(); x++) {
+			for (int y = 0; y < result.getHeight(); y++) {
+				result.setPixel(x, y, new CustomColor(texture.getPixel(x, y)));
 			}
 		}
 		return result;

@@ -124,30 +124,39 @@ public class TextureTest {
 
     public static BufferTexture makeStoneTexture(float[] values, Random random) {
         Rands.setRand(random);
-        BufferTexture texture = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(0.6F, 1.2F) / 4F);
-        BufferTexture distort = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(0.6F, 1.2F) / 4F);
-        BufferTexture additions = TextureHelper.makeNoiseTexture(random, 64, Rands.randFloatRange(0.5F, 1.4F) / 4F);
-        BufferTexture result = TextureHelper.distort(texture, distort, Rands.randFloatRange(0F, 8F));
-        BufferTexture pass = TextureHelper.heightPass(result, -1, -1);
+        int size = 16 * 4;
+        BufferTexture highFreq = TextureHelper.simpleTileable(TextureHelper.makeNoiseTexture(random, size, Rands.randFloatRange(1F, 1.6F) / (size/16F)));
 
-        pass = TextureHelper.normalize(pass);
-        result = TextureHelper.clamp(result, 9);
-        result = TextureHelper.normalize(result);
-        result = TextureHelper.blend(result, pass, 0.3F);
-        result = TextureHelper.add(result, pass);
-        result = TextureHelper.blend(result, additions, 0.3F);
-        result = TextureHelper.normalize(result);
-        result = TextureHelper.clamp(result, 8);
+        BufferTexture midFreq = TextureHelper.edgeTileable(TextureHelper.downScaleCrop(
+                TextureHelper.offset(highFreq, Rands.randInt(size), Rands.randInt(size)),
+                4),3);
 
-        if (16 < result.getWidth())
-            result = TextureHelper.downScale(result, result.getWidth() / 16);
-        else result = TextureHelper.upScale(result, 16 / result.getWidth());
+        BufferTexture lowFreq = TextureHelper.upScale(TextureHelper.edgeTileable(TextureHelper.downScaleCrop(
+                TextureHelper.offset(highFreq, Rands.randInt(size), Rands.randInt(size)),
+                8),3),2);
 
-        result = TextureHelper.normalize(result, 0.1F, 0.7F);
-        result = TextureHelper.clampValue(result, values);
+        midFreq = TextureHelper.blur(midFreq, 0.1f, 2);
 
+        BufferTexture pass = TextureHelper.heightPass(midFreq, -1, -1);
+
+        TextureHelper.normalize(pass);
+        TextureHelper.clamp(midFreq, 9);
+        TextureHelper.normalize(midFreq);
+
+        midFreq = TextureHelper.blend(midFreq, pass, 0.2F);
+        midFreq = TextureHelper.add(midFreq, pass);
+
+        BufferTexture result = TextureHelper.blend(
+                TextureHelper.blur(lowFreq, 0.5f, 2),
+                TextureHelper.blend(midFreq, TextureHelper.downScale(highFreq,4),
+                        0.3f),0.65f);
+
+        TextureHelper.normalize(result, 0.1F, 0.7F);
+        TextureHelper.clampValue(result, values);
         return result;
     }
+
+
 
     private static class notTextureHelper {
 
@@ -189,11 +198,34 @@ public class TextureTest {
         }
     }
 
+    public static BufferTexture rotate(BufferTexture tex, int rotation) {
+        BufferTexture out = new BufferTexture(tex.getHeight(),tex.getWidth());
+        rotation = rotation%4+1;
+        for (int i = 0; i < rotation; i++) {
+            for(int y = 0; y < out.getHeight(); y++) {
+                for (int x = 0; x < out.getWidth(); x++) {
+                    out.setPixel(x, y, new CustomColor(tex.getPixel(out.getHeight()- y - 1, x)));
+                }
+            }
+        }
+        return out;
+    }
+
     public static BufferTexture tile(BufferTexture tex) {
         BufferTexture out = new BufferTexture(tex.getWidth()*3,tex.getHeight()*3);
         for(int y = 0; y < out.getHeight(); y++) {
             for (int x = 0; x < out.getWidth(); x++) {
                 out.setPixel(x, y, new CustomColor(tex.getPixel(x%tex.getWidth(),y%tex.getHeight())));
+            }
+        }
+        return out;
+    }
+
+    public static BufferTexture untile(BufferTexture tex) {
+        BufferTexture out = new BufferTexture(tex.getWidth()/3,tex.getHeight()/3);
+        for(int y = 0; y < out.getHeight(); y++) {
+            for (int x = 0; x < out.getWidth(); x++) {
+                out.setPixel(x, y, new CustomColor(tex.getPixel(x+tex.getWidth()/3,y+tex.getHeight()/3)));
             }
         }
         return out;
