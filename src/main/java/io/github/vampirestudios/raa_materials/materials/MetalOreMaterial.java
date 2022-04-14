@@ -7,13 +7,14 @@ import io.github.vampirestudios.raa_materials.api.BiomeAPI;
 import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
-import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.recipes.FurnaceRecipe;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
+import net.fabricmc.fabric.api.registry.OxidizableBlocksRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -27,7 +28,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
@@ -52,7 +52,7 @@ import java.util.Random;
 //Normal Block -> Ore/Raw -> Oxidized Block
 
 //0.0 -> 0.5 -> 1.0
-//Normal Block -> Ore/Raw and Exposed/Weathered Block -> Oxidized Block
+//Normal Block -> Ore/Raw and Worn Block -> Oxidized Block
 
 //0.0 -> 0.25(with 0.75 overlay) -> 0.5 -> 0.75(with 0.25 overlay) -> 1.0
 //Normal Block -> Exposed Block -> Ore/Raw -> Weathered Block -> Oxidized Block
@@ -80,18 +80,34 @@ public class MetalOreMaterial extends OreMaterial {
 	private final ResourceLocation dustTexture;
 	private final ResourceLocation smallDustTexture;
 	private final ResourceLocation storageBlockTexture;
+	private final ResourceLocation exposedStorageBlockTexture;
+	private final ResourceLocation wornStorageBlockTexture;
+	private final ResourceLocation weatheredStorageBlockTexture;
+	private final ResourceLocation oxidizedStorageBlockTexture;
 	private final ResourceLocation crushedOreTexture;
+
+	public Block exposedStorageBlock;
+	public Block wornStorageBlock;
+	public Block weatheredStorageBlock;
+	public Block oxidizedStorageBlock;
 
 	public final Block rawMaterialBlock;
 	public final Block metalShingles;
+	public Block exposedMetalShingles;
+	public Block wornMetalShingles;
+	public Block weatheredMetalShingles;
+	public Block oxidizedMetalShingles;
 	public final Block metalPlate;
-	public Block oxidizedStorageBlock;
+	public Block exposedMetalPlate;
+	public Block wornMetalPlate;
+	public Block weatheredMetalPlate;
+	public Block oxidizedMetalPlate;
 
 	//TODO: Create Support
 //	public final Block woodenCasing;
 //	public final Block casing;
+	public Item crushedOre;
 
-	public final Item crushedOre;
 	public final Item ingot;
 	public final Item nugget;
 	public final Item gear;
@@ -101,8 +117,10 @@ public class MetalOreMaterial extends OreMaterial {
 
 	public boolean hasOreVein;
 
-	public ColorGradient corrodedGradient;
+	public ColorGradient exposedGradient;
 	public ColorGradient oreGradient;
+	public ColorGradient weatheredGradient;
+	public ColorGradient corrodedGradient;
 
 	public MetalOreMaterial(Target target, Random random) {
 		this(TestNameGenerator.generateOreName(random), random,
@@ -110,6 +128,10 @@ public class MetalOreMaterial extends OreMaterial {
 				TextureInformation.builder()
 					.oreOverlay(Rands.values(oreVeinTextures))
 					.storageBlock(Rands.values(storageBlockTextures))
+					.exposedStorageBlock(Rands.values(storageBlockTextures))
+					.wornStorageBlock(Rands.values(storageBlockTextures))
+					.weatheredStorageBlock(Rands.values(storageBlockTextures))
+					.oxidizedStorageBlock(Rands.values(storageBlockTextures))
 					.rawMaterialBlock(Rands.values(rawMaterialBlockTextures))
 					.ingot(Rands.values(ingotTextures))
 					.rawItem(Rands.values(rawMaterialTextures))
@@ -134,12 +156,16 @@ public class MetalOreMaterial extends OreMaterial {
 		);
 	}
 
-	public MetalOreMaterial(Pair<String, String> name, ColorDualGradient gradient, TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
+	public MetalOreMaterial(Pair<String, String> name, Random random, ColorDualGradient gradient, TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
 		super(name, random, gradient.gradient1(), textureInformation, targetIn, RAASimpleItem.SimpleItemType.RAW, tier, true);
 		Rands.setRand(random);
 
 		this.oreVeinTexture = textureInformation.oreOverlay();
 		this.storageBlockTexture = textureInformation.storageBlock();
+		this.exposedStorageBlockTexture = textureInformation.exposedStorageBlock();
+		this.wornStorageBlockTexture = textureInformation.wornStorageBlock();
+		this.weatheredStorageBlockTexture = textureInformation.weatheredStorageBlock();
+		this.oxidizedStorageBlockTexture = textureInformation.oxidizedStorageBlock();
 		this.rawItemTexture = textureInformation.rawItem();
 		this.rawMaterialBlockTexture = textureInformation.rawMaterialBlock();
 		this.ingotTexture = textureInformation.ingot();
@@ -151,45 +177,44 @@ public class MetalOreMaterial extends OreMaterial {
 		this.crushedOreTexture = textureInformation.crushedOre();
 
 		this.hasOreVein = hasOreVein;
+		this.exposedGradient = gradient.getIntermediaryGradient(0.25f);
+		this.oreGradient = gradient.getIntermediaryGradient(0.5f);
+		this.weatheredGradient = gradient.getIntermediaryGradient(0.75f);
 		this.corrodedGradient = gradient.gradient2();
-		this.oreGradient = gradient.getIntermedaryGradient(0.5f);
 
-		this.oxidizedStorageBlock = InnerRegistry.registerBlockAndItem("oxidized_" + this.registryName + "_block", new Block(BlockBehaviour.Properties.copy(Blocks.OXIDIZED_COPPER)), RAAMaterials.RAA_ORES);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, this.oxidizedStorageBlock);
-		TagHelper.addTag(switch (tier) {
-			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, this.oxidizedStorageBlock);
+		this.exposedStorageBlock = registerSimpleBlock("exposed_" + this.registryName + "_block", BlockBehaviour.Properties.copy(Blocks.EXPOSED_COPPER));
+		this.wornStorageBlock = registerSimpleBlock("worn_" + this.registryName + "_block", BlockBehaviour.Properties.copy(Blocks.WEATHERED_COPPER));
+		this.weatheredStorageBlock = registerSimpleBlock("weathered_" + this.registryName + "_block", BlockBehaviour.Properties.copy(Blocks.WEATHERED_COPPER));
+		this.oxidizedStorageBlock = registerSimpleBlock("oxidized_" + this.registryName + "_block", BlockBehaviour.Properties.copy(Blocks.OXIDIZED_COPPER));
 
-		rawMaterialBlock = InnerRegistry.registerBlockAndItem("raw_" + this.registryName + "_block", new Block(BlockBehaviour.Properties.copy(Blocks.RAW_IRON_BLOCK)), RAAMaterials.RAA_ORES);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, rawMaterialBlock);
-		TagHelper.addTag(switch (tier) {
-			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, rawMaterialBlock);
+		OxidizableBlocksRegistry.registerOxidizableBlockPair(this.storageBlock, this.exposedStorageBlock);
+		OxidizableBlocksRegistry.registerOxidizableBlockPair(this.exposedStorageBlock, this.wornStorageBlock);
+		OxidizableBlocksRegistry.registerOxidizableBlockPair(this.wornStorageBlock, this.weatheredStorageBlock);
+		OxidizableBlocksRegistry.registerOxidizableBlockPair(this.weatheredStorageBlock, this.oxidizedStorageBlock);
 
-		this.metalShingles = InnerRegistry.registerBlockAndItem(this.registryName + "_shingles", new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)), RAAMaterials.RAA_ORES);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, metalShingles);
-		TagHelper.addTag(switch (tier) {
-			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, metalShingles);
+		this.rawMaterialBlock = registerSimpleBlock("raw_" + this.registryName + "_block", BlockBehaviour.Properties.copy(Blocks.RAW_IRON_BLOCK));
 
-		this.metalPlate = InnerRegistry.registerBlockAndItem("raw_" + this.registryName + "_plate", new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)), RAAMaterials.RAA_ORES);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, metalPlate);
-		TagHelper.addTag(switch (tier) {
-			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, metalPlate);
+		this.metalShingles = registerSimpleBlock(this.registryName + "_shingles", BlockBehaviour.Properties.copy(Blocks.COPPER_BLOCK));
+		this.exposedMetalShingles = registerSimpleBlock("exposed_" + this.registryName + "_shingles", BlockBehaviour.Properties.copy(Blocks.EXPOSED_COPPER));
+		this.wornMetalShingles = registerSimpleBlock("worn_" + this.registryName + "_shingles", BlockBehaviour.Properties.copy(Blocks.WEATHERED_COPPER));
+		this.weatheredMetalShingles = registerSimpleBlock("weathered_" + this.registryName + "_shingles", BlockBehaviour.Properties.copy(Blocks.WEATHERED_COPPER));
+		this.oxidizedMetalShingles = registerSimpleBlock("oxidized_" + this.registryName + "_shingles", BlockBehaviour.Properties.copy(Blocks.OXIDIZED_COPPER));
 
+		OxidizableBlocksRegistry.registerOxidizableBlockPair(this.metalShingles, this.exposedMetalShingles);
+		OxidizableBlocksRegistry.registerOxidizableBlockPair(this.exposedMetalShingles, this.wornMetalShingles);
+		OxidizableBlocksRegistry.registerOxidizableBlockPair(this.wornMetalShingles, this.weatheredMetalShingles);
+		OxidizableBlocksRegistry.registerOxidizableBlockPair(this.weatheredMetalShingles, this.oxidizedMetalShingles);
+
+		this.metalPlate = registerSimpleBlock(this.registryName + "_plate", BlockBehaviour.Properties.copy(Blocks.COPPER_BLOCK));
+		this.exposedMetalPlate = registerSimpleBlock("exposed_" + this.registryName + "_plate", BlockBehaviour.Properties.copy(Blocks.EXPOSED_COPPER));
+		this.wornMetalPlate = registerSimpleBlock("worn_" + this.registryName + "_plate", BlockBehaviour.Properties.copy(Blocks.WEATHERED_COPPER));
+		this.weatheredMetalPlate = registerSimpleBlock("weathered_" + this.registryName + "_plate", BlockBehaviour.Properties.copy(Blocks.WEATHERED_COPPER));
+		this.oxidizedMetalPlate = registerSimpleBlock("oxidized_" + this.registryName + "_plate", BlockBehaviour.Properties.copy(Blocks.OXIDIZED_COPPER));
+
+		OxidizableBlocksRegistry.registerOxidizableBlockPair(this.metalPlate, this.exposedMetalPlate);
+		OxidizableBlocksRegistry.registerOxidizableBlockPair(this.exposedMetalPlate, this.wornMetalPlate);
+		OxidizableBlocksRegistry.registerOxidizableBlockPair(this.wornMetalPlate, this.weatheredMetalPlate);
+		OxidizableBlocksRegistry.registerOxidizableBlockPair(this.weatheredMetalPlate, this.oxidizedMetalPlate);
 //		woodenCasing = InnerRegistry.registerBlockAndItem(this.registryName + "_wooden_casing", new Block(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)), RAAMaterials.RAA_CREATE);
 //		TagHelper.addTag(BlockTags.MINEABLE_WITH_AXE, woodenCasing);
 //		TagHelper.addTag(switch (tier) {
@@ -214,7 +239,10 @@ public class MetalOreMaterial extends OreMaterial {
 		dust = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.DUST);
 		small_dust = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SMALL_DUST);
 		plate = RAASimpleItem.register(this.registryName,  new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.PLATE);
-		crushedOre = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_CREATE), RAASimpleItem.SimpleItemType.CRUSHED_ORE);
+
+		if (FabricLoader.getInstance().isModLoaded("create")) {
+			crushedOre = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.CRUSHED_ORE);
+		}
 
 //		brainTreeBlock = InnerRegistry.registerBlockAndItem(this.registryName + "_brain_tree_block", new BrainTreeBlock(MaterialColor.GOLD), RAAMaterials.RAA_ORES);
 //		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, brainTreeBlock);
@@ -313,18 +341,86 @@ public class MetalOreMaterial extends OreMaterial {
 				.buildWithBlasting();
 
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_shingles", this.metalShingles)
-				.addMaterial('r', this.storageBlock)
+				.addMaterial('r', this.metalPlate)
+				.setShape("rr", "rr")
+				.setGroup("shingles")
+				.setOutputCount(2)
+				.build();
+
+		GridRecipe.make(RAAMaterials.MOD_ID, "exposed_" + this.registryName + "_shingles", this.exposedMetalShingles)
+				.addMaterial('r', this.exposedMetalPlate)
+				.setShape("rr", "rr")
+				.setGroup("shingles")
+				.setOutputCount(2)
+				.build();
+
+		GridRecipe.make(RAAMaterials.MOD_ID, "worn_" + this.registryName + "_shingles", this.wornMetalShingles)
+				.addMaterial('r', this.wornMetalPlate)
+				.setShape("rr", "rr")
+				.setGroup("shingles")
+				.setOutputCount(2)
+				.build();
+
+		GridRecipe.make(RAAMaterials.MOD_ID, "weathered_" + this.registryName + "_shingles", this.weatheredMetalShingles)
+				.addMaterial('r', this.weatheredMetalPlate)
+				.setShape("rr", "rr")
+				.setGroup("shingles")
+				.setOutputCount(2)
+				.build();
+
+		GridRecipe.make(RAAMaterials.MOD_ID, "oxidized_" + this.registryName + "_shingles", this.oxidizedMetalShingles)
+				.addMaterial('r', this.oxidizedMetalPlate)
 				.setShape("rr", "rr")
 				.setGroup("shingles")
 				.setOutputCount(2)
 				.build();
 
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_plate", this.metalPlate)
-				.addMaterial('r', this.droppedItem)
+				.addMaterial('r', this.storageBlock)
 				.setShape("rr", "rr")
 				.setGroup("plates")
 				.setOutputCount(4)
 				.build();
+
+		GridRecipe.make(RAAMaterials.MOD_ID, "exposed_" + this.registryName + "_plate", this.exposedMetalPlate)
+				.addMaterial('r', this.exposedStorageBlock)
+				.setShape("rr", "rr")
+				.setGroup("plates")
+				.setOutputCount(4)
+				.build();
+
+		GridRecipe.make(RAAMaterials.MOD_ID, "worn_" + this.registryName + "_plate", this.wornMetalPlate)
+				.addMaterial('r', this.wornStorageBlock)
+				.setShape("rr", "rr")
+				.setGroup("plates")
+				.setOutputCount(2)
+				.build();
+
+		GridRecipe.make(RAAMaterials.MOD_ID, "weathered_" + this.registryName + "_plate", this.weatheredMetalPlate)
+				.addMaterial('r', this.weatheredStorageBlock)
+				.setShape("rr", "rr")
+				.setGroup("plates")
+				.setOutputCount(2)
+				.build();
+
+		GridRecipe.make(RAAMaterials.MOD_ID, "oxidized_" + this.registryName + "_plate", this.oxidizedMetalPlate)
+				.addMaterial('r', this.oxidizedStorageBlock)
+				.setShape("rr", "rr")
+				.setGroup("plates")
+				.setOutputCount(2)
+				.build();
+	}
+
+	private Block registerSimpleBlock(String name, BlockBehaviour.Properties properties) {
+		Block block = InnerRegistry.registerBlockAndItem(name, new Block(properties), RAAMaterials.RAA_ORES);
+		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, block);
+		TagHelper.addTag(switch (tier) {
+			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+			default -> throw new IllegalStateException("Unexpected value: " + tier);
+		}, block);
+		return block;
 	}
 
 	@Override
@@ -338,6 +434,10 @@ public class MetalOreMaterial extends OreMaterial {
 		CompoundTag texturesCompound = materialCompound.getCompound("textures");
 		texturesCompound.putString("oreTexture", oreVeinTexture.toString());
 		texturesCompound.putString("storageBlockTexture", storageBlockTexture.toString());
+		texturesCompound.putString("exposedStorageBlockTexture", exposedStorageBlockTexture.toString());
+		texturesCompound.putString("wornStorageBlockTexture", wornStorageBlockTexture.toString());
+		texturesCompound.putString("weatheredStorageBlockTexture", weatheredStorageBlockTexture.toString());
+		texturesCompound.putString("oxidizedStorageBlockTexture", oxidizedStorageBlockTexture.toString());
 		texturesCompound.putString("rawItemTexture", rawItemTexture.toString());
 		texturesCompound.putString("rawMaterialBlockTexture", rawMaterialBlockTexture.toString());
 		texturesCompound.putString("ingotTexture", ingotTexture.toString());
@@ -365,41 +465,25 @@ public class MetalOreMaterial extends OreMaterial {
 
 		ModelHelper.generateOreAssets(this.ore, oreVeinTexture, registryName, name, oreGradient, target);
 
-		// Storage Block
-		ResourceLocation textureID = TextureHelper.makeBlockTextureID(this.registryName + "_block");
-		BufferTexture texture = ProceduralTextures.randomColored(storageBlockTexture, gradient);
-		InnerRegistryClient.registerTexture(textureID, texture);
-		InnerRegistryClient.registerBlockModel(this.storageBlock, ModelHelper.makeCube(textureID));
-		InnerRegistryClient.registerItemModel(this.storageBlock.asItem(), ModelHelper.makeCube(textureID));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"),  String.format("%s Block", this.name));
+		simpleBlockAssets(this.storageBlock, storageBlockTexture, gradient, this.registryName + "_block", "block.block");
+		simpleBlockAssets(this.exposedStorageBlock, exposedStorageBlockTexture, exposedGradient, "exposed_" + this.registryName + "_block", "block.exposed_block");
+		simpleBlockAssets(this.wornStorageBlock, wornStorageBlockTexture, oreGradient, "worn_" + this.registryName + "_block", "block.worn_block");
+		simpleBlockAssets(this.weatheredStorageBlock, weatheredStorageBlockTexture, weatheredGradient, "weathered_" + this.registryName + "_block", "block.weathered_block");
+		simpleBlockAssets(this.oxidizedStorageBlock, oxidizedStorageBlockTexture, corrodedGradient, "oxidized_" + this.registryName + "_block", "block.oxidized_block");
 
-		textureID = TextureHelper.makeBlockTextureID("oxidized_" + this.registryName + "_block");
-		texture = ProceduralTextures.randomColored(storageBlockTexture, corrodedGradient);
-		InnerRegistryClient.registerTexture(textureID, texture);
-		InnerRegistryClient.registerItemModel(this.oxidizedStorageBlock.asItem(), ModelHelper.makeCube(textureID));
-		InnerRegistryClient.registerBlockModel(this.oxidizedStorageBlock, ModelHelper.makeCube(textureID));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock("oxidized_" + this.registryName + "_block"),  String.format("Oxidized %s Block", this.name));
+		simpleBlockAssets(this.rawMaterialBlock, rawMaterialBlockTexture, oreGradient, "raw_" + this.registryName + "_block", "block.raw_block");
 
-		textureID = TextureHelper.makeBlockTextureID("raw_" + this.registryName + "_block");
-		texture = ProceduralTextures.randomColored(rawMaterialBlockTexture, oreGradient);
-		InnerRegistryClient.registerTexture(textureID, texture);
-		InnerRegistryClient.registerBlockModel(this.rawMaterialBlock, ModelHelper.makeCube(textureID));
-		InnerRegistryClient.registerItemModel(this.rawMaterialBlock.asItem(), ModelHelper.makeCube(textureID));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock("raw_" + this.registryName + "_block"),  String.format("Raw %s Block", this.name));
+		simpleBlockAssets(this.metalShingles, metalShinglesTexture, gradient, this.registryName + "_shingles", "block.shingles");
+		simpleBlockAssets(this.exposedMetalShingles, metalShinglesTexture, exposedGradient, "exposed_" + this.registryName + "_shingles", "block.exposed_shingles");
+		simpleBlockAssets(this.wornMetalShingles, metalShinglesTexture, oreGradient, "worn_" + this.registryName + "_shingles", "block.worn_shingles");
+		simpleBlockAssets(this.weatheredMetalShingles, metalShinglesTexture, weatheredGradient, "weathered_" + this.registryName + "_shingles", "block.weathered_shingles");
+		simpleBlockAssets(this.oxidizedMetalShingles, metalShinglesTexture, corrodedGradient, "oxidized_" + this.registryName + "_shingles", "block.oxidized_shingles");
 
-		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_shingles");
-		texture = ProceduralTextures.randomColored(metalShinglesTexture, corrodedGradient);
-		InnerRegistryClient.registerTexture(textureID, texture);
-		InnerRegistryClient.registerBlockModel(this.metalShingles, ModelHelper.makeCube(textureID));
-		InnerRegistryClient.registerItemModel(this.metalShingles.asItem(), ModelHelper.makeCube(textureID));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_shingles"),  "block.shingles", this.name);
-
-		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_plate");
-		texture = ProceduralTextures.randomColored(metalPlateTexture, corrodedGradient);
-		InnerRegistryClient.registerTexture(textureID, texture);
-		InnerRegistryClient.registerBlockModel(this.metalPlate, ModelHelper.makeCube(textureID));
-		InnerRegistryClient.registerItemModel(this.metalPlate.asItem(), ModelHelper.makeCube(textureID));
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_plate"),  "block.plate", this.name);
+		simpleBlockAssets(this.metalPlate, metalPlateTexture, gradient, this.registryName + "_plate", "block.plate");
+		simpleBlockAssets(this.exposedMetalPlate, metalPlateTexture, exposedGradient, "exposed_" + this.registryName + "_plate", "block.exposed_plate");
+		simpleBlockAssets(this.wornMetalPlate, metalPlateTexture, oreGradient, "worn_" + this.registryName + "_plate", "block.worn_plate");
+		simpleBlockAssets(this.weatheredMetalPlate, metalPlateTexture, weatheredGradient, "weathered_" + this.registryName + "_plate", "block.weathered_plate");
+		simpleBlockAssets(this.oxidizedMetalPlate, metalPlateTexture, corrodedGradient, "oxidized_" + this.registryName + "_plate", "block.oxidized_plate");
 
 		// Items
 		makeColoredItemAssets(rawItemTexture, droppedItem, oreGradient, "raw_" + this.registryName, "item.raw");
@@ -410,73 +494,24 @@ public class MetalOreMaterial extends OreMaterial {
 		makeColoredItemAssets(smallDustTexture, small_dust, gradient, "small_" + this.registryName + "_dust", "item.small_dust");
 		makeColoredItemAssets(gearTexture, gear, gradient, this.registryName + "_gear", "item.gear");
 		makeColoredItemAssets(dustTexture, dust, gradient, this.registryName + "_dust", "item.dust");
-		makeColoredItemAssets(crushedOreTexture, crushedOre, oreGradient, "crushed_" + this.registryName + "_ore", "item.crushed_ore");
 
-		initClientModded();
+		if (FabricLoader.getInstance().isModLoaded("create")) makeColoredItemAssets(crushedOreTexture, crushedOre, oreGradient, "crushed_" + this.registryName + "_ore", "item.crushed_ore");
 	}
 
-	public void initClientModded() {
-		BufferTexture brainTreeBlockTexture = TextureHelper.loadTexture("textures/block/brain_tree_block.png");
-		BufferTexture grassTextureOverlay = TextureHelper.loadTexture("textures/block/grass_color.png");
-		BufferTexture grassTexture = TextureHelper.loadTexture("textures/block/grass_overlay.png");
+	private void simpleBlockAssets(Block block, ResourceLocation texture, ColorGradient gradient, String name, String type) {
+		ResourceLocation textureID = TextureHelper.makeBlockTextureID(name);
+		InnerRegistryClient.registerTexture(textureID, ProceduralTextures.randomColored(texture, gradient));
+		InnerRegistryClient.registerBlockModel(block, ModelHelper.makeCube(textureID));
+		InnerRegistryClient.registerItemModel(block.asItem(), ModelHelper.makeCube(textureID));
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(name),  type, this.name);
+	}
 
-		BufferTexture woodenCasingInside = TextureHelper.loadTexture("textures/block/wooden_casing_inside.png");
-		BufferTexture woodenCasing = TextureHelper.loadTexture("textures/block/wooden_casing.png");
-		BufferTexture casingInside = TextureHelper.loadTexture("textures/block/casing_inside.png");
-		BufferTexture casing = TextureHelper.loadTexture("textures/block/casing.png");
-
-		BufferTexture casingInsideConnected = TextureHelper.loadTexture("textures/block/casing_inside_connected.png");
-		BufferTexture casingConnected = TextureHelper.loadTexture("textures/block/casing_connected.png");
-
-		BufferTexture woodenCrateInside = TextureHelper.loadTexture("textures/block/wooden_crate_inside.png");
-		BufferTexture woodenCrate = TextureHelper.loadTexture("textures/block/wooden_crate.png");
-		BufferTexture crateInside = TextureHelper.loadTexture("textures/block/crate_inside.png");
-		BufferTexture crate = TextureHelper.loadTexture("textures/block/crate.png");
-
-		ResourceLocation textureID = TextureHelper.makeBlockTextureID(this.registryName + "_brain_tree_block");
-		BufferTexture texture = ProceduralTextures.randomColored(brainTreeBlockTexture, gradient);
-		InnerRegistryClient.registerTexture(textureID, texture);
-		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_brain_tree_block_active");
-		InnerRegistryClient.registerTexture(textureID, texture);
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_brain_tree_block"),  String.format("%s Brain Tree Block", this.name));
-
-		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_grass_color");
-		texture = ProceduralTextures.randomColored(grassTextureOverlay, gradient);
-		InnerRegistryClient.registerTexture(textureID, texture);
-		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_grass_overlay");
-		InnerRegistryClient.registerTexture(textureID, grassTexture);
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock( this.registryName + "_grass"),  String.format("%s Grass", this.name));
-
-		// Wooden Casing
-//		ResourceLocation woodenCasingTexture = TextureHelper.makeBlockTextureID(this.registryName + "_wooden_casing");
-//		textureID = woodenCasingTexture;
-//		texture = ProceduralTextures.randomColored(woodenCasing, gradient);
-//		texture = TextureHelper.combine(woodenCasingInside, texture);
-//		InnerRegistryClient.registerTexture(textureID, texture);
-//		InnerRegistryClient.registerItemModel(this.woodenCasing.asItem(), ModelHelper.makeCube(textureID));
-//		InnerRegistryClient.registerBlockModel(this.woodenCasing, ModelHelper.makeCube(textureID));
-//		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_wooden_casing"),  String.format("%s Wooden Casing", this.name));
-
-		// Casing
-//		ResourceLocation casingTexture = TextureHelper.makeBlockTextureID(this.registryName + "_casing");
-//		textureID = casingTexture;
-//		texture = ProceduralTextures.randomColored(casing, gradient);
-//		texture = TextureHelper.combine(casingInside, texture);
-//		InnerRegistryClient.registerTexture(textureID, texture);
-//		InnerRegistryClient.registerItemModel(this.casing.asItem(), ModelHelper.makeCube(textureID));
-//		InnerRegistryClient.registerBlockModel(this.casing, ModelHelper.makeCube(textureID));
-//		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_casing"),  String.format("%s Casing", this.name));
-//
-//		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_casing_connected");
-//		texture = ProceduralTextures.randomColored(casingConnected, gradient);
-//		texture = TextureHelper.combine(casingInsideConnected, texture);
-//		InnerRegistryClient.registerTexture(textureID, texture);
-
-//		ColorProviderRegistry.BLOCK.register((blockState, blockAndTintGetter, blockPos, i) -> blockAndTintGetter != null && blockPos != null ?
-//				BiomeColors.getAverageGrassColor(blockAndTintGetter, blockPos) : GrassColor.get(0.5D, 1.0D), grass);
-//		ColorProviderRegistry.ITEM.register((itemStack, i) -> i == 1 ? GrassColor.get(0.5D, 1.0D) :
-//				ColorUtil.rgb(255, 255, 255), grass);
-//		BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutoutMipped(), grass);
+	private void simpleBlockAssets(Block block, BufferTexture texture, ColorGradient gradient, String name, String type) {
+		ResourceLocation textureID = TextureHelper.makeBlockTextureID(name);
+		InnerRegistryClient.registerTexture(textureID, ProceduralTextures.randomColored(texture, gradient));
+		InnerRegistryClient.registerBlockModel(block, ModelHelper.makeCube(textureID));
+		InnerRegistryClient.registerItemModel(block.asItem(), ModelHelper.makeCube(textureID));
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(name),  type, this.name);
 	}
 
 	@Override

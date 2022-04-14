@@ -1,7 +1,5 @@
 package io.github.vampirestudios.raa_materials.utils;
 
-import net.minecraft.util.Mth;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -45,7 +43,7 @@ public record ColorDualGradient(ColorGradient gradient1,
 		else return VALUE.set(0, 0, 0, 0);
 	}
 
-	public ColorGradient getIntermedaryGradient(float mix){
+	public ColorGradient getIntermediaryGradient(float mix) {
 		CustomColor start = new CustomColor().set(getColor(0f,mix));
 		CustomColor mid = new CustomColor().set(getColor(0.5f,mix));
 		CustomColor end = new CustomColor().set(getColor(1f,mix));

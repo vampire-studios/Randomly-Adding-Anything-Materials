@@ -61,6 +61,11 @@ public class StoneMaterial extends ComplexMaterial {
 	public int maxHeight;
 	public int rarity;
 
+	public float hardness;
+	public float resistance;
+	public float slipperiness;
+	public int propertiesNumber;
+
 	public StoneMaterial(Random random) {
 		this(random, TestNameGenerator.generateStoneName(random), ProceduralTextures.makeStonePalette(random),
 				TextureInformation.builder()
@@ -75,6 +80,7 @@ public class StoneMaterial extends ComplexMaterial {
 	public StoneMaterial(Random random, Pair<String, String> name, ColorGradient colorGradient, TextureInformation textureInformation) {
 		super(name, colorGradient);
 		this.textureInformation = textureInformation;
+
 		Rands.setRand(random);
 
 		this.size = Rands.randIntRange(3, Rands.chance(100) ? 64 : 28);
@@ -88,21 +94,24 @@ public class StoneMaterial extends ComplexMaterial {
 		}
 		this.rarity = Rands.randIntRange(20, 60);
 
+		this.propertiesNumber = Rands.randIntRange(0, 5);
+		this.hardness = Rands.randFloatRange(1.0F, 5.0F);
+		this.resistance = Rands.randFloatRange(1.0F, 5.0F);
+		this.slipperiness = Rands.randFloatRange(0.6F, 1.0F);
+
 		Block[] baseBlocks = {Blocks.STONE, Blocks.DEEPSLATE, Blocks.NETHERRACK, Blocks.TUFF, Blocks.CALCITE, Blocks.BASALT};
 		Block[] cobbledBlocks = {Blocks.COBBLESTONE, Blocks.COBBLED_DEEPSLATE, Blocks.NETHERRACK, Blocks.TUFF, Blocks.CALCITE, Blocks.BASALT};
 		Block[] brickBlocks = {Blocks.STONE_BRICKS, Blocks.DEEPSLATE_BRICKS, Blocks.NETHER_BRICKS, Blocks.TUFF, Blocks.CALCITE, Blocks.POLISHED_BASALT};
 		Block[] tileBlocks = {Blocks.STONE_BRICKS, Blocks.DEEPSLATE_TILES, Blocks.NETHER_BRICKS, Blocks.TUFF, Blocks.CALCITE, Blocks.POLISHED_BASALT};
 
-		int number = Rands.randInt(baseBlocks.length);
-
-		BlockBehaviour.Properties baseBlockProperties = FabricBlockSettings.copyOf(baseBlocks[number]).hardness(Rands.randFloatRange(1.0F, 5.0F))
-				.slipperiness(Rands.randFloatRange(0.6F, 1.0F)).resistance(Rands.randFloatRange(1.0F, 5.0F)).color(MaterialColor.COLOR_GRAY);
-		BlockBehaviour.Properties cobbledProperties = FabricBlockSettings.copyOf(cobbledBlocks[number]).hardness(Rands.randFloatRange(1.0F, 5.0F))
-				.slipperiness(Rands.randFloatRange(0.6F, 1.0F)).resistance(Rands.randFloatRange(1.0F, 5.0F)).color(MaterialColor.COLOR_GRAY);
-		BlockBehaviour.Properties brickProperties = FabricBlockSettings.copyOf(brickBlocks[number]).hardness(Rands.randFloatRange(1.0F, 5.0F))
-				.slipperiness(Rands.randFloatRange(0.6F, 1.0F)).resistance(Rands.randFloatRange(1.0F, 5.0F)).color(MaterialColor.COLOR_GRAY);
-		BlockBehaviour.Properties tileProperties = FabricBlockSettings.copyOf(tileBlocks[number]).hardness(Rands.randFloatRange(1.0F, 5.0F))
-				.slipperiness(Rands.randFloatRange(0.6F, 1.0F)).resistance(Rands.randFloatRange(1.0F, 5.0F)).color(MaterialColor.COLOR_GRAY);
+		BlockBehaviour.Properties baseBlockProperties = FabricBlockSettings.copyOf(baseBlocks[propertiesNumber]).hardness(hardness)
+				.slipperiness(slipperiness).resistance(resistance).color(MaterialColor.COLOR_GRAY);
+		BlockBehaviour.Properties cobbledProperties = FabricBlockSettings.copyOf(cobbledBlocks[propertiesNumber]).hardness(hardness)
+				.slipperiness(slipperiness).resistance(resistance).color(MaterialColor.COLOR_GRAY);
+		BlockBehaviour.Properties brickProperties = FabricBlockSettings.copyOf(brickBlocks[propertiesNumber]).hardness(hardness)
+				.slipperiness(slipperiness).resistance(resistance).color(MaterialColor.COLOR_GRAY);
+		BlockBehaviour.Properties tileProperties = FabricBlockSettings.copyOf(tileBlocks[propertiesNumber]).hardness(hardness)
+				.slipperiness(slipperiness).resistance(resistance).color(MaterialColor.COLOR_GRAY);
 
 		stone = InnerRegistry.registerBlockAndItem(this.registryName, new BaseBlock(baseBlockProperties), RAAMaterials.RAA_STONE_TYPES);
 		cobbled = InnerRegistry.registerBlockAndItem("cobbled_" + this.registryName, new BaseBlock(cobbledProperties), RAAMaterials.RAA_STONE_TYPES);
@@ -166,11 +175,31 @@ public class StoneMaterial extends ComplexMaterial {
 		this.rarity = rarity;
 	}
 
+	public void setPropertiesNumber(int propertiesNumber) {
+		this.propertiesNumber = propertiesNumber;
+	}
+
+	public void setHardness(float hardness) {
+		this.hardness = hardness;
+	}
+
+	public void setResistance(float resistance) {
+		this.resistance = resistance;
+	}
+
+	public void setSlipperiness(float slipperiness) {
+		this.slipperiness = slipperiness;
+	}
+
 	@Override
 	public CompoundTag writeToNbt(CompoundTag materialCompound) {
 		materialCompound.putString("name", this.name);
 		materialCompound.putString("registryName", this.registryName);
 		materialCompound.putString("materialType", "stone");
+		materialCompound.putInt("propertiesNumber", this.propertiesNumber);
+		materialCompound.putFloat("hardness", this.hardness);
+		materialCompound.putFloat("resistance", this.resistance);
+		materialCompound.putFloat("slipperiness", this.slipperiness);
 
 		CompoundTag colorGradientCompound = new CompoundTag();
 		colorGradientCompound.putInt("startColor", this.gradient.getColor(0.0F).getAsInt());

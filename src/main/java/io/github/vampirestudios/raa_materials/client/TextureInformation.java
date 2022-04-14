@@ -3,6 +3,8 @@ package io.github.vampirestudios.raa_materials.client;
 import net.minecraft.resources.ResourceLocation;
 
 public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation storageBlock,
+                                 ResourceLocation exposedStorageBlock, ResourceLocation wornStorageBlock,
+                                 ResourceLocation weatheredStorageBlock, ResourceLocation oxidizedStorageBlock,
                                  ResourceLocation crystalBlock, ResourceLocation buddingCrystalBlock,
                                  ResourceLocation rawMaterialBlock, ResourceLocation crystal,
                                  ResourceLocation ingot, ResourceLocation gem, ResourceLocation rawItem,
@@ -23,6 +25,10 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
         //Blocks
         private ResourceLocation oreOverlay;
         private ResourceLocation storageBlock;
+        private ResourceLocation exposedStorageBlock;
+        private ResourceLocation wornStorageBlock;
+        private ResourceLocation weatheredStorageBlock;
+        private ResourceLocation oxidizedStorageBlock;
         private ResourceLocation rawMaterialBlock;
         private ResourceLocation crystalBlock;
         private ResourceLocation buddingCrystalBlock;
@@ -63,6 +69,26 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
 
         public Builder storageBlock(ResourceLocation storageBlock) {
             this.storageBlock = storageBlock;
+            return this;
+        }
+
+        public Builder exposedStorageBlock(ResourceLocation exposedStorageBlock) {
+            this.exposedStorageBlock = exposedStorageBlock;
+            return this;
+        }
+
+        public Builder wornStorageBlock(ResourceLocation wornStorageBlock) {
+            this.wornStorageBlock = wornStorageBlock;
+            return this;
+        }
+
+        public Builder weatheredStorageBlock(ResourceLocation weatheredStorageBlock) {
+            this.weatheredStorageBlock = weatheredStorageBlock;
+            return this;
+        }
+
+        public Builder oxidizedStorageBlock(ResourceLocation oxidizedStorageBlock) {
+            this.oxidizedStorageBlock = oxidizedStorageBlock;
             return this;
         }
 
@@ -213,7 +239,8 @@ public record TextureInformation(ResourceLocation oreOverlay, ResourceLocation s
         }
 
         public TextureInformation build() {
-            return new TextureInformation(oreOverlay, storageBlock, crystalBlock, buddingCrystalBlock,
+            return new TextureInformation(oreOverlay, storageBlock, exposedStorageBlock, wornStorageBlock,
+                    weatheredStorageBlock, oxidizedStorageBlock, crystalBlock, buddingCrystalBlock,
                     rawMaterialBlock, crystal, ingot, gem, rawItem, plate, shard, gear, nugget, dust,
                     smallDust, crushedOre, swordBlade, swordHandle, pickaxeHead, pickaxeStick, axeHead,
                     axeStick, hoeHead, hoeStick, shovelHead, shovelStick, stoneBricks, stoneFrame,

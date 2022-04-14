@@ -45,10 +45,8 @@ public class RAAMaterials implements RAAAddon {
 
 	public static final CreativeModeTab RAA_ORES = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "ores"), () -> new ItemStack(Blocks.IRON_ORE));
 	public static final CreativeModeTab RAA_RESOURCES = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "resources"), () -> new ItemStack(Items.IRON_INGOT));
-	public static final CreativeModeTab RAA_CREATE = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "create"), () -> new ItemStack(Blocks.IRON_BLOCK));
 	public static final CreativeModeTab RAA_TOOLS = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "tools"), () -> new ItemStack(Items.IRON_PICKAXE));
 	public static final CreativeModeTab RAA_WEAPONS = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "weapons"), () -> new ItemStack(Items.IRON_SWORD));
-	public static final CreativeModeTab RAA_FOOD = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "food"), () -> new ItemStack(Items.GOLDEN_APPLE));
 	public static final CreativeModeTab RAA_STONE_TYPES = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "stone_types"), () -> new ItemStack(Items.STONE));
 	public static final Registry<OreMaterial.Target> TARGETS = FabricRegistryBuilder.createSimple(OreMaterial.Target.class, id("ore_targets")).buildAndRegister();
 	public static GeneralConfig CONFIG;

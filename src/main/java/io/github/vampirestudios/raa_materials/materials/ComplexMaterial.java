@@ -33,13 +33,15 @@ public abstract class ComplexMaterial {
 
 	public static ComplexMaterial readFromNbt(Random random, CompoundTag compound) {
 		String type = compound.getString("materialType");
+
 		String name = compound.getString("name");
 		String registryName = compound.getString("registryName");
 		Pair<String, String> parsedName = Pair.of(name, registryName);
+
 		int tier = compound.getInt("tier");
 		int bonus = compound.getInt("bonus");
+
 		ResourceLocation targetName = RAAMaterials.minecraftId(compound.getString("target"));
-		ComplexMaterial material;
 
 		CompoundTag colorGradientCompound = compound.getCompound("colorGradient");
 		ColorGradient gradient = new ColorGradient(
@@ -107,9 +109,11 @@ public abstract class ComplexMaterial {
 		int crystalLampOverlayTextureInt = texturesCompound.getInt("crystalLampOverlayTextureInt");
 		int crystalOreTextureInt = texturesCompound.getInt("crystalOreTextureInt");
 		int chiseledVariantInt = texturesCompound.getInt("chiseledVariantInt");
+		int tintedGlassVariantInt = texturesCompound.getInt("tintedGlassVariantInt");
 
 		TextureInformation textureInformation = textureInformationBuilder.build();
 
+		ComplexMaterial material;
 		switch (type) {
 			case "gem" -> {
 				material = new GemOreMaterial(parsedName, random, gradient, textureInformation, target, tier);
@@ -121,7 +125,8 @@ public abstract class ComplexMaterial {
 				oreMaterial.setRarity(rarity);
 				oreMaterial.setHiddenChance(hiddenChance);
 			}
-			case "crystal" -> material = new CrystalMaterial(parsedName, random, gradient, textureInformation, tier, crystalLampOverlayTextureInt, crystalOreTextureInt, chiseledVariantInt);
+			case "crystal" -> material = new CrystalMaterial(parsedName, random, gradient, textureInformation, tier, crystalLampOverlayTextureInt, crystalOreTextureInt,
+					chiseledVariantInt, tintedGlassVariantInt);
 			case "metal" -> {
 				ColorDualGradient metalicGradient = new ColorDualGradient(gradient, corrodedGradient);
 				material = new MetalOreMaterial(parsedName, random, metalicGradient, textureInformation, target, tier, hasOreVein);
@@ -134,8 +139,16 @@ public abstract class ComplexMaterial {
 				oreMaterial.setHiddenChance(hiddenChance);
 			}
 			default -> {
+				int propertiesNumber = compound.getInt("propertiesNumber");
+				float hardness = compound.getFloat("hardness");
+				float resistance = compound.getFloat("hardness");
+				float slipperiness = compound.getFloat("hardness");
 				material = new StoneMaterial(random, parsedName, gradient, textureInformation);
 				StoneMaterial stoneMaterial = (StoneMaterial) material;
+				stoneMaterial.setPropertiesNumber(propertiesNumber);
+				stoneMaterial.setHardness(hardness);
+				stoneMaterial.setResistance(resistance);
+				stoneMaterial.setSlipperiness(slipperiness);
 				stoneMaterial.setSize(size);
 				stoneMaterial.setMinHeight(minHeight);
 				stoneMaterial.setMaxHeight(maxHeight);
