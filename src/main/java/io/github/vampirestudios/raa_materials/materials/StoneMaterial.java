@@ -11,9 +11,12 @@ import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerat
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
+import io.github.vampirestudios.raa_materials.recipes.FurnaceRecipe;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
+import io.github.vampirestudios.raa_materials.recipes.support.ProcessingCreateRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -158,6 +161,13 @@ public class StoneMaterial extends ComplexMaterial {
 			this.gradient.getColor(1.0F),
 			BlockTags.MINEABLE_WITH_PICKAXE
 		));*/
+
+		if (FabricLoader.getInstance().isModLoaded("create")){
+			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushed_to_random", this.stone, Registry.ITEM.byId(Rands.randIntRange(1, Registry.ITEM.size()-1)), 2, 0.125f)
+					.addOutput(Registry.ITEM.byId(Rands.randIntRange(1, Registry.ITEM.size()-1)), 1, 0.0625f)
+					.setProcssingTime(250)
+					.buildCrushing();
+		}
 	}
 
 	public void setSize(int size) {

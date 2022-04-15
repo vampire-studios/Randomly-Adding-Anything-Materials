@@ -13,6 +13,7 @@ import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.recipes.FurnaceRecipe;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
+import io.github.vampirestudios.raa_materials.recipes.support.ProcessingCreateRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.fabricmc.fabric.api.registry.OxidizableBlocksRegistry;
 import net.fabricmc.loader.api.FabricLoader;
@@ -21,6 +22,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
@@ -40,6 +42,7 @@ import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.RarityFilter;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RandomBlockMatchTest;
+import net.minecraft.world.level.storage.loot.LootContext;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -411,6 +414,20 @@ public class MetalOreMaterial extends OreMaterial {
 				.setOutputCount(2)
 				.build();
 		if (FabricLoader.getInstance().isModLoaded("create")){
+			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.droppedItem, this.crushedOre)
+					.addExpNugget()
+					.setProcssingTime(400)
+					.buildCrushing();
+			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore_block", this.rawMaterialBlock, this.crushedOre, 9, 1f)
+					.addExpNugget()
+					.setProcssingTime(400)
+					.buildCrushing();
+			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.ore.asItem(), this.crushedOre)
+					.oreCrushing(this.target.block(), 0.25f, 350)
+					.buildCrushing();
+			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_washing_crushed_ore", this.crushedOre, this.nugget, 9, 1f)
+					.addOutput(Registry.ITEM.byId(Rands.randIntRange(1, Registry.ITEM.size()-1)), 1, 0.125f)
+					.buildWashing();
 			FurnaceRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_ingot_from_crushed_material", crushedOre, ingot)
 					.setCookTime(20)
 					.setXP(5)

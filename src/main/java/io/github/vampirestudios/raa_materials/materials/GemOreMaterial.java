@@ -7,8 +7,12 @@ import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerat
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
+import io.github.vampirestudios.raa_materials.recipes.FurnaceRecipe;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
+import io.github.vampirestudios.raa_materials.recipes.support.ProcessingCreateRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
@@ -58,13 +62,13 @@ public class GemOreMaterial extends OreMaterial {
 		this.gemTexture = textureInformation.gem();
 
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_block_from_gem_recipe", this.storageBlock)
-				.addMaterial('r', this.drop)
+				.addMaterial('r', this.droppedItem)
 				.setShape("rrr", "rrr", "rrr")
 				.setGroup("storage_blocks")
 				.setOutputCount(1)
 				.build();
 
-		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_gem_from_block_recipe", this.drop)
+		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_gem_from_block_recipe", this.droppedItem)
 				.addMaterial('r', this.storageBlock)
 				.setShape("r")
 				.setGroup("storage_blocks")
@@ -72,40 +76,45 @@ public class GemOreMaterial extends OreMaterial {
 				.build();
 
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_shovel_recipe", this.shovel)
-				.addMaterial('r', this.drop)
+				.addMaterial('r', this.droppedItem)
 				.addMaterial('s', Items.STICK)
 				.setShape("r", "s", "s")
 				.setGroup("shovels")
 				.setOutputCount(1)
 				.build();
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_sword_recipe", this.sword)
-				.addMaterial('r', this.drop)
+				.addMaterial('r', this.droppedItem)
 				.addMaterial('s', Items.STICK)
 				.setShape("r", "r", "s")
 				.setGroup("swords")
 				.setOutputCount(1)
 				.build();
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_pickaxe_recipe", this.pickaxe)
-				.addMaterial('r', this.drop)
+				.addMaterial('r', this.droppedItem)
 				.addMaterial('s', Items.STICK)
 				.setShape("rrr", " s ", " s ")
 				.setGroup("pickaxes")
 				.setOutputCount(1)
 				.build();
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_axe_recipe", this.axe)
-				.addMaterial('r', this.drop)
+				.addMaterial('r', this.droppedItem)
 				.addMaterial('s', Items.STICK)
 				.setShape("rr", "rs", " s")
 				.setGroup("axes")
 				.setOutputCount(1)
 				.build();
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_hoe_recipe", this.hoe)
-				.addMaterial('r', this.drop)
+				.addMaterial('r', this.droppedItem)
 				.addMaterial('s', Items.STICK)
 				.setShape("rr", " s", " s")
 				.setGroup("hoes")
 				.setOutputCount(1)
 				.build();
+		if (FabricLoader.getInstance().isModLoaded("create")){
+			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.ore.asItem(), this.droppedItem)
+					.oreCrushing(this.target.block(), 0.25f, 350)
+					.buildCrushing();
+		}
 	}
 
 	@Override
