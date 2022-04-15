@@ -1,6 +1,7 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
+import de.guntram.mcmod.crowdintranslate.CrowdinTranslate;
 import io.github.vampirestudios.raa_core.api.RAAAddon;
 import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
@@ -146,7 +147,8 @@ public class RAAMaterials implements RAAAddon {
 				world.getServer().reloadResources(world.getServer().getPackRepository().getSelectedIds());
 
 				if (isClient()) {
-					materials.forEach(material -> material.initClient(random));
+					InnerRegistry.registerArtificeResourcePack(id("material_assets"), clientResourcePackBuilder ->
+							materials.forEach(material -> material.initClient(random, clientResourcePackBuilder)));
 					Minecraft.getInstance().delayTextureReload().thenRun(() ->
 							Minecraft.getInstance().getItemRenderer().getItemModelShaper().rebuildCache());
 				}
@@ -169,6 +171,8 @@ public class RAAMaterials implements RAAAddon {
 		NameGenerator.init();
 		AutoConfig.register(GeneralConfig.class, GsonConfigSerializer::new);
 		CONFIG = AutoConfig.getConfigHolder(GeneralConfig.class).getConfig();
+
+		CrowdinTranslate.downloadTranslations("randomly-adding-anything-mater", MOD_ID);
 
 		Registry.register(TARGETS, minecraftId("stone"), OreMaterial.Target.STONE);
 		Registry.register(TARGETS, minecraftId("diorite"), OreMaterial.Target.DIORITE);

@@ -50,8 +50,8 @@ public class PlayerOnlyGlassBlock extends AbstractGlassBlock {
 			return true;
 		}
 		if(state.getBlock() instanceof GemGlassBlock && state.getBlock() instanceof PlayerOnlyGlassBlock &&
-				state.getBlock() instanceof de.dafuqs.spectrum.blocks.decoration.GemGlassBlock &&
-				state.getBlock() instanceof de.dafuqs.spectrum.blocks.PlayerOnlyGlassBlock &&
+				state.getBlock() instanceof de.dafuqs.spectrum.blocks.glass.GemstoneGlassBlock &&
+				state.getBlock() instanceof de.dafuqs.spectrum.blocks.glass.GemstonePlayerOnlyGlassBlock &&
 				state.getBlock() instanceof TintedGlassBlock) {
 			return true;
 		}

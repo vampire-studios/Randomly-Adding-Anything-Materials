@@ -1,5 +1,6 @@
 package io.github.vampirestudios.raa_materials.materials;
 
+import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
@@ -261,7 +262,7 @@ public class StoneMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public void initClient(Random random) {
+	public void initClient(Random random, ArtificeResourcePack.ClientResourcePackBuilder clientResourcePackBuilder) {
 		String textureBaseName = registryName;
 		String mainName = RAAMaterials.MOD_ID + "." + textureBaseName;
 

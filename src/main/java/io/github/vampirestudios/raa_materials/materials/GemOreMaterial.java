@@ -1,8 +1,8 @@
 package io.github.vampirestudios.raa_materials.materials;
 
+import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
-import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
@@ -109,8 +109,8 @@ public class GemOreMaterial extends OreMaterial {
 	}
 
 	@Override
-	public void initClient(Random random) {
-		super.initClient(random);
+	public void initClient(Random random, ArtificeResourcePack.ClientResourcePackBuilder clientResourcePackBuilder) {
+		super.initClient(random, clientResourcePackBuilder);
 
 		ModelHelper.generateOreAssets(this.ore, oreVeinTexture, registryName, name, gradient, target);
 

@@ -11,6 +11,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class GemGlassBlock extends GlassBlock {
 
+	private int gemstoneColor;
+
 	public GemGlassBlock(Properties settings) {
 		super(settings);
 	}
@@ -21,8 +23,8 @@ public class GemGlassBlock extends GlassBlock {
 			return true;
 		}
 		if(state.getBlock() instanceof GemGlassBlock && state.getBlock() instanceof PlayerOnlyGlassBlock &&
-				state.getBlock() instanceof de.dafuqs.spectrum.blocks.decoration.GemGlassBlock &&
-				state.getBlock() instanceof de.dafuqs.spectrum.blocks.PlayerOnlyGlassBlock &&
+				state.getBlock() instanceof de.dafuqs.spectrum.blocks.glass.GemstoneGlassBlock &&
+				state.getBlock() instanceof de.dafuqs.spectrum.blocks.glass.GemstonePlayerOnlyGlassBlock &&
 				state.getBlock() instanceof TintedGlassBlock) {
 			return true;
 		}

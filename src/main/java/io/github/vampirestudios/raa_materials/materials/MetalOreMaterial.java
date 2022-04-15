@@ -1,5 +1,6 @@
 package io.github.vampirestudios.raa_materials.materials;
 
+import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
@@ -467,8 +468,8 @@ public class MetalOreMaterial extends OreMaterial {
 	}
 
 	@Override
-	public void initClient(Random random) {
-		super.initClient(random);
+	public void initClient(Random random, ArtificeResourcePack.ClientResourcePackBuilder clientResourcePackBuilder) {
+		super.initClient(random, clientResourcePackBuilder);
 		BufferTexture metalShinglesTexture = TextureHelper.loadTexture("textures/block/metal_shingles.png");
 		BufferTexture metalPlateTexture = TextureHelper.loadTexture("textures/block/metal_plate.png");
 

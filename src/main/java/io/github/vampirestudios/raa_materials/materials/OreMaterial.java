@@ -2,6 +2,7 @@ package io.github.vampirestudios.raa_materials.materials;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
@@ -290,10 +291,10 @@ public abstract class OreMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public void initClient(Random random) {
+	public void initClient(Random random, ArtificeResourcePack.ClientResourcePackBuilder clientResourcePackBuilder) {
 		Rands.setRand(random);
 
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), "block.storage_block", this.name);
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), "block.block", this.name);
 
 		// Swords
 		BufferTexture texture = TextureHelper.loadTexture(swordBladeTexture);
@@ -305,7 +306,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 		InnerRegistryClient.registerItemModel(this.sword, ModelHelper.makeTwoLayerTool(textureID, TextureHelper.makeItemTextureID("tools/sword/stick")));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_sword"),  "item.sword", this.name);
-
+		
 		// Pickaxes
 		texture = ProceduralTextures.randomColored(pickaxeHeadTexture, gradient);
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_pickaxe_head");

@@ -1,6 +1,7 @@
 package io.github.vampirestudios.raa_materials.materials;
 
 import com.google.common.collect.Lists;
+import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.utils.ColorDualGradient;
@@ -163,7 +164,7 @@ public abstract class ComplexMaterial {
 		return material;
 	}
 
-	public abstract void initClient(Random random);
+	public abstract void initClient(Random random, ArtificeResourcePack.ClientResourcePackBuilder clientResourcePackBuilder);
 
 	public static void resetMaterials() {
 		MATERIALS.clear();

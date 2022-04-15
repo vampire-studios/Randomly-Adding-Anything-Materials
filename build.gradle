@@ -1,9 +1,27 @@
+buildscript {
+	dependencies {
+		classpath 'de.guntram.mcmod:crowdin-translate:1.3+1.17'
+	}
+	repositories {
+		maven {
+			name = 'CrowdinTranslate source'
+			url = "https://minecraft.guntram.de/maven/"
+		}
+	}
+}
+
 plugins {
 	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
 	id "io.github.juuxel.loom-quiltflower" version "1.7.0"
 	id 'org.quiltmc.quilt-mappings-on-loom' version '4.0.0'
 }
+
+apply plugin: 'de.guntram.mcmod.crowdin-translate'
+
+crowdintranslate.crowdinProjectName = 'randomly-adding-anything-mater'
+crowdintranslate.minecraftProjectName = 'raa_materials'
+crowdintranslate.verbose = true
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -32,6 +50,7 @@ repositories {
 	maven { url = "https://maven.blamejared.com" }
 	maven { url = "https://maven.wispforest.io/" }
 	maven { url = "https://ladysnake.jfrog.io/artifactory/mods" }
+	maven { url = "https://minecraft.guntram.de/maven/" }
 }
 
 loom {
@@ -66,21 +85,9 @@ dependencies {
 	modImplementation ("com.github.DaFuqs:Spectrum:1.18.2-SNAPSHOT") {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
-//	modImplementation("de.dafuqs.spectrum:Spectrum-1.18.2:1.3.1-1.18.2-midgame16-trinkets-brewing") {
-//		exclude(group: "net.fabricmc.fabric-api")
-//	}
-	modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}") {
-		force = true
-	}
-	include ("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}") {
-		force = true
-	}
-	modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}") {
-		force = true
-	}
-	include ("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}") {
-		force = true
-	}
+
+	modImplementation "de.guntram.mcmod:crowdin-translate:1.4+1.18.2"
+	include "de.guntram.mcmod:crowdin-translate:1.4+1.18.2"
 }
 
 processResources {
@@ -104,6 +111,10 @@ jar {
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}"}
 	}
+}
+
+build {
+	dependsOn downloadTranslations
 }
 
 publishing {
