@@ -141,8 +141,7 @@ public class CrystalMaterial extends ComplexMaterial {
 	public CrystalMaterial(Pair<String, String> name, Random random, ColorGradient gradient, TextureInformation textureInformation, int tier, int crystalLampOverlayTextureInt,
 						   int crystalOreTextureInt, int chiseledVariantInt, int tintedGlassVariantInt) {
 		super(name, gradient);
-		this.particleColor = this.gradient.getColor(0.5F).setSaturation(1.0F).switchToRGB();
-		System.out.println(ColorUtil.toHexString(particleColor.getAsInt()));
+		this.particleColor = new CustomColor().set(this.gradient.getColor(0.5F))/*.setSaturation(1.0F)*/.switchToRGB();
 		this.tier = tier;
 
 		Rands.setRand(random);

@@ -409,6 +409,15 @@ public class MetalOreMaterial extends OreMaterial {
 				.setGroup("plates")
 				.setOutputCount(2)
 				.build();
+		if (FabricLoader.getInstance().isModLoaded("create")){
+			FurnaceRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_ingot_from_crushed_material", crushedOre, ingot)
+					.setCookTime(20)
+					.setXP(5)
+					.setGroup("raw_materials_to_cooked")
+					.setOutputCount(1)
+					.buildWithBlasting();
+
+		}
 	}
 
 	private Block registerSimpleBlock(String name, BlockBehaviour.Properties properties) {
