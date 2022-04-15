@@ -80,7 +80,6 @@ public abstract class OreMaterial extends ComplexMaterial {
 	public Target target;
 
 	public final Item droppedItem;
-	public final Item drop;
 	public final Item sword;
 	public final Item pickaxe;
 	public final Item axe;
@@ -131,7 +130,6 @@ public abstract class OreMaterial extends ComplexMaterial {
 		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(target.block()).requiresTool().mapColor(MaterialColor.COLOR_GRAY);
 		this.droppedItem = RAASimpleItem.register(this.registryName, new Item.Properties().tab(RAAMaterials.RAA_RESOURCES), rawType);
 		this.ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new BaseDropBlock(material, this.droppedItem), RAAMaterials.RAA_ORES);
-		this.drop = ((BaseDropBlock)this.ore).drop;
 		TagHelper.addTag(target.toolType(), this.ore);
 		TagHelper.addTag(switch (tier) {
 			case 1 -> BlockTags.NEEDS_STONE_TOOL;
