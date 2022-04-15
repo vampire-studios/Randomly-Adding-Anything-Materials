@@ -73,6 +73,10 @@ public abstract class ComplexMaterial {
 		//Blocks
 		textureInformationBuilder.oreOverlay(ResourceLocation.tryParse(texturesCompound.getString("oreTexture")));
 		textureInformationBuilder.storageBlock(ResourceLocation.tryParse(texturesCompound.getString("storageBlockTexture")));
+		textureInformationBuilder.exposedStorageBlock(ResourceLocation.tryParse(texturesCompound.getString("exposedStorageBlockTexture")));
+		textureInformationBuilder.wornStorageBlock(ResourceLocation.tryParse(texturesCompound.getString("wornStorageBlockTexture")));
+		textureInformationBuilder.weatheredStorageBlock(ResourceLocation.tryParse(texturesCompound.getString("weatheredStorageBlockTexture")));
+		textureInformationBuilder.oxidizedStorageBlock(ResourceLocation.tryParse(texturesCompound.getString("oxidizedStorageBlockTexture")));
 		textureInformationBuilder.rawMaterialBlock(ResourceLocation.tryParse(texturesCompound.getString("rawMaterialBlockTexture")));
 		textureInformationBuilder.crystalBlock(ResourceLocation.tryParse(texturesCompound.getString("crystalBlockTexture")));
 		textureInformationBuilder.buddingCrystalBlock(ResourceLocation.tryParse(texturesCompound.getString("buddingCrystalBlockTexture")));

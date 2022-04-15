@@ -76,7 +76,7 @@ public class RAAMaterials implements RAAAddon {
 				String nbtFile = "data/raa_materials.dat";
 				String materialCompoundName = "materials";
 				if (!world.getServer().getWorldPath(LevelResource.ROOT).resolve(nbtFile).toFile().exists()) {
-					InnerRegistry.clear();
+//					InnerRegistry.clear();
 					LOGGER.info("Creating new materials");
 
 					if (CONFIG.stoneTypeAmount != 0) {
@@ -123,7 +123,7 @@ public class RAAMaterials implements RAAAddon {
 
 					materials.forEach(material -> material.generate(world, biomeRegistry));
 				} else {
-					InnerRegistry.clear();
+//					InnerRegistry.clear();
 					LOGGER.info("Loading materials");
 
 					CompoundTag compound;

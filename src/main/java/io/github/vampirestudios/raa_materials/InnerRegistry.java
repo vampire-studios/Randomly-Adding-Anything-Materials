@@ -2,6 +2,12 @@ package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Lifecycle;
+import com.swordglowsblue.artifice.api.ArtificeResourcePack;
+import com.swordglowsblue.artifice.api.util.Processor;
+import com.swordglowsblue.artifice.common.ArtificeRegistry;
+import com.swordglowsblue.artifice.common.ClientResourcePackProfileLike;
+import com.swordglowsblue.artifice.common.ServerResourcePackProfileLike;
+import com.swordglowsblue.artifice.impl.DynamicResourcePackFactory;
 import io.github.vampirestudios.raa_materials.api.BiomeAPI;
 import io.github.vampirestudios.raa_materials.materials.CrystalMaterial;
 import io.github.vampirestudios.raa_materials.materials.GemOreMaterial;
@@ -9,15 +15,13 @@ import io.github.vampirestudios.raa_materials.materials.MetalOreMaterial;
 import io.github.vampirestudios.raa_materials.materials.StoneMaterial;
 import io.github.vampirestudios.raa_materials.utils.RegistryUtils;
 import io.github.vampirestudios.raa_materials.utils.TagHelper;
-import net.minecraft.core.DefaultedRegistry;
-import net.minecraft.core.Holder;
-import net.minecraft.core.MappedRegistry;
-import net.minecraft.core.Registry;
+import net.minecraft.core.*;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -39,6 +43,8 @@ import static io.github.vampirestudios.raa_materials.utils.RegistryUtils.REGISTE
 public class InnerRegistry {
 
 	private static final Map<ResourceLocation, Block> BLOCKS = Maps.newHashMap();
+	private static final Map<ResourceLocation, ServerResourcePackProfileLike> ARTIFICE_DATAPACKS = Maps.newHashMap();
+	private static final Map<ResourceLocation, ClientResourcePackProfileLike> ARTIFICE_RESOURCE_PACKS = Maps.newHashMap();
 	private static final Map<ResourceLocation, ParticleType<?>> PARTICLE_TYPES = Maps.newHashMap();
 	private static final Map<ResourceLocation, Item> ITEMS = Maps.newHashMap();
 	private static final Map<ResourceLocation, ConfiguredFeature<?, ?>> CONFIGURED_FEATURES = Maps.newHashMap();
@@ -80,6 +86,8 @@ public class InnerRegistry {
 		PLACED_FEATURES.clear();
 		BLOCKS.clear();
 		ITEMS.clear();
+		ARTIFICE_RESOURCE_PACKS.clear();
+		ARTIFICE_DATAPACKS.clear();
 	}
 
 	private static <T> T replace(DefaultedRegistry<T> registry, ResourceLocation id, T replacement) {
@@ -105,6 +113,18 @@ public class InnerRegistry {
 		return replacement;
 	}
 
+	private static <T> T replace(WritableRegistry<T> registry, ResourceLocation id, T replacement) {
+		T entry = registry.get(id);
+		assert entry != null;
+		Optional<ResourceKey<T>> key = registry.getResourceKey(entry);
+		Lifecycle lifecycle = registry.lifecycle(entry);
+
+		key.ifPresent(tResourceKey -> {
+			if (!registry.containsKey(tResourceKey)) registry.register(tResourceKey, replacement, lifecycle);
+		});
+		return replacement;
+	}
+
 	public static <T extends Block> Block registerBlockAndItem(String name, T block, CreativeModeTab group) {
 		ResourceLocation id = RAAMaterials.id(name);
 
@@ -115,6 +135,26 @@ public class InnerRegistry {
 		} else {
 			return Registry.BLOCK.get(id); //honestly this can return null, material names are fucked if this gets called can there is no good way to cast it correctly
 		}
+	}
+
+	public static void registerArtificeDataPack(ResourceLocation id, Processor<ArtificeResourcePack.ServerResourcePackBuilder> register) {
+		if (ArtificeRegistry.DATA_PACKS.containsKey(id)) {
+			replace(ArtificeRegistry.DATA_PACKS, id, new DynamicResourcePackFactory<>(PackType.SERVER_DATA, id, register));
+		} else {
+			Registry.register(ArtificeRegistry.DATA_PACKS, id, new DynamicResourcePackFactory<>(PackType.SERVER_DATA, id, register));
+		}
+		ARTIFICE_DATAPACKS.put(id, new DynamicResourcePackFactory<>(PackType.SERVER_DATA, id, register));
+		RegistryUtils.addRegisteredKey(ArtificeRegistry.DATA_PACKS.key().location(), id);
+	}
+
+	public static void registerArtificeResourcePack(ResourceLocation id, Processor<ArtificeResourcePack.ClientResourcePackBuilder> register) {
+		if (ArtificeRegistry.DATA_PACKS.containsKey(id)) {
+			replace(ArtificeRegistry.RESOURCE_PACKS, id, new DynamicResourcePackFactory<>(PackType.CLIENT_RESOURCES, id, register));
+		} else {
+			Registry.register(ArtificeRegistry.RESOURCE_PACKS, id, new DynamicResourcePackFactory<>(PackType.CLIENT_RESOURCES, id, register));
+		}
+		ARTIFICE_RESOURCE_PACKS.put(id, new DynamicResourcePackFactory<>(PackType.CLIENT_RESOURCES, id, register));
+		RegistryUtils.addRegisteredKey(ArtificeRegistry.RESOURCE_PACKS.key().location(), id);
 	}
 
 	public static void registerBlock(ResourceLocation id, Block block) {

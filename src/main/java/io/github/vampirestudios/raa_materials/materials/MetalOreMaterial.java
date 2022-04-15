@@ -238,7 +238,7 @@ public class MetalOreMaterial extends OreMaterial {
 		gear = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEAR);
 		dust = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.DUST);
 		small_dust = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SMALL_DUST);
-		plate = RAASimpleItem.register(this.registryName,  new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.PLATE);
+		plate = RAASimpleItem.register(this.registryName,  new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHEETS);
 
 		if (FabricLoader.getInstance().isModLoaded("create")) {
 			crushedOre = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.CRUSHED_ORE);
@@ -518,11 +518,11 @@ public class MetalOreMaterial extends OreMaterial {
 	public void generate(ServerLevel world, Registry<Biome> biomeRegistry) {
 		if (this.hasOreVein) {
 			List<OreConfiguration.TargetBlockState> blockStates = new ArrayList<>();
-			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.2F), ore.defaultBlockState()));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.3F), ore.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.01F), rawMaterialBlock.defaultBlockState()));
-			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.05F), rawMaterialBlock.defaultBlockState()));
-			Holder<ConfiguredFeature<?, ?>> oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein"), Feature.ORE,
-					new OreConfiguration(blockStates, size));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.25F), rawMaterialBlock.defaultBlockState()));
+			Holder<ConfiguredFeature<?, ?>> oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein"),
+					Feature.ORE, new OreConfiguration(blockStates, size));
 
 			ResourceKey<PlacedFeature> oreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, RAAMaterials.id(this.registryName + "_ore_vein_pf"));
 			Holder<PlacedFeature> oreVeinHolder = InnerRegistry.registerPlacedFeature(world, oreVeinKey, oreVein,
@@ -531,8 +531,8 @@ public class MetalOreMaterial extends OreMaterial {
 
 			blockStates = new ArrayList<>();
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.3F), ore.defaultBlockState()));
-			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.03F), rawMaterialBlock.defaultBlockState()));
-			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.1F), rawMaterialBlock.defaultBlockState()));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.01F), rawMaterialBlock.defaultBlockState()));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.25F), rawMaterialBlock.defaultBlockState()));
 			oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein"), Feature.ORE,
 					new OreConfiguration(blockStates, size * 2));
 
@@ -542,8 +542,8 @@ public class MetalOreMaterial extends OreMaterial {
 					CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(rarity * 2));
 
 			blockStates = new ArrayList<>();
-			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.5F), ore.defaultBlockState()));
-			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.05F), rawMaterialBlock.defaultBlockState()));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.3F), ore.defaultBlockState()));
+			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.01F), rawMaterialBlock.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.25F), rawMaterialBlock.defaultBlockState()));
 			oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein_huge"), Feature.ORE,
 					new OreConfiguration(blockStates, size * 4));

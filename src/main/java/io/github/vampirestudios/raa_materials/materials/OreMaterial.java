@@ -347,11 +347,39 @@ public abstract class OreMaterial extends ComplexMaterial {
 	}
 
 	public void makeColoredItemAssets(ResourceLocation bufferTexture, Item item, ColorGradient gradient, String regName, String translatableName) {
+		makeColoredItemAssets(bufferTexture, item, gradient, regName, this.registryName, translatableName, this.name);
+	}
+
+	public static void makeColoredItemAssets(BufferTexture bufferTexture, Item item, ColorGradient gradient, String textureName, String registryName, String translatableName, String name) {
 		BufferTexture texture = ProceduralTextures.randomColored(bufferTexture, gradient);
-		ResourceLocation textureID = TextureHelper.makeItemTextureID(regName);
+		ResourceLocation textureID = TextureHelper.makeItemTextureID(textureName);
 		InnerRegistryClient.registerTexture(textureID, texture);
 		InnerRegistryClient.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
-		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)item).getItemType().apply(registryName), translatableName, this.name);
+		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)item).getItemType().apply(registryName), translatableName, name);
+	}
+
+	public static void makeColoredItemAssets(ResourceLocation bufferTexture, Item item, ColorGradient gradient, String textureName, String registryName, String translatableName, String name) {
+		BufferTexture texture = ProceduralTextures.randomColored(bufferTexture, gradient);
+		ResourceLocation textureID = TextureHelper.makeItemTextureID(textureName);
+		InnerRegistryClient.registerTexture(textureID, texture);
+		InnerRegistryClient.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
+		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)item).getItemType().apply(registryName), translatableName, name);
+	}
+
+	public static void makeColoredCloakedItemAssets(BufferTexture bufferTexture, Item item, ColorGradient gradient, String textureName, String registryName, String translatableName, String name) {
+		BufferTexture texture = ProceduralTextures.randomColored(bufferTexture, gradient);
+		ResourceLocation textureID = TextureHelper.makeItemTextureID(textureName);
+		InnerRegistryClient.registerTexture(textureID, texture);
+		InnerRegistryClient.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
+		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleCloakedItem)item).getItemType().apply(registryName), translatableName, name);
+	}
+
+	public static void makeColoredCloakedItemAssets(ResourceLocation bufferTexture, Item item, ColorGradient gradient, String textureName, String registryName, String translatableName, String name) {
+		BufferTexture texture = ProceduralTextures.randomColored(bufferTexture, gradient);
+		ResourceLocation textureID = TextureHelper.makeItemTextureID(textureName);
+		InnerRegistryClient.registerTexture(textureID, texture);
+		InnerRegistryClient.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
+		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleCloakedItem)item).getItemType().apply(registryName), translatableName, name);
 	}
 
 	static {
