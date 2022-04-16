@@ -434,7 +434,6 @@ public class MetalOreMaterial extends OreMaterial {
 					.setGroup("raw_materials_to_cooked")
 					.setOutputCount(1)
 					.buildWithBlasting();
-
 		}
 	}
 

@@ -147,8 +147,18 @@ public class RAAMaterials implements RAAAddon {
 				world.getServer().reloadResources(world.getServer().getPackRepository().getSelectedIds());
 
 				if (isClient()) {
-					InnerRegistry.registerArtificeResourcePack(id("material_assets"), clientResourcePackBuilder ->
-							materials.forEach(material -> material.initClient(random, clientResourcePackBuilder)));
+					InnerRegistry.registerArtificeResourcePack(id("material_assets"), clientResourcePackBuilder ->{
+							materials.forEach(material -> material.initClient(random, clientResourcePackBuilder));
+
+								new Thread(() -> {
+									try {
+										clientResourcePackBuilder.dumpResources("testing", "assets");
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
+								}).start();
+					}
+					);
 					Minecraft.getInstance().delayTextureReload().thenRun(() ->
 							Minecraft.getInstance().getItemRenderer().getItemModelShaper().rebuildCache());
 				}

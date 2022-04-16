@@ -363,13 +363,15 @@ public class CrystalMaterial extends ComplexMaterial {
 		texture = ProceduralTextures.randomColored(TextureHelper.loadTexture(crystalTexture), gradient);
 		InnerRegistryClient.registerTexture(textureID, texture);
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_crystal"), "block.crystal", this.name);
+		InnerRegistryClient.registerItemModel(this.crystal.asItem(), ModelHelper.makeFlatItem(textureID));
 
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_shard");
 		texture = ProceduralTextures.randomColored(TextureHelper.loadTexture(shardTexture), gradient);
 		InnerRegistryClient.registerTexture(textureID, texture);
 
-		textureID = new ResourceLocation(textureID.getNamespace(), textureID.getPath().replace("item/", ""));
-		ArtificeGenerationHelper.generateSimpleItemModel(clientResourcePackBuilder, id(this.registryName + "_shard"), textureID);
+		//textureID = new ResourceLocation(textureID.getNamespace(), textureID.getPath().replace("item/", ""));
+		//ArtificeGenerationHelper.generateSimpleItemModel(clientResourcePackBuilder, id(this.registryName + "_shard"), textureID);
+		InnerRegistryClient.registerItemModel(this.shard, ModelHelper.makeFlatItem(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shard"), "item.crystal_shard", this.name);
 
 		BlockRenderLayerMap.INSTANCE.putBlock(this.crystal, RenderType.cutout());
@@ -425,12 +427,10 @@ public class CrystalMaterial extends ComplexMaterial {
 					new ResourceLocation("spectrum:block/amethyst_basalt_lamp"), Map.of(
 							"particle", textureID,
 							"side_outer", textureID,
-							"inner", new ResourceLocation(crystalBlock.getNamespace(), crystalBlock.getPath().replace("textures/", "")
-									.replace(".png", "")
-							)
+							"inner", TextureHelper.makeBlockTextureID(this.registryName + "_block")
 					)
 			);
-			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_basalt_lamp"), new ResourceLocation("spectrum:block/amethyst_basalt_lamp"));
+			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_basalt_lamp"), new ResourceLocation("spectrum:amethyst_basalt_lamp"));
 
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_basalt_lamp"), "block.basalt_lamp", this.name);
 			BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), this.basaltLamp);
@@ -441,17 +441,18 @@ public class CrystalMaterial extends ComplexMaterial {
 			texture = TextureHelper.combine(calciteLampTexture, texture);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			ArtificeGenerationHelper.generateBasicBlockState(clientResourcePackBuilder, id(this.registryName + "_calcite_lamp"));
-			ArtificeGenerationHelper.generateBlockModel(clientResourcePackBuilder, id(this.registryName + "_calcite_lamp"),
-					new ResourceLocation("spectrum:block/amethyst_calcite_lamp"), Map.of(
-							"particle", textureID,
-							"side_outer", textureID,
-							"inner", new ResourceLocation(crystalBlock.getNamespace(), crystalBlock.getPath().replace("textures/", "")
-									.replace(".png", "")
-							)
-					)
-			);
-			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_calcite_lamp"), new ResourceLocation("spectrum:block/amethyst_calcite_lamp"));
+			InnerRegistryClient.registerBlockModel(this.calciteLamp, ModelHelper.simpleParentBlock(new ResourceLocation("spectrum:block/amethyst_calcite_lamp"), Map.of(
+					"particle", textureID,
+					"side_outer", textureID,
+					"inner", TextureHelper.makeBlockTextureID(this.registryName + "_block")
+					)));
+			InnerRegistryClient.registerItemModel(this.calciteLamp.asItem(), ModelHelper.simpleParentBlock(new ResourceLocation("spectrum:block/amethyst_calcite_lamp"), Map.of(
+					"particle", textureID,
+					"side_outer", textureID,
+					"inner", TextureHelper.makeBlockTextureID(this.registryName + "_block")
+			)));
+					//ModelHelper.simpleParentItem(BlockModelShaper.stateToModelLocation(Registry.BLOCK.getKey(calciteLamp), calciteLamp.defaultBlockState())));
+//			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_calcite_lamp"), new ResourceLocation("spectrum:amethyst_calcite_lamp"));
 
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_calcite_lamp"), "block.calcite_lamp", this.name);
 			BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), this.calciteLamp);
@@ -559,7 +560,8 @@ public class CrystalMaterial extends ComplexMaterial {
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_player_only_glass"), "block.crystal_player_only_glass", this.name);
 			BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), this.playerOnlyGlass);
 
-			OreMaterial.makeColoredCloakedItemAssets(TextureHelper.loadTexture(io.github.vampirestudios.vampirelib.utils.Utils.prependToPath(TextureHelper.makeItemTextureID("crystal_powder.png"), "textures/")), this.crystalPowder, gradient, this.registryName + "_powder", this.registryName, "item.powder", this.name);
+			OreMaterial.makeColoredCloakedItemAssets(TextureHelper.loadTexture(io.github.vampirestudios.vampirelib.utils.Utils.prependToPath(TextureHelper.makeItemTextureID("crystal_powder.png"),
+					"textures/")), this.crystalPowder, gradient, this.registryName + "_powder", this.registryName, "item.powder", this.name);
 		}
 
 		if (FabricLoader.getInstance().isModLoaded("immersive_amethyst")) {
@@ -583,13 +585,6 @@ public class CrystalMaterial extends ComplexMaterial {
 			ArtificeGenerationHelper.generateSimpleItemModel(clientResourcePackBuilder, id(this.registryName + "_enriched_geode_core"), textureID);
 			NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem) this.enrichedGeodeCore).getItemType().apply(registryName), "item.enriched_geode_core", this.name);
 		}
-		new Thread(() -> {
-			try {
-				clientResourcePackBuilder.dumpResources("testing", "assets");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}).start();
 	}
 
 	@Override

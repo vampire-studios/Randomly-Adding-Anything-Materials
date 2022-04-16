@@ -90,6 +90,10 @@ dependencies {
 	include "de.guntram.mcmod:crowdin-translate:1.4+1.18.2"
 }
 
+configurations.all {
+	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 processResources {
 	inputs.property "version", project.version
 

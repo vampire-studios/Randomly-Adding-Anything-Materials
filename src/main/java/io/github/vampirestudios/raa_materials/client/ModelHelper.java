@@ -33,6 +33,26 @@ public class ModelHelper {
 		return String.format(template, parent.toString(), textureName, texture.toString());
 	}
 
+	public static String simpleParentBlock(ResourceLocation parent, Map<String, ResourceLocation> textures) {
+		String innerTemplate = """
+				    "%s": "%s"%s
+				""";
+		StringBuilder inner = new StringBuilder();
+		int i = 0;
+		for (Map.Entry<String, ResourceLocation> a : textures.entrySet()) {
+			inner.append(String.format(innerTemplate, a.getKey(), a.getValue().toString(), i < textures.size()-1 ? "," : "" ));
+			i++;
+		}
+		String template = """
+				{
+				  "parent": "%s",
+				  "textures": {
+				    %s
+				  }
+				}""";
+		return String.format(template, parent.toString(), inner);
+	}
+
 	public static String simpleParentItem(ResourceLocation parent) {
 		String template = """
 				{
