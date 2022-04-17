@@ -3,7 +3,6 @@ package io.github.vampirestudios.raa_materials.materials;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import de.dafuqs.spectrum.SpectrumCommon;
 import de.dafuqs.spectrum.blocks.decoration.DecoStoneBlock;
 import de.dafuqs.spectrum.blocks.decoration.GemstoneChimeBlock;
@@ -319,7 +318,7 @@ public class CrystalMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public void initClient(Random random, ArtificeResourcePack.ClientResourcePackBuilder clientResourcePackBuilder) {
+	public void initClient(Random random) {
 		Rands.setRand(random);
 
 		BufferTexture crystalBlockTexture = TextureHelper.loadTexture(crystalBlock);
@@ -369,17 +368,15 @@ public class CrystalMaterial extends ComplexMaterial {
 		texture = ProceduralTextures.randomColored(TextureHelper.loadTexture(shardTexture), gradient);
 		InnerRegistryClient.registerTexture(textureID, texture);
 
-		//textureID = new ResourceLocation(textureID.getNamespace(), textureID.getPath().replace("item/", ""));
-		//ArtificeGenerationHelper.generateSimpleItemModel(clientResourcePackBuilder, id(this.registryName + "_shard"), textureID);
 		InnerRegistryClient.registerItemModel(this.shard, ModelHelper.makeFlatItem(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawItem(this.registryName + "_shard"), "item.crystal_shard", this.name);
 
 		BlockRenderLayerMap.INSTANCE.putBlock(this.crystal, RenderType.cutout());
 
-		initModdedClient(clientResourcePackBuilder);
+		initModdedClient();
 	}
 
-	public void initModdedClient(ArtificeResourcePack.ClientResourcePackBuilder clientResourcePackBuilder) {
+	public void initModdedClient() {
 		BufferTexture basaltLampTexture = TextureHelper.loadTexture("textures/block/basalt_lamp.png");
 		BufferTexture calciteLampTexture = TextureHelper.loadTexture("textures/block/calcite_lamp.png");
 		BufferTexture crystalGlassTexture = TextureHelper.loadTexture("textures/block/crystal_glass.png");
@@ -400,18 +397,35 @@ public class CrystalMaterial extends ComplexMaterial {
 
 		if (FabricLoader.getInstance().isModLoaded("spectrum")) {
 			registerColoredRisingParticle(this.risingParticle, particleColor.getRed(), particleColor.getGreen(), particleColor.getBlue());
-			clientResourcePackBuilder.addParticle(id(this.registryName + "_sparkle_rising"), particleBuilder ->
-					particleBuilder.texture(new ResourceLocation("minecraft:critical_hit"))
-			);
 
 			ResourceLocation textureID = TextureHelper.makeBlockTextureID(registryName + "_glass");
 			BufferTexture texture = ProceduralTextures.randomColored(crystalGlassTexture, gradient);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			ArtificeGenerationHelper.generateBasicBlockState(clientResourcePackBuilder, id(this.registryName + "_chime"));
-			ArtificeGenerationHelper.generateBlockModel(clientResourcePackBuilder, id(this.registryName + "_chime"),
-					new ResourceLocation("spectrum:block/template_chime"), Map.of("gemstone", textureID));
-			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_chime"));
+			InnerRegistry.registerArtificeResourcePack(id(this.registryName + "_assets"), clientResourcePackBuilder -> {
+				clientResourcePackBuilder.addParticle(id(this.registryName + "_sparkle_rising"), particleBuilder ->
+						particleBuilder.texture(new ResourceLocation("minecraft:critical_hit"))
+				);
+				clientResourcePackBuilder.addBlockState(id(this.registryName + "_chime"), blockStateBuilder -> blockStateBuilder.variant("",
+						variant -> variant.model(TextureHelper.makeBlockTextureID(this.registryName + "_chime"))));
+				/*ArtificeGenerationHelper.generateBlockModel(clientResourcePackBuilder, id(this.registryName + "_chime"),
+						new ResourceLocation("spectrum:block/template_chime"), Map.of(
+								"gemstone", TextureHelper.makeBlockTextureID(this.registryName + "_glass")
+						)
+				);*/
+				new Thread(() -> {
+					try {
+						clientResourcePackBuilder.dumpResources("testing", "assets");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}).start();
+			});
+
+			InnerRegistryClient.registerBlockModel(this.chime, ModelHelper.simpleParentBlock(new ResourceLocation("spectrum:block/template_chime"),
+					"gemstone", TextureHelper.makeBlockTextureID(this.registryName + "_glass")));
+			InnerRegistryClient.registerItemModel(this.chime.asItem(), ModelHelper.simpleParentItem(TextureHelper.makeBlockTextureID(this.registryName +
+					"_chime")));
 
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_chime"), "block.crystal_chime", this.name);
 			BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), this.chime);
@@ -422,15 +436,16 @@ public class CrystalMaterial extends ComplexMaterial {
 			texture = TextureHelper.combine(basaltLampTexture, texture);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			ArtificeGenerationHelper.generateBasicBlockState(clientResourcePackBuilder, id(this.registryName + "_basalt_lamp"));
-			ArtificeGenerationHelper.generateBlockModel(clientResourcePackBuilder, id(this.registryName + "_basalt_lamp"),
-					new ResourceLocation("spectrum:block/amethyst_basalt_lamp"), Map.of(
-							"particle", textureID,
-							"side_outer", textureID,
-							"inner", TextureHelper.makeBlockTextureID(this.registryName + "_block")
-					)
-			);
-			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_basalt_lamp"), new ResourceLocation("spectrum:amethyst_basalt_lamp"));
+			InnerRegistryClient.registerBlockModel(this.basaltLamp, ModelHelper.simpleParentBlock(new ResourceLocation("spectrum:block/amethyst_basalt_lamp"), Map.of(
+					"particle", textureID,
+					"side_outer", textureID,
+					"inner", TextureHelper.makeBlockTextureID(this.registryName + "_block")
+			)));
+			InnerRegistryClient.registerItemModel(this.basaltLamp.asItem(), ModelHelper.simpleParentBlock(new ResourceLocation("spectrum:block/amethyst_basalt_lamp"), Map.of(
+					"particle", textureID,
+					"side_outer", textureID,
+					"inner", TextureHelper.makeBlockTextureID(this.registryName + "_block")
+			)));
 
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_basalt_lamp"), "block.basalt_lamp", this.name);
 			BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), this.basaltLamp);
@@ -445,15 +460,12 @@ public class CrystalMaterial extends ComplexMaterial {
 					"particle", textureID,
 					"side_outer", textureID,
 					"inner", TextureHelper.makeBlockTextureID(this.registryName + "_block")
-					)));
+			)));
 			InnerRegistryClient.registerItemModel(this.calciteLamp.asItem(), ModelHelper.simpleParentBlock(new ResourceLocation("spectrum:block/amethyst_calcite_lamp"), Map.of(
 					"particle", textureID,
 					"side_outer", textureID,
 					"inner", TextureHelper.makeBlockTextureID(this.registryName + "_block")
 			)));
-					//ModelHelper.simpleParentItem(BlockModelShaper.stateToModelLocation(Registry.BLOCK.getKey(calciteLamp), calciteLamp.defaultBlockState())));
-//			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_calcite_lamp"), new ResourceLocation("spectrum:amethyst_calcite_lamp"));
-
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_calcite_lamp"), "block.calcite_lamp", this.name);
 			BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), this.calciteLamp);
 
@@ -463,10 +475,8 @@ public class CrystalMaterial extends ComplexMaterial {
 			texture = TextureHelper.combine(chiseledBasaltTexture, texture);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			textureID = new ResourceLocation(textureID.getNamespace(), textureID.getPath().replace("block/", ""));
-			ArtificeGenerationHelper.generateBasicBlockState(clientResourcePackBuilder, id(this.registryName + "_chiseled_basalt"));
-			ArtificeGenerationHelper.generateAllBlockModel(clientResourcePackBuilder, id(this.registryName + "_chiseled_basalt"), textureID);
-			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_chiseled_basalt"));
+			InnerRegistryClient.registerBlockModel(chiseledBasalt, ModelHelper.makeCube(textureID));
+			InnerRegistryClient.registerItemModel(chiseledBasalt.asItem(), ModelHelper.makeCube(textureID));
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_chiseled_basalt"), "block.chiseled_basalt", this.name);
 
 			//Chiseled Calcite
@@ -475,10 +485,8 @@ public class CrystalMaterial extends ComplexMaterial {
 			texture = TextureHelper.combine(chiseledCalciteTexture, texture);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			textureID = new ResourceLocation(textureID.getNamespace(), textureID.getPath().replace("block/", ""));
-			ArtificeGenerationHelper.generateBasicBlockState(clientResourcePackBuilder, id(this.registryName + "_chiseled_calcite"));
-			ArtificeGenerationHelper.generateAllBlockModel(clientResourcePackBuilder, id(this.registryName + "_chiseled_calcite"), textureID);
-			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_chiseled_calcite"));
+			InnerRegistryClient.registerBlockModel(chiseledCalcite, ModelHelper.makeCube(textureID));
+			InnerRegistryClient.registerItemModel(chiseledCalcite.asItem(), ModelHelper.makeCube(textureID));
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_chiseled_calcite"), "block.chiseled_calcite", this.name);
 
 			//Ore
@@ -487,10 +495,8 @@ public class CrystalMaterial extends ComplexMaterial {
 			texture = TextureHelper.combine(oreTexture, texture);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			textureID = new ResourceLocation(textureID.getNamespace(), textureID.getPath().replace("block/", ""));
-			ArtificeGenerationHelper.generateBasicBlockState(clientResourcePackBuilder, id(this.registryName + "_ore"));
-			ArtificeGenerationHelper.generateAllBlockModel(clientResourcePackBuilder, id(this.registryName + "_ore"), textureID);
-			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_ore"));
+			InnerRegistryClient.registerBlockModel(ore, ModelHelper.makeCube(textureID));
+			InnerRegistryClient.registerItemModel(ore.asItem(), ModelHelper.makeCube(textureID));
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_ore"), "block.crystal_ore", this.name);
 
 			//Deepslate Ore
@@ -499,10 +505,8 @@ public class CrystalMaterial extends ComplexMaterial {
 			texture = TextureHelper.combine(deepslateOreTexture, texture);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			textureID = new ResourceLocation(textureID.getNamespace(), textureID.getPath().replace("block/", ""));
-			ArtificeGenerationHelper.generateBasicBlockState(clientResourcePackBuilder, id(this.registryName + "_deepslate_ore"));
-			ArtificeGenerationHelper.generateAllBlockModel(clientResourcePackBuilder, id(this.registryName + "_deepslate_ore"), textureID);
-			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_deepslate_ore"));
+			InnerRegistryClient.registerBlockModel(deepslateOre, ModelHelper.makeCube(textureID));
+			InnerRegistryClient.registerItemModel(deepslateOre.asItem(), ModelHelper.makeCube(textureID));
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_deepslate_ore"), "block.crystal_deepslate_ore", this.name);
 
 			//Storage Block
@@ -510,31 +514,37 @@ public class CrystalMaterial extends ComplexMaterial {
 			texture = ProceduralTextures.randomColored(storageBlockTexture, gradient);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			textureID = new ResourceLocation(textureID.getNamespace(), textureID.getPath().replace("block/", ""));
-			ArtificeGenerationHelper.generateBasicBlockState(clientResourcePackBuilder, id(this.registryName + "_storage_block"));
-			ArtificeGenerationHelper.generateAllBlockModel(clientResourcePackBuilder, id(this.registryName + "_storage_block"), textureID);
-			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_storage_block"));
+			InnerRegistryClient.registerBlockModel(storageBlock, ModelHelper.makeCube(textureID));
+			InnerRegistryClient.registerItemModel(storageBlock.asItem(), ModelHelper.makeCube(textureID));
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_storage_block"), "block.block", this.name);
 
 			textureID = TextureHelper.makeBlockTextureID(registryName + "_decostone");
 			texture = ProceduralTextures.randomColored(crystalDecostoneTexture, gradient);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			String decostoneTop = ModelHelper.makeDecostoneTop(
-					textureID,
-					new ResourceLocation("spectrum:block/polished_basalt")
-			);
-			InnerRegistryClient.registerBlockModel(decostone.defaultBlockState().setValue(DecoStoneBlock.HALF, DoubleBlockHalf.UPPER), decostoneTop);
+			InnerRegistry.registerArtificeResourcePack(id(this.registryName + "_decostone_assets"), clientResourcePackBuilder -> {
+				clientResourcePackBuilder.addBlockState(id(this.registryName + "_decostone"), blockStateBuilder -> {
+					blockStateBuilder.variant("half=upper", variant -> variant.model(TextureHelper.makeBlockTextureID(this.registryName + "_decostone_top")));
+					blockStateBuilder.variant("half=lower", variant -> variant.model(TextureHelper.makeBlockTextureID(this.registryName + "_decostone_bottom")));
+				});
+				new Thread(() -> {
+					try {
+						clientResourcePackBuilder.dumpResources("testing", "assets");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}).start();
+			});
 
-			String decostoneBottom = ModelHelper.makeDecostoneBottom(
-				new ResourceLocation("spectrum:block/polished_basalt"),
-				new ResourceLocation("spectrum:block/polished_calcite"),
-				textureID,
-				new ResourceLocation("spectrum:block/polished_basalt_pillar_side"),
-				new ResourceLocation("spectrum:block/polished_basalt")
-			);
-			InnerRegistryClient.registerBlockModel(decostone.defaultBlockState().setValue(DecoStoneBlock.HALF, DoubleBlockHalf.LOWER), decostoneBottom);
-			InnerRegistryClient.registerItemModel(decostone.asItem(), decostoneTop);
+			InnerRegistryClient.registerBlockModel(this.decostone, TextureHelper.makeBlockTextureID(this.registryName + "_decostone_top"), ModelHelper.simpleParentBlock(
+					new ResourceLocation("spectrum:block/amethyst_decostone_top"),
+					Map.of("2", TextureHelper.makeBlockTextureID(this.registryName + "_glass"))
+			));
+			InnerRegistryClient.registerBlockModel(this.decostone, TextureHelper.makeBlockTextureID(this.registryName + "_decostone_bottom"), ModelHelper.simpleParentBlock(
+					new ResourceLocation("spectrum:block/amethyst_decostone_bottom"),
+					Map.of("2", TextureHelper.makeBlockTextureID(this.registryName + "_glass"))
+			));
+			InnerRegistryClient.registerItemModel(decostone.asItem(), ModelHelper.simpleParentItem(TextureHelper.makeBlockTextureID(this.registryName + "_decostone_top")));
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_decostone"), "block.crystal_decostone", this.name);
 			BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), this.decostone);
 
@@ -542,10 +552,8 @@ public class CrystalMaterial extends ComplexMaterial {
 			texture = ProceduralTextures.randomColored(crystalGlassTexture, gradient);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			textureID = new ResourceLocation(textureID.getNamespace(), textureID.getPath().replace("block/", ""));
-			ArtificeGenerationHelper.generateBasicBlockState(clientResourcePackBuilder, id(this.registryName + "_glass"));
-			ArtificeGenerationHelper.generateAllBlockModel(clientResourcePackBuilder, id(this.registryName + "_glass"), textureID);
-			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_glass"));
+			InnerRegistryClient.registerBlockModel(glass, ModelHelper.makeCube(textureID));
+			InnerRegistryClient.registerItemModel(glass.asItem(), ModelHelper.makeCube(textureID));
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_glass"), "block.crystal_glass", this.name);
 			BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), this.glass);
 
@@ -553,10 +561,8 @@ public class CrystalMaterial extends ComplexMaterial {
 			texture = ProceduralTextures.randomColored(crystalGlassTexture, gradient);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			textureID = new ResourceLocation(textureID.getNamespace(), textureID.getPath().replace("block/", ""));
-			ArtificeGenerationHelper.generateBasicBlockState(clientResourcePackBuilder, id(this.registryName + "_player_only_glass"));
-			ArtificeGenerationHelper.generateAllBlockModel(clientResourcePackBuilder, id(this.registryName + "_player_only_glass"), textureID);
-			ArtificeGenerationHelper.generateBlockItemModel(clientResourcePackBuilder, id(this.registryName + "_player_only_glass"));
+			InnerRegistryClient.registerBlockModel(playerOnlyGlass, ModelHelper.makeCube(textureID));
+			InnerRegistryClient.registerItemModel(playerOnlyGlass.asItem(), ModelHelper.makeCube(textureID));
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_player_only_glass"), "block.crystal_player_only_glass", this.name);
 			BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), this.playerOnlyGlass);
 
@@ -571,8 +577,7 @@ public class CrystalMaterial extends ComplexMaterial {
 			texture = TextureHelper.combine(geodeCoreTexture, texture);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			textureID = new ResourceLocation(textureID.getNamespace(), textureID.getPath().replace("item/", ""));
-			ArtificeGenerationHelper.generateSimpleItemModel(clientResourcePackBuilder, id(this.registryName + "_geode_core"), textureID);
+			InnerRegistryClient.registerItemModel(this.geodeCore, ModelHelper.makeFlatItem(textureID));
 			NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem) this.geodeCore).getItemType().apply(registryName), "item.geode_core", this.name);
 
 			//Enriched Geode Core
@@ -581,8 +586,7 @@ public class CrystalMaterial extends ComplexMaterial {
 			texture = TextureHelper.combine(enrichedGeodeCoreTexture, texture);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			textureID = new ResourceLocation(textureID.getNamespace(), textureID.getPath().replace("item/", ""));
-			ArtificeGenerationHelper.generateSimpleItemModel(clientResourcePackBuilder, id(this.registryName + "_enriched_geode_core"), textureID);
+			InnerRegistryClient.registerItemModel(this.enrichedGeodeCore, ModelHelper.makeFlatItem(textureID));
 			NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem) this.enrichedGeodeCore).getItemType().apply(registryName), "item.enriched_geode_core", this.name);
 		}
 	}

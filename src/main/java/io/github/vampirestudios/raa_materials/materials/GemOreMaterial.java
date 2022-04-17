@@ -118,8 +118,8 @@ public class GemOreMaterial extends OreMaterial {
 	}
 
 	@Override
-	public void initClient(Random random, ArtificeResourcePack.ClientResourcePackBuilder clientResourcePackBuilder) {
-		super.initClient(random, clientResourcePackBuilder);
+	public void initClient(Random random) {
+		super.initClient(random);
 
 		ModelHelper.generateOreAssets(this.ore, oreVeinTexture, registryName, name, gradient, target);
 

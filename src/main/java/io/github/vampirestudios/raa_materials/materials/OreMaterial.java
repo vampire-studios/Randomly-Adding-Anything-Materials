@@ -2,7 +2,6 @@ package io.github.vampirestudios.raa_materials.materials;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
@@ -289,7 +288,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 	}
 
 	@Override
-	public void initClient(Random random, ArtificeResourcePack.ClientResourcePackBuilder clientResourcePackBuilder) {
+	public void initClient(Random random) {
 		Rands.setRand(random);
 
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_block"), "block.block", this.name);

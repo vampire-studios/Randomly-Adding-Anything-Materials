@@ -4,27 +4,16 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.vampirestudios.raa_core.api.client.RAAAddonClient;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.model.*;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.MOD_ID;
 
-public class RAAMaterialsClient implements RAAAddonClient, ModelResourceProvider, ModelVariantProvider {
-	public static CustomModelBakery modelBakery;
-
+public class RAAMaterialsClient implements RAAAddonClient {
 	@Override
 	public void onClientInitialize() {
-		modelBakery = new CustomModelBakery();
-		ModelLoadingRegistry.INSTANCE.registerResourceProvider(rm -> this);
-		ModelLoadingRegistry.INSTANCE.registerVariantProvider(rm -> this);
-
 		KeyMapping keyBinding = KeyBindingHelper.registerKeyBinding(new KeyMapping(
 				"key.raa_materials.fully_reload_assets", // The translation key of the keybinding's name
 				InputConstants.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
@@ -50,16 +39,6 @@ public class RAAMaterialsClient implements RAAAddonClient, ModelResourceProvider
 	@Override
 	public String[] shouldLoadAfter() {
 		return new String[]{};
-	}
-
-	@Override
-	public @Nullable UnbakedModel loadModelResource(ResourceLocation resourceId, ModelProviderContext context) {
-		return modelBakery.getBlockModel(resourceId);
-	}
-
-	@Override
-	public @Nullable UnbakedModel loadModelVariant(ModelResourceLocation modelId, ModelProviderContext context) {
-		return modelId.getVariant().equals("inventory") ? modelBakery.getItemModel( modelId) : modelBakery.getBlockModel(modelId);
 	}
 
 }

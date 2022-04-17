@@ -1,7 +1,6 @@
 package io.github.vampirestudios.raa_materials.materials;
 
 import com.google.common.collect.Lists;
-import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.utils.ColorDualGradient;
@@ -56,6 +55,20 @@ public abstract class ComplexMaterial {
 				new CustomColor(colorGradientCompound.getInt("startColor")),
 				new CustomColor(colorGradientCompound.getInt("midColor")),
 				new CustomColor(colorGradientCompound.getInt("endColor"))
+		);
+
+		CompoundTag compassGradientCompound = compound.getCompound("compassGradient");
+		ColorGradient compassGradient = new ColorGradient(
+				new CustomColor(compassGradientCompound.getInt("startColor")),
+				new CustomColor(compassGradientCompound.getInt("midColor")),
+				new CustomColor(compassGradientCompound.getInt("endColor"))
+		);
+
+		CompoundTag compassNeedleGradientCompound = compound.getCompound("compassNeedleGradient");
+		ColorGradient compassNeedleGradient = new ColorGradient(
+				new CustomColor(compassNeedleGradientCompound.getInt("startColor")),
+				new CustomColor(compassNeedleGradientCompound.getInt("midColor")),
+				new CustomColor(compassNeedleGradientCompound.getInt("endColor"))
 		);
 
 		OreMaterial.Target target = RAAMaterials.TARGETS.get(targetName);
@@ -133,8 +146,8 @@ public abstract class ComplexMaterial {
 			case "crystal" -> material = new CrystalMaterial(parsedName, random, gradient, textureInformation, tier, crystalLampOverlayTextureInt, crystalOreTextureInt,
 					chiseledVariantInt, tintedGlassVariantInt);
 			case "metal" -> {
-				ColorDualGradient metalicGradient = new ColorDualGradient(gradient, corrodedGradient);
-				material = new MetalOreMaterial(parsedName, random, metalicGradient, textureInformation, target, tier, hasOreVein);
+				ColorDualGradient metallicGradient = new ColorDualGradient(gradient, corrodedGradient);
+				material = new MetalOreMaterial(parsedName, random, metallicGradient, compassGradient, compassNeedleGradient, textureInformation, target, tier, hasOreVein);
 				OreMaterial oreMaterial = (OreMaterial) material;
 				oreMaterial.setBonus(bonus);
 				oreMaterial.setSize(size);
@@ -164,7 +177,7 @@ public abstract class ComplexMaterial {
 		return material;
 	}
 
-	public abstract void initClient(Random random, ArtificeResourcePack.ClientResourcePackBuilder clientResourcePackBuilder);
+	public abstract void initClient(Random random);
 
 	public static void resetMaterials() {
 		MATERIALS.clear();

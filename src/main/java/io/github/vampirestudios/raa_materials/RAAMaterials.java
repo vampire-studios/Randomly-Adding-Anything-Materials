@@ -7,8 +7,6 @@ import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.config.GeneralConfig;
 import io.github.vampirestudios.raa_materials.materials.*;
-import io.github.vampirestudios.raa_materials.utils.BlockFixer;
-import io.github.vampirestudios.raa_materials.utils.ItemFixer;
 import io.github.vampirestudios.vampirelib.utils.Rands;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
@@ -147,18 +145,7 @@ public class RAAMaterials implements RAAAddon {
 				world.getServer().reloadResources(world.getServer().getPackRepository().getSelectedIds());
 
 				if (isClient()) {
-					InnerRegistry.registerArtificeResourcePack(id("material_assets"), clientResourcePackBuilder ->{
-							materials.forEach(material -> material.initClient(random, clientResourcePackBuilder));
-
-								new Thread(() -> {
-									try {
-										clientResourcePackBuilder.dumpResources("testing", "assets");
-									} catch (IOException e) {
-										e.printStackTrace();
-									}
-								}).start();
-					}
-					);
+					materials.forEach(material -> material.initClient(random));
 					Minecraft.getInstance().delayTextureReload().thenRun(() ->
 							Minecraft.getInstance().getItemRenderer().getItemModelShaper().rebuildCache());
 				}
@@ -209,9 +196,6 @@ public class RAAMaterials implements RAAAddon {
 		Registry.register(TARGETS, minecraftId("warped_nylium"), OreMaterial.Target.WARPED_NYLIUM);
 		Registry.register(TARGETS, minecraftId("mycelium"), OreMaterial.Target.MYCELIUM);
 		Registry.register(TARGETS, minecraftId("podzol"), OreMaterial.Target.PODZOL);
-
-		ItemFixer.init();
-		BlockFixer.init();
 
 		LifeCycleAPI.onLevelLoad((biomeWorld, seed, biomes) -> onServerStart(biomeWorld, seed, biomes, biomeWorld.dimension().equals(Level.OVERWORLD)));
 	}

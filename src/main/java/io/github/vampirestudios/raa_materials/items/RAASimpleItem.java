@@ -33,6 +33,7 @@ public class RAASimpleItem extends Item implements GeneratedItemName {
         POWDER("","powder"),
         SMALL_DUST("small","dust"),
         SHEETS("","sheet"),
+        COMPASS("","compass"),
         GEODE_CORE("","geode_core"),
         ENRICHED_GEODE_CORE("","enriched_geode_core"),
         CRUSHED_ORE("crushed","ore");

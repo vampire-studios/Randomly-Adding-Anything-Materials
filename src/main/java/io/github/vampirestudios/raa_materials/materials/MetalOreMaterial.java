@@ -1,6 +1,5 @@
 package io.github.vampirestudios.raa_materials.materials;
 
-import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
@@ -8,6 +7,7 @@ import io.github.vampirestudios.raa_materials.api.BiomeAPI;
 import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
+import io.github.vampirestudios.raa_materials.client.CompassItemPropertyFunction;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
@@ -17,14 +17,16 @@ import io.github.vampirestudios.raa_materials.recipes.support.ProcessingCreateRe
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.fabricmc.fabric.api.registry.OxidizableBlocksRegistry;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.Items;
@@ -42,12 +44,13 @@ import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.RarityFilter;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RandomBlockMatchTest;
-import net.minecraft.world.level.storage.loot.LootContext;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 
 //0.0 -> 1.0
 //Normal Block -> Ore/Raw
@@ -118,6 +121,7 @@ public class MetalOreMaterial extends OreMaterial {
 	public final Item dust;
 	public final Item small_dust;
 	public final Item plate;
+	public Item compass;
 
 	public boolean hasOreVein;
 
@@ -125,10 +129,14 @@ public class MetalOreMaterial extends OreMaterial {
 	public ColorGradient oreGradient;
 	public ColorGradient weatheredGradient;
 	public ColorGradient corrodedGradient;
+	public ColorGradient compassColorGradient;
+	public ColorGradient compassNeedleColorGradient;
 
 	public MetalOreMaterial(Target target, Random random) {
 		this(TestNameGenerator.generateOreName(random), random,
 				ProceduralTextures.makeMetalPalette(random),
+				ProceduralTextures.makeGemPalette(random),
+				ProceduralTextures.makeGemPalette(random),
 				TextureInformation.builder()
 					.oreOverlay(Rands.values(oreVeinTextures))
 					.storageBlock(Rands.values(storageBlockTextures))
@@ -140,10 +148,10 @@ public class MetalOreMaterial extends OreMaterial {
 					.ingot(Rands.values(ingotTextures))
 					.rawItem(Rands.values(rawMaterialTextures))
 					.plate(Rands.values(plateTextures))
-					.gear(RAAMaterials.id("textures/item/gears/gear_1.png"))
+					.gear(id("textures/item/gears/gear_1.png"))
 					.nugget(Rands.values(nuggetTextures))
 					.dust(Rands.values(dustTextures))
-					.smallDust(RAAMaterials.id("textures/item/small_dusts/small_dust_1.png"))
+					.smallDust(id("textures/item/small_dusts/small_dust_1.png"))
 					.swordBlade(Rands.values(swordBladeTextures))
 					.swordHandle(Rands.values(swordHandleTextures))
 					.pickaxeHead(Rands.values(pickaxeHeadTextures))
@@ -160,7 +168,8 @@ public class MetalOreMaterial extends OreMaterial {
 		);
 	}
 
-	public MetalOreMaterial(Pair<String, String> name, Random random, ColorDualGradient gradient, TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
+	public MetalOreMaterial(Pair<String, String> name, Random random, ColorDualGradient gradient, ColorGradient compassGradient, ColorGradient compassNeedleGradient,
+							TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
 		super(name, random, gradient.gradient1(), textureInformation, targetIn, RAASimpleItem.SimpleItemType.RAW, tier, true);
 		Rands.setRand(random);
 
@@ -185,6 +194,8 @@ public class MetalOreMaterial extends OreMaterial {
 		this.oreGradient = gradient.getIntermediaryGradient(0.5f);
 		this.weatheredGradient = gradient.getIntermediaryGradient(0.75f);
 		this.corrodedGradient = gradient.gradient2();
+		this.compassColorGradient = compassGradient;
+		this.compassNeedleColorGradient = compassNeedleGradient;
 
 		this.exposedStorageBlock = registerSimpleBlock("exposed_" + this.registryName + "_block", BlockBehaviour.Properties.copy(Blocks.EXPOSED_COPPER));
 		this.wornStorageBlock = registerSimpleBlock("worn_" + this.registryName + "_block", BlockBehaviour.Properties.copy(Blocks.WEATHERED_COPPER));
@@ -243,6 +254,7 @@ public class MetalOreMaterial extends OreMaterial {
 		dust = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.DUST);
 		small_dust = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SMALL_DUST);
 		plate = RAASimpleItem.register(this.registryName,  new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHEETS);
+		compass = RAASimpleItem.register(this.registryName,  new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.COMPASS);
 
 		if (FabricLoader.getInstance().isModLoaded("create")) {
 			crushedOre = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.CRUSHED_ORE);
@@ -480,12 +492,24 @@ public class MetalOreMaterial extends OreMaterial {
 		colorGradientCompound.putInt("endColor", this.corrodedGradient.getColor(1.0F).getAsInt());
 		materialCompound.put("corrosionGradient", colorGradientCompound);
 
+		CompoundTag compassGradientCompound = new CompoundTag();
+		compassGradientCompound.putInt("startColor", this.compassColorGradient.getColor(0.0F).getAsInt());
+		compassGradientCompound.putInt("midColor", this.compassColorGradient.getColor(0.5F).getAsInt());
+		compassGradientCompound.putInt("endColor", this.compassColorGradient.getColor(1.0F).getAsInt());
+		materialCompound.put("compassGradient", compassGradientCompound);
+
+		CompoundTag compassNeedleGradientCompound = new CompoundTag();
+		compassNeedleGradientCompound.putInt("startColor", this.compassNeedleColorGradient.getColor(0.0F).getAsInt());
+		compassNeedleGradientCompound.putInt("midColor", this.compassNeedleColorGradient.getColor(0.5F).getAsInt());
+		compassNeedleGradientCompound.putInt("endColor", this.compassNeedleColorGradient.getColor(1.0F).getAsInt());
+		materialCompound.put("compassNeedleGradient", compassNeedleGradientCompound);
+
 		return materialCompound;
 	}
 
 	@Override
-	public void initClient(Random random, ArtificeResourcePack.ClientResourcePackBuilder clientResourcePackBuilder) {
-		super.initClient(random, clientResourcePackBuilder);
+	public void initClient(Random random) {
+		super.initClient(random);
 		BufferTexture metalShinglesTexture = TextureHelper.loadTexture("textures/block/metal_shingles.png");
 		BufferTexture metalPlateTexture = TextureHelper.loadTexture("textures/block/metal_plate.png");
 
@@ -521,6 +545,43 @@ public class MetalOreMaterial extends OreMaterial {
 		makeColoredItemAssets(gearTexture, gear, gradient, this.registryName + "_gear", "item.gear");
 		makeColoredItemAssets(dustTexture, dust, gradient, this.registryName + "_dust", "item.dust");
 
+		BufferTexture compassBaseTexture = TextureHelper.loadTexture("textures/item/compass/compass_base.png");
+		ResourceLocation textureID = TextureHelper.makeItemTextureID(this.registryName + "_compass_base");
+		InnerRegistryClient.registerTexture(textureID, compassBaseTexture);
+
+		BufferTexture compassOverlayTexture = TextureHelper.loadTexture("textures/item/compass/compass_overlay.png");
+		BufferTexture compassOverlay = ProceduralTextures.randomColored(compassOverlayTexture, this.compassColorGradient);
+		textureID = TextureHelper.makeItemTextureID(this.registryName + "_compass_base");
+		InnerRegistryClient.registerTexture(textureID, compassOverlay);
+
+		BufferTexture[] compassNeedles = new BufferTexture[32];
+		for(int i = 0; i < 32; ++i) {
+			compassNeedles[i] = TextureHelper.loadTexture(String.format("textures/item/compass/compass_%02d_overlay.png", i));
+			BufferTexture compassNeedle = ProceduralTextures.randomColored(compassNeedles[0], this.compassNeedleColorGradient);
+			textureID = TextureHelper.makeItemTextureID(this.registryName + String.format("_compass_%02d_overlay.png", i));
+			InnerRegistryClient.registerTexture(textureID, compassNeedle);
+
+			BufferTexture texture = TextureHelper.combine(compassBaseTexture, compassOverlay);
+			texture = TextureHelper.combine(texture, compassNeedle);
+			textureID = TextureHelper.makeItemTextureID(this.registryName + String.format("_compass_%02d.png", i));
+			InnerRegistryClient.registerTexture(textureID, texture);
+			if (i != 16) {
+				InnerRegistryClient.registerModel(TextureHelper.makeItemTextureID(this.registryName + String.format("_compass_%02d", i)), ModelHelper.makeFlatItem(textureID));
+			}
+		}
+		String model = ModelHelper.makeCompass(this.registryName);
+		System.out.println(model);
+		InnerRegistryClient.registerItemModel(this.compass, model);
+		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)compass).getItemType().apply(registryName), "item.compass", name);
+		int number = Rands.randIntRange(20, 100);
+		ItemProperties.register(
+				this.compass,
+				new ResourceLocation("angle"),
+				new CompassItemPropertyFunction((world, stack, entity) -> entity instanceof Player player ? GlobalPos.of(world.dimension(), player.blockPosition().offset(
+						number, player.blockPosition().getY(), number)) : null
+				)
+		);
+
 		if (FabricLoader.getInstance().isModLoaded("create")) makeColoredItemAssets(crushedOreTexture, crushedOre, oreGradient, "crushed_" + this.registryName + "_ore", "item.crushed_ore");
 	}
 
@@ -547,10 +608,10 @@ public class MetalOreMaterial extends OreMaterial {
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.3F), ore.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.01F), rawMaterialBlock.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.25F), rawMaterialBlock.defaultBlockState()));
-			Holder<ConfiguredFeature<?, ?>> oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein"),
+			Holder<ConfiguredFeature<?, ?>> oreVein = InnerRegistry.registerConfiguredFeature(world, id(this.registryName + "_ore_vein"),
 					Feature.ORE, new OreConfiguration(blockStates, size));
 
-			ResourceKey<PlacedFeature> oreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, RAAMaterials.id(this.registryName + "_ore_vein_pf"));
+			ResourceKey<PlacedFeature> oreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_vein_pf"));
 			Holder<PlacedFeature> oreVeinHolder = InnerRegistry.registerPlacedFeature(world, oreVeinKey, oreVein,
 					HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)),
 					CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(rarity));
@@ -559,10 +620,10 @@ public class MetalOreMaterial extends OreMaterial {
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.3F), ore.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.01F), rawMaterialBlock.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.25F), rawMaterialBlock.defaultBlockState()));
-			oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein"), Feature.ORE,
+			oreVein = InnerRegistry.registerConfiguredFeature(world, id(this.registryName + "_ore_vein"), Feature.ORE,
 					new OreConfiguration(blockStates, size * 2));
 
-			oreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, RAAMaterials.id(this.registryName + "_ore_vein_pf"));
+			oreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_vein_pf"));
 			Holder<PlacedFeature> mediumOreVeinHolder = InnerRegistry.registerPlacedFeature(world, oreVeinKey, oreVein,
 					HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)),
 					CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(rarity * 2));
@@ -571,10 +632,10 @@ public class MetalOreMaterial extends OreMaterial {
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.3F), ore.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(target.block(), 0.01F), rawMaterialBlock.defaultBlockState()));
 			blockStates.add(OreConfiguration.target(new RandomBlockMatchTest(ore, 0.25F), rawMaterialBlock.defaultBlockState()));
-			oreVein = InnerRegistry.registerConfiguredFeature(world, RAAMaterials.id(this.registryName + "_ore_vein_huge"), Feature.ORE,
+			oreVein = InnerRegistry.registerConfiguredFeature(world, id(this.registryName + "_ore_vein_huge"), Feature.ORE,
 					new OreConfiguration(blockStates, size * 4));
 
-			ResourceKey<PlacedFeature> placedHugeOreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, RAAMaterials.id(this.registryName + "_ore_vein_huge_pf"));
+			ResourceKey<PlacedFeature> placedHugeOreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_vein_huge_pf"));
 			Holder<PlacedFeature> largeOreVeinHolder = InnerRegistry.registerPlacedFeature(world, placedHugeOreVeinKey, oreVein,
 					HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)),
 					CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(rarity * 4));
@@ -595,43 +656,43 @@ public class MetalOreMaterial extends OreMaterial {
 	static {
 		oreVeinTextures = new ResourceLocation[39];
 		for (int i = 0; i < oreVeinTextures.length; i++) {
-			oreVeinTextures[i] = RAAMaterials.id("textures/block/ores/metals/ore_" + (i+1) + ".png");
+			oreVeinTextures[i] = id("textures/block/ores/metals/ore_" + (i+1) + ".png");
 		}
 		storageBlockTextures = new ResourceLocation[21];
 		for (int i = 0; i < storageBlockTextures.length; i++) {
-			storageBlockTextures[i] = RAAMaterials.id("textures/block/storage_blocks/metals/metal_" + (i+1) + ".png");
+			storageBlockTextures[i] = id("textures/block/storage_blocks/metals/metal_" + (i+1) + ".png");
 		}
 		rawMaterialBlockTextures = new ResourceLocation[14];
 		for (int i = 0; i < rawMaterialBlockTextures.length; i++) {
-			rawMaterialBlockTextures[i] = RAAMaterials.id("textures/block/storage_blocks/metals/raw_" + (i+1) + ".png");
+			rawMaterialBlockTextures[i] = id("textures/block/storage_blocks/metals/raw_" + (i+1) + ".png");
 		}
 
 		rawMaterialTextures = new ResourceLocation[18];
 		for (int i = 0; i < rawMaterialTextures.length; i++) {
-			rawMaterialTextures[i] = RAAMaterials.id("textures/item/raw/raw_" + (i+1) + ".png");
+			rawMaterialTextures[i] = id("textures/item/raw/raw_" + (i+1) + ".png");
 		}
 		ingotTextures = new ResourceLocation[28];
 		for (int i = 0; i < ingotTextures.length; i++) {
-			ingotTextures[i] = RAAMaterials.id("textures/item/ingots/ingot_" + (i+1) + ".png");
+			ingotTextures[i] = id("textures/item/ingots/ingot_" + (i+1) + ".png");
 		}
 		nuggetTextures = new ResourceLocation[10];
 		for (int i = 0; i < nuggetTextures.length; i++) {
-			nuggetTextures[i] = RAAMaterials.id("textures/item/nuggets/nugget_" + (i+1) + ".png");
+			nuggetTextures[i] = id("textures/item/nuggets/nugget_" + (i+1) + ".png");
 		}
 
 		plateTextures = new ResourceLocation[3];
 		for (int i = 0; i < plateTextures.length; i++) {
-			plateTextures[i] = RAAMaterials.id("textures/item/plates/plate_" + (i+1) + ".png");
+			plateTextures[i] = id("textures/item/plates/plate_" + (i+1) + ".png");
 		}
 
 		dustTextures = new ResourceLocation[5];
 		for (int i = 0; i < dustTextures.length; i++) {
-			dustTextures[i] = RAAMaterials.id("textures/item/dusts/dust_" + (i+1) + ".png");
+			dustTextures[i] = id("textures/item/dusts/dust_" + (i+1) + ".png");
 		}
 
 		crushedOreTextures = new ResourceLocation[4];
 		for (int i = 0; i < crushedOreTextures.length; i++) {
-			crushedOreTextures[i] = RAAMaterials.id("textures/item/crushed_ore/crushed_ore_" + (i+1) + ".png");
+			crushedOreTextures[i] = id("textures/item/crushed_ore/crushed_ore_" + (i+1) + ".png");
 		}
 	}
 

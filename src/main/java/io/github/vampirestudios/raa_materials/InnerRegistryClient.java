@@ -58,16 +58,37 @@ public class InnerRegistryClient {
 		MODELED.add(id);
 	}
 
+	public static void registerBlockModel(ResourceLocation id, BlockState state, UnbakedModel model) {
+		if (model instanceof BlockModel) {
+			((BlockModel) model).name = BlockModelShaper.stateToModelLocation(id, state).toString();
+		}
+		BLOCK_MODELS.put(state, model);
+		MODELED.add(id);
+	}
+
 	public static void registerBlockModel(Block block, String json) {
 		BlockModel model = BlockModel.fromString(json);
 		BlockState state = block.defaultBlockState();
 		registerBlockModel(state, model);
 	}
 
+	public static void registerBlockModel(Block block, ResourceLocation id, String json) {
+		BlockModel model = BlockModel.fromString(json);
+		BlockState state = block.defaultBlockState();
+		registerBlockModel(id, state, model);
+	}
+
 	public static void registerModel(ResourceLocation id, String json) {
 		BlockModel model = BlockModel.fromString(json);
 		model.name = id.toString();
 		FREE_MODELS.put(id, model);
+	}
+
+	public static void registerItemModel(Item item, ResourceLocation id, String json) {
+		BlockModel model = BlockModel.fromString(json);
+		model.name = id.toString();
+		ITEM_MODELS.put(item, model);
+		MODELED.add(id);
 	}
 
 	public static void registerItemModel(Item item, String json) {
