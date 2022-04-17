@@ -163,7 +163,7 @@ public class StoneMaterial extends ComplexMaterial {
 		if (FabricLoader.getInstance().isModLoaded("create")){
 			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushed_to_random", this.stone, Registry.ITEM.byId(Rands.randIntRange(1, Registry.ITEM.size()-1)), 2, 0.125f)
 					.addOutput(Registry.ITEM.byId(Rands.randIntRange(1, Registry.ITEM.size()-1)), 1, 0.0625f)
-					.setProcssingTime(250)
+					.setProcessingTime(250)
 					.buildCrushing();
 		}
 	}

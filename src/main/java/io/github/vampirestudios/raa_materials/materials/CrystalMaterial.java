@@ -20,8 +20,8 @@ import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.RAASimpleCloakedItem;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
+import io.github.vampirestudios.raa_materials.recipes.support.ProcessingCreateRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
-import io.github.vampirestudios.vampirelib.utils.ArtificeGenerationHelper;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
@@ -47,7 +47,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.TintedGlassBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -278,6 +277,13 @@ public class CrystalMaterial extends ComplexMaterial {
 				.setShape(" i ", "igi", " i ")
 				.setOutputCount(1)
 				.build();
+
+		if (FabricLoader.getInstance().isModLoaded("create")) {
+			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_cluster", this.crystal, this.shard, 7, 1.0F)
+					.addOutput(shard, 1, 0.5F)
+					.setProcessingTime(150)
+					.buildCrushing();
+		}
 
 		this.crystalBlock = textureInformation.crystalBlock();
 		this.buddingCrystalBlock = textureInformation.buddingCrystalBlock();

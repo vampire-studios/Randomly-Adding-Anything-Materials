@@ -4,16 +4,14 @@ import com.simibubi.create.AllItems;
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.content.contraptions.components.crusher.CrushingRecipe;
 import com.simibubi.create.content.contraptions.components.fan.SplashingRecipe;
+import com.simibubi.create.content.contraptions.components.press.PressingRecipe;
 import com.simibubi.create.content.contraptions.processing.ProcessingRecipeBuilder;
-import com.simibubi.create.foundation.data.recipe.CreateRecipeProvider;
 import io.github.vampirestudios.raa_materials.recipes.CustomRecipeManager;
-import io.github.vampirestudios.raa_materials.recipes.FurnaceRecipe;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 
 import java.util.ArrayList;
-import java.util.function.Supplier;
 
 public class ProcessingCreateRecipe {
     private static final ProcessingCreateRecipe INSTANCE = new ProcessingCreateRecipe();
@@ -39,6 +37,7 @@ public class ProcessingCreateRecipe {
     public static ProcessingCreateRecipe make(ResourceLocation id, ItemLike input, ItemLike output) {
         return make(id, input, output, 1, 1f);
     }
+
     public static ProcessingCreateRecipe make(ResourceLocation id, ItemLike input, ItemLike output, int count, float chance) {
         INSTANCE.id = id;
         INSTANCE.input = input;
@@ -63,18 +62,26 @@ public class ProcessingCreateRecipe {
 
     public ProcessingCreateRecipe oreCrushing(ItemLike target, float extra, int processingTime) {
         this.addOutput(this.output.get(0),1, extra)
-                .addOutput(AllItems.EXP_NUGGET.get(),1,0.75f)
-                .addOutput(target,1,0.125f);
+            .addOutput(AllItems.EXP_NUGGET.get(),1,0.75f)
+            .addOutput(target,1,0.125f);
         this.processingTime = processingTime;
         return this;
     }
 
     public ProcessingCreateRecipe addExpNugget() {
-        this.addOutput(AllItems.EXP_NUGGET.get(),1,0.75f);
+        return addExpNugget(1, 0.75F);
+    }
+
+    public ProcessingCreateRecipe addExpNugget(int count) {
+        return addExpNugget(count, 0.75F);
+    }
+
+    public ProcessingCreateRecipe addExpNugget(int count, float chance) {
+        this.addOutput(AllItems.EXP_NUGGET.get() ,count, chance);
         return this;
     }
 
-    public ProcessingCreateRecipe setProcssingTime(int processingTime) {
+    public ProcessingCreateRecipe setProcessingTime(int processingTime) {
         this.processingTime = processingTime;
         return this;
     }
@@ -89,6 +96,18 @@ public class ProcessingCreateRecipe {
             recipe.output(chance.get(i), output.get(i), count.get(i));
         }
         CustomRecipeManager.addRecipe(AllRecipeTypes.SPLASHING.getType(), recipe.build());
+    }
+
+    public void buildPressing() {
+        if (!exist) {
+            return;
+        }
+        ProcessingRecipeBuilder<PressingRecipe> recipe = new ProcessingRecipeBuilder<>(PressingRecipe::new, new ResourceLocation(id + "_pressing"))
+                .withItemIngredients(Ingredient.of(input));
+        for (int i = 0; i < chance.size(); i++) {
+            recipe.output(chance.get(i), output.get(i), count.get(i));
+        }
+        CustomRecipeManager.addRecipe(AllRecipeTypes.PRESSING.getType(), recipe.build());
     }
 
     public void buildCrushing() {

@@ -120,7 +120,7 @@ public class MetalOreMaterial extends OreMaterial {
 	public final Item gear;
 	public final Item dust;
 	public final Item small_dust;
-	public final Item plate;
+	public final Item sheet;
 	public Item compass;
 
 	public boolean hasOreVein;
@@ -253,7 +253,7 @@ public class MetalOreMaterial extends OreMaterial {
 		gear = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEAR);
 		dust = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.DUST);
 		small_dust = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SMALL_DUST);
-		plate = RAASimpleItem.register(this.registryName,  new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHEETS);
+		sheet = RAASimpleItem.register(this.registryName,  new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHEETS);
 		compass = RAASimpleItem.register(this.registryName,  new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.COMPASS);
 
 		if (FabricLoader.getInstance().isModLoaded("create")) {
@@ -428,18 +428,20 @@ public class MetalOreMaterial extends OreMaterial {
 		if (FabricLoader.getInstance().isModLoaded("create")){
 			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.droppedItem, this.crushedOre)
 					.addExpNugget()
-					.setProcssingTime(400)
+					.setProcessingTime(400)
 					.buildCrushing();
 			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore_block", this.rawMaterialBlock, this.crushedOre, 9, 1f)
-					.addExpNugget()
-					.setProcssingTime(400)
+					.addExpNugget(9)
+					.setProcessingTime(400)
 					.buildCrushing();
 			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.ore.asItem(), this.crushedOre)
-					.oreCrushing(this.target.block(), 0.25f, 350)
+					.oreCrushing(this.target.block(), Rands.list(List.of(0.5F, 0.75F)), 350)
 					.buildCrushing();
 			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_washing_crushed_ore", this.crushedOre, this.nugget, 9, 1f)
 					.addOutput(Registry.ITEM.byId(Rands.randIntRange(1, Registry.ITEM.size()-1)), 1, 0.125f)
 					.buildWashing();
+			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_pressing_sheet", this.ingot, this.sheet)
+					.buildPressing();
 			FurnaceRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_ingot_from_crushed_material", crushedOre, ingot)
 					.setCookTime(20)
 					.setXP(5)
@@ -540,7 +542,7 @@ public class MetalOreMaterial extends OreMaterial {
 		makeColoredItemAssets(ingotTexture, ingot, gradient, this.registryName + "_ingot", "item.ingot");
 		makeColoredItemAssets(nuggetTexture, nugget, gradient, this.registryName + "_nugget", "item.nugget");
 
-		makeColoredItemAssets(plateTexture, plate, gradient, this.registryName + "_plate", "item.plate");
+		makeColoredItemAssets(plateTexture, sheet, gradient, this.registryName + "_plate", "item.plate");
 		makeColoredItemAssets(smallDustTexture, small_dust, gradient, "small_" + this.registryName + "_dust", "item.small_dust");
 		makeColoredItemAssets(gearTexture, gear, gradient, this.registryName + "_gear", "item.gear");
 		makeColoredItemAssets(dustTexture, dust, gradient, this.registryName + "_dust", "item.dust");
