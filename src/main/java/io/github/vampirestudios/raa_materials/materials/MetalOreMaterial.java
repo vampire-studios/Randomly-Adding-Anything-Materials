@@ -548,30 +548,25 @@ public class MetalOreMaterial extends OreMaterial {
 		makeColoredItemAssets(dustTexture, dust, gradient, this.registryName + "_dust", "item.dust");
 
 		BufferTexture compassBaseTexture = TextureHelper.loadTexture("textures/item/compass/compass_base.png");
-		ResourceLocation textureID = TextureHelper.makeItemTextureID(this.registryName + "_compass_base");
-		InnerRegistryClient.registerTexture(textureID, compassBaseTexture);
+		ResourceLocation textureID;
 
 		BufferTexture compassOverlayTexture = TextureHelper.loadTexture("textures/item/compass/compass_overlay.png");
 		BufferTexture compassOverlay = ProceduralTextures.randomColored(compassOverlayTexture, this.compassColorGradient);
-		textureID = TextureHelper.makeItemTextureID(this.registryName + "_compass_base");
-		InnerRegistryClient.registerTexture(textureID, compassOverlay);
 
 		BufferTexture[] compassNeedles = new BufferTexture[32];
 		for(int i = 0; i < 32; ++i) {
 			compassNeedles[i] = TextureHelper.loadTexture(String.format("textures/item/compass/compass_%02d_overlay.png", i));
-			BufferTexture compassNeedle = ProceduralTextures.randomColored(compassNeedles[0], this.compassNeedleColorGradient);
-			textureID = TextureHelper.makeItemTextureID(this.registryName + String.format("_compass_%02d_overlay.png", i));
-			InnerRegistryClient.registerTexture(textureID, compassNeedle);
+			BufferTexture compassNeedle = ProceduralTextures.randomColored(compassNeedles[i], this.compassNeedleColorGradient);
 
 			BufferTexture texture = TextureHelper.combine(compassBaseTexture, compassOverlay);
 			texture = TextureHelper.combine(texture, compassNeedle);
-			textureID = TextureHelper.makeItemTextureID(this.registryName + String.format("_compass_%02d.png", i));
+			textureID = TextureHelper.makeItemTextureID(this.registryName + String.format("_compass_%02d", i));
 			InnerRegistryClient.registerTexture(textureID, texture);
 			if (i != 16) {
 				InnerRegistryClient.registerModel(TextureHelper.makeItemTextureID(this.registryName + String.format("_compass_%02d", i)), ModelHelper.makeFlatItem(textureID));
 			}
 		}
-		String model = ModelHelper.makeCompass(this.registryName);
+		String model = ModelHelper.makeCompass(TextureHelper.makeItemTextureID(this.registryName + "_compass"));
 		System.out.println(model);
 		InnerRegistryClient.registerItemModel(this.compass, model);
 		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)compass).getItemType().apply(registryName), "item.compass", name);
