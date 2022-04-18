@@ -37,7 +37,7 @@ public class CustomModelBakery {
 			}
 			storageID = new ResourceLocation(blockID.getNamespace(), "models/item/" + blockID.getPath() + ".json");
 			if (!resourceManager.hasResource(storageID)) {
-				addItemModel(blockID, (ItemModelProvider) block);
+//				addItemModel(blockID, (ItemModelProvider) block);
 			}
 		});
 		

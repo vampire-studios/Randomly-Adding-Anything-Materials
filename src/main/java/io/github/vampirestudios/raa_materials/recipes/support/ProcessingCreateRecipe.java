@@ -61,8 +61,16 @@ public class ProcessingCreateRecipe {
     }
 
     public ProcessingCreateRecipe oreCrushing(ItemLike target, float extra, int processingTime) {
-        this.addOutput(this.output.get(0),1, extra)
-            .addOutput(AllItems.EXP_NUGGET.get(),1,0.75f)
+        return this.oreCrushing(target, 1, extra, processingTime);
+    }
+
+    public ProcessingCreateRecipe oreCrushing(ItemLike target, int amount, float extraOutputChance, int processingTime) {
+        return this.oreCrushing(target, amount, 1, extraOutputChance, processingTime);
+    }
+
+    public ProcessingCreateRecipe oreCrushing(ItemLike target, int extraAmount, int expAmount, float extraOutputChance, int processingTime) {
+        this.addOutput(this.output.get(0), extraAmount, extraOutputChance)
+            .addExpNugget(expAmount)
             .addOutput(target,1,0.125f);
         this.processingTime = processingTime;
         return this;

@@ -75,10 +75,6 @@ dependencies {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 
-	modImplementation fileTree(dir: 'libs', include: '*.jar')
-	modImplementation("com.github.paulevsGitch:BCLib:1.4.3") {
-		exclude(group: "net.fabricmc.fabric-api")
-	}
 	modImplementation("com.simibubi:Create:mc1.18.2_v0.4.1+500") {
 		exclude(group: "net.fabricmc.fabric-api")
 	}

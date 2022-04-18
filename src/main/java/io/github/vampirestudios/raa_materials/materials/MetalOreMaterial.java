@@ -30,6 +30,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -124,6 +125,10 @@ public class MetalOreMaterial extends OreMaterial {
 	public Item compass;
 
 	public boolean hasOreVein;
+	public final int randXOffset;
+	public final int randZOffset;
+	public final int crushedOreAmount;
+	public final ResourceKey<Level> compassDimension;
 
 	public ColorGradient exposedGradient;
 	public ColorGradient oreGradient;
@@ -164,12 +169,16 @@ public class MetalOreMaterial extends OreMaterial {
 					.shovelStick(Rands.values(shovelStickTextures))
 					.crushedOre(Rands.values(crushedOreTextures))
 					.build(),
-				target, Rands.randIntRange(1, 3), Rands.chance(10)
+				target, Rands.randIntRange(1, 3), Rands.chance(10),
+				Rands.randIntRange(20, 300), Rands.randIntRange(20, 300),
+				Rands.list(List.of(Level.OVERWORLD, Level.END, Level.NETHER)),
+				Rands.randIntRange(1, Rands.chance(2) ? 6 : 2)
 		);
 	}
 
 	public MetalOreMaterial(Pair<String, String> name, Random random, ColorDualGradient gradient, ColorGradient compassGradient, ColorGradient compassNeedleGradient,
-							TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein) {
+							TextureInformation textureInformation, Target targetIn, int tier, boolean hasOreVein, int randXOffset,
+							int randZOffset, ResourceKey<Level> compassDimension, int crushedOreAmount) {
 		super(name, random, gradient.gradient1(), textureInformation, targetIn, RAASimpleItem.SimpleItemType.RAW, tier, true);
 		Rands.setRand(random);
 
@@ -190,6 +199,10 @@ public class MetalOreMaterial extends OreMaterial {
 		this.crushedOreTexture = textureInformation.crushedOre();
 
 		this.hasOreVein = hasOreVein;
+		this.randXOffset = randXOffset;
+		this.randZOffset = randZOffset;
+		this.compassDimension = compassDimension;
+		this.crushedOreAmount = crushedOreAmount;
 		this.exposedGradient = gradient.getIntermediaryGradient(0.25f);
 		this.oreGradient = gradient.getIntermediaryGradient(0.5f);
 		this.weatheredGradient = gradient.getIntermediaryGradient(0.75f);
@@ -344,15 +357,15 @@ public class MetalOreMaterial extends OreMaterial {
 				.build();
 
 		FurnaceRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_ingot_from_raw_material", droppedItem, ingot)
-				.setCookTime(20)
-				.setXP(5)
+				.setCookTime(100)
+				.setXP(0.7F)
 				.setGroup("raw_materials_to_cooked")
 				.setOutputCount(1)
 				.buildWithBlasting();
 		FurnaceRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_block_from_raw_material_block", rawMaterialBlock, storageBlock)
-				.setCookTime(10)
-				.setXP(5)
-				.setGroup("raw_materials_to_cooked")
+				.setCookTime(900)
+				.setXP(6.3F)
+				.setGroup("raw_blocks_to_cooked")
 				.setOutputCount(1)
 				.buildWithBlasting();
 
@@ -425,19 +438,26 @@ public class MetalOreMaterial extends OreMaterial {
 				.setGroup("plates")
 				.setOutputCount(2)
 				.build();
-		if (FabricLoader.getInstance().isModLoaded("create")){
+		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_compass", this.compass)
+				.addMaterial('i', this.ingot)
+				.addMaterial('r', Items.REDSTONE)
+				.setShape(" i ", "iri", " r ")
+				.setGroup("compasses")
+				.setOutputCount(1)
+				.build();
+		if (FabricLoader.getInstance().isModLoaded("create")) {
 			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.droppedItem, this.crushedOre)
 					.addExpNugget()
 					.setProcessingTime(400)
 					.buildCrushing();
-			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore_block", this.rawMaterialBlock, this.crushedOre, 9, 1f)
+			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore_block", this.rawMaterialBlock, this.crushedOre, 9, 1.0F)
 					.addExpNugget(9)
 					.setProcessingTime(400)
 					.buildCrushing();
-			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.ore.asItem(), this.crushedOre)
+			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.ore.asItem(), this.crushedOre, this.crushedOreAmount, 1.0F)
 					.oreCrushing(this.target.block(), Rands.list(List.of(0.5F, 0.75F)), 350)
 					.buildCrushing();
-			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_washing_crushed_ore", this.crushedOre, this.nugget, 9, 1f)
+			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_washing_crushed_ore", this.crushedOre, this.nugget, 9, 1.0F)
 					.addOutput(Registry.ITEM.byId(Rands.randIntRange(1, Registry.ITEM.size()-1)), 1, 0.125f)
 					.buildWashing();
 			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_pressing_sheet", this.ingot, this.sheet)
@@ -467,6 +487,10 @@ public class MetalOreMaterial extends OreMaterial {
 	public CompoundTag writeToNbt(CompoundTag materialCompound) {
 		super.writeToNbt(materialCompound);
 		materialCompound.putString("materialType", "metal");
+		materialCompound.putInt("randXOffset", this.randXOffset);
+		materialCompound.putInt("randZOffset", this.randZOffset);
+		materialCompound.putInt("crushedOreAmount", this.crushedOreAmount);
+		materialCompound.putString("compassDimension", this.compassDimension.location().toString());
 
 		CompoundTag generationCompound = materialCompound.getCompound("generation");
 		generationCompound.putBoolean("hasOreVein", this.hasOreVein);
@@ -566,16 +590,13 @@ public class MetalOreMaterial extends OreMaterial {
 				InnerRegistryClient.registerModel(TextureHelper.makeItemTextureID(this.registryName + String.format("_compass_%02d", i)), ModelHelper.makeFlatItem(textureID));
 			}
 		}
-		String model = ModelHelper.makeCompass(TextureHelper.makeItemTextureID(this.registryName + "_compass"));
-//		System.out.println(model);
-		InnerRegistryClient.registerItemModel(this.compass, model);
+		InnerRegistryClient.registerItemModel(this.compass, ModelHelper.makeCompass(TextureHelper.makeItemTextureID(this.registryName + "_compass")));
 		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)compass).getItemType().apply(registryName), "item.compass", name);
-		int number = Rands.randIntRange(20, 100);
 		ItemProperties.register(
 				this.compass,
 				new ResourceLocation("angle"),
-				new CompassItemPropertyFunction((world, stack, entity) -> entity instanceof Player player ? GlobalPos.of(world.dimension(), player.blockPosition().offset(
-						number, player.blockPosition().getY(), number)) : null
+				new CompassItemPropertyFunction((world, stack, entity) -> entity instanceof Player player ? GlobalPos.of(this.compassDimension, player.blockPosition().offset(
+						this.randXOffset, player.blockPosition().getY(), this.randZOffset)) : null
 				)
 		);
 

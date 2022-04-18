@@ -12,8 +12,14 @@ import org.lwjgl.glfw.GLFW;
 import static io.github.vampirestudios.raa_materials.RAAMaterials.MOD_ID;
 
 public class RAAMaterialsClient implements RAAAddonClient {
+	public static CustomModelBakery modelBakery;
+
 	@Override
 	public void onClientInitialize() {
+		modelBakery = new CustomModelBakery();
+//		ModelLoadingRegistry.INSTANCE.registerResourceProvider(rm -> this);
+//		ModelLoadingRegistry.INSTANCE.registerVariantProvider(rm -> this);
+
 		KeyMapping keyBinding = KeyBindingHelper.registerKeyBinding(new KeyMapping(
 				"key.raa_materials.fully_reload_assets", // The translation key of the keybinding's name
 				InputConstants.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
@@ -40,5 +46,15 @@ public class RAAMaterialsClient implements RAAAddonClient {
 	public String[] shouldLoadAfter() {
 		return new String[]{};
 	}
+
+//	@Override
+//	public @Nullable UnbakedModel loadModelResource(ResourceLocation resourceId, ModelProviderContext context) {
+//		return modelBakery.getBlockModel(resourceId);
+//	}
+
+//	@Override
+//	public @Nullable UnbakedModel loadModelVariant(ModelResourceLocation modelId, ModelProviderContext context) {
+//		return modelId.getVariant().equals("inventory") ? modelBakery.getItemModel( modelId) : modelBakery.getBlockModel(modelId);
+//	}
 
 }

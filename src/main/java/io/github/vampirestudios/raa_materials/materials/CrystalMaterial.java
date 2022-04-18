@@ -47,7 +47,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.TintedGlassBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -280,6 +279,15 @@ public class CrystalMaterial extends ComplexMaterial {
 				.setOutputCount(1)
 				.build();
 
+		if (FabricLoader.getInstance().isModLoaded("spectrum")) {
+			GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_storage_block", this.storageBlock)
+					.setGroup("crystal_storage_blocks")
+					.addMaterial('i', shard)
+					.setShape("iii", "iii", "iii")
+					.setOutputCount(1)
+					.build();
+		}
+
 		if (FabricLoader.getInstance().isModLoaded("create")) {
 			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_cluster", this.crystal, this.shard, 7, 1.0F)
 					.addOutput(shard, 1, 0.5F)
@@ -369,8 +377,8 @@ public class CrystalMaterial extends ComplexMaterial {
 		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_crystal");
 		texture = ProceduralTextures.randomColored(TextureHelper.loadTexture(crystalTexture), gradient);
 		InnerRegistryClient.registerTexture(textureID, texture);
-		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_crystal"), "block.crystal", this.name);
 		InnerRegistryClient.registerItemModel(this.crystal.asItem(), ModelHelper.makeFlatItem(textureID));
+		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_crystal"), "block.crystal", this.name);
 
 		textureID = TextureHelper.makeItemTextureID(this.registryName + "_shard");
 		texture = ProceduralTextures.randomColored(TextureHelper.loadTexture(shardTexture), gradient);
@@ -414,13 +422,8 @@ public class CrystalMaterial extends ComplexMaterial {
 				clientResourcePackBuilder.addParticle(id(this.registryName + "_sparkle_rising"), particleBuilder ->
 						particleBuilder.texture(new ResourceLocation("minecraft:critical_hit"))
 				);
-				clientResourcePackBuilder.addBlockState(id(this.registryName + "_chime"), blockStateBuilder -> blockStateBuilder.variant("",
-						variant -> variant.model(TextureHelper.makeBlockTextureID(this.registryName + "_chime"))));
-				/*ArtificeGenerationHelper.generateBlockModel(clientResourcePackBuilder, id(this.registryName + "_chime"),
-						new ResourceLocation("spectrum:block/template_chime"), Map.of(
-								"gemstone", TextureHelper.makeBlockTextureID(this.registryName + "_glass")
-						)
-				);*/
+//				clientResourcePackBuilder.addBlockState(id(this.registryName + "_chime"), blockStateBuilder -> blockStateBuilder.variant("",
+//						variant -> variant.model(TextureHelper.makeBlockTextureID(this.registryName + "_chime"))));
 				new Thread(() -> {
 					try {
 						clientResourcePackBuilder.dumpResources("testing", "assets");
@@ -528,20 +531,6 @@ public class CrystalMaterial extends ComplexMaterial {
 			textureID = TextureHelper.makeBlockTextureID(registryName + "_decostone");
 			texture = ProceduralTextures.randomColored(crystalDecostoneTexture, gradient);
 			InnerRegistryClient.registerTexture(textureID, texture);
-
-//			InnerRegistry.registerArtificeResourcePack(id(this.registryName + "_decostone_assets"), clientResourcePackBuilder -> {
-//				clientResourcePackBuilder.addBlockState(id(this.registryName + "_decostone"), blockStateBuilder -> {
-//					blockStateBuilder.variant("half=upper", variant -> variant.model(TextureHelper.makeBlockTextureID(this.registryName + "_decostone_top")));
-//					blockStateBuilder.variant("half=lower", variant -> variant.model(TextureHelper.makeBlockTextureID(this.registryName + "_decostone_bottom")));
-//				});
-//				new Thread(() -> {
-//					try {
-//						clientResourcePackBuilder.dumpResources("testing", "assets");
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//				}).start();
-//			});
 
 			InnerRegistryClient.registerBlockModel(this.decostone.getStateDefinition().any().setValue(DecoStoneBlock.HALF, DoubleBlockHalf.UPPER), TextureHelper.makeBlockTextureID(this.registryName + "_decostone_top"), ModelHelper.simpleParentBlock(
 					new ResourceLocation("spectrum:block/amethyst_decostone_top"),

@@ -8,7 +8,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -22,7 +21,7 @@ import java.util.function.BiConsumer;
 
 public class InnerRegistryClient {
 	@Environment(EnvType.CLIENT)
-	private static final Map<BlockState, UnbakedModel> BLOCK_MODELS = Maps.newHashMap();
+	private static final Map<BlockState, BlockModel> BLOCK_MODELS = Maps.newHashMap();
 	@Environment(EnvType.CLIENT)
 	private static final Map<Item, BlockModel> ITEM_MODELS = Maps.newHashMap();
 	@Environment(EnvType.CLIENT)
@@ -49,22 +48,16 @@ public class InnerRegistryClient {
 		registerBlockModel(state, model);
 	}
 
-	public static void registerBlockModel(BlockState state, UnbakedModel model) {
+	public static void registerBlockModel(BlockState state, BlockModel model) {
 		ResourceLocation id = Registry.BLOCK.getKey(state.getBlock());
 		ResourceLocation id2 = new ResourceLocation(id.getNamespace(), "block/" + id.getPath());
-
-		if (model instanceof BlockModel) {
-			((BlockModel) model).name = BlockModelShaper.stateToModelLocation(id2, state).toString();
-		}
+		model.name = BlockModelShaper.stateToModelLocation(id2, state).toString();
 		BLOCK_MODELS.put(state, model);
 		MODELED.add(id);
 	}
 
-	public static void registerBlockModel(ResourceLocation id, BlockState state, UnbakedModel model) {
-
-		if (model instanceof BlockModel) {
-			((BlockModel) model).name = BlockModelShaper.stateToModelLocation(id, state).toString();
-		}
+	public static void registerBlockModel(ResourceLocation id, BlockState state, BlockModel model) {
+		model.name = BlockModelShaper.stateToModelLocation(id, state).toString();
 		BLOCK_MODELS.put(state, model);
 		MODELED.add(id);
 	}
@@ -115,7 +108,7 @@ public class InnerRegistryClient {
 		return TEXTURES.get(id);
 	}
 
-	public static UnbakedModel getModel(BlockState state) {
+	public static BlockModel getModel(BlockState state) {
 		return BLOCK_MODELS.get(state);
 	}
 

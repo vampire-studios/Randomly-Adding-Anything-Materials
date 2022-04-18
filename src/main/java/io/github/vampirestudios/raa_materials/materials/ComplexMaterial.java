@@ -8,6 +8,7 @@ import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
@@ -143,11 +144,17 @@ public abstract class ComplexMaterial {
 				oreMaterial.setRarity(rarity);
 				oreMaterial.setHiddenChance(hiddenChance);
 			}
-			case "crystal" -> material = new CrystalMaterial(parsedName, random, gradient, textureInformation, tier, crystalLampOverlayTextureInt, crystalOreTextureInt,
-					chiseledVariantInt, tintedGlassVariantInt);
+			case "crystal" -> material = new CrystalMaterial(parsedName, random, gradient, textureInformation, tier,
+					crystalLampOverlayTextureInt, crystalOreTextureInt, chiseledVariantInt, tintedGlassVariantInt);
 			case "metal" -> {
+				int randXOffset = compound.getInt("randXOffset");
+				int randZOffset = compound.getInt("randZOffset");
+				String compassDimension = compound.getString("compassDimension");
+				int crushedOreAmount = compound.getInt("crushedOreAmount");
 				ColorDualGradient metallicGradient = new ColorDualGradient(gradient, corrodedGradient);
-				material = new MetalOreMaterial(parsedName, random, metallicGradient, compassGradient, compassNeedleGradient, textureInformation, target, tier, hasOreVein);
+				material = new MetalOreMaterial(parsedName, random, metallicGradient, compassGradient, compassNeedleGradient,
+						textureInformation, target, tier, hasOreVein, randXOffset, randZOffset, ResourceKey.create(Registry.DIMENSION_REGISTRY,
+						new ResourceLocation(compassDimension)), crushedOreAmount);
 				OreMaterial oreMaterial = (OreMaterial) material;
 				oreMaterial.setBonus(bonus);
 				oreMaterial.setSize(size);

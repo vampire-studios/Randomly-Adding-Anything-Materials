@@ -21,7 +21,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,7 +35,7 @@ public class ModelLoaderMixin {
 	private void cacheAndQueueDependencies(ResourceLocation id, UnbakedModel unbakedModel) {}
 
 	@Inject(method = "loadBlockModel", at = @At("HEAD"), cancellable = true)
-	private void procmcLoadModelFromJson(ResourceLocation id, CallbackInfoReturnable<BlockModel> info) throws IOException {
+	private void procmcLoadModelFromJson(ResourceLocation id, CallbackInfoReturnable<BlockModel> info) {
 		BlockModel model = InnerRegistryClient.getModel(id);
 		if (model != null) {
 			info.setReturnValue(model);
@@ -45,13 +44,20 @@ public class ModelLoaderMixin {
 	}
 
 	@Inject(method = "loadBlockModel", at = @At("HEAD"), cancellable = true)
-	private void loadModelFromJson(ResourceLocation id, CallbackInfoReturnable<BlockModel> info) throws IOException {
+	private void loadModelFromJson(ResourceLocation id, CallbackInfoReturnable<BlockModel> info) {
 		String path = id.getPath();
 		if (path.startsWith("item/")) {
 			Item item = Registry.ITEM.get(new ResourceLocation(id.getNamespace(), path.substring(path.lastIndexOf('/') + 1)));
 			BlockModel model = InnerRegistryClient.getModel(item);
 			if (model != null) {
 				model.name = id.toString();
+				info.setReturnValue(model);
+				info.cancel();
+			}
+		} else if(path.startsWith("block/")) {
+			Block block = Registry.BLOCK.get(id);
+			BlockModel model = InnerRegistryClient.getModel(block.defaultBlockState());
+			if (model != null) {
 				info.setReturnValue(model);
 				info.cancel();
 			}

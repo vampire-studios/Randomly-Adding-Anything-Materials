@@ -148,7 +148,7 @@ public class InnerRegistry {
 	}
 
 	public static void registerArtificeResourcePack(ResourceLocation id, Processor<ArtificeResourcePack.ClientResourcePackBuilder> register) {
-		if (ArtificeRegistry.DATA_PACKS.containsKey(id)) {
+		if (ArtificeRegistry.RESOURCE_PACKS.containsKey(id)) {
 			replace(ArtificeRegistry.RESOURCE_PACKS, id, new DynamicResourcePackFactory<>(PackType.CLIENT_RESOURCES, id, register));
 		} else {
 			Registry.register(ArtificeRegistry.RESOURCE_PACKS, id, new DynamicResourcePackFactory<>(PackType.CLIENT_RESOURCES, id, register));
