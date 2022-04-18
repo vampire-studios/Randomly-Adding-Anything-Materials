@@ -60,6 +60,12 @@ public class ModelLoaderMixin {
 
 	@Inject(method = "loadModel", at = @At("HEAD"), cancellable = true)
 	private void loadModel(ResourceLocation id, CallbackInfo info) {
+		if (id.toString().contains("_chime")) {
+			RAACore.LOGGER.warn("break point bait aaaa");
+		}
+		if (id.toString().contains("_decostone")) {
+			RAACore.LOGGER.warn("break point bait aaaa");
+		}
 		if (id instanceof ModelResourceLocation modelID) {
 			ResourceLocation cleanID = new ResourceLocation(id.getNamespace(), id.getPath());
 			if (InnerRegistryClient.hasCustomModel(cleanID)) {
@@ -78,16 +84,6 @@ public class ModelLoaderMixin {
 					}
 				} else {
 					Block block = Registry.BLOCK.get(cleanID);
-					/*block.getStateManager().getStates().forEach((state) -> {
-						UnbakedModel model = InnerRegistry.getModel(state);
-						if (model != null) {
-							ModelIdentifier stateID = BlockModels.getModelId(cleanID, state);
-							putModel(stateID, model);
-						}
-						else {
-							System.out.printf("Missing block model for %s for state %s%n", cleanID, state);
-						}
-					});*/
 					List<BlockState> possibleStates = block.getStateDefinition().getPossibleStates();
 					Optional<BlockState> possibleState = possibleStates
 							.stream()
@@ -96,10 +92,8 @@ public class ModelLoaderMixin {
 					if (possibleState.isPresent()) {
 						UnbakedModel model = InnerRegistryClient.getModel(possibleState.get());
 						if (model != null) {
-							possibleStates.forEach(state -> {
-								ResourceLocation stateId = BlockModelShaper.stateToModelLocation(cleanID, state);
-								cacheAndQueueDependencies(stateId, model);
-							});
+							ResourceLocation stateId = BlockModelShaper.stateToModelLocation(cleanID, possibleState.get());
+							cacheAndQueueDependencies(stateId, model);
 						} else {
 							RAACore.LOGGER.warn("Error loading variant: {}", modelID);
 						}

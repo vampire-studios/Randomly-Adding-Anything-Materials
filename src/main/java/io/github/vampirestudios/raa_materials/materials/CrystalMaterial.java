@@ -47,6 +47,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.TintedGlassBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -430,8 +432,7 @@ public class CrystalMaterial extends ComplexMaterial {
 
 			InnerRegistryClient.registerBlockModel(this.chime, ModelHelper.simpleParentBlock(new ResourceLocation("spectrum:block/template_chime"),
 					"gemstone", TextureHelper.makeBlockTextureID(this.registryName + "_glass")));
-			InnerRegistryClient.registerItemModel(this.chime.asItem(), ModelHelper.simpleParentItem(TextureHelper.makeBlockTextureID(this.registryName +
-					"_chime")));
+			InnerRegistryClient.registerItemModel(this.chime.asItem(), ModelHelper.simpleParentItem(TextureHelper.makeBlockTextureID(this.registryName + "_chime")));
 
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_chime"), "block.crystal_chime", this.name);
 			BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), this.chime);
@@ -528,25 +529,25 @@ public class CrystalMaterial extends ComplexMaterial {
 			texture = ProceduralTextures.randomColored(crystalDecostoneTexture, gradient);
 			InnerRegistryClient.registerTexture(textureID, texture);
 
-			InnerRegistry.registerArtificeResourcePack(id(this.registryName + "_decostone_assets"), clientResourcePackBuilder -> {
-				clientResourcePackBuilder.addBlockState(id(this.registryName + "_decostone"), blockStateBuilder -> {
-					blockStateBuilder.variant("half=upper", variant -> variant.model(TextureHelper.makeBlockTextureID(this.registryName + "_decostone_top")));
-					blockStateBuilder.variant("half=lower", variant -> variant.model(TextureHelper.makeBlockTextureID(this.registryName + "_decostone_bottom")));
-				});
-				new Thread(() -> {
-					try {
-						clientResourcePackBuilder.dumpResources("testing", "assets");
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}).start();
-			});
+//			InnerRegistry.registerArtificeResourcePack(id(this.registryName + "_decostone_assets"), clientResourcePackBuilder -> {
+//				clientResourcePackBuilder.addBlockState(id(this.registryName + "_decostone"), blockStateBuilder -> {
+//					blockStateBuilder.variant("half=upper", variant -> variant.model(TextureHelper.makeBlockTextureID(this.registryName + "_decostone_top")));
+//					blockStateBuilder.variant("half=lower", variant -> variant.model(TextureHelper.makeBlockTextureID(this.registryName + "_decostone_bottom")));
+//				});
+//				new Thread(() -> {
+//					try {
+//						clientResourcePackBuilder.dumpResources("testing", "assets");
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//				}).start();
+//			});
 
-			InnerRegistryClient.registerBlockModel(this.decostone, TextureHelper.makeBlockTextureID(this.registryName + "_decostone_top"), ModelHelper.simpleParentBlock(
+			InnerRegistryClient.registerBlockModel(this.decostone.getStateDefinition().any().setValue(DecoStoneBlock.HALF, DoubleBlockHalf.UPPER), TextureHelper.makeBlockTextureID(this.registryName + "_decostone_top"), ModelHelper.simpleParentBlock(
 					new ResourceLocation("spectrum:block/amethyst_decostone_top"),
 					Map.of("2", TextureHelper.makeBlockTextureID(this.registryName + "_glass"))
 			));
-			InnerRegistryClient.registerBlockModel(this.decostone, TextureHelper.makeBlockTextureID(this.registryName + "_decostone_bottom"), ModelHelper.simpleParentBlock(
+			InnerRegistryClient.registerBlockModel(this.decostone.getStateDefinition().any().setValue(DecoStoneBlock.HALF, DoubleBlockHalf.LOWER), TextureHelper.makeBlockTextureID(this.registryName + "_decostone_bottom"), ModelHelper.simpleParentBlock(
 					new ResourceLocation("spectrum:block/amethyst_decostone_bottom"),
 					Map.of("2", TextureHelper.makeBlockTextureID(this.registryName + "_glass"))
 			));

@@ -567,7 +567,7 @@ public class MetalOreMaterial extends OreMaterial {
 			}
 		}
 		String model = ModelHelper.makeCompass(TextureHelper.makeItemTextureID(this.registryName + "_compass"));
-		System.out.println(model);
+//		System.out.println(model);
 		InnerRegistryClient.registerItemModel(this.compass, model);
 		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)compass).getItemType().apply(registryName), "item.compass", name);
 		int number = Rands.randIntRange(20, 100);
