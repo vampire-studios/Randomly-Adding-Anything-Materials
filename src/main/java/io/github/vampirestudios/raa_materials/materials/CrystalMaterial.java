@@ -435,7 +435,7 @@ public class CrystalMaterial extends ComplexMaterial {
 
 			InnerRegistryClient.registerBlockModel(this.chime, ModelHelper.simpleParentBlock(new ResourceLocation("spectrum:block/template_chime"),
 					"gemstone", TextureHelper.makeBlockTextureID(this.registryName + "_glass")));
-			InnerRegistryClient.registerItemModel(this.chime.asItem(), ModelHelper.simpleParentItem(TextureHelper.makeBlockTextureID(this.registryName + "_chime")));
+			InnerRegistryClient.registerItemModel(this.chime.asItem(), ModelHelper.simpleParentItem(/*TextureHelper.makeBlockTextureID*/id(this.registryName + "_chime")));
 
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_chime"), "block.crystal_chime", this.name);
 			BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), this.chime);

@@ -46,20 +46,31 @@ public class ModelLoaderMixin {
 	@Inject(method = "loadBlockModel", at = @At("HEAD"), cancellable = true)
 	private void loadModelFromJson(ResourceLocation id, CallbackInfoReturnable<BlockModel> info) {
 		String path = id.getPath();
-		if (path.startsWith("item/")) {
-			Item item = Registry.ITEM.get(new ResourceLocation(id.getNamespace(), path.substring(path.lastIndexOf('/') + 1)));
-			BlockModel model = InnerRegistryClient.getModel(item);
-			if (model != null) {
-				model.name = id.toString();
-				info.setReturnValue(model);
-				info.cancel();
-			}
-		} else if(path.startsWith("block/")) {
-			Block block = Registry.BLOCK.get(id);
-			BlockModel model = InnerRegistryClient.getModel(block.defaultBlockState());
-			if (model != null) {
-				info.setReturnValue(model);
-				info.cancel();
+		if(InnerRegistryClient.hasCustomModel(id)){
+			if (path.startsWith("item/")) {
+				Item item = Registry.ITEM.get(new ResourceLocation(id.getNamespace(), path.substring(path.lastIndexOf('/') + 1)));
+				BlockModel model = InnerRegistryClient.getModel(item);
+				if(model == null) model = InnerRegistryClient.getModel(InnerRegistryClient.getItem(id));
+				if (model != null) {
+					model.name = id.toString();
+					info.setReturnValue(model);
+					info.cancel();
+				}
+			} else if(path.startsWith("block/")) {
+				Block block = Registry.BLOCK.get(new ResourceLocation(id.getNamespace(), path.substring(path.lastIndexOf('/') + 1)));
+				BlockModel model = InnerRegistryClient.getModel(block.defaultBlockState());
+				if(model == null) model = InnerRegistryClient.getModel(InnerRegistryClient.getState(id));
+				if (model != null) {
+					info.setReturnValue(model);
+					info.cancel();
+				}
+			}else{// this means the id is somewhere but it's unclear if it's a block or an item model, usually this should be a block
+				BlockModel model = InnerRegistryClient.getModel(InnerRegistryClient.getState(id));
+				if(model == null) model = InnerRegistryClient.getModel(InnerRegistryClient.getItem(id));
+				if (model != null) {
+					info.setReturnValue(model);
+					info.cancel();
+				}
 			}
 		}
 	}

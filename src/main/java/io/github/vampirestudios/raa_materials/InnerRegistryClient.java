@@ -21,7 +21,11 @@ import java.util.function.BiConsumer;
 
 public class InnerRegistryClient {
 	@Environment(EnvType.CLIENT)
+	private static final Map<ResourceLocation,BlockState> CUSTOM_BLOCK_ID_STATES = Maps.newHashMap();
+	@Environment(EnvType.CLIENT)
 	private static final Map<BlockState, BlockModel> BLOCK_MODELS = Maps.newHashMap();
+	@Environment(EnvType.CLIENT)
+	private static final Map<ResourceLocation, Item> CUSTOM_ITEM_ID_ITEMS = Maps.newHashMap();
 	@Environment(EnvType.CLIENT)
 	private static final Map<Item, BlockModel> ITEM_MODELS = Maps.newHashMap();
 	@Environment(EnvType.CLIENT)
@@ -32,7 +36,9 @@ public class InnerRegistryClient {
 	private static final Set<ResourceLocation> MODELED = Sets.newHashSet();
 
 	public static void clearClient() {
+		CUSTOM_BLOCK_ID_STATES.clear();
 		BLOCK_MODELS.clear();
+		CUSTOM_ITEM_ID_ITEMS.clear();
 		ITEM_MODELS.clear();
 		TEXTURES.clear();
 		MODELED.clear();
@@ -51,13 +57,15 @@ public class InnerRegistryClient {
 	public static void registerBlockModel(BlockState state, BlockModel model) {
 		ResourceLocation id = Registry.BLOCK.getKey(state.getBlock());
 		ResourceLocation id2 = new ResourceLocation(id.getNamespace(), "block/" + id.getPath());
-		model.name = BlockModelShaper.stateToModelLocation(id2, state).toString();
+		model.name = BlockModelShaper.stateToModelLocation(id, state).toString();
 		BLOCK_MODELS.put(state, model);
-		MODELED.add(id);
+		MODELED.add(id2);
+		CUSTOM_BLOCK_ID_STATES.put(id2, state);
 	}
 
 	public static void registerBlockModel(ResourceLocation id, BlockState state, BlockModel model) {
 		model.name = BlockModelShaper.stateToModelLocation(id, state).toString();
+		CUSTOM_BLOCK_ID_STATES.put(id, state);
 		BLOCK_MODELS.put(state, model);
 		MODELED.add(id);
 	}
@@ -87,7 +95,7 @@ public class InnerRegistryClient {
 
 	public static void registerItemModel(Item item, ResourceLocation id, String json) {
 		BlockModel model = BlockModel.fromString(json);
-		model.name = id.getNamespace() + ":item/" + id.getPath();
+		CUSTOM_ITEM_ID_ITEMS.put(id, item);
 		ITEM_MODELS.put(item, model);
 		MODELED.add(id);
 	}
@@ -98,6 +106,7 @@ public class InnerRegistryClient {
 		model.name = id.getNamespace() + ":item/" + id.getPath();
 		ITEM_MODELS.put(item, model);
 		MODELED.add(id);
+		CUSTOM_ITEM_ID_ITEMS.put(id, item);
 	}
 
 	public static Collection<ResourceLocation> getTextureIDs() {
@@ -110,6 +119,14 @@ public class InnerRegistryClient {
 
 	public static BlockModel getModel(BlockState state) {
 		return BLOCK_MODELS.get(state);
+	}
+
+	public static BlockState getState(ResourceLocation id) {
+		return CUSTOM_BLOCK_ID_STATES.get(id);
+	}
+
+	public static Item getItem(ResourceLocation id) {
+		return CUSTOM_ITEM_ID_ITEMS.get(id);
 	}
 
 	public static BlockModel getModel(ResourceLocation id) {
