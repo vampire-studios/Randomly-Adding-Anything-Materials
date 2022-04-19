@@ -3,6 +3,7 @@ package io.github.vampirestudios.raa_materials.materials;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.math.Vector3f;
 import de.dafuqs.spectrum.SpectrumCommon;
 import de.dafuqs.spectrum.blocks.decoration.DecoStoneBlock;
 import de.dafuqs.spectrum.blocks.decoration.GemstoneChimeBlock;
@@ -19,6 +20,7 @@ import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.RAASimpleCloakedItem;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
+import io.github.vampirestudios.raa_materials.recipes.AnvilCrushingRecipe;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.recipes.support.ProcessingCreateRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
@@ -36,12 +38,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Mth;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -79,6 +83,7 @@ public class CrystalMaterial extends ComplexMaterial {
 	private final int chiseledVariantInt;
 	private final int crystalOreTextureInt;
 	private final int tintedGlassVariantInt;
+	private Vector3f cymValues;
 
 	static {
 		crystalBlocks = new ResourceLocation[5];
@@ -143,6 +148,7 @@ public class CrystalMaterial extends ComplexMaterial {
 	public CrystalMaterial(Pair<String, String> name, Random random, ColorGradient gradient, TextureInformation textureInformation, int tier, int crystalLampOverlayTextureInt,
 						   int crystalOreTextureInt, int chiseledVariantInt, int tintedGlassVariantInt) {
 		super(name, gradient);
+		this.cymValues = this.getCYMValues();
 		this.particleColor = new CustomColor().set(this.gradient.getColor(0.5F))/*.setSaturation(1.0F)*/.switchToRGB();
 		this.tier = tier;
 
@@ -286,6 +292,33 @@ public class CrystalMaterial extends ComplexMaterial {
 					.setShape("iii", "iii", "iii")
 					.setOutputCount(1)
 					.build();
+
+			AnvilCrushingRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_powder_from_shard", this.crystalPowder)
+					.setInput(Ingredient.of(this.shard))
+					.setCrushedItemsPerPointOfDamage(0.6F)
+					.setExperience(0.4F)
+					.setParticleEffect(new ResourceLocation("explosion"))
+					.setSoundEvent(new ResourceLocation("block.small_amethyst_bud.break"))
+					.setOutputCount(2)
+					.buildAnvilCrushing();
+
+			AnvilCrushingRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_powder_from_block", this.crystalPowder)
+					.setInput(Ingredient.of(this.block))
+					.setCrushedItemsPerPointOfDamage(0.4F)
+					.setExperience(0.2F)
+					.setParticleEffect(new ResourceLocation("explosion"))
+					.setSoundEvent(new ResourceLocation("block.small_amethyst_cluster.break"))
+					.setOutputCount(1)
+					.buildAnvilCrushing();
+
+			AnvilCrushingRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_powder_from_cluster", this.crystalPowder)
+					.setInput(Ingredient.of(this.crystal))
+					.setCrushedItemsPerPointOfDamage(0.6F)
+					.setExperience(0.4F)
+					.setParticleEffect(new ResourceLocation("explosion"))
+					.setSoundEvent(new ResourceLocation("block.small_amethyst_cluster.break"))
+					.setOutputCount(16)
+					.buildAnvilCrushing();
 		}
 
 		if (FabricLoader.getInstance().isModLoaded("create")) {
@@ -435,7 +468,7 @@ public class CrystalMaterial extends ComplexMaterial {
 
 			InnerRegistryClient.registerBlockModel(this.chime, ModelHelper.simpleParentBlock(new ResourceLocation("spectrum:block/template_chime"),
 					"gemstone", TextureHelper.makeBlockTextureID(this.registryName + "_glass")));
-			InnerRegistryClient.registerItemModel(this.chime.asItem(), ModelHelper.simpleParentItem(/*TextureHelper.makeBlockTextureID*/id(this.registryName + "_chime")));
+			InnerRegistryClient.registerItemModel(this.chime.asItem(), ModelHelper.simpleParentItem(TextureHelper.makeBlockTextureID(this.registryName + "_chime")));
 
 			NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_chime"), "block.crystal_chime", this.name);
 			BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), this.chime);
@@ -678,6 +711,24 @@ public class CrystalMaterial extends ComplexMaterial {
 					GenerationStep.Decoration.UNDERGROUND_ORES, List.of(placedFeatureHolder));
 		}
 		((BiomeSourceAccessor) world.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
+	}
+
+	public Vector3f getCYMValues() {
+		CustomColor color = this.gradient.getColor(0.5F).switchToRGB();
+		float red = color.getRed();
+		float green = color.getGreen();
+		float blue = color.getBlue();
+
+		float value = Math.max(red, Math.max(green, blue));
+
+		float redValue = red / value;
+		float greenValue = green / value;
+		float blueValue = blue / value;
+
+		float cyan = 1.0F - Mth.clamp(redValue, 0.0F, 1.0F);
+		float magenta = 1.0F - Mth.clamp(greenValue, 0.0F, 1.0F);
+		float yellow = 1.0F - Mth.clamp(blueValue, 0.0F, 1.0F);
+		return new Vector3f(cyan, magenta, yellow);
 	}
 
 }

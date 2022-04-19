@@ -566,7 +566,7 @@ public class MetalOreMaterial extends OreMaterial {
 		makeColoredItemAssets(ingotTexture, ingot, gradient, this.registryName + "_ingot", "item.ingot");
 		makeColoredItemAssets(nuggetTexture, nugget, gradient, this.registryName + "_nugget", "item.nugget");
 
-		makeColoredItemAssets(plateTexture, sheet, gradient, this.registryName + "_plate", "item.plate");
+		makeColoredItemAssets(plateTexture, sheet, gradient, this.registryName + "_sheet", "item.sheet");
 		makeColoredItemAssets(smallDustTexture, small_dust, gradient, "small_" + this.registryName + "_dust", "item.small_dust");
 		makeColoredItemAssets(gearTexture, gear, gradient, this.registryName + "_gear", "item.gear");
 		makeColoredItemAssets(dustTexture, dust, gradient, this.registryName + "_dust", "item.dust");

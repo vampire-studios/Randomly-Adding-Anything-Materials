@@ -101,7 +101,7 @@ public class GridRecipe {
 		}
 		return materials;
 	}
-	
+
 	public void build() {
 		if (!exist) {
 			return;
@@ -122,4 +122,5 @@ public class GridRecipe {
 		) : new ShapelessRecipe(id, group, result, materials);
 		CustomRecipeManager.addRecipe(type, recipe);
 	}
+
 }
