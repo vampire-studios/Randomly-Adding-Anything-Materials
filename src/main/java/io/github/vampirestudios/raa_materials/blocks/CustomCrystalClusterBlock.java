@@ -2,13 +2,12 @@ package io.github.vampirestudios.raa_materials.blocks;
 
 import com.google.common.collect.Maps;
 import com.mojang.math.Transformation;
-import io.github.vampirestudios.raa_materials.api.BasePatterns;
-import io.github.vampirestudios.raa_materials.api.BlockModelProvider;
-import io.github.vampirestudios.raa_materials.api.ModelsHelper;
-import io.github.vampirestudios.raa_materials.api.PatternsHelper;
+import io.github.vampirestudios.raa_materials.InnerRegistryClient;
+import io.github.vampirestudios.raa_materials.api.*;
 import io.github.vampirestudios.raa_materials.utils.Rands;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.resources.model.UnbakedModel;
@@ -61,34 +60,33 @@ public class CustomCrystalClusterBlock extends AmethystClusterBlock implements S
 
 	@Override
 	@Environment(EnvType.CLIENT)
-	public BlockModel getItemModel(ResourceLocation blockId) {
-		return ModelsHelper.fromPattern(createBlockPattern(blockId));
+	public String getItemModel(ResourceLocation blockId) {
+		return createBlockPattern(blockId).orElse("");
 	}
 
 	@Override
 	@Environment(EnvType.CLIENT)
-	public @Nullable BlockModel getBlockModel(ResourceLocation blockId, BlockState blockState) {
-		return ModelsHelper.fromPattern(createBlockPattern(blockId));
+	public @Nullable String getBlockModel(ResourceLocation blockId, BlockState blockState) {
+		return createBlockPattern(blockId).orElse("");
+	}
+
+	@Override
+	public void registerVariants(ResourceLocation id) {
+		this.stateDefinition.getPossibleStates().forEach((aa)->{
+			ResourceLocation stateId = new ModelResourceLocation(id.getNamespace(), id.getPath(), aa.toString());
+			InnerRegistryClient.registerBlockVarients(new ModelResourceLocation(id.getNamespace(),"blockstates/"+stateId.getPath(), aa.toString()), this.getVariantModel(stateId, aa));
+		});
 	}
 
 	@Override
 	@Environment(EnvType.CLIENT)
-	public UnbakedModel getModelVariant(ResourceLocation stateId, BlockState blockState, Map<ResourceLocation, UnbakedModel> modelCache) {
+	public UnbakedModel getVariantModel(ResourceLocation stateId, BlockState blockState) {
 		ModelResourceLocation shardsUp = new ModelResourceLocation(stateId.getNamespace(), stateId.getPath(), this.defaultBlockState().toString());
 
-		if (!modelCache.containsKey(shardsUp)) {
-			Map<String, String> textures = Maps.newHashMap();
-			textures.put("%modid%", stateId.getNamespace());
-			textures.put("%texture%", stateId.getPath());
-			Optional<String> pattern = PatternsHelper.createJson(BasePatterns.BLOCK_CROSS, textures);
-			BlockModel model = ModelsHelper.fromPattern(pattern);
-			modelCache.put(shardsUp, model);
-		}
-
 		Direction facing = blockState.getValue(FACING);
-		if (facing == Direction.UP) {
-			return modelCache.get(shardsUp);
-		}
+
+		ResourceLocation modelId = new ResourceLocation(stateId.getNamespace(), "block/" + stateId.getPath());
+		registerBlockModel(stateId, modelId, blockState);
 
 		Transformation transformation = new Transformation(null, facing.getRotation(), null, null);
 		return ModelsHelper.createMultiVariant(shardsUp, transformation, false);

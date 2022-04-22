@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials.blocks;
 
 import io.github.vampirestudios.raa_materials.api.BasePatterns;
-import io.github.vampirestudios.raa_materials.api.BlockModelProvider;
+import io.github.vampirestudios.raa_materials.api.LegacyBlockModelProvider;
 import io.github.vampirestudios.raa_materials.api.ModelsHelper;
 import io.github.vampirestudios.raa_materials.api.PatternsHelper;
 import net.fabricmc.api.EnvType;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class BaseSlabBlock extends SlabBlock implements BlockModelProvider {
+public class BaseSlabBlock extends SlabBlock implements LegacyBlockModelProvider {
 	private final Block source;
 	private final ResourceLocation registryName;
 
@@ -43,8 +43,8 @@ public class BaseSlabBlock extends SlabBlock implements BlockModelProvider {
 
 	@Override
 	@Environment(EnvType.CLIENT)
-	public BlockModel getItemModel(ResourceLocation resourceLocation) {
-		return ModelsHelper.fromPattern(PatternsHelper.createJson(BasePatterns.BLOCK_BASE, new ResourceLocation("block/stone")));
+	public String getItemModel(ResourceLocation resourceLocation) {
+		return PatternsHelper.createJson(BasePatterns.BLOCK_BASE, new ResourceLocation("block/stone")).orElse("");
 	}
 
 	@Override

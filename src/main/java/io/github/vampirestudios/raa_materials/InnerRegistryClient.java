@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -21,7 +22,7 @@ import java.util.function.BiConsumer;
 
 public class InnerRegistryClient {
 	@Environment(EnvType.CLIENT)
-	private static final Map<ResourceLocation,BlockState> CUSTOM_BLOCK_ID_STATES = Maps.newHashMap();
+	private static final Map<ResourceLocation, BlockState> CUSTOM_BLOCK_ID_STATES = Maps.newHashMap();
 	@Environment(EnvType.CLIENT)
 	private static final Map<BlockState, BlockModel> BLOCK_MODELS = Maps.newHashMap();
 	@Environment(EnvType.CLIENT)
@@ -30,6 +31,8 @@ public class InnerRegistryClient {
 	private static final Map<Item, BlockModel> ITEM_MODELS = Maps.newHashMap();
 	@Environment(EnvType.CLIENT)
 	private static final Map<ResourceLocation, BlockModel> FREE_MODELS = Maps.newHashMap();
+	@Environment(EnvType.CLIENT)
+	private static final Map<ResourceLocation, UnbakedModel> EXTRASTATES = Maps.newHashMap();
 	@Environment(EnvType.CLIENT)
 	private static final Map<ResourceLocation, BufferTexture> TEXTURES = Maps.newHashMap();
 	@Environment(EnvType.CLIENT)
@@ -40,6 +43,8 @@ public class InnerRegistryClient {
 		BLOCK_MODELS.clear();
 		CUSTOM_ITEM_ID_ITEMS.clear();
 		ITEM_MODELS.clear();
+		FREE_MODELS.clear();
+		EXTRASTATES.clear();
 		TEXTURES.clear();
 		MODELED.clear();
 		ModelHelper.clearModels();
@@ -87,6 +92,11 @@ public class InnerRegistryClient {
 		registerBlockModel(id, state, model);
 	}
 
+	public static void registerBlockVarients(ResourceLocation id, UnbakedModel model) {
+		EXTRASTATES.put(id, model);
+		MODELED.add(id);
+	}
+
 	public static void registerModel(ResourceLocation id, String json) {
 		BlockModel model = BlockModel.fromString(json);
 		model.name = id.toString();
@@ -123,6 +133,10 @@ public class InnerRegistryClient {
 
 	public static BlockState getState(ResourceLocation id) {
 		return CUSTOM_BLOCK_ID_STATES.get(id);
+	}
+
+	public static UnbakedModel getVarient(ResourceLocation id) {
+		return EXTRASTATES.get(id);
 	}
 
 	public static Item getItem(ResourceLocation id) {

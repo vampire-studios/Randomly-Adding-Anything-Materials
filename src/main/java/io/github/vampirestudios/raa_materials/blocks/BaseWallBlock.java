@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials.blocks;
 
 import io.github.vampirestudios.raa_materials.api.BasePatterns;
-import io.github.vampirestudios.raa_materials.api.BlockModelProvider;
+import io.github.vampirestudios.raa_materials.api.LegacyBlockModelProvider;
 import io.github.vampirestudios.raa_materials.api.ModelsHelper;
 import io.github.vampirestudios.raa_materials.api.PatternsHelper;
 import net.fabricmc.api.EnvType;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class BaseWallBlock extends WallBlock implements BlockModelProvider {
+public class BaseWallBlock extends WallBlock implements LegacyBlockModelProvider {
 	private final Block parent;
 	private final ResourceLocation registryName;
 	
@@ -43,10 +43,10 @@ public class BaseWallBlock extends WallBlock implements BlockModelProvider {
 	
 	@Override
 	@Environment(EnvType.CLIENT)
-	public BlockModel getItemModel(ResourceLocation blockId) {
+	public String getItemModel(ResourceLocation blockId) {
 		ResourceLocation parentId = Registry.BLOCK.getKey(parent);
 		Optional<String> pattern = PatternsHelper.createJson(BasePatterns.ITEM_WALL, parentId);
-		return ModelsHelper.fromPattern(pattern);
+		return pattern.orElse("");
 	}
 	
 	@Override
