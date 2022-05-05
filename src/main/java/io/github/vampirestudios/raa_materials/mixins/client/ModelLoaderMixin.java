@@ -105,14 +105,13 @@ public class ModelLoaderMixin {
 						UnbakedModel model = InnerRegistryClient.getVarient(stateId);
 						if (model != null) {
 							cacheAndQueueDependencies(stateId, model);
-							info.cancel();
-						}
-						model = InnerRegistryClient.getModel(possibleState.get());
-
-						if (model != null) {
-							cacheAndQueueDependencies(stateId, model);
 						} else {
-							RAACore.LOGGER.warn("Error loading variant: {}", modelID);
+							model = InnerRegistryClient.getModel(possibleState.get());
+							if (model != null) {
+								cacheAndQueueDependencies(stateId, model);
+							} else {
+								RAACore.LOGGER.warn("Error loading variant: {}", modelID);
+							}
 						}
 						info.cancel();
 					}

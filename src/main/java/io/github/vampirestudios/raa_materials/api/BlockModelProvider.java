@@ -31,7 +31,7 @@ public interface BlockModelProvider extends ItemModelProvider {
 	default void registerBlockModel(ResourceLocation stateId, ResourceLocation modelId, BlockState blockState) {
 		String model = getBlockModel(stateId, blockState);
 		if (model != null) {
-			InnerRegistryClient.registerBlockModel(blockState, stateId, model);
+			InnerRegistryClient.registerModel(modelId, model);
 		}
 		else {
 			System.out.println("Error loading model: " + modelId);

@@ -73,23 +73,22 @@ public class CustomCrystalClusterBlock extends AmethystClusterBlock implements S
 	@Override
 	public void registerVariants(ResourceLocation id) {
 		this.stateDefinition.getPossibleStates().forEach((aa)->{
-			ResourceLocation stateId = new ModelResourceLocation(id.getNamespace(), id.getPath(), aa.toString());
-			InnerRegistryClient.registerBlockVarients(new ModelResourceLocation(id.getNamespace(),"blockstates/"+stateId.getPath(), aa.toString()), this.getVariantModel(stateId, aa));
+			ResourceLocation stateId = BlockModelShaper.stateToModelLocation(id, aa);
+			InnerRegistryClient.registerBlockVarients(stateId, this.getVariantModel(stateId, aa));
 		});
 	}
 
 	@Override
 	@Environment(EnvType.CLIENT)
 	public UnbakedModel getVariantModel(ResourceLocation stateId, BlockState blockState) {
-		ModelResourceLocation shardsUp = new ModelResourceLocation(stateId.getNamespace(), stateId.getPath(), this.defaultBlockState().toString());
 
 		Direction facing = blockState.getValue(FACING);
 
-		ResourceLocation modelId = new ResourceLocation(stateId.getNamespace(), "block/" + stateId.getPath());
+		ResourceLocation modelId = new ResourceLocation(stateId.getNamespace(), "block/base_" + stateId.getPath());
 		registerBlockModel(stateId, modelId, blockState);
 
 		Transformation transformation = new Transformation(null, facing.getRotation(), null, null);
-		return ModelsHelper.createMultiVariant(shardsUp, transformation, false);
+		return ModelsHelper.createMultiVariant(modelId, transformation, false);
 	}
 
 	protected Optional<String> createBlockPattern(ResourceLocation blockId) {
