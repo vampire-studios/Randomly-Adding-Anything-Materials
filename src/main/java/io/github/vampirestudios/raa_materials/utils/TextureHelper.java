@@ -373,20 +373,40 @@ public class TextureHelper {
 		return result;
 	}
 
-	public static BufferTexture edgeTileable(BufferTexture texture, int edgeSize) { // todo use some sorta blur on the edges
-		BufferTexture tex = offset(texture.cloneTexture(), texture.getWidth()/2, texture.getHeight()/2);
-		BufferTexture alpha;
+	public static BufferTexture edgeTileable(BufferTexture texture, int edgeSize) {
+		return edgeTileable(texture, edgeSize, 0f, 0);
+	}
+
+	public static BufferTexture edgeTileable(BufferTexture texture, int edgeSize, float blur, int blurRadius) { // todo use some sorta blur on the edges
+		BufferTexture tex = offset(texture, texture.getWidth()/2, texture.getHeight()/2);
+		BufferTexture alpha = new BufferTexture(texture.getWidth(), texture.getHeight());
+		BufferTexture alpha2 = new BufferTexture(texture.getWidth(), texture.getHeight());
 		BufferTexture result = texture.cloneTexture();
 
 		COLOR.forceRGB();
+		COLOR2.forceRGB();
 		for (int x = 0; x < texture.getWidth(); x++) {
 			for (int y = 0; y < texture.getHeight(); y++) {
 				if(x < edgeSize || x > texture.getWidth() - edgeSize-1 || y < edgeSize || y > texture.getHeight() - edgeSize - 1){
-					result.setPixel(x, y, COLOR.set(tex.getPixel(x,y)));
-				}
+					alpha.setPixel(x, y, COLOR.set(tex.getPixel(x,y)));
+				}else alpha.setPixel(x, y, COLOR.set(tex.getPixel(x,y)).setAlpha(0f));
 			}
 		}
-		result = offset(result, texture.getWidth()/2, texture.getHeight()/2);
+		for (int x = 0; x < tex.getWidth(); x++) {
+			for (int y = 0; y < tex.getHeight(); y++) {
+				COLOR.set(alpha.getPixel(x, y)).mixWith(getAverageAlpha(alpha, x, y, blurRadius), blur, false, false);
+				alpha2.setPixel(x, y, COLOR);
+			}
+		}
+		normalizeAlpha(alpha2);
+		for (int x = 0; x < tex.getWidth(); x++) {
+			for (int y = 0; y < tex.getHeight(); y++) {
+				result.setPixel(x, y, COLOR.set(result.getPixel(x, y)).alphaBlend(COLOR2.set(alpha2.getPixel(x, y))));
+			}
+		}
+//		result = alpha2;
+
+		result = offset(result, tex.getWidth()/2, tex.getHeight()/2);
 		return result;
 	}
 
@@ -440,6 +460,44 @@ public class TextureHelper {
 		return result;
 	}
 
+	/*
+	 * Faster that the "step"/loop based blur methods
+	*/
+	public static BufferTexture blur(BufferTexture tex, float strength, int width, int height) {
+		BufferTexture result = tex.cloneTexture();
+
+		COLOR2.forceRGB();
+		for (int x = 0; x < tex.getWidth(); x++) {
+			for (int y = 0; y < tex.getHeight(); y++) {
+
+				result.setPixel(x, y, COLOR2.set(tex.getPixel(x, y)).mixWith(getAverageColor(tex, x-(width/2), y-(height/2), width, height),strength));
+			}
+		}
+
+		return result;
+	}
+
+	public static BufferTexture normalizeAlpha(BufferTexture texture) {
+		float minA = 1;
+		float normA = 0;
+		COLOR.forceRGB();
+		for (int x = 0; x < texture.getWidth(); x++) {
+			for (int y = 0; y < texture.getHeight(); y++) {
+				COLOR.set(texture.getPixel(x, y));
+				normA = MHelper.max(normA, COLOR.getAlpha());
+				minA = MHelper.min(minA, COLOR.getAlpha());
+			}
+		}
+		normA = (normA == 0 ? 1 : normA) - minA;
+		for (int x = 0; x < texture.getWidth(); x++) {
+			for (int y = 0; y < texture.getHeight(); y++) {
+				COLOR.set(texture.getPixel(x, y));
+				COLOR.setAlpha((COLOR.getAlpha() - minA) / normA);
+				texture.setPixel(x, y, COLOR);
+			}
+		}
+		return texture;
+	}
 	public static BufferTexture normalize(BufferTexture texture) {
 		float minR = 1;
 		float minG = 1;
@@ -621,10 +679,10 @@ public class TextureHelper {
 				.setSaturation(Mth.clamp(colorStart.getSaturation() - satDist, 0.01F, 1F))
 				.setBrightness(Mth.clamp(colorStart.getBrightness() - valDist, 0.07F, 0.55F));
 		CustomColor colorMid = new CustomColor().set(color).switchToHSV();
-		colorStart
-				.setHue(colorStart.getHue() )
-				.setSaturation(Mth.clamp(colorStart.getSaturation() , 0.03F, 1F))
-				.setBrightness(Mth.clamp(colorStart.getBrightness() , 0.1F, 0.6F));
+		colorMid
+				.setHue(colorMid.getHue() )
+				.setSaturation(Mth.clamp(colorMid.getSaturation() , 0.03F, 1F))
+				.setBrightness(Mth.clamp(colorMid.getBrightness() , 0.1F, 0.6F));
 		CustomColor colorEnd = new CustomColor().set(color).switchToHSV();
 		colorEnd
 				.setHue(colorEnd.getHue() + hueDist)
@@ -640,10 +698,10 @@ public class TextureHelper {
 				.setSaturation(Mth.clamp(colorStart.getSaturation() - backSat, 0.01F, 1F))
 				.setBrightness(Mth.clamp(colorStart.getBrightness() - backVal, 0.07F, 0.55F));
 		CustomColor colorMid = new CustomColor().set(color).switchToHSV();
-		colorStart
-				.setHue(colorStart.getHue() )
-				.setSaturation(Mth.clamp(colorStart.getSaturation() , 0.0F, 1F))
-				.setBrightness(Mth.clamp(colorStart.getBrightness() , 0.0F, 1F));
+		colorMid
+				.setHue(colorMid.getHue() )
+				.setSaturation(Mth.clamp(colorMid.getSaturation() , 0.0F, 1F))
+				.setBrightness(Mth.clamp(colorMid.getBrightness() , 0.0F, 1F));
 		CustomColor colorEnd = new CustomColor().set(color).switchToHSV();
 		colorEnd
 				.setHue(colorEnd.getHue() + forHue)
@@ -652,10 +710,30 @@ public class TextureHelper {
 		return new ColorGradient(colorStart, colorMid, colorEnd);
 	}
 
+	public static CustomColor getAverageAlpha(BufferTexture texture, int x, int y, int r) {
+		float ca = 0;
+
+		COLOR.forceRGB();
+
+		for (int px = -r; px <= r; px ++) {
+			int posX = MHelper.wrap(x + px, texture.getWidth());
+			for (int py = -r; py <= r; py ++) {
+				int posY = MHelper.wrap(y + py, texture.getHeight());
+				COLOR.set(texture.getPixel(posX, posY));
+				ca += COLOR.getAlpha();
+			}
+		}
+
+		int count = r * 2 + 1;
+		count *= count;
+		return COLOR.set(texture.getPixel(x,y)).setAlpha( ca / count);
+	}
+
 	public static CustomColor getAverageColor(BufferTexture texture, int x, int y, int r) {
 		float cr = 0;
 		float cg = 0;
 		float cb = 0;
+		float ca = 0;
 
 		COLOR.forceRGB();
 		for (int px = -r; px <= r; px ++) {
@@ -666,12 +744,13 @@ public class TextureHelper {
 				cr += COLOR.getRed();
 				cg += COLOR.getGreen();
 				cb += COLOR.getBlue();
+				ca += COLOR.getAlpha();
 			}
 		}
 
 		int count = r * 2 + 1;
 		count *= count;
-		return COLOR.set(cr / count, cg / count, cb / count);
+		return COLOR.set(cr / count, cg / count, cb / count, ca / count);
 	}
 
 	public static CustomColor getAverageColor(BufferTexture texture, int x, int y, int width, int height) {

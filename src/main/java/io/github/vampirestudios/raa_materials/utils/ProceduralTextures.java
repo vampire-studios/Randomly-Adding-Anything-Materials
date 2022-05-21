@@ -140,24 +140,29 @@ public class ProceduralTextures {
 		BufferTexture highFreq = TextureHelper.simpleTileable(TextureHelper.makeNoiseTexture(random, size, Rands.randFloatRange(1F, 1.6F) / (size/16F)));
 		BufferTexture midFreq = TextureHelper.edgeTileable(TextureHelper.downScaleCrop(
 				TextureHelper.offset(highFreq, Rands.randInt(size), Rands.randInt(size)),
-				4),3);
+				4),4,0.96f, (size/16));
 		BufferTexture lowFreq = TextureHelper.upScale(TextureHelper.edgeTileable(TextureHelper.downScaleCrop(
 				TextureHelper.offset(highFreq, Rands.randInt(size), Rands.randInt(size)),
-				8),3),2);
+				8),4, 0.95f, (size/16)/2),2);
 
-		midFreq = TextureHelper.blur(midFreq, 0.1f, 2);
+		midFreq = TextureHelper.blur(midFreq, 0.1f, Rands.randIntRange(2, 6), Rands.randIntRange(2, 6));
+
 		BufferTexture pass = TextureHelper.heightPass(midFreq, -1, -1);
 		TextureHelper.normalize(pass);
-		TextureHelper.clamp(midFreq, 9);
+		TextureHelper.clampValue(midFreq, values);
 		TextureHelper.normalize(midFreq);
+
 		midFreq = TextureHelper.blend(midFreq, pass, 0.2F);
 		midFreq = TextureHelper.add(midFreq, pass);
-
 		BufferTexture result = TextureHelper.blend(
 				TextureHelper.blur(lowFreq, 0.5f, 2),
 				TextureHelper.blend(midFreq, TextureHelper.downScale(highFreq,4),
 						0.3f),0.65f);
-		TextureHelper.normalize(result, 0.1F, 0.7F);
+		BufferTexture hrm = TextureHelper.blur(pass, 0.5f, 2, 2);
+
+		hrm = TextureHelper.add(result, hrm);
+		result = TextureHelper.blend(result, hrm, 0.15F);
+		TextureHelper.normalize(result, 0.1F, 0.8F);
 		TextureHelper.clampValue(result, values);
 		return result;
 	}
