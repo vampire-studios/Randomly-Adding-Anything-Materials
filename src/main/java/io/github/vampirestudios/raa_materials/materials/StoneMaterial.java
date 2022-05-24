@@ -352,7 +352,7 @@ public class StoneMaterial extends ComplexMaterial {
 		for (int i = 0; i < stoneFrames.length; i++) {
 			stoneFrames[i] = id("textures/block/stone_frame_0" + (i+1) + ".png");
 		}
-		stoneBricks = new ResourceLocation[16];
+		stoneBricks = new ResourceLocation[18];
 		for (int i = 0; i < stoneBricks.length; i++) {
 			stoneBricks[i] = id("textures/block/stone_bricks_0" + (i+1) + ".png");
 		}

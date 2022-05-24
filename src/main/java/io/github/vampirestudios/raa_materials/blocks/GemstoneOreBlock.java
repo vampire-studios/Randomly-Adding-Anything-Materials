@@ -1,3 +1,4 @@
+/*
 package io.github.vampirestudios.raa_materials.blocks;
 
 import de.dafuqs.spectrum.blocks.conditional.CloakedOreBlock;
@@ -18,4 +19,4 @@ public class GemstoneOreBlock extends CloakedOreBlock {
 		return this.advancementResourceLocation;
 	}
 
-}
+}*/

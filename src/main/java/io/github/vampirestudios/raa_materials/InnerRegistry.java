@@ -2,12 +2,12 @@ package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Lifecycle;
-import com.swordglowsblue.artifice.api.ArtificeResourcePack;
-import com.swordglowsblue.artifice.api.util.Processor;
-import com.swordglowsblue.artifice.common.ArtificeRegistry;
-import com.swordglowsblue.artifice.common.ClientResourcePackProfileLike;
-import com.swordglowsblue.artifice.common.ServerResourcePackProfileLike;
-import com.swordglowsblue.artifice.impl.DynamicResourcePackFactory;
+import io.github.vampirestudios.artifice.api.ArtificeResourcePack;
+import io.github.vampirestudios.artifice.api.util.Processor;
+import io.github.vampirestudios.artifice.common.ArtificeRegistry;
+import io.github.vampirestudios.artifice.common.ClientResourcePackProfileLike;
+import io.github.vampirestudios.artifice.common.ServerResourcePackProfileLike;
+import io.github.vampirestudios.artifice.impl.DynamicResourcePackFactory;
 import io.github.vampirestudios.raa_materials.api.BiomeAPI;
 import io.github.vampirestudios.raa_materials.materials.CrystalMaterial;
 import io.github.vampirestudios.raa_materials.materials.GemOreMaterial;
@@ -138,23 +138,23 @@ public class InnerRegistry {
 	}
 
 	public static void registerArtificeDataPack(ResourceLocation id, Processor<ArtificeResourcePack.ServerResourcePackBuilder> register) {
-		if (ArtificeRegistry.DATA_PACKS.containsKey(id)) {
-			replace(ArtificeRegistry.DATA_PACKS, id, new DynamicResourcePackFactory<>(PackType.SERVER_DATA, id, register));
+		if (ArtificeRegistry.DATA.containsKey(id)) {
+//			replace(ArtificeRegistry.DATA, id, new DynamicResourcePackFactory<>(PackType.SERVER_DATA, id, register));
 		} else {
-			Registry.register(ArtificeRegistry.DATA_PACKS, id, new DynamicResourcePackFactory<>(PackType.SERVER_DATA, id, register));
+			Registry.register(ArtificeRegistry.DATA, id, new DynamicResourcePackFactory<>(PackType.SERVER_DATA, id, register));
 		}
 		ARTIFICE_DATAPACKS.put(id, new DynamicResourcePackFactory<>(PackType.SERVER_DATA, id, register));
-		RegistryUtils.addRegisteredKey(ArtificeRegistry.DATA_PACKS.key().location(), id);
+		RegistryUtils.addRegisteredKey(ArtificeRegistry.DATA.key().location(), id);
 	}
 
 	public static void registerArtificeResourcePack(ResourceLocation id, Processor<ArtificeResourcePack.ClientResourcePackBuilder> register) {
-		if (ArtificeRegistry.RESOURCE_PACKS.containsKey(id)) {
-			replace(ArtificeRegistry.RESOURCE_PACKS, id, new DynamicResourcePackFactory<>(PackType.CLIENT_RESOURCES, id, register));
+		if (ArtificeRegistry.ASSETS.containsKey(id)) {
+//			replace(ArtificeRegistry.ASSETS, id, new DynamicResourcePackFactory<>(PackType.CLIENT_RESOURCES, id, register));
 		} else {
-			Registry.register(ArtificeRegistry.RESOURCE_PACKS, id, new DynamicResourcePackFactory<>(PackType.CLIENT_RESOURCES, id, register));
+			Registry.register(ArtificeRegistry.ASSETS, id, new DynamicResourcePackFactory<>(PackType.CLIENT_RESOURCES, id, register));
 		}
 		ARTIFICE_RESOURCE_PACKS.put(id, new DynamicResourcePackFactory<>(PackType.CLIENT_RESOURCES, id, register));
-		RegistryUtils.addRegisteredKey(ArtificeRegistry.RESOURCE_PACKS.key().location(), id);
+		RegistryUtils.addRegisteredKey(ArtificeRegistry.ASSETS.key().location(), id);
 	}
 
 	public static void registerBlock(ResourceLocation id, Block block) {

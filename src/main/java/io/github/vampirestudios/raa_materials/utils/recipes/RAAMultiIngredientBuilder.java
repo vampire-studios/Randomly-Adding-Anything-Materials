@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials.utils.recipes;
 
 import com.google.gson.JsonArray;
-import com.swordglowsblue.artifice.api.builder.JsonObjectBuilder;
+import io.github.vampirestudios.artifice.api.builder.JsonObjectBuilder;
 import net.minecraft.resources.ResourceLocation;
 
 public class RAAMultiIngredientBuilder {

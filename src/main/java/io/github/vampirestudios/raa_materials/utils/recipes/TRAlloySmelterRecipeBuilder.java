@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials.utils.recipes;
 
-import com.swordglowsblue.artifice.api.builder.data.recipe.RecipeBuilder;
-import com.swordglowsblue.artifice.api.util.Processor;
+import io.github.vampirestudios.artifice.api.builder.data.recipe.RecipeBuilder;
+import io.github.vampirestudios.artifice.api.util.Processor;
 
 public class TRAlloySmelterRecipeBuilder extends RecipeBuilder<TRAlloySmelterRecipeBuilder> {
     public TRAlloySmelterRecipeBuilder() {

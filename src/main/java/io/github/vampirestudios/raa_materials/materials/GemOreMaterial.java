@@ -1,18 +1,15 @@
 package io.github.vampirestudios.raa_materials.materials;
 
-import com.swordglowsblue.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
-import io.github.vampirestudios.raa_materials.recipes.FurnaceRecipe;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.recipes.support.ProcessingCreateRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
@@ -134,17 +131,17 @@ public class GemOreMaterial extends OreMaterial {
 	}
 
 	static {
-		oreVeinTextures = new ResourceLocation[32];
+		oreVeinTextures = new ResourceLocation[33];
 		for (int i = 0; i < oreVeinTextures.length; i++) {
 			oreVeinTextures[i] = id("textures/block/ores/gems/ore_" + (i+1) + ".png");
 		}
 
-		storageBlockTextures = new ResourceLocation[14];
+		storageBlockTextures = new ResourceLocation[16];
 		for (int i = 0; i < storageBlockTextures.length; i++) {
 			storageBlockTextures[i] = id("textures/block/storage_blocks/gems/gem_" + (i+1) + ".png");
 		}
 
-		gemTextures = new ResourceLocation[30];
+		gemTextures = new ResourceLocation[33];
 		for (int i = 0; i < gemTextures.length; i++) {
 			gemTextures[i] = id("textures/item/gems/gem_" + (i+1) + ".png");
 		}

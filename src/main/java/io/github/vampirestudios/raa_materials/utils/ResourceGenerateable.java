@@ -1,6 +1,6 @@
 package io.github.vampirestudios.raa_materials.utils;
 
-import com.swordglowsblue.artifice.api.ArtificeResourcePack;
+import io.github.vampirestudios.artifice.api.ArtificeResourcePack;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.vampirelib.utils.Utils;
 import net.minecraft.resources.ResourceLocation;

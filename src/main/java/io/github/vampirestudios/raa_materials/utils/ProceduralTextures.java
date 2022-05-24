@@ -70,12 +70,12 @@ public class ProceduralTextures {
 			float hue = (color.getHue() < 0.66 ? -1 : 1) * cos * 0.14F;
 			float sat = -0.35F;
 			return makeCorrodedPalette(TextureHelper.makeDistortedPalette(color, hue, sat, 0.6F));
-		}else if (type == 1) {
+		} else if (type == 1) {
 			CustomColor color = new CustomColor(random.nextFloat(), random.nextFloat(), random.nextFloat())
 					.switchToHSV();
 			color.setSaturation(Math.min(color.getSaturation(), 0.6F)).setBrightness(Math.min(color.getBrightness(), 0.6F));
 			return makeCorrodedPalette(TextureHelper.makeDualDistPalette(color, 0.08F, -0.3F, 0.5F, 0.08F, -0.5F, 0.6F));
-		}else {
+		} else {
 			float value = random.nextBoolean() ? Rands.randFloatRange(0.2F, 0.4F) : Rands.randFloatRange(0.6F, 0.75F);
 			CustomColor color = new CustomColor(value, value + 0.01f, value).switchToHSV()
 					.setHue(Rands.randFloatRange(0F, 1F))

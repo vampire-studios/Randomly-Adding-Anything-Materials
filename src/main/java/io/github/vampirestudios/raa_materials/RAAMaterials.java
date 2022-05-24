@@ -66,6 +66,7 @@ public class RAAMaterials implements RAAAddon {
 		Random random = Rands.getRandom();
 		random.setSeed(seed);
 
+
 		List<OreMaterial.Target> targets = new ArrayList<>();
 
 		synchronized (world) {

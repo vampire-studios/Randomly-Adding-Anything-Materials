@@ -1,13 +1,7 @@
 package io.github.vampirestudios.raa_materials.materials;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.mojang.math.Vector3f;
-import de.dafuqs.spectrum.SpectrumCommon;
-import de.dafuqs.spectrum.blocks.decoration.DecoStoneBlock;
-import de.dafuqs.spectrum.blocks.decoration.GemstoneChimeBlock;
-import de.dafuqs.spectrum.registries.SpectrumBlocks;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
@@ -15,10 +9,10 @@ import io.github.vampirestudios.raa_materials.api.BiomeAPI;
 import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
-import io.github.vampirestudios.raa_materials.blocks.*;
+import io.github.vampirestudios.raa_materials.blocks.CustomCrystalBlock;
+import io.github.vampirestudios.raa_materials.blocks.CustomCrystalClusterBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
-import io.github.vampirestudios.raa_materials.items.RAASimpleCloakedItem;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.recipes.AnvilCrushingRecipe;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
@@ -26,7 +20,6 @@ import io.github.vampirestudios.raa_materials.recipes.support.ProcessingCreateRe
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Holder;
@@ -36,12 +29,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.valueproviders.UniformInt;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.Items;
@@ -51,7 +41,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.TintedGlassBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -62,13 +51,11 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.RarityFilter;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-import static de.dafuqs.spectrum.particle.SpectrumParticleFactories.registerColoredRisingParticle;
-import static io.github.vampirestudios.raa_materials.RAAMaterials.*;
+import static io.github.vampirestudios.raa_materials.RAAMaterials.RAA_ORES;
+import static io.github.vampirestudios.raa_materials.RAAMaterials.id;
 
 public class CrystalMaterial extends ComplexMaterial {
 	private static final ResourceLocation[] crystalBlocks;
@@ -98,7 +85,7 @@ public class CrystalMaterial extends ComplexMaterial {
 		for (int i = 0; i < crystals.length; i++) {
 			crystals[i] = RAAMaterials.id("textures/block/crystal_" + (i + 1) + ".png");
 		}
-		shards = new ResourceLocation[4];
+		shards = new ResourceLocation[7];
 		for (int i = 0; i < shards.length; i++) {
 			shards[i] = RAAMaterials.id("textures/item/shard_" + (i + 1) + ".png");
 		}
@@ -176,7 +163,7 @@ public class CrystalMaterial extends ComplexMaterial {
 			default -> throw new IllegalStateException("Unexpected value: " + tier);
 		}, crystal);
 
-		if (FabricLoader.getInstance().isModLoaded("spectrum")) {
+		/*if (FabricLoader.getInstance().isModLoaded("spectrum")) {
 			this.risingParticle = InnerRegistry.registerParticle(RAAMaterials.id(this.registryName + "_sparkle_rising"), FabricParticleTypes.simple(false));
 
 			InnerRegistry.registerArtificeDataPack(id(String.format("spectrum_%s_advancements", this.registryName)), dataResourceBuilder -> {
@@ -263,7 +250,7 @@ public class CrystalMaterial extends ComplexMaterial {
 				case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
 				default -> throw new IllegalStateException("Unexpected value: " + tier);
 			}, storageBlock);
-		}
+		}*/
 
 		if (FabricLoader.getInstance().isModLoaded("immersive_amethyst")) {
 			geodeCore = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEODE_CORE);
@@ -444,7 +431,7 @@ public class CrystalMaterial extends ComplexMaterial {
 		BufferTexture enrichedGeodeCoreTexture = TextureHelper.loadTexture("textures/item/enriched_geode_core.png");
 		BufferTexture geodeCoreOverlayTexture = TextureHelper.loadTexture("textures/item/geode_core_overlay.png");
 
-		if (FabricLoader.getInstance().isModLoaded("spectrum")) {
+		/*if (FabricLoader.getInstance().isModLoaded("spectrum")) {
 			registerColoredRisingParticle(this.risingParticle, particleColor.getRed(), particleColor.getGreen(), particleColor.getBlue());
 
 			ResourceLocation textureID = TextureHelper.makeBlockTextureID(registryName + "_glass");
@@ -597,7 +584,7 @@ public class CrystalMaterial extends ComplexMaterial {
 
 			OreMaterial.makeColoredCloakedItemAssets(TextureHelper.loadTexture(io.github.vampirestudios.vampirelib.utils.Utils.prependToPath(TextureHelper.makeItemTextureID("crystal_powder.png"),
 					"textures/")), this.crystalPowder, gradient, this.registryName + "_powder", this.registryName, "item.powder", this.name);
-		}
+		}*/
 
 		if (FabricLoader.getInstance().isModLoaded("immersive_amethyst")) {
 			//Geode Core

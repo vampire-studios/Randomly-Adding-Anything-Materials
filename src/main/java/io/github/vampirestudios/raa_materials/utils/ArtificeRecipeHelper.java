@@ -1,12 +1,13 @@
 package io.github.vampirestudios.raa_materials.utils;
 
-import com.swordglowsblue.artifice.api.ArtificeResourcePack;
-import com.swordglowsblue.artifice.api.builder.TypedJsonBuilder;
-import com.swordglowsblue.artifice.api.resource.JsonResource;
-import com.swordglowsblue.artifice.api.util.IdUtils;
-import com.swordglowsblue.artifice.api.util.Processor;
-import java.util.function.Supplier;
+import io.github.vampirestudios.artifice.api.ArtificeResourcePack;
+import io.github.vampirestudios.artifice.api.builder.TypedJsonBuilder;
+import io.github.vampirestudios.artifice.api.resource.JsonResource;
+import io.github.vampirestudios.artifice.api.util.IdUtils;
+import io.github.vampirestudios.artifice.api.util.Processor;
 import net.minecraft.resources.ResourceLocation;
+
+import java.util.function.Supplier;
 
 public class ArtificeRecipeHelper {
 	private final ArtificeResourcePack.ServerResourcePackBuilder dataPackBuilder;

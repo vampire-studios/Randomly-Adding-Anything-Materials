@@ -672,15 +672,15 @@ public class MetalOreMaterial extends OreMaterial {
 	}
 
 	static {
-		oreVeinTextures = new ResourceLocation[39];
+		oreVeinTextures = new ResourceLocation[40];
 		for (int i = 0; i < oreVeinTextures.length; i++) {
 			oreVeinTextures[i] = id("textures/block/ores/metals/ore_" + (i+1) + ".png");
 		}
-		storageBlockTextures = new ResourceLocation[21];
+		storageBlockTextures = new ResourceLocation[23];
 		for (int i = 0; i < storageBlockTextures.length; i++) {
 			storageBlockTextures[i] = id("textures/block/storage_blocks/metals/metal_" + (i+1) + ".png");
 		}
-		rawMaterialBlockTextures = new ResourceLocation[14];
+		rawMaterialBlockTextures = new ResourceLocation[15];
 		for (int i = 0; i < rawMaterialBlockTextures.length; i++) {
 			rawMaterialBlockTextures[i] = id("textures/block/storage_blocks/metals/raw_" + (i+1) + ".png");
 		}
@@ -689,7 +689,7 @@ public class MetalOreMaterial extends OreMaterial {
 		for (int i = 0; i < rawMaterialTextures.length; i++) {
 			rawMaterialTextures[i] = id("textures/item/raw/raw_" + (i+1) + ".png");
 		}
-		ingotTextures = new ResourceLocation[28];
+		ingotTextures = new ResourceLocation[29];
 		for (int i = 0; i < ingotTextures.length; i++) {
 			ingotTextures[i] = id("textures/item/ingots/ingot_" + (i+1) + ".png");
 		}

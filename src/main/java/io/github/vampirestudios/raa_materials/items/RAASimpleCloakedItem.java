@@ -1,3 +1,4 @@
+/*
 package io.github.vampirestudios.raa_materials.items;
 
 import de.dafuqs.spectrum.items.CloakedItem;
@@ -25,3 +26,4 @@ public class RAASimpleCloakedItem extends CloakedItem implements GeneratedItemNa
         return itemType;
     }
 }
+*/

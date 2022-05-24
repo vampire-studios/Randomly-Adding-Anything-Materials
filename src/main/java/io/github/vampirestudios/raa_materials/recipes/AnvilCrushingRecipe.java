@@ -82,16 +82,16 @@ public class AnvilCrushingRecipe {
 
 		ItemStack result = new ItemStack(output, count);
 
-		de.dafuqs.spectrum.recipe.anvil_crushing.AnvilCrushingRecipe recipe = new de.dafuqs.spectrum.recipe.anvil_crushing.AnvilCrushingRecipe(
-				id,
-				input,
-				result,
-				crushedItemsPerPointOfDamage,
-				experience,
-				particleEffect,
-				particleCount,
-				soundEvent
-		);
-		CustomRecipeManager.addRecipe(type, recipe);
+//		de.dafuqs.spectrum.recipe.anvil_crushing.AnvilCrushingRecipe recipe = new de.dafuqs.spectrum.recipe.anvil_crushing.AnvilCrushingRecipe(
+//				id,
+//				input,
+//				result,
+//				crushedItemsPerPointOfDamage,
+//				experience,
+//				particleEffect,
+//				particleCount,
+//				soundEvent
+//		);
+//		CustomRecipeManager.addRecipe(type, recipe);
 	}
 }

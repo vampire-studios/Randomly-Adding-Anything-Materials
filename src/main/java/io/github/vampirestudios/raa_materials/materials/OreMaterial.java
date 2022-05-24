@@ -364,21 +364,21 @@ public abstract class OreMaterial extends ComplexMaterial {
 		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)item).getItemType().apply(registryName), translatableName, name);
 	}
 
-	public static void makeColoredCloakedItemAssets(BufferTexture bufferTexture, Item item, ColorGradient gradient, String textureName, String registryName, String translatableName, String name) {
-		BufferTexture texture = ProceduralTextures.randomColored(bufferTexture, gradient);
-		ResourceLocation textureID = TextureHelper.makeItemTextureID(textureName);
-		InnerRegistryClient.registerTexture(textureID, texture);
-		InnerRegistryClient.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
-		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleCloakedItem)item).getItemType().apply(registryName), translatableName, name);
-	}
-
-	public static void makeColoredCloakedItemAssets(ResourceLocation bufferTexture, Item item, ColorGradient gradient, String textureName, String registryName, String translatableName, String name) {
-		BufferTexture texture = ProceduralTextures.randomColored(bufferTexture, gradient);
-		ResourceLocation textureID = TextureHelper.makeItemTextureID(textureName);
-		InnerRegistryClient.registerTexture(textureID, texture);
-		InnerRegistryClient.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
-		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleCloakedItem)item).getItemType().apply(registryName), translatableName, name);
-	}
+//	public static void makeColoredCloakedItemAssets(BufferTexture bufferTexture, Item item, ColorGradient gradient, String textureName, String registryName, String translatableName, String name) {
+//		BufferTexture texture = ProceduralTextures.randomColored(bufferTexture, gradient);
+//		ResourceLocation textureID = TextureHelper.makeItemTextureID(textureName);
+//		InnerRegistryClient.registerTexture(textureID, texture);
+//		InnerRegistryClient.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
+//		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleCloakedItem)item).getItemType().apply(registryName), translatableName, name);
+//	}
+//
+//	public static void makeColoredCloakedItemAssets(ResourceLocation bufferTexture, Item item, ColorGradient gradient, String textureName, String registryName, String translatableName, String name) {
+//		BufferTexture texture = ProceduralTextures.randomColored(bufferTexture, gradient);
+//		ResourceLocation textureID = TextureHelper.makeItemTextureID(textureName);
+//		InnerRegistryClient.registerTexture(textureID, texture);
+//		InnerRegistryClient.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
+//		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleCloakedItem)item).getItemType().apply(registryName), translatableName, name);
+//	}
 
 	static {
 		swordBladeTextures = new ResourceLocation[13];

@@ -1,3 +1,4 @@
+/*
 package io.github.vampirestudios.raa_materials.blocks;
 
 import net.fabricmc.api.EnvType;
@@ -36,3 +37,4 @@ public class GemGlassBlock extends GlassBlock {
 	}
 
 }
+*/
