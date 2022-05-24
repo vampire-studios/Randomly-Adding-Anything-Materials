@@ -2,7 +2,7 @@ package io.github.vampirestudios.raa_materials.client;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import io.github.vampirestudios.raa_materials.api.BlockModelProvider;
+import io.github.vampirestudios.raa_materials.api.LegacyBlockModelProvider;
 import io.github.vampirestudios.raa_materials.api.ItemModelProvider;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BlockModel;
@@ -29,7 +29,7 @@ public class CustomModelBakery {
 	}
 	
 	public void loadCustomModels(ResourceManager resourceManager) {
-		Registry.BLOCK.stream().parallel().filter(BlockModelProvider.class::isInstance).forEach(block -> {
+		Registry.BLOCK.stream().parallel().filter(LegacyBlockModelProvider.class::isInstance).forEach(block -> {
 			ResourceLocation blockID = Registry.BLOCK.getKey(block);
 			ResourceLocation storageID = new ResourceLocation(blockID.getNamespace(), "blockstates/" + blockID.getPath() + ".json");
 			if (!resourceManager.hasResource(storageID)) {
@@ -51,7 +51,7 @@ public class CustomModelBakery {
 	}
 	
 	private void addBlockModel(ResourceLocation blockID, Block block) {
-		BlockModelProvider provider = (BlockModelProvider) block;
+		LegacyBlockModelProvider provider = (LegacyBlockModelProvider) block;
 		ImmutableList<BlockState> states = block.getStateDefinition().getPossibleStates();
 		BlockState defaultState = block.defaultBlockState();
 		
@@ -78,7 +78,7 @@ public class CustomModelBakery {
 		if (models.containsKey(modelLocation)) {
 			return;
 		}
-		BlockModel model = provider.getItemModel(modelLocation);
+		BlockModel model = BlockModel.fromString(provider.getItemModel(modelLocation));
 		if (model != null) models.put(modelLocation, model);
 	}
 

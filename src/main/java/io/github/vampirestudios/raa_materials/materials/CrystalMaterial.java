@@ -5,8 +5,7 @@ import com.mojang.math.Vector3f;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
-import io.github.vampirestudios.raa_materials.api.BiomeAPI;
-import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
+import io.github.vampirestudios.raa_materials.api.*;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.CustomCrystalBlock;
@@ -22,6 +21,8 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -396,7 +397,10 @@ public class CrystalMaterial extends ComplexMaterial {
 
 		textureID = TextureHelper.makeBlockTextureID(this.registryName + "_crystal");
 		texture = ProceduralTextures.randomColored(TextureHelper.loadTexture(crystalTexture), gradient);
+
 		InnerRegistryClient.registerTexture(textureID, texture);
+
+		((CustomCrystalClusterBlock)this.crystal).registerVariants(id(this.registryName+"_crystal"));
 		InnerRegistryClient.registerItemModel(this.crystal.asItem(), ModelHelper.makeFlatItem(textureID));
 		NameGenerator.addTranslation(NameGenerator.makeRawBlock(this.registryName + "_crystal"), "block.crystal", this.name);
 

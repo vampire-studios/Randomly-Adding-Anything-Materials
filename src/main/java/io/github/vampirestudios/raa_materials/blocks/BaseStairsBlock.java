@@ -1,9 +1,10 @@
 package io.github.vampirestudios.raa_materials.blocks;
 
 import io.github.vampirestudios.raa_materials.api.BasePatterns;
-import io.github.vampirestudios.raa_materials.api.BlockModelProvider;
+import io.github.vampirestudios.raa_materials.api.LegacyBlockModelProvider;
 import io.github.vampirestudios.raa_materials.api.ModelsHelper;
 import io.github.vampirestudios.raa_materials.api.PatternsHelper;
+import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class BaseStairsBlock extends StairBlock implements BlockModelProvider {
+public class BaseStairsBlock extends StairBlock implements LegacyBlockModelProvider {
 	private final Block source;
 	private final ResourceLocation registryName;
 
@@ -45,8 +46,8 @@ public class BaseStairsBlock extends StairBlock implements BlockModelProvider {
 
 	@Override
 	@Environment(EnvType.CLIENT)
-	public BlockModel getItemModel(ResourceLocation resourceLocation) {
-		return getBlockModel(resourceLocation, defaultBlockState());
+	public String getItemModel(ResourceLocation resourceLocation) {
+		return ModelHelper.simpleParentItem(resourceLocation);
 	}
 
 	@Override

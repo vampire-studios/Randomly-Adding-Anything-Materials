@@ -77,12 +77,6 @@ public class ModelLoaderMixin {
 
 	@Inject(method = "loadModel", at = @At("HEAD"), cancellable = true)
 	private void loadModel(ResourceLocation id, CallbackInfo info) {
-		if (id.toString().contains("_chime")) {
-			RAACore.LOGGER.warn("break point bait aaaa");
-		}
-		if (id.toString().contains("_decostone")) {
-			RAACore.LOGGER.warn("break point bait aaaa");
-		}
 		if (id instanceof ModelResourceLocation modelID) {
 			ResourceLocation cleanID = new ResourceLocation(id.getNamespace(), id.getPath());
 			if (InnerRegistryClient.hasCustomModel(cleanID)) {
@@ -107,12 +101,17 @@ public class ModelLoaderMixin {
 							.filter(state -> modelID.equals(BlockModelShaper.stateToModelLocation(cleanID, state)))
 							.findFirst();
 					if (possibleState.isPresent()) {
-						UnbakedModel model = InnerRegistryClient.getModel(possibleState.get());
+						ResourceLocation stateId = BlockModelShaper.stateToModelLocation(cleanID, possibleState.get());
+						UnbakedModel model = InnerRegistryClient.getVarient(stateId);
 						if (model != null) {
-							ResourceLocation stateId = BlockModelShaper.stateToModelLocation(cleanID, possibleState.get());
 							cacheAndQueueDependencies(stateId, model);
 						} else {
-							RAACore.LOGGER.warn("Error loading variant: {}", modelID);
+							model = InnerRegistryClient.getModel(possibleState.get());
+							if (model != null) {
+								cacheAndQueueDependencies(stateId, model);
+							} else {
+								RAACore.LOGGER.warn("Error loading variant: {}", modelID);
+							}
 						}
 						info.cancel();
 					}

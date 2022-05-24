@@ -69,7 +69,7 @@ public class TextureTest {
 
         float[] values = new float[]{0.13f,0.22f,0.34f,0.53f,0.60f,0.70f,0.85f,0.90f};
 
-        ResourceLocation stoneTexID = notTextureHelper.makeBlockTextureID(textureBaseName);
+        ResourceLocation stoneTexID = notTextureHelper.makeBlockTextureID("aaaa_"+textureBaseName);
         BufferTexture texture = makeStoneTexture(values, random); //from procedural texture
         float[] temp = TextureHelper.getValues(texture);
         values = new float[temp.length+1];
@@ -129,18 +129,18 @@ public class TextureTest {
 
         BufferTexture midFreq = TextureHelper.edgeTileable(TextureHelper.downScaleCrop(
                 TextureHelper.offset(highFreq, Rands.randInt(size), Rands.randInt(size)),
-                4),3);
+                4),4,0.96f, (size/16));
 
         BufferTexture lowFreq = TextureHelper.upScale(TextureHelper.edgeTileable(TextureHelper.downScaleCrop(
                 TextureHelper.offset(highFreq, Rands.randInt(size), Rands.randInt(size)),
-                8),3),2);
+                8),4, 0.95f, (size/16)/2),2);
 
-        midFreq = TextureHelper.blur(midFreq, 0.1f, 2);
+        midFreq = TextureHelper.blur(midFreq, 0.1f, Rands.randIntRange(2, 6), Rands.randIntRange(2, 6));
 
         BufferTexture pass = TextureHelper.heightPass(midFreq, -1, -1);
 
         TextureHelper.normalize(pass);
-        TextureHelper.clamp(midFreq, 9);
+        TextureHelper.clampValue(midFreq, values);
         TextureHelper.normalize(midFreq);
 
         midFreq = TextureHelper.blend(midFreq, pass, 0.2F);
@@ -150,8 +150,12 @@ public class TextureTest {
                 TextureHelper.blur(lowFreq, 0.5f, 2),
                 TextureHelper.blend(midFreq, TextureHelper.downScale(highFreq,4),
                         0.3f),0.65f);
+        BufferTexture hrm = TextureHelper.blur(pass, 0.5f, 2, 2);
 
-        TextureHelper.normalize(result, 0.1F, 0.7F);
+        hrm = TextureHelper.add(result, hrm);
+        result = TextureHelper.blend(result, hrm, 0.15F);
+
+        TextureHelper.normalize(result, 0.1F, 0.8F);
         TextureHelper.clampValue(result, values);
         return result;
     }
