@@ -1,31 +1,36 @@
 [versions]
-minecraft = "1.18.2"
-quilt_mappings = "1.18.2+build.23"
-quilt_loader = "0.16.1"
-parchment = "2022.03.13"
+    minecraft = "1.19"
+    quilt_mappings = "1.19+build.1"
+    quilt_loader = "0.17.1-beta.6"
+    parchment = "2022.03.13"
 
-fabric-api = "0.53.0+1.18.2"
+    quilted_fabric_api = '2.0.0-beta.6+0.57.0-1.19'
 
-vampirelib = "4.9.0+build.1-1.18.2"
-raa_core = "2.3.1+build.1-1.18.2"
-create = "mc1.18.2_v0.4.1+580"
-spectrum = "b05db8e86c"
-crowdin_translate = "1.4+1.18.2"
+    vampirelib = "5.3.0+build.1-1.19"
+    raa_core = "2.4.0+build.1-1.19"
+
+    create = "mc1.18.2_v0.4.1+580"
+    spectrum = "b05db8e86c"
+
+    crowdin_translate = "1.4+1.18.2"
 
 [libraries]
-minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-quilt_mappings = { module = "org.quiltmc:quilt-mappings", version.ref = "quilt_mappings" }
-quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "quilt_loader" }
+    minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+    quilt_mappings = { module = "org.quiltmc:quilt-mappings", version.ref = "quilt_mappings" }
+    quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "quilt_loader" }
 
-fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
+    quilted_fabric_api = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api", version.ref = "quilted_fabric_api" }
+    quilted_fabric_api_deprecated = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api-deprecated", version.ref = "quilted_fabric_api" }
 
-vampirelib = { module = "io.github.vampirestudios:VampireLib-Fabric", version.ref = "vampirelib" }
-raa_core = { module = "io.github.vampirestudios:Randomly-Adding-Anything-Core", version.ref = "raa_core" }
-create = { module = "com.simibubi:Create", version.ref = "create" }
-spectrum = { module = "com.github.DaFuqs:Spectrum", version.ref = "spectrum" }
-crowdin_translate = { module = "de.guntram.mcmod:crowdin-translate", version.ref = "crowdin_translate" }
+    vampirelib = { module = "io.github.vampirestudios:VampireLib-Fabric", version.ref = "vampirelib" }
+    raa_core = { module = "io.github.vampirestudios:Randomly-Adding-Anything-Core", version.ref = "raa_core" }
+
+#    create = { module = "com.simibubi:Create", version.ref = "create" }
+    spectrum = { module = "com.github.DaFuqs:Spectrum", version.ref = "spectrum" }
+    crowdin_translate = { module = "de.guntram.mcmod:crowdin-translate", version.ref = "crowdin_translate" }
 
 [plugins]
-quilt_loom = { id = "org.quiltmc.loom", version = "0.12.+" }
-loom_quiltflower = { id = "io.github.juuxel.loom-quiltflower", version = "1.7.+" }
-mappings_loom = { id = "org.quiltmc.quilt-mappings-on-loom", version = "4.+" }
+    quilt_loom = { id = "org.quiltmc.loom", version = "0.12.+" }
+
+[bundles]
+    qsl = ["quilted_fabric_api", "quilted_fabric_api_deprecated"]
