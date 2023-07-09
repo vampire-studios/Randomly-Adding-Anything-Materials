@@ -8,13 +8,13 @@ import net.minecraft.client.resources.metadata.animation.AnimationMetadataSectio
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.Mth;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.joml.Vector3f;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
+import java.io.InputStream;
+import java.util.*;
+import java.util.function.BiConsumer;
 
 public class TextureHelper {
 	private static final CustomColor COLOR = new CustomColor();
@@ -50,52 +50,27 @@ public class TextureHelper {
 		float deltaX = x - Mth.floor(x);
 		float deltaY = y - Mth.floor(y);
 
-		COLOR.forceRGB().set(img.getPixel(x1, y1));
-		float r1 = COLOR.getRed();
-		float g1 = COLOR.getGreen();
-		float b1 = COLOR.getBlue();
-		float a1 = COLOR.getAlpha();
+		float[] color1 = getColorComponents(img.getPixel(x1, y1));
+		float[] color2 = getColorComponents(img.getPixel(x2, y1));
+		float[] color3 = getColorComponents(img.getPixel(x1, y2));
+		float[] color4 = getColorComponents(img.getPixel(x2, y2));
 
-		COLOR.set(img.getPixel(x2, y1));
-		float r2 = COLOR.getRed();
-		float g2 = COLOR.getGreen();
-		float b2 = COLOR.getBlue();
-		float a2 = COLOR.getAlpha();
+		float r = Mth.lerp(deltaY, Mth.lerp(deltaX, color1[0], color2[0]), Mth.lerp(deltaX, color3[0], color4[0]));
+		float g = Mth.lerp(deltaY, Mth.lerp(deltaX, color1[1], color2[1]), Mth.lerp(deltaX, color3[1], color4[1]));
+		float b = Mth.lerp(deltaY, Mth.lerp(deltaX, color1[2], color2[2]), Mth.lerp(deltaX, color3[2], color4[2]));
+		float a = Mth.lerp(deltaY, Mth.lerp(deltaX, color1[3], color2[3]), Mth.lerp(deltaX, color3[3], color4[3]));
 
-		COLOR.set(img.getPixel(x1, y2));
-		float r3 = COLOR.getRed();
-		float g3 = COLOR.getGreen();
-		float b3 = COLOR.getBlue();
-		float a3 = COLOR.getAlpha();
+		return COLOR.set(r, g, b, a);
+	}
 
-		COLOR.set(img.getPixel(x2, y2));
-		float r4 = COLOR.getRed();
-		float g4 = COLOR.getGreen();
-		float b4 = COLOR.getBlue();
-		float a4 = COLOR.getAlpha();
-
-		r1 = Mth.lerp(deltaX, r1, r2);
-		g1 = Mth.lerp(deltaX, g1, g2);
-		b1 = Mth.lerp(deltaX, b1, b2);
-		a1 = Mth.lerp(deltaX, a1, a2);
-
-		r2 = Mth.lerp(deltaX, r3, r4);
-		g2 = Mth.lerp(deltaX, g3, g4);
-		b2 = Mth.lerp(deltaX, b3, b4);
-		a2 = Mth.lerp(deltaX, a3, a4);
-
-		r1 = Mth.lerp(deltaY, r1, r2);
-		g1 = Mth.lerp(deltaY, g1, g2);
-		b1 = Mth.lerp(deltaY, b1, b2);
-		a1 = Mth.lerp(deltaY, a1, a2);
-
-		return COLOR.set(r1, g1, b1, a1);
+	private static float[] getColorComponents(int pixel) {
+		COLOR.set(pixel);
+		return new float[] { COLOR.getRed(), COLOR.getGreen(), COLOR.getBlue(), COLOR.getAlpha() };
 	}
 
 	public static NativeImage loadImage(ResourceLocation name) {
-		try {
-			Resource input = Minecraft.getInstance().getResourceManager().getResourceOrThrow(name);
-			return NativeImage.read(input.open());
+		try(InputStream input = Minecraft.getInstance().getResourceManager().getResourceOrThrow(name).open()) {
+			return NativeImage.read(input);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
@@ -103,10 +78,9 @@ public class TextureHelper {
 	}
 	
 	public static NativeImage loadImage(String name) {
-		try {
-			ResourceLocation id = RAAMaterials.id(name);
-			Resource input = Minecraft.getInstance().getResourceManager().getResourceOrThrow(id);
-			return NativeImage.read(input.open());
+		ResourceLocation id = RAAMaterials.id(name);
+		try(InputStream input = Minecraft.getInstance().getResourceManager().getResourceOrThrow(id).open()) {
+			return NativeImage.read(input);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -137,10 +111,28 @@ public class TextureHelper {
 		return new BufferTexture(Objects.requireNonNull(loadImage(name)), loadAnimation(name));
 	}
 
+	// add this helper method for DRY principle
+	public static BufferTexture ensureSameSize(BufferTexture a, BufferTexture b) {
+		if (a.width > b.width) return TextureHelper.downScale(a, a.width / b.width);
+		if (a.width < b.width) return TextureHelper.upScale(a, b.width / a.width);
+		return a;
+	}
+
+	private static void forEachPixel(BufferTexture texture, TriConsumer<BufferTexture, Integer, Integer> function) {
+		int width = texture.getWidth();
+		int height = texture.getHeight();
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				function.accept(texture, x, y);
+			}
+		}
+	}
+
 	public static BufferTexture makeNoiseTexture(Random random, int side, float scale) {
 		BufferTexture texture = new BufferTexture(side, side);
 
 		long seed = random.nextLong();
+		CloverNoise.Noise2D noise2D = new CloverNoise.Noise2D(seed); // create instance once outside loop
 		double f = Math.PI * 2 / side;
 		double r = side * scale * (1.0 / (Math.PI * 2));
 
@@ -153,76 +145,66 @@ public class TextureHelper {
 		COLOR.forceRGB().setAlpha(1F);
 		for (int x = 0; x < side; x++) {
 			for (int y = 0; y < side; y++) {
-
-				float value = (float) new CloverNoise.Noise2D(seed).fractalNoise(sin[x], cos[y], Rands.randIntRange(2, 4));
+				float value = (float) noise2D.fractalNoise(sin[x], cos[y], Rands.randIntRange(2, 4)); // use instance
 				COLOR.set(value, value, value);
 				texture.setPixel(x, y, COLOR);
 			}
 		}
+
 		return texture;
 	}
 
 	public static BufferTexture blend(BufferTexture a, BufferTexture b, float mix) {
 		BufferTexture result = a.cloneTexture();
-		if (a.width > b.width) a = TextureHelper.downScale(a, a.width / b.width);
-		if (a.width < b.width) a = TextureHelper.upScale(a, b.width / a.width);
+		a = ensureSameSize(a, b);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
-		for (int x = 0; x < a.getWidth(); x++) {
-			for (int y = 0; y < a.getHeight(); y++) {
-				COLOR.set(a.getPixel(x, y));
-				COLOR2.set(b.getPixel(x, y));
-				if (COLOR2.getAlpha() > 0 && COLOR.getAlpha() > 0) {
-					COLOR.mixWith(COLOR2, mix,false,true);
-				}
-				if (COLOR2.getAlpha() > 0 && (COLOR.getAlpha() <= 0)) {
-					COLOR.set(COLOR2);
-				}
-				result.setPixel(x, y, COLOR);
+		forEachPixel(a, (texture, x, y) -> {
+			COLOR.set(texture.getPixel(x, y));
+			COLOR2.set(b.getPixel(x, y));
+			if (COLOR2.getAlpha() > 0 && COLOR.getAlpha() > 0) {
+				COLOR.mixWith(COLOR2, mix,false,true);
 			}
-		}
+			if (COLOR2.getAlpha() > 0 && (COLOR.getAlpha() <= 0)) {
+				COLOR.set(COLOR2);
+			}
+			result.setPixel(x, y, COLOR);
+		});
 		return result;
 	}
 
 	public static BufferTexture cover(BufferTexture a, BufferTexture b) {
 		BufferTexture result = a.cloneTexture();
-		if (a.width > b.width) a = TextureHelper.downScale(a, a.width / b.width);
-		if (a.width < b.width) a = TextureHelper.upScale(a, b.width / a.width);
+		a = ensureSameSize(a, b);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
-		for (int x = 0; x < a.getWidth(); x++) {
-			for (int y = 0; y < a.getHeight(); y++) {
-				int pixelA = a.getPixel(x, y);
-				int pixelB = b.getPixel(x, y);
-				COLOR.set(pixelA);
-				COLOR2.set(pixelB);
-				if (COLOR.getAlpha() < 0.01F) {
-					result.setPixel(x, y, COLOR);
-				} else {
-					COLOR.set(pixelA).mixWith(COLOR2.set(pixelB), COLOR2.getAlpha());
-				}
-				result.setPixel(x, y, COLOR);
-			}
-		}
+		forEachPixel(a, (texture, x, y) -> {
+			int pixelA = texture.getPixel(x, y);
+			int pixelB = b.getPixel(x, y);
+			COLOR.set(pixelA);
+			COLOR2.set(pixelB);
+
+			if (COLOR.getAlpha() < 0.01F) result.setPixel(x, y, COLOR);
+			else COLOR.set(pixelA).mixWith(COLOR2.set(pixelB), COLOR2.getAlpha());
+
+			result.setPixel(x, y, COLOR);
+		});
 		return result;
 	}
 
 	public static BufferTexture combine(BufferTexture a, BufferTexture b) {
 		BufferTexture result = a.cloneTexture();
-		if (a.width > b.width) a = TextureHelper.downScale(a, a.width / b.width);
-		if (a.width < b.width) a = TextureHelper.upScale(a, b.width / a.width);
+		a = ensureSameSize(a, b);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
-		for (int x = 0; x < a.getWidth(); x++) {
-			for (int y = 0; y < a.getHeight(); y++) {
-				int pixelA = a.getPixel(x, y);
-				int pixelB = b.getPixel(x, y);
-				COLOR.set(pixelA);
-				COLOR2.set(pixelB);
-				COLOR.set(pixelA).alphaBlend(COLOR2).copyMaxAlpha(COLOR2);
-				result.setPixel(x, y, COLOR);
-			}
-		}
+		forEachPixel(a, (texture, x, y) -> {
+			int pixelA = texture.getPixel(x, y);
+			int pixelB = b.getPixel(x, y);
+			COLOR.set(pixelA);
+			COLOR2.set(pixelB);
+			COLOR.set(pixelA).alphaBlend(COLOR2).copyMaxAlpha(COLOR2);
+			result.setPixel(x, y, COLOR);
+		});
 		return result;
 	}
 
@@ -231,81 +213,73 @@ public class TextureHelper {
 		BufferTexture darkOffset = offset(texture, offsetX, offsetY);
 		BufferTexture lightOffset = offset(texture, -offsetX, -offsetY);
 		COLOR.forceRGB();
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(lightOffset.getPixel(x, y));
-				if (COLOR.getAlpha() > 0) {
-					COLOR.set(texture.getPixel(x, y));
-					if (COLOR.getAlpha() == 0) {
-						result.setPixel(x, y, bright);
-						continue;
-					}
-				}
-				COLOR.set(darkOffset.getPixel(x, y));
-				if (COLOR.getAlpha() > 0) {
-					COLOR.set(texture.getPixel(x, y));
-					if (COLOR.getAlpha() == 0) {
-						result.setPixel(x, y, dark);
-					}
+		forEachPixel(texture, (texture1, x, y) -> {
+			COLOR.set(lightOffset.getPixel(x, y));
+			if (COLOR.getAlpha() > 0) {
+				COLOR.set(texture1.getPixel(x, y));
+				if (COLOR.getAlpha() == 0) {
+					result.setPixel(x, y, bright);
+					return;
 				}
 			}
-		}
+			COLOR.set(darkOffset.getPixel(x, y));
+			if (COLOR.getAlpha() > 0) {
+				COLOR.set(texture1.getPixel(x, y));
+				if (COLOR.getAlpha() == 0) {
+					result.setPixel(x, y, dark);
+				}
+			}
+		});
 		return result;
 	}
 
 	public static BufferTexture clamp(BufferTexture texture, int levels) {
 		COLOR.forceRGB();
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(x, y));
-				float r = (float) Mth.floor(COLOR.getRed() * levels) / levels;
-				float g = (float) Mth.floor(COLOR.getGreen() * levels) / levels;
-				float b = (float) Mth.floor(COLOR.getBlue() * levels) / levels;
-				float a = (float) Mth.floor(COLOR.getAlpha() * levels) / levels;
-				COLOR.set(r, g, b, a);
-				texture.setPixel(x, y, COLOR);
-			}
-		}
+		forEachPixel(texture, (texture1, x, y) -> {
+			COLOR.set(texture1.getPixel(x, y));
+			float r = (float) Mth.floor(COLOR.getRed() * levels) / levels;
+			float g = (float) Mth.floor(COLOR.getGreen() * levels) / levels;
+			float b = (float) Mth.floor(COLOR.getBlue() * levels) / levels;
+			float a = (float) Mth.floor(COLOR.getAlpha() * levels) / levels;
+			COLOR.set(r, g, b, a);
+			texture1.setPixel(x, y, COLOR);
+		});
 		return texture;
 	}
 
 	public static BufferTexture clampValue(BufferTexture texture, float[] levels) {
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(x, y));
-				COLOR.switchToHSV();
-				float h = 0;
-				float s = 0;
-				float v = COLOR.getBrightness();
-				float clamped = 4f;
-				for (int i = 1; i < levels.length; i++) {
-					float temp = Mth.abs(v - levels[i-1]) < Mth.abs(v - levels[i]) ? levels[i-1] : levels[i];
-					clamped = Mth.abs(v-clamped) <= Mth.abs(v - temp)? clamped : temp;
-				}
-				v = clamped;
-				float a = COLOR.getAlpha();
-				COLOR.set(h, s, v, a);
-				COLOR.switchToRGB();
-				texture.setPixel(x, y, COLOR);
+		forEachPixel(texture, (texture1, x, y) -> {
+			COLOR.set(texture1.getPixel(x, y));
+			COLOR.switchToHSV();
+			float h = 0;
+			float s = 0;
+			float v = COLOR.getBrightness();
+			float clamped = 4f;
+			for (int i = 1; i < levels.length; i++) {
+				float temp = Mth.abs(v - levels[i-1]) < Mth.abs(v - levels[i]) ? levels[i-1] : levels[i];
+				clamped = Mth.abs(v-clamped) <= Mth.abs(v - temp)? clamped : temp;
 			}
-		}
+			v = clamped;
+			float a = COLOR.getAlpha();
+			COLOR.set(h, s, v, a);
+			COLOR.switchToRGB();
+			texture1.setPixel(x, y, COLOR);
+		});
 		return texture;
 	}
 
 	public static float[] getValues(BufferTexture texture) {
 		ArrayList<Float> list = new ArrayList<>();
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(x, y));
-				COLOR.switchToHSV();
-				float v = COLOR.getBrightness();
-				if(!list.contains(v))list.add(v);
-				COLOR.forceRGB();
-			}
-		}
+		forEachPixel(texture, (texture1, x, y) -> {
+			COLOR.set(texture1.getPixel(x, y));
+			COLOR.switchToHSV();
+			float v = COLOR.getBrightness();
+			if (!list.contains(v)) list.add(v);
+			COLOR.forceRGB();
+		});
 		float[] out = new float[list.size()];
 		for (int i = 0; i < list.size(); i++) {
-			out[i] = list.get(i);
+			out[i] = list.get(i); // manually fill the array
 		}
 		return out;
 	}
@@ -317,36 +291,33 @@ public class TextureHelper {
 		Vector3f dirX = new Vector3f();
 		Vector3f dirY = new Vector3f();
 		COLOR.forceRGB();
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(distortion.getPixel(x, y));
-				float h1 = COLOR.getRed();
-				COLOR.set(distortion.getPixel((x + 1) % distortion.getWidth(), y));
-				float h2 = COLOR.getGreen();
-				COLOR.set(distortion.getPixel(x, (y + 1) % distortion.getHeight()));
-				float h3 = COLOR.getBlue();
-				dirX.set(1, h2 - h1, 1);
-				dirY.set(1, h3 - h1, 1);
-				dirX.normalize();
-				dirY.normalize();
-				dirX.cross(dirY);
-				dirX.normalize();
 
-				float dx = dirX.x() * amount;
-				float dy = dirX.y() * amount;
-				result.setPixel(x, y, getFromTexture(texture, x + dx, y + dy));
-			}
-		}
+		forEachPixel(texture, (texture1, x, y) -> {
+			COLOR.set(distortion.getPixel(x, y));
+			float h1 = COLOR.getRed();
+			COLOR.set(distortion.getPixel((x + 1) % distortion.getWidth(), y));
+			float h2 = COLOR.getGreen();
+			COLOR.set(distortion.getPixel(x, (y + 1) % distortion.getHeight()));
+			float h3 = COLOR.getBlue();
+			dirX.set(1, h2 - h1, 1);
+			dirY.set(1, h3 - h1, 1);
+			dirX.normalize();
+			dirY.normalize();
+			dirX.cross(dirY);
+			dirX.normalize();
+
+			float dx = dirX.x() * amount;
+			float dy = dirX.y() * amount;
+			result.setPixel(x, y, getFromTexture(texture1, x + dx, y + dy));
+		});
 		return result;
 	}
 
 	public static BufferTexture applyGradient(BufferTexture texture, ColorGradient gradient) {
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(x, y));
-				texture.setPixel(x, y, COLOR2.set(gradient.getColor(COLOR.getRed())).setAlpha(COLOR.getAlpha()));
-			}
-		}
+		forEachPixel(texture, (texture1, x, y) -> {
+			COLOR.set(texture1.getPixel(x, y));
+			texture1.setPixel(x, y, COLOR2.set(gradient.getColor(COLOR.getRed())).setAlpha(COLOR.getAlpha()));
+		});
 		return texture;
 	}
 
@@ -354,25 +325,21 @@ public class TextureHelper {
 		BufferTexture result = texture.cloneTexture();
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(x, y));
-				COLOR2.set(texture.getPixel(MHelper.wrap(x + offsetX, texture.getWidth()), MHelper.wrap(y + offsetY, texture.getHeight())));
-				float r = Mth.abs(COLOR.getRed() - COLOR2.getRed());
-				float g = Mth.abs(COLOR.getGreen() - COLOR2.getGreen());
-				float b = Mth.abs(COLOR.getBlue() - COLOR2.getBlue());
-				result.setPixel(x, y, COLOR.set(r, g, b));
-			}
-		}
+		forEachPixel(texture, (texture, x, y) -> {
+			COLOR.set(texture.getPixel(x, y));
+			COLOR2.set(texture.getPixel(MHelper.wrap(x + offsetX, texture.getWidth()), MHelper.wrap(y + offsetY, texture.getHeight())));
+			float r = Mth.abs(COLOR.getRed() - COLOR2.getRed());
+			float g = Mth.abs(COLOR.getGreen() - COLOR2.getGreen());
+			float b = Mth.abs(COLOR.getBlue() - COLOR2.getBlue());
+			result.setPixel(x, y, COLOR.set(r, g, b));
+		});
 		return result;
 	}
 
 	public static BufferTexture simpleTileable(BufferTexture texture) {
 		BufferTexture tex = texture.cloneTexture();
-
-		BufferTexture result = offset(tex, tex.getWidth()/2, tex.getHeight()/2);
+		BufferTexture result = offset(tex, tex.getWidth() / 2, tex.getHeight() / 2);
 		result = blend(tex, result, 0.5f);
-
 		return result;
 	}
 
@@ -407,7 +374,6 @@ public class TextureHelper {
 				result.setPixel(x, y, COLOR.set(result.getPixel(x, y)).alphaBlend(COLOR2.set(alpha2.getPixel(x, y))));
 			}
 		}
-//		result = alpha2;
 
 		result = offset(result, tex.getWidth()/2, tex.getHeight()/2);
 		return result;
@@ -417,13 +383,19 @@ public class TextureHelper {
 	 * Very slightly faster way of blurring textures than ProceduralTextures.MakeBlurredTexture(BufferTexture texture, float strength, int steps)
 	 * Effectively the same when steps are low, exponentially faster for each blur step;
 	 */
+	private static void addColor(BufferTexture tex, int x, int y, float[] colorAccumulator) {
+		COLOR.set(tex.getPixel(MHelper.wrap(x, tex.getWidth()), MHelper.wrap(y, tex.getHeight())));
+		colorAccumulator[0] += COLOR.getRed();
+		colorAccumulator[1] += COLOR.getGreen();
+		colorAccumulator[2] += COLOR.getBlue();
+		colorAccumulator[3] += COLOR.getAlpha();
+	}
+
 	public static BufferTexture blur(BufferTexture texture, float strength, int steps) {
 		BufferTexture tex;
 		BufferTexture result = texture.cloneTexture();
-		float cr = 0f;
-		float cg = 0f;
-		float cb = 0f;
-		float ca = 0f;
+
+		float[] colorAccumulator = new float[4]; // cr, cg, cb, ca
 
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
@@ -431,32 +403,15 @@ public class TextureHelper {
 			tex = result.cloneTexture();
 			for (int x = 0; x < tex.getWidth(); x++) {
 				for (int y = 0; y < tex.getHeight(); y++) {
-					COLOR.set(tex.getPixel(MHelper.wrap(x-1, tex.getWidth()), MHelper.wrap(y, tex.getHeight())));
-					cr += COLOR.getRed();
-					cg += COLOR.getGreen();
-					cb += COLOR.getBlue();
-					ca += COLOR.getAlpha();
-					COLOR.set(tex.getPixel(MHelper.wrap(x, tex.getWidth()), MHelper.wrap(y-1, tex.getHeight())));
-					cr += COLOR.getRed();
-					cg += COLOR.getGreen();
-					cb += COLOR.getBlue();
-					ca += COLOR.getAlpha();
-					COLOR.set(tex.getPixel(MHelper.wrap(x+1, tex.getWidth()), MHelper.wrap(y, tex.getHeight())));
-					cr += COLOR.getRed();
-					cg += COLOR.getGreen();
-					cb += COLOR.getBlue();
-					ca += COLOR.getAlpha();
-					COLOR.set(tex.getPixel(MHelper.wrap(x, tex.getWidth()), MHelper.wrap(y+1, tex.getHeight())));
-					cr += COLOR.getRed();
-					cg += COLOR.getGreen();
-					cb += COLOR.getBlue();
-					ca += COLOR.getAlpha();
+					Arrays.fill(colorAccumulator, 0f);
+					addColor(tex, x - 1, y, colorAccumulator);
+					addColor(tex, x, y - 1, colorAccumulator);
+					addColor(tex, x + 1, y, colorAccumulator);
+					addColor(tex, x, y + 1, colorAccumulator);
 
-					result.setPixel(x, y, COLOR.set(tex.getPixel(x,y)).mixWith(COLOR2.set(cr/4, cg/4, cb/4, ca/4),strength));
-					cr = 0f;
-					cg = 0f;
-					cb = 0f;
-					ca = 0f;
+					result.setPixel(x, y, COLOR.set(tex.getPixel(x, y))
+							.mixWith(COLOR2.set(colorAccumulator[0] / 4, colorAccumulator[1] / 4,
+									colorAccumulator[2] / 4, colorAccumulator[3] / 4), strength));
 				}
 			}
 		}
@@ -470,168 +425,154 @@ public class TextureHelper {
 		BufferTexture result = tex.cloneTexture();
 
 		COLOR2.forceRGB();
-		for (int x = 0; x < tex.getWidth(); x++) {
-			for (int y = 0; y < tex.getHeight(); y++) {
-
-				result.setPixel(x, y, COLOR2.set(tex.getPixel(x, y)).mixWith(getAverageColor(tex, x-(width/2), y-(height/2), width, height),strength));
-			}
-		}
+		forEachPixel(tex, (texture, x, y) -> result.setPixel(
+				x, y,
+				COLOR2.set(tex.getPixel(x, y)).mixWith(
+						getAverageColor(texture, x-(width/2), y-(height/2), width, height),
+						strength
+				)
+		));
 
 		return result;
 	}
 
 	public static BufferTexture normalizeAlpha(BufferTexture texture) {
-		float minA = 1;
-		float normA = 0;
+		final float[] minA = {1};
+		final float[] normA = {0};
 		COLOR.forceRGB();
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(x, y));
-				normA = MHelper.max(normA, COLOR.getAlpha());
-				minA = MHelper.min(minA, COLOR.getAlpha());
-			}
-		}
-		normA = (normA == 0 ? 1 : normA) - minA;
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(x, y));
-				COLOR.setAlpha((COLOR.getAlpha() - minA) / normA);
-				texture.setPixel(x, y, COLOR);
-			}
-		}
+
+		// Calculate minA and normA
+		forEachPixel(texture, (x, y) -> {
+			COLOR.set(texture.getPixel(x, y));
+			normA[0] = MHelper.max(normA[0], COLOR.getAlpha());
+			minA[0] = MHelper.min(minA[0], COLOR.getAlpha());
+		});
+
+		normA[0] = (normA[0] == 0 ? 1 : normA[0]) - minA[0];
+
+		// Normalize alpha values
+		forEachPixel(texture, (x, y) -> {
+			COLOR.set(texture.getPixel(x, y));
+			COLOR.setAlpha((COLOR.getAlpha() - minA[0]) / normA[0]);
+			texture.setPixel(x, y, COLOR);
+		});
+
 		return texture;
 	}
 	public static BufferTexture normalize(BufferTexture texture) {
-		float minR = 1;
-		float minG = 1;
-		float minB = 1;
-		float normR = 0;
-		float normG = 0;
-		float normB = 0;
+		final float[] minR = {1};
+		final float[] minG = {1};
+		final float[] minB = {1};
+		final float[] normR = {0};
+		final float[] normG = {0};
+		final float[] normB = {0};
 		COLOR.forceRGB();
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(x, y));
-				normR = MHelper.max(normR, COLOR.getRed());
-				normG = MHelper.max(normG, COLOR.getGreen());
-				normB = MHelper.max(normB, COLOR.getBlue());
-				minR = MHelper.min(minR, COLOR.getRed());
-				minG = MHelper.min(minG, COLOR.getGreen());
-				minB = MHelper.min(minB, COLOR.getBlue());
-			}
-		}
-		normR = (normR == 0 ? 1 : normR) - minR;
-		normG = (normG == 0 ? 1 : normG) - minG;
-		normB = (normB == 0 ? 1 : normB) - minB;
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(x, y));
-				COLOR.setRed((COLOR.getRed() - minR) / normR);
-				COLOR.setGreen((COLOR.getGreen() - minG) / normG);
-				COLOR.setBlue((COLOR.getBlue() - minB) / normB);
-				texture.setPixel(x, y, COLOR);
-			}
-		}
+		forEachPixel(texture, (x, y) -> {
+			COLOR.set(texture.getPixel(x, y));
+			normR[0] = MHelper.max(normR[0], COLOR.getRed());
+			normG[0] = MHelper.max(normG[0], COLOR.getGreen());
+			normB[0] = MHelper.max(normB[0], COLOR.getBlue());
+			minR[0] = MHelper.min(minR[0], COLOR.getRed());
+			minG[0] = MHelper.min(minG[0], COLOR.getGreen());
+			minB[0] = MHelper.min(minB[0], COLOR.getBlue());
+		});
+		normR[0] = (normR[0] == 0 ? 1 : normR[0]) - minR[0];
+		normG[0] = (normG[0] == 0 ? 1 : normG[0]) - minG[0];
+		normB[0] = (normB[0] == 0 ? 1 : normB[0]) - minB[0];
+		forEachPixel(texture, (x, y) -> {
+			COLOR.set(texture.getPixel(x, y));
+			COLOR.setRed((COLOR.getRed() - minR[0]) / normR[0]);
+			COLOR.setGreen((COLOR.getGreen() - minG[0]) / normG[0]);
+			COLOR.setBlue((COLOR.getBlue() - minB[0]) / normB[0]);
+			texture.setPixel(x, y, COLOR);
+		});
 		return texture;
 	}
 
 	public static BufferTexture normalize(BufferTexture texture, float min, float max) {
 		float delta = max - min;
-		float minR = 1;
-		float minG = 1;
-		float minB = 1;
-		float normR = 0;
-		float normG = 0;
-		float normB = 0;
+		final float[] minR = {1};
+		final float[] minG = {1};
+		final float[] minB = {1};
+		final float[] normR = {0};
+		final float[] normG = {0};
+		final float[] normB = {0};
 		COLOR.forceRGB();
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(x, y));
-				normR = MHelper.max(normR, COLOR.getRed());
-				normG = MHelper.max(normG, COLOR.getGreen());
-				normB = MHelper.max(normB, COLOR.getBlue());
-				minR = MHelper.min(minR, COLOR.getRed());
-				minG = MHelper.min(minG, COLOR.getGreen());
-				minB = MHelper.min(minB, COLOR.getBlue());
-			}
-		}
-		normR = (normR == 0 ? 1 : normR) - minR;
-		normG = (normG == 0 ? 1 : normG) - minG;
-		normB = (normB == 0 ? 1 : normB) - minB;
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(x, y));
-				COLOR.setRed((COLOR.getRed() - minR) / normR * delta + min);
-				COLOR.setGreen((COLOR.getGreen() - minG) / normG * delta + min);
-				COLOR.setBlue((COLOR.getBlue() - minB) / normB * delta + min);
-				texture.setPixel(x, y, COLOR);
-			}
-		}
+		forEachPixel(texture, (x, y) -> {
+			COLOR.set(texture.getPixel(x, y));
+			normR[0] = MHelper.max(normR[0], COLOR.getRed());
+			normG[0] = MHelper.max(normG[0], COLOR.getGreen());
+			normB[0] = MHelper.max(normB[0], COLOR.getBlue());
+			minR[0] = MHelper.min(minR[0], COLOR.getRed());
+			minG[0] = MHelper.min(minG[0], COLOR.getGreen());
+			minB[0] = MHelper.min(minB[0], COLOR.getBlue());
+		});
+		normR[0] = (normR[0] == 0 ? 1 : normR[0]) - minR[0];
+		normG[0] = (normG[0] == 0 ? 1 : normG[0]) - minG[0];
+		normB[0] = (normB[0] == 0 ? 1 : normB[0]) - minB[0];
+		forEachPixel(texture, (x, y) -> {
+			COLOR.set(texture.getPixel(x, y));
+			COLOR.setRed((COLOR.getRed() - minR[0]) / normR[0] * delta + min);
+			COLOR.setGreen((COLOR.getGreen() - minG[0]) / normG[0] * delta + min);
+			COLOR.setBlue((COLOR.getBlue() - minB[0]) / normB[0] * delta + min);
+			texture.setPixel(x, y, COLOR);
+		});
 		return texture;
 	}
 
 	public static BufferTexture add(BufferTexture a, BufferTexture b) {
 		BufferTexture result = a.cloneTexture();
-		if (a.width > b.width) a = TextureHelper.downScale(a, a.width / b.width);
-		if (a.width < b.width) a = TextureHelper.upScale(a, b.width / a.width);
+		a = ensureSameSize(a, b);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
-		for (int x = 0; x < a.getWidth(); x++) {
-			for (int y = 0; y < a.getHeight(); y++) {
-				COLOR.set(a.getPixel(x, y));
-				COLOR2.set(b.getPixel(x, y));
-				float cr = COLOR.getRed() + COLOR2.getRed();
-				float cg = COLOR.getGreen() + COLOR2.getGreen();
-				float cb = COLOR.getBlue() + COLOR2.getBlue();
-				float ca = COLOR.getAlpha() + COLOR2.getAlpha();
-				result.setPixel(x, y, COLOR.set(cr, cg, cb, ca));
-			}
-		}
+		BufferTexture finalA = a;
+		forEachPixel(a, (x, y) -> {
+			COLOR.set(finalA.getPixel(x, y));
+			COLOR2.set(b.getPixel(x, y));
+			float cr = COLOR.getRed() + COLOR2.getRed();
+			float cg = COLOR.getGreen() + COLOR2.getGreen();
+			float cb = COLOR.getBlue() + COLOR2.getBlue();
+			float ca = COLOR.getAlpha() + COLOR2.getAlpha();
+			result.setPixel(x, y, COLOR.set(cr, cg, cb, ca));
+		});
 		return result;
 	}
 
 	public static BufferTexture sub(BufferTexture a, BufferTexture b) {
 		BufferTexture result = a.cloneTexture();
-		if (a.width > b.width) a = TextureHelper.downScale(a, a.width / b.width);
-		if (a.width < b.width) a = TextureHelper.upScale(a, b.width / a.width);
+		a = ensureSameSize(a, b);
 		COLOR.forceRGB();
 		COLOR2.forceRGB();
-		for (int x = 0; x < a.getWidth(); x++) {
-			for (int y = 0; y < a.getHeight(); y++) {
-				COLOR.set(a.getPixel(x, y));
-				COLOR2.set(b.getPixel(x, y));
-				float cr = COLOR.getRed() - COLOR2.getRed();
-				float cg = COLOR.getGreen() - COLOR2.getGreen();
-				float cb = COLOR.getBlue() - COLOR2.getBlue();
-				result.setPixel(x, y, COLOR.set(cr, cg, cb));
-			}
-		}
+		forEachPixel(a, (x, y) -> {
+			COLOR.set(a.getPixel(x, y));
+			COLOR2.set(b.getPixel(x, y));
+			float cr = COLOR.getRed() - COLOR2.getRed();
+			float cg = COLOR.getGreen() - COLOR2.getGreen();
+			float cb = COLOR.getBlue() - COLOR2.getBlue();
+			result.setPixel(x, y, COLOR.set(cr, cg, cb));
+		});
 		return result;
 	}
 
 	public static BufferTexture offset(BufferTexture texture, int offsetX, int offsetY) {
 		BufferTexture result = texture.cloneTexture();
 		COLOR.forceRGB();
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(MHelper.wrap(x + offsetX, texture.getWidth()), MHelper.wrap(y + offsetY, texture.getHeight())));
-				result.setPixel(x, y, COLOR);
-			}
-		}
+		forEachPixel(texture, (x, y) -> {
+			COLOR.set(texture.getPixel(MHelper.wrap(x + offsetX, texture.getWidth()), MHelper.wrap(y + offsetY, texture.getHeight())));
+			result.setPixel(x, y, COLOR);
+		});
 		return result;
 	}
 
 	public static BufferTexture invert(BufferTexture texture) {
 		COLOR.forceRGB();
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				COLOR.set(texture.getPixel(x, y));
-				COLOR.setRed(1 - COLOR.getRed());
-				COLOR.setGreen(1 - COLOR.getGreen());
-				COLOR.setBlue(1 - COLOR.getBlue());
-				texture.setPixel(x, y, COLOR);
-			}
-		}
+		forEachPixel(texture, (x, y) -> {
+			COLOR.set(texture.getPixel(x, y));
+			COLOR.setRed(1 - COLOR.getRed());
+			COLOR.setGreen(1 - COLOR.getGreen());
+			COLOR.setBlue(1 - COLOR.getBlue());
+			texture.setPixel(x, y, COLOR);
+		});
 		return texture;
 	}
 
