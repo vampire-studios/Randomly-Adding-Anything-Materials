@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -48,7 +48,7 @@ public class ModelLoaderMixin {
 		String path = id.getPath();
 		if(InnerRegistryClient.hasCustomModel(id)){
 			if (path.startsWith("item/")) {
-				Item item = Registry.ITEM.get(new ResourceLocation(id.getNamespace(), path.substring(path.lastIndexOf('/') + 1)));
+				Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(id.getNamespace(), path.substring(path.lastIndexOf('/') + 1)));
 				BlockModel model = InnerRegistryClient.getModel(item);
 				if(model == null) model = InnerRegistryClient.getModel(InnerRegistryClient.getItem(id));
 				if (model != null) {
@@ -57,7 +57,7 @@ public class ModelLoaderMixin {
 					info.cancel();
 				}
 			} else if(path.startsWith("block/")) {
-				Block block = Registry.BLOCK.get(new ResourceLocation(id.getNamespace(), path.substring(path.lastIndexOf('/') + 1)));
+				Block block = BuiltInRegistries.BLOCK.get(new ResourceLocation(id.getNamespace(), path.substring(path.lastIndexOf('/') + 1)));
 				BlockModel model = InnerRegistryClient.getModel(block.defaultBlockState());
 				if(model == null) model = InnerRegistryClient.getModel(InnerRegistryClient.getState(id));
 				if (model != null) {
@@ -81,10 +81,10 @@ public class ModelLoaderMixin {
 			ResourceLocation cleanID = new ResourceLocation(id.getNamespace(), id.getPath());
 			if (InnerRegistryClient.hasCustomModel(cleanID)) {
 				if (modelID.getVariant().equals("inventory")) {
-					Item item = Registry.ITEM.get(cleanID);
+					Item item = BuiltInRegistries.ITEM.get(cleanID);
 					BlockModel model = InnerRegistryClient.getModel(item);
 					if (model != null) {
-						ModelHelper.MODELS.put(Registry.ITEM.get(cleanID), modelID);
+						ModelHelper.MODELS.put(BuiltInRegistries.ITEM.get(cleanID), modelID);
 						ResourceLocation identifier2 = new ResourceLocation(id.getNamespace(), "item/" + id.getPath());
 						model.name = identifier2.toString();
 						cacheAndQueueDependencies(modelID, model);
@@ -94,7 +94,7 @@ public class ModelLoaderMixin {
 						RAACore.LOGGER.warn("Missing item model for {}", cleanID);
 					}
 				} else {
-					Block block = Registry.BLOCK.get(cleanID);
+					Block block = BuiltInRegistries.BLOCK.get(cleanID);
 					List<BlockState> possibleStates = block.getStateDefinition().getPossibleStates();
 					Optional<BlockState> possibleState = possibleStates
 							.stream()

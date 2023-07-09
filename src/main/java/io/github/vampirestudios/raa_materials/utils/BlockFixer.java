@@ -3,7 +3,9 @@ package io.github.vampirestudios.raa_materials.utils;
 import io.github.vampirestudios.raa_materials.api.RegistryEntryDeletedCallback;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,7 +20,7 @@ public final class BlockFixer {
     }
 
     public static void init() {
-        RegistryEntryDeletedCallback.event(Registry.BLOCK).register(BlockFixer::onBlockDeleted);
+        RegistryEntryDeletedCallback.event(BuiltInRegistries.BLOCK).register(BlockFixer::onBlockDeleted);
     }
 
     private static void onBlockDeleted(int rawId, Holder.Reference<Block> entry) {
@@ -28,7 +30,7 @@ public final class BlockFixer {
             IdListUtils.remove(Block.BLOCK_STATE_REGISTRY, state);
 
             ClearUtils.clearMapKeys(state,
-                PoiType.TYPE_BY_STATE);
+                PoiTypes.TYPE_BY_STATE);
 
             ClearUtils.clearMapValues(state,
                 ShovelItem.BY_BLOCK);

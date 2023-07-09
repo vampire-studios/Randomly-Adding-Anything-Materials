@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.BlockModelRotation;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -27,11 +27,9 @@ import java.util.Optional;
 
 public class BaseWallBlock extends WallBlock implements LegacyBlockModelProvider {
 	private final Block parent;
-	private final ResourceLocation registryName;
-	
-	public BaseWallBlock(ResourceLocation registryName, Block source) {
+
+	public BaseWallBlock(Block source) {
 		super(FabricBlockSettings.copyOf(source).noOcclusion());
-		this.registryName = registryName;
 		this.parent = source;
 	}
 	
@@ -44,7 +42,7 @@ public class BaseWallBlock extends WallBlock implements LegacyBlockModelProvider
 	@Override
 	@Environment(EnvType.CLIENT)
 	public String getItemModel(ResourceLocation blockId) {
-		ResourceLocation parentId = Registry.BLOCK.getKey(parent);
+		ResourceLocation parentId = BuiltInRegistries.BLOCK.getKey(parent);
 		Optional<String> pattern = PatternsHelper.createJson(BasePatterns.ITEM_WALL, parentId);
 		return pattern.orElse("");
 	}
@@ -52,7 +50,7 @@ public class BaseWallBlock extends WallBlock implements LegacyBlockModelProvider
 	@Override
 	@Environment(EnvType.CLIENT)
 	public @Nullable BlockModel getBlockModel(ResourceLocation blockId, BlockState blockState) {
-		ResourceLocation parentId = Registry.BLOCK.getKey(parent);
+		ResourceLocation parentId = BuiltInRegistries.BLOCK.getKey(parent);
 		String path = blockId.getPath();
 		Optional<String> pattern = Optional.empty();
 		if (path.endsWith("_post")) {

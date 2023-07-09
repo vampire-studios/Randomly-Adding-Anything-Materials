@@ -1,3 +1,4 @@
+/*
 package io.github.vampirestudios.raa_materials.utils;
 
 import net.minecraft.core.Registry;
@@ -34,4 +35,4 @@ public class BiomeUtils {
         }
     }
 
-}
+}*/

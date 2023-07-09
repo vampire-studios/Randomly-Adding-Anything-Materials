@@ -5,7 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
 	"BiomeMixin",
-	"BiomeSourceMixin",
+//	"BiomeSourceMixin",
 	"ChunkSectionMixin",
 	"DeletableObjectsMixin",
 	"GenerationSettingsAccessor",
@@ -16,7 +16,7 @@
 	"MinecraftServerMixin",
 	"RecipeManagerAccessor",
 	"RecipeManagerMixin",
-	"RegistryAccessMixin",
+//	"RegistryAccessMixin",
 	"RegistryMixin",
 	"ServerLevelMixin",
 	"ServerWorldMixin",

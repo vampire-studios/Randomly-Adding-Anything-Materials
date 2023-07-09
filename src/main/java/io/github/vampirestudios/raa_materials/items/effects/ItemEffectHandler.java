@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials.items.effects;
 
 import com.google.gson.JsonElement;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -29,7 +29,7 @@ public class ItemEffectHandler {
     public static void statusEffectForTarget(Level world, LivingEntity target, LivingEntity attacker, JsonElement config) {
         if (!world.isClientSide()) {
             target.addEffect(new MobEffectInstance(
-                    Objects.requireNonNull(Registry.MOB_EFFECT.get(new ResourceLocation(config.getAsJsonObject().get("type").getAsString()))),
+                    Objects.requireNonNull(BuiltInRegistries.MOB_EFFECT.get(new ResourceLocation(config.getAsJsonObject().get("type").getAsString()))),
                     config.getAsJsonObject().get("duration").getAsInt(),
                     config.getAsJsonObject().get("amplifier").getAsInt()));
         }

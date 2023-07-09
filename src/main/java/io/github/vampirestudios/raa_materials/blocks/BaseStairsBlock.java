@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.BlockModelRotation;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -30,11 +30,9 @@ import java.util.Optional;
 
 public class BaseStairsBlock extends StairBlock implements LegacyBlockModelProvider {
 	private final Block source;
-	private final ResourceLocation registryName;
 
-	public BaseStairsBlock(ResourceLocation registryName, Block source) {
+	public BaseStairsBlock(Block source) {
 		super(source.defaultBlockState(), FabricBlockSettings.copyOf(source));
-		this.registryName = registryName;
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(HALF, Half.BOTTOM).setValue(SHAPE, StairsShape.STRAIGHT).setValue(WATERLOGGED, false));
 		this.source = source;
 	}
@@ -53,7 +51,7 @@ public class BaseStairsBlock extends StairBlock implements LegacyBlockModelProvi
 	@Override
 	@Environment(EnvType.CLIENT)
 	public @Nullable BlockModel getBlockModel(ResourceLocation blockId, BlockState blockState) {
-		ResourceLocation parentId = Registry.BLOCK.getKey(source);
+		ResourceLocation parentId = BuiltInRegistries.BLOCK.getKey(source);
 		Optional<String> pattern = switch (blockState.getValue(SHAPE)) {
 			case STRAIGHT -> PatternsHelper.createJson(BasePatterns.BLOCK_STAIR, parentId);
 			case INNER_LEFT, INNER_RIGHT -> PatternsHelper.createJson(BasePatterns.BLOCK_STAIR_INNER, parentId);

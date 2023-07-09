@@ -1,3 +1,4 @@
+/*
 package io.github.vampirestudios.raa_materials.mixins.server;
 
 import io.github.vampirestudios.raa_materials.api.EndDynamicRegistrySetupCallback;
@@ -18,3 +19,4 @@ public interface RegistryAccessMixin {
 	}
 
 }
+*/

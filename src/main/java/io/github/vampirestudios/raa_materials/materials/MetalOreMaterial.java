@@ -4,7 +4,6 @@ import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.BiomeAPI;
-import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.client.CompassItemPropertyFunction;
@@ -13,22 +12,21 @@ import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.recipes.FurnaceRecipe;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
-import io.github.vampirestudios.raa_materials.recipes.support.ProcessingCreateRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.registry.OxidizableBlocksRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -261,16 +259,16 @@ public class MetalOreMaterial extends OreMaterial {
 //			default -> throw new IllegalStateException("Unexpected value: " + tier);
 //		}, casing);
 
-		ingot = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.INGOT);
-		nugget = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.NUGGET);
-		gear = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEAR);
-		dust = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.DUST);
-		small_dust = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SMALL_DUST);
-		sheet = RAASimpleItem.register(this.registryName,  new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHEETS);
-		compass = RAASimpleItem.register(this.registryName,  new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.COMPASS);
+		ingot = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.INGOT);
+		nugget = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.NUGGET);
+		gear = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEAR);
+		dust = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.DUST);
+		small_dust = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SMALL_DUST);
+		sheet = RAASimpleItem.register(this.registryName,  new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHEETS);
+		compass = RAASimpleItem.register(this.registryName,  new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.COMPASS);
 
 		if (FabricLoader.getInstance().isModLoaded("create")) {
-			crushedOre = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.CRUSHED_ORE);
+			crushedOre = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.CRUSHED_ORE);
 		}
 
 //		brainTreeBlock = InnerRegistry.registerBlockAndItem(this.registryName + "_brain_tree_block", new BrainTreeBlock(MaterialColor.GOLD), RAAMaterials.RAA_ORES);
@@ -445,41 +443,41 @@ public class MetalOreMaterial extends OreMaterial {
 				.setGroup("compasses")
 				.setOutputCount(1)
 				.build();
-		if (FabricLoader.getInstance().isModLoaded("create")) {
-			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.droppedItem, this.crushedOre)
-					.addExpNugget()
-					.setProcessingTime(400)
-					.buildCrushing();
-			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore_block", this.rawMaterialBlock, this.crushedOre, 9, 1.0F)
-					.addExpNugget(9)
-					.setProcessingTime(400)
-					.buildCrushing();
-			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.ore.asItem(), this.crushedOre, this.crushedOreAmount, 1.0F)
-					.oreCrushing(this.target.block(), Rands.list(List.of(0.5F, 0.75F)), 350)
-					.buildCrushing();
-			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_washing_crushed_ore", this.crushedOre, this.nugget, 9, 1.0F)
-					.addOutput(Registry.ITEM.byId(Rands.randIntRange(1, Registry.ITEM.size()-1)), 1, 0.125f)
-					.buildWashing();
-			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_pressing_sheet", this.ingot, this.sheet)
-					.buildPressing();
-			FurnaceRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_ingot_from_crushed_material", crushedOre, ingot)
-					.setCookTime(20)
-					.setXP(5)
-					.setGroup("raw_materials_to_cooked")
-					.setOutputCount(1)
-					.buildWithBlasting();
-		}
+//		if (FabricLoader.getInstance().isModLoaded("create")) {
+//			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.droppedItem, this.crushedOre)
+//					.addExpNugget()
+//					.setProcessingTime(400)
+//					.buildCrushing();
+//			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore_block", this.rawMaterialBlock, this.crushedOre, 9, 1.0F)
+//					.addExpNugget(9)
+//					.setProcessingTime(400)
+//					.buildCrushing();
+//			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.ore.asItem(), this.crushedOre, this.crushedOreAmount, 1.0F)
+//					.oreCrushing(this.target.block(), Rands.list(List.of(0.5F, 0.75F)), 350)
+//					.buildCrushing();
+//			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_washing_crushed_ore", this.crushedOre, this.nugget, 9, 1.0F)
+//					.addOutput(Registry.ITEM.byId(Rands.randIntRange(1, Registry.ITEM.size()-1)), 1, 0.125f)
+//					.buildWashing();
+//			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_pressing_sheet", this.ingot, this.sheet)
+//					.buildPressing();
+//			FurnaceRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_ingot_from_crushed_material", crushedOre, ingot)
+//					.setCookTime(20)
+//					.setXP(5)
+//					.setGroup("raw_materials_to_cooked")
+//					.setOutputCount(1)
+//					.buildWithBlasting();
+//		}
 	}
 
 	private Block registerSimpleBlock(String name, BlockBehaviour.Properties properties) {
 		Block block = InnerRegistry.registerBlockAndItem(name, new Block(properties), RAAMaterials.RAA_ORES);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, block);
-		TagHelper.addTag(switch (tier) {
-			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, block);
+//		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, block);
+//		TagHelper.addTag(switch (tier) {
+//			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+//			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+//			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+//			default -> throw new IllegalStateException("Unexpected value: " + tier);
+//		}, block);
 		return block;
 	}
 
@@ -629,7 +627,7 @@ public class MetalOreMaterial extends OreMaterial {
 			Holder<ConfiguredFeature<?, ?>> oreVein = InnerRegistry.registerConfiguredFeature(world, id(this.registryName + "_ore_vein"),
 					Feature.ORE, new OreConfiguration(blockStates, size));
 
-			ResourceKey<PlacedFeature> oreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_vein_pf"));
+			ResourceKey<PlacedFeature> oreVeinKey = ResourceKey.create(Registries.PLACED_FEATURE, id(this.registryName + "_ore_vein_pf"));
 			Holder<PlacedFeature> oreVeinHolder = InnerRegistry.registerPlacedFeature(world, oreVeinKey, oreVein,
 					HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)),
 					CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(rarity));
@@ -641,7 +639,7 @@ public class MetalOreMaterial extends OreMaterial {
 			oreVein = InnerRegistry.registerConfiguredFeature(world, id(this.registryName + "_ore_vein"), Feature.ORE,
 					new OreConfiguration(blockStates, size * 2));
 
-			oreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_vein_pf"));
+			oreVeinKey = ResourceKey.create(Registries.PLACED_FEATURE, id(this.registryName + "_ore_vein_pf"));
 			Holder<PlacedFeature> mediumOreVeinHolder = InnerRegistry.registerPlacedFeature(world, oreVeinKey, oreVein,
 					HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)),
 					CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(rarity * 2));
@@ -653,19 +651,19 @@ public class MetalOreMaterial extends OreMaterial {
 			oreVein = InnerRegistry.registerConfiguredFeature(world, id(this.registryName + "_ore_vein_huge"), Feature.ORE,
 					new OreConfiguration(blockStates, size * 4));
 
-			ResourceKey<PlacedFeature> placedHugeOreVeinKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_vein_huge_pf"));
+			ResourceKey<PlacedFeature> placedHugeOreVeinKey = ResourceKey.create(Registries.PLACED_FEATURE, id(this.registryName + "_ore_vein_huge_pf"));
 			Holder<PlacedFeature> largeOreVeinHolder = InnerRegistry.registerPlacedFeature(world, placedHugeOreVeinKey, oreVein,
 					HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)),
 					CountOnEveryLayerPlacement.of(2), RarityFilter.onAverageOnceEvery(rarity * 4));
 
 			List<Holder<PlacedFeature>> availableFeatures = List.of(oreVeinHolder, mediumOreVeinHolder, largeOreVeinHolder);
-			Holder<PlacedFeature> selectedFeatureHolder = io.github.vampirestudios.vampirelib.utils.Rands.list(availableFeatures);
+			Holder<PlacedFeature> selectedFeatureHolder = Rands.list(availableFeatures);
 
 			for (Biome biome : biomeRegistry) {
 				BiomeAPI.addBiomeFeature(biomeRegistry, Holder.direct(biome),
 						GenerationStep.Decoration.UNDERGROUND_ORES, List.of(selectedFeatureHolder));
 			}
-			((BiomeSourceAccessor) world.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
+//			((BiomeSourceAccessor) world.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
 		} else {
 			super.generate(world, biomeRegistry);
 		}

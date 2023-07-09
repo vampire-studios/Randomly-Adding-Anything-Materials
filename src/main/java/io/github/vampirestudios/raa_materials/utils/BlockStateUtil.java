@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials.utils;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +22,7 @@ public final class BlockStateUtil {
     public static BlockState recreateState(BlockState oldState) {
         @SuppressWarnings("deprecation") ResourceLocation id = oldState.getBlock().builtInRegistryHolder().key().location();
 
-        Block newBlock = Registry.BLOCK.getOptional(id).orElse(null);
+        Block newBlock = BuiltInRegistries.BLOCK.getOptional(id).orElse(null);
 
         if (newBlock == null) {
             return Blocks.AIR.defaultBlockState();

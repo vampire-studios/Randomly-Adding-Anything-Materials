@@ -2,14 +2,14 @@ package io.github.vampirestudios.raa_materials.client;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import io.github.vampirestudios.raa_materials.api.LegacyBlockModelProvider;
 import io.github.vampirestudios.raa_materials.api.ItemModelProvider;
+import io.github.vampirestudios.raa_materials.api.LegacyBlockModelProvider;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.multipart.MultiPart;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.block.Block;
@@ -29,22 +29,22 @@ public class CustomModelBakery {
 	}
 	
 	public void loadCustomModels(ResourceManager resourceManager) {
-		Registry.BLOCK.stream().parallel().filter(LegacyBlockModelProvider.class::isInstance).forEach(block -> {
-			ResourceLocation blockID = Registry.BLOCK.getKey(block);
+		BuiltInRegistries.BLOCK.stream().parallel().filter(LegacyBlockModelProvider.class::isInstance).forEach(block -> {
+			ResourceLocation blockID = BuiltInRegistries.BLOCK.getKey(block);
 			ResourceLocation storageID = new ResourceLocation(blockID.getNamespace(), "blockstates/" + blockID.getPath() + ".json");
-			if (!resourceManager.hasResource(storageID)) {
+			if (resourceManager.getResource(storageID).isEmpty()) {
 				addBlockModel(blockID, block);
 			}
 			storageID = new ResourceLocation(blockID.getNamespace(), "models/item/" + blockID.getPath() + ".json");
-			if (!resourceManager.hasResource(storageID)) {
+			if (resourceManager.getResource(storageID).isEmpty()) {
 //				addItemModel(blockID, (ItemModelProvider) block);
 			}
 		});
-		
-		Registry.ITEM.stream().parallel().filter(ItemModelProvider.class::isInstance).forEach(item -> {
-			ResourceLocation registryID = Registry.ITEM.getKey(item);
+
+		BuiltInRegistries.ITEM.stream().parallel().filter(ItemModelProvider.class::isInstance).forEach(item -> {
+			ResourceLocation registryID = BuiltInRegistries.ITEM.getKey(item);
 			ResourceLocation storageID = new ResourceLocation(registryID.getNamespace(), "models/item/" + registryID.getPath() + ".json");
-			if (!resourceManager.hasResource(storageID)) {
+			if (resourceManager.getResource(storageID).isEmpty()) {
 				addItemModel(registryID, (ItemModelProvider) item);
 			}
 		});

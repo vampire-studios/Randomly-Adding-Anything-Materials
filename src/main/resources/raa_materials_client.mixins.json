@@ -9,7 +9,7 @@
 	"MinecraftMixin",
 	"ModelLoaderMixin",
 	"ModelManagerMixin",
-	"SpriteAtlasTextureMixin",
+//	"SpriteAtlasTextureMixin",
 	"TranslationStorageMixin",
     "LanguageManagerMixin"
   ],

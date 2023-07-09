@@ -10,12 +10,13 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.storage.loot.LootContext;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,11 +27,9 @@ import java.util.Optional;
 
 public class BaseStonePressurePlateBlock extends PressurePlateBlock implements LegacyBlockModelProvider {
 	private final Block source;
-	private final ResourceLocation registryName;
 
-	public BaseStonePressurePlateBlock(ResourceLocation registryName, Block source) {
-		super(Sensitivity.MOBS, FabricBlockSettings.copyOf(source).noOcclusion());
-		this.registryName = registryName;
+	public BaseStonePressurePlateBlock(Block source) {
+		super(Sensitivity.MOBS, FabricBlockSettings.copyOf(source).noOcclusion(), BlockSetType.STONE);
 		this.source = source;
 	}
 
@@ -48,7 +47,7 @@ public class BaseStonePressurePlateBlock extends PressurePlateBlock implements L
 	@Override
 	@Environment(EnvType.CLIENT)
 	public @Nullable BlockModel getBlockModel(ResourceLocation resourceLocation, BlockState blockState) {
-		ResourceLocation parentId = Registry.BLOCK.getKey(source);
+		ResourceLocation parentId = BuiltInRegistries.BLOCK.getKey(source);
 		Optional<String> pattern;
 		if (blockState.getValue(POWERED)) {
 			pattern = PatternsHelper.createJson(BasePatterns.BLOCK_PLATE_DOWN, parentId);

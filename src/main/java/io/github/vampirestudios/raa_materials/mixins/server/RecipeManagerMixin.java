@@ -21,15 +21,25 @@ public class RecipeManagerMixin {
 		return null;
 	}
 
-	@Inject(method = "getRecipeFor", at = @At(value = "HEAD"), cancellable = true)
-	private <C extends Container, T extends Recipe<C>> void bclib_getRecipeFor(RecipeType<T> type, C inventory, Level world, CallbackInfoReturnable<Optional<T>> info) {
-		Collection<Recipe<C>> values = Objects.requireNonNull(byType(type)).values();
-		List<Recipe<C>> list = new ArrayList<>(values);
-		list.sort((v1, v2) -> {
-			boolean b1 = v1.getId().getNamespace().equals("minecraft");
-			boolean b2 = v2.getId().getNamespace().equals("minecraft");
-			return b1 ^ b2 ? (b1 ? 1 : -1) : 0;
-		});
-		info.setReturnValue(list.stream().flatMap((recipe) -> type.tryMatch(recipe, world, inventory).stream()).findFirst());
+	@Inject(method = "getRecipeFor*", at = @At(value = "HEAD"), cancellable = true)
+	private <C extends Container, T extends Recipe<C>> void bclib_getRecipeFor(RecipeType<T> recipeType, C container, Level level, CallbackInfoReturnable<Optional<T>> info) {
+		var inter = this.byType(recipeType);
+		assert inter != null;
+		var all = inter.values().stream().filter((recipe) -> recipe.matches(container, level)).sorted((a, b) -> {
+			if (a.getId().getNamespace().equals(b.getId().getNamespace())) {
+				return a.getId().getPath().compareTo(b.getId().getPath());
+			}
+			if (a.getId().getNamespace().equals("minecraft") && !b.getId().getNamespace().equals("minecraft")) {
+				return 1;
+			} else if (!a.getId().getNamespace().equals("minecraft") && b.getId().getNamespace().equals("minecraft")) {
+				return -1;
+			} else {
+				return a.getId().getNamespace().compareTo(b.getId().getNamespace());
+			}
+		}).toList();
+
+		if (all.size() > 1) {
+			info.setReturnValue((Optional<T>) Optional.of(all.get(0)));
+		}
 	}
 } 

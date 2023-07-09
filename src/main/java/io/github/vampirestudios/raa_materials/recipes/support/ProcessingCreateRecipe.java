@@ -1,3 +1,4 @@
+/*
 package io.github.vampirestudios.raa_materials.recipes.support;
 
 import com.simibubi.create.AllItems;
@@ -130,3 +131,4 @@ public class ProcessingCreateRecipe {
         CustomRecipeManager.addRecipe(AllRecipeTypes.CRUSHING.getType(), recipe.build());
     }
 }
+*/

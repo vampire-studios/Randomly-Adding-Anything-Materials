@@ -1,6 +1,6 @@
 package io.github.vampirestudios.raa_materials.mixins.server;
 
-import net.minecraft.world.level.StructureFeatureManager;
+import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -20,7 +20,7 @@ public class BiomeMixin {
 	}
 
 	@Inject(method = "applyBiomeDecoration", at = @At("HEAD"))
-	private void raa_obBiomeGenerate(WorldGenLevel level, ChunkAccess chunk, StructureFeatureManager structureFeatureManager, CallbackInfo ci) {
+	private void raa_obBiomeGenerate(WorldGenLevel level, ChunkAccess chunk, StructureManager structureFeatureManager, CallbackInfo ci) {
 		raa_featureIteratorSeed = 0;
 	}
 }

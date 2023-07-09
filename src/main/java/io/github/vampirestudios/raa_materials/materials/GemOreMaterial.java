@@ -7,9 +7,7 @@ import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
-import io.github.vampirestudios.raa_materials.recipes.support.ProcessingCreateRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
@@ -107,11 +105,11 @@ public class GemOreMaterial extends OreMaterial {
 				.setGroup("hoes")
 				.setOutputCount(1)
 				.build();
-		if (FabricLoader.getInstance().isModLoaded("create")){
-			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.ore.asItem(), this.droppedItem)
-					.oreCrushing(this.target.block(), 0.25f, 350)
-					.buildCrushing();
-		}
+//		if (FabricLoader.getInstance().isModLoaded("create")){
+//			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_raw_ore", this.ore.asItem(), this.droppedItem)
+//					.oreCrushing(this.target.block(), 0.25f, 350)
+//					.buildCrushing();
+//		}
 	}
 
 	@Override

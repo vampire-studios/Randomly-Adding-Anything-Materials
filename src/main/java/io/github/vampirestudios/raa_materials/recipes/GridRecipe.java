@@ -18,6 +18,7 @@ public class GridRecipe {
 	private ResourceLocation id;
 	private ItemLike output;
 	
+	private CraftingBookCategory category;
 	private String group;
 	private RecipeType<?> type;
 	private boolean shaped;
@@ -37,6 +38,7 @@ public class GridRecipe {
 		INSTANCE.output = output;
 		
 		INSTANCE.group = "";
+		INSTANCE.category = CraftingBookCategory.BUILDING;
 		INSTANCE.type = RecipeType.CRAFTING;
 		INSTANCE.shaped = true;
 		INSTANCE.shape = new String[] {"#"};
@@ -102,6 +104,11 @@ public class GridRecipe {
 		return materials;
 	}
 
+	public GridRecipe setCategory(CraftingBookCategory category) {
+		this.category = category;
+		return this;
+	}
+
 	public void build() {
 		if (!exist) {
 			return;
@@ -115,11 +122,12 @@ public class GridRecipe {
 		CraftingRecipe recipe = shaped ? new ShapedRecipe(
 			id,
 			group,
+			category,
 			width,
 			height,
 			materials,
 			result
-		) : new ShapelessRecipe(id, group, result, materials);
+		) : new ShapelessRecipe(id, group, category, result, materials);
 		CustomRecipeManager.addRecipe(type, recipe);
 	}
 

@@ -4,7 +4,7 @@ import io.github.vampirestudios.raa_materials.api.RegistryEntryDeletedCallback;
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.FireworkStarRecipe;
@@ -18,7 +18,7 @@ public final class ItemFixer {
     }
 
     public static void init() {
-        RegistryEntryDeletedCallback.event(Registry.ITEM).register(ItemFixer::onItemDeleted);
+        RegistryEntryDeletedCallback.event(BuiltInRegistries.ITEM).register(ItemFixer::onItemDeleted);
     }
 
     private static void onItemDeleted(int rawId, Holder.Reference<Item> entry) {

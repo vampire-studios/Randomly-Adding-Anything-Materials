@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials.api.namegeneration;
 
 import com.mojang.datafixers.util.Pair;
-import io.github.vampirestudios.vampirelib.utils.Rands;
+import io.github.vampirestudios.raa_materials.utils.Rands;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;

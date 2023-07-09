@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 import static io.github.vampirestudios.raa_materials.RAAMaterials.MOD_ID;
@@ -30,7 +30,7 @@ public class RAAMaterialsClient implements RAAAddonClient {
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (keyBinding.consumeClick()) {
 				assert client.player != null;
-				client.player.displayClientMessage(new TextComponent("Reloading assets fully!"), false);
+				client.player.displayClientMessage(Component.literal("Reloading assets fully!"), false);
 				Minecraft.getInstance().delayTextureReload().thenRun(() ->
 						Minecraft.getInstance().getItemRenderer().getItemModelShaper().rebuildCache());
 			}

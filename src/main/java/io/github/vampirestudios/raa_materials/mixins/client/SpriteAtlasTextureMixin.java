@@ -1,9 +1,11 @@
+/*
 package io.github.vampirestudios.raa_materials.mixins.client;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.utils.BufferTexture;
 import net.fabricmc.fabric.impl.client.texture.FabricSprite;
+import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -11,6 +13,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Collection;
@@ -23,9 +26,9 @@ public class SpriteAtlasTextureMixin {
 		ids.removeAll(InnerRegistryClient.getTextureIDs());
 	}
 	
-	@Inject(method = "getBasicSpriteInfos", at = @At("RETURN"), cancellable = true)
-	private void loadSpritesEnd(ResourceManager resourceManager, Set<ResourceLocation> ids, CallbackInfoReturnable<Collection<TextureAtlasSprite.Info>> info) {
-		Collection<TextureAtlasSprite.Info> result = info.getReturnValue();
+	@Inject(method = "getSprite", at = @At("RETURN"), cancellable = true)
+	private void loadSpritesEnd(ResourceLocation name, CallbackInfoReturnable<TextureAtlasSprite> cir) {
+		SpriteContents result = cir.getReturnValue().contents();
 		InnerRegistryClient.iterateTextures((id, img) -> {
 			Pair<Integer, Integer> pair = img.getAnimation().getFrameSize(img.getWidth(), img.getHeight());
 			TextureAtlasSprite.Info spriteInfo = new TextureAtlasSprite.Info(id, pair.getFirst(), pair.getSecond(), img.getAnimation());
@@ -34,8 +37,8 @@ public class SpriteAtlasTextureMixin {
 		info.setReturnValue(result);
 	}
 	
-	@Inject(method = "load(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite$Info;IIIII)Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;", at = @At("HEAD"), cancellable = true)
-	private void loadSprite(ResourceManager container, TextureAtlasSprite.Info info, int atlasWidth, int atlasHeight, int maxLevel, int x, int y, CallbackInfoReturnable<TextureAtlasSprite> callbackInfo) {
+	@Inject(method = "load", at = @At("HEAD"), cancellable = true)
+	private void loadSprite(ResourceManager resourceManager, CallbackInfo ci) {
 		BufferTexture texture = InnerRegistryClient.getTexture(info.name());
 		if (texture != null) {
 			try {
@@ -48,4 +51,4 @@ public class SpriteAtlasTextureMixin {
 			}
 		}
 	}
-}
+}*/

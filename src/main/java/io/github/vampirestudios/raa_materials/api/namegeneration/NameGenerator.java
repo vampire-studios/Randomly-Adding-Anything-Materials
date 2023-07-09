@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import com.ibm.icu.text.MessageFormat;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.Map;
 
@@ -62,7 +61,7 @@ public class NameGenerator {
 	}
 
 	public static String generate(String rawBase, Object[] args) {
-		Component translatableText = new TranslatableComponent(rawBase);
+		Component translatableText = Component.translatable(rawBase);
 		MessageFormat messageFormat = new MessageFormat(translatableText.getString());
 		return messageFormat.format(args);
 	}

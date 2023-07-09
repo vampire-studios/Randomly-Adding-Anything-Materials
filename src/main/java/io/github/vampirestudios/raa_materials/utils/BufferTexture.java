@@ -37,11 +37,11 @@ public class BufferTexture {
 		this.width = texture.width;
 		this.height = texture.height;
 		buffer = Arrays.copyOf(texture.buffer, texture.buffer.length);
-		List<AnimationFrame> copyani = Lists.<AnimationFrame>newArrayList();
+		List<AnimationFrame> copyani = Lists.newArrayList();
 		texture.animation.forEachFrame((index, time) -> copyani.add(new AnimationFrame(index, time)));
 		this.animation = new AnimationMetadataSection(copyani,
-				texture.animation.getFrameWidth(-1),
-				texture.animation.getFrameHeight(-1),
+				texture.animation.calculateFrameSize(this.width, this.height).width(),
+				texture.animation.calculateFrameSize(this.width, this.height).height(),
 				texture.animation.getDefaultFrameTime(),
 				texture.animation.isInterpolatedFrames());
 	}

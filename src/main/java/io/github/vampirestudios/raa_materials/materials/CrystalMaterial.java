@@ -1,11 +1,10 @@
 package io.github.vampirestudios.raa_materials.materials;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.math.Vector3f;
 import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
-import io.github.vampirestudios.raa_materials.api.*;
+import io.github.vampirestudios.raa_materials.api.BiomeAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.CustomCrystalBlock;
@@ -15,26 +14,24 @@ import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.RAASimpleItem;
 import io.github.vampirestudios.raa_materials.recipes.AnvilCrushingRecipe;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
-import io.github.vampirestudios.raa_materials.recipes.support.ProcessingCreateRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.Mth;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.biome.Biome;
@@ -71,7 +68,6 @@ public class CrystalMaterial extends ComplexMaterial {
 	private final int chiseledVariantInt;
 	private final int crystalOreTextureInt;
 	private final int tintedGlassVariantInt;
-	private Vector3f cymValues;
 
 	static {
 		crystalBlocks = new ResourceLocation[5];
@@ -136,7 +132,7 @@ public class CrystalMaterial extends ComplexMaterial {
 	public CrystalMaterial(Pair<String, String> name, Random random, ColorGradient gradient, TextureInformation textureInformation, int tier, int crystalLampOverlayTextureInt,
 						   int crystalOreTextureInt, int chiseledVariantInt, int tintedGlassVariantInt) {
 		super(name, gradient);
-		this.cymValues = this.getCYMValues();
+//		this.cymValues = this.getCYMValues();
 		this.particleColor = new CustomColor().set(this.gradient.getColor(0.5F))/*.setSaturation(1.0F)*/.switchToRGB();
 		this.tier = tier;
 
@@ -146,23 +142,23 @@ public class CrystalMaterial extends ComplexMaterial {
 		this.tintedGlass = InnerRegistry.registerBlockAndItem("tinted_" + this.registryName + "_glass", new TintedGlassBlock(FabricBlockSettings.copyOf(Blocks.TINTED_GLASS)), RAA_ORES);
 		this.buddingBlock = InnerRegistry.registerBlockAndItem("budding_" + this.registryName + "_block", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.BUDDING_AMETHYST)), RAA_ORES);
 		this.crystalBricks = InnerRegistry.registerBlockAndItem(this.registryName + "_crystal_bricks", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.AMETHYST_BLOCK)), RAA_ORES);
-		this.shard = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHARD);
+		this.shard = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHARD);
 		this.crystal = InnerRegistry.registerBlockAndItem(this.registryName + "_crystal", new CustomCrystalClusterBlock(BlockBehaviour.Properties.copy(Blocks.AMETHYST_CLUSTER), shard), RAA_ORES);
 
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, block);
-		TagHelper.addTag(switch (tier) {
-			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, block);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, crystal);
-		TagHelper.addTag(switch (tier) {
-			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, crystal);
+//		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, block);
+//		TagHelper.addTag(switch (tier) {
+//			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+//			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+//			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+//			default -> throw new IllegalStateException("Unexpected value: " + tier);
+//		}, block);
+//		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, crystal);
+//		TagHelper.addTag(switch (tier) {
+//			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+//			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+//			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+//			default -> throw new IllegalStateException("Unexpected value: " + tier);
+//		}, crystal);
 
 		/*if (FabricLoader.getInstance().isModLoaded("spectrum")) {
 			this.risingParticle = InnerRegistry.registerParticle(RAAMaterials.id(this.registryName + "_sparkle_rising"), FabricParticleTypes.simple(false));
@@ -254,8 +250,8 @@ public class CrystalMaterial extends ComplexMaterial {
 		}*/
 
 		if (FabricLoader.getInstance().isModLoaded("immersive_amethyst")) {
-			geodeCore = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEODE_CORE);
-			enrichedGeodeCore = RAASimpleItem.register(this.registryName, new Properties().tab(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.ENRICHED_GEODE_CORE);
+			geodeCore = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEODE_CORE);
+			enrichedGeodeCore = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.ENRICHED_GEODE_CORE);
 		}
 
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crystal_block", block)
@@ -309,12 +305,12 @@ public class CrystalMaterial extends ComplexMaterial {
 					.buildAnvilCrushing();
 		}
 
-		if (FabricLoader.getInstance().isModLoaded("create")) {
-			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_cluster", this.crystal, this.shard, 7, 1.0F)
-					.addOutput(shard, 1, 0.5F)
-					.setProcessingTime(150)
-					.buildCrushing();
-		}
+//		if (FabricLoader.getInstance().isModLoaded("create")) {
+//			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushing_cluster", this.crystal, this.shard, 7, 1.0F)
+//					.addOutput(shard, 1, 0.5F)
+//					.setProcessingTime(150)
+//					.buildCrushing();
+//		}
 
 		this.crystalBlock = textureInformation.crystalBlock();
 		this.buddingCrystalBlock = textureInformation.buddingCrystalBlock();
@@ -658,18 +654,16 @@ public class CrystalMaterial extends ComplexMaterial {
 				)
 		);
 
-		ResourceKey<ConfiguredFeature<?, ?>> resourceKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_geode"));
+		ResourceKey<ConfiguredFeature<?, ?>> resourceKey = ResourceKey.create(Registries.CONFIGURED_FEATURE, id(this.registryName + "_geode"));
 		Holder<ConfiguredFeature<?, ?>> geodeCf = InnerRegistry.registerConfiguredFeature(world, resourceKey,
 				Feature.GEODE, new GeodeConfiguration(
 						new GeodeBlockSettings(
 								BlockStateProvider.simple(Blocks.AIR),
-								BlockStateProvider.simple(Registry.BLOCK.get(id(this.registryName + "_block"))),
-								BlockStateProvider.simple(Registry.BLOCK.get(id("budding_" + this.registryName + "_block"))),
+								BlockStateProvider.simple(BuiltInRegistries.BLOCK.get(id(this.registryName + "_block"))),
+								BlockStateProvider.simple(BuiltInRegistries.BLOCK.get(id("budding_" + this.registryName + "_block"))),
 								BlockStateProvider.simple(Blocks.CALCITE),
 								Rands.list(List.of(BlockStateProvider.simple(Blocks.SMOOTH_BASALT), BlockStateProvider.simple(Blocks.TUFF))),
-								ImmutableList.of(
-										Registry.BLOCK.get(id(this.registryName + "_crystal")).defaultBlockState()
-								),
+								ImmutableList.of(BuiltInRegistries.BLOCK.get(id(this.registryName + "_crystal")).defaultBlockState()),
 								BlockTags.FEATURES_CANNOT_REPLACE,
 								BlockTags.GEODE_INVALID_BLOCKS
 						),
@@ -691,7 +685,7 @@ public class CrystalMaterial extends ComplexMaterial {
 						1
 				)
 		);
-		ResourceKey<PlacedFeature> placedFeatureHugeRareRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_geode"));
+		ResourceKey<PlacedFeature> placedFeatureHugeRareRegistryKey = ResourceKey.create(Registries.PLACED_FEATURE, id(this.registryName + "_geode"));
 		Holder<PlacedFeature> placedFeatureHolder = InnerRegistry.registerPlacedFeature(world, placedFeatureHugeRareRegistryKey, geodeCf,
 				HeightRangePlacement.uniform(VerticalAnchor.aboveBottom(10), VerticalAnchor.absolute(46)),
 				RarityFilter.onAverageOnceEvery(RAAMaterials.CONFIG.crystalTypeAmount * 100)
@@ -701,25 +695,25 @@ public class CrystalMaterial extends ComplexMaterial {
 			BiomeAPI.addBiomeFeature(biomeRegistry, Holder.direct(biome),
 					GenerationStep.Decoration.UNDERGROUND_ORES, List.of(placedFeatureHolder));
 		}
-		((BiomeSourceAccessor) world.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
+//		((BiomeSourceAccessor) world.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
 	}
 
-	public Vector3f getCYMValues() {
-		CustomColor color = this.gradient.getColor(0.5F).switchToRGB();
-		float red = color.getRed();
-		float green = color.getGreen();
-		float blue = color.getBlue();
-
-		float value = Math.max(red, Math.max(green, blue));
-
-		float redValue = red / value;
-		float greenValue = green / value;
-		float blueValue = blue / value;
-
-		float cyan = 1.0F - Mth.clamp(redValue, 0.0F, 1.0F);
-		float magenta = 1.0F - Mth.clamp(greenValue, 0.0F, 1.0F);
-		float yellow = 1.0F - Mth.clamp(blueValue, 0.0F, 1.0F);
-		return new Vector3f(cyan, magenta, yellow);
-	}
+//	public Vector3f getCYMValues() {
+//		CustomColor color = this.gradient.getColor(0.5F).switchToRGB();
+//		float red = color.getRed();
+//		float green = color.getGreen();
+//		float blue = color.getBlue();
+//
+//		float value = Math.max(red, Math.max(green, blue));
+//
+//		float redValue = red / value;
+//		float greenValue = green / value;
+//		float blueValue = blue / value;
+//
+//		float cyan = 1.0F - Mth.clamp(redValue, 0.0F, 1.0F);
+//		float magenta = 1.0F - Mth.clamp(greenValue, 0.0F, 1.0F);
+//		float yellow = 1.0F - Mth.clamp(blueValue, 0.0F, 1.0F);
+//		return new Vector3f(cyan, magenta, yellow);
+//	}
 
 }

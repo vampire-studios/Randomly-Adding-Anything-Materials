@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -60,7 +60,7 @@ public class InnerRegistryClient {
 	}
 
 	public static void registerBlockModel(BlockState state, BlockModel model) {
-		ResourceLocation id = Registry.BLOCK.getKey(state.getBlock());
+		ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
 		ResourceLocation id2 = new ResourceLocation(id.getNamespace(), "block/" + id.getPath());
 		model.name = BlockModelShaper.stateToModelLocation(id, state).toString();
 		BLOCK_MODELS.put(state, model);
@@ -112,7 +112,7 @@ public class InnerRegistryClient {
 
 	public static void registerItemModel(Item item, String json) {
 		BlockModel model = BlockModel.fromString(json);
-		ResourceLocation id = Registry.ITEM.getKey(item);
+		ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
 		model.name = id.getNamespace() + ":item/" + id.getPath();
 		ITEM_MODELS.put(item, model);
 		MODELED.add(id);

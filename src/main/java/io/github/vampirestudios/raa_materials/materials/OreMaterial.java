@@ -6,7 +6,6 @@ import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.BiomeAPI;
-import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.blocks.BaseDropBlock;
@@ -15,9 +14,11 @@ import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.items.*;
 import io.github.vampirestudios.raa_materials.items.effects.MaterialEffects;
 import io.github.vampirestudios.raa_materials.utils.*;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -128,42 +129,42 @@ public abstract class OreMaterial extends ComplexMaterial {
 		this.shovelStickTexture = textureInformation.shovelStick();
 
 		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(target.block()).requiresTool().mapColor(MaterialColor.COLOR_GRAY);
-		this.droppedItem = RAASimpleItem.register(this.registryName, new Item.Properties().tab(RAAMaterials.RAA_RESOURCES), rawType);
+		this.droppedItem = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), rawType);
 		this.ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new BaseDropBlock(material, this.droppedItem), RAAMaterials.RAA_ORES);
-		TagHelper.addTag(target.toolType(), this.ore);
-		TagHelper.addTag(switch (tier) {
-			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, this.ore);
+//		TagHelper.addTag(target.toolType(), this.ore);
+//		TagHelper.addTag(switch (tier) {
+//			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+//			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+//			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+//			default -> throw new IllegalStateException("Unexpected value: " + tier);
+//		}, this.ore);
 
 		this.storageBlock = InnerRegistry.registerBlockAndItem(this.registryName + "_block", new BaseBlock(material.sound(SoundType.METAL)), RAAMaterials.RAA_ORES);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, this.storageBlock);
-		TagHelper.addTag(switch (tier) {
-			case 1 -> BlockTags.NEEDS_STONE_TOOL;
-			case 2 -> BlockTags.NEEDS_IRON_TOOL;
-			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
-			default -> throw new IllegalStateException("Unexpected value: " + tier);
-		}, this.storageBlock);
+//		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, this.storageBlock);
+//		TagHelper.addTag(switch (tier) {
+//			case 1 -> BlockTags.NEEDS_STONE_TOOL;
+//			case 2 -> BlockTags.NEEDS_IRON_TOOL;
+//			case 3 -> BlockTags.NEEDS_DIAMOND_TOOL;
+//			default -> throw new IllegalStateException("Unexpected value: " + tier);
+//		}, this.storageBlock);
 
 		CustomToolMaterial toolMaterial = new CustomToolMaterial(id(this.registryName), metal, tier, this.bonus);
 
 		this.sword = InnerRegistry.registerItem(this.registryName + "_sword",
 				new CustomSwordItem(this, toolMaterial, 3, toolMaterial.getSwordAttackSpeed(),
-						new Item.Properties().tab(RAAMaterials.RAA_WEAPONS).stacksTo(1)));
+						new FabricItemSettings().group(RAAMaterials.RAA_WEAPONS).stacksTo(1)));
 
 		this.pickaxe = InnerRegistry.registerItem(this.registryName + "_pickaxe",
-				new CustomPickaxeItem(toolMaterial, 1, toolMaterial.getPickaxeAttackSpeed(), new Item.Properties().tab(RAAMaterials.RAA_TOOLS).stacksTo(1)));
+				new CustomPickaxeItem(toolMaterial, 1, toolMaterial.getPickaxeAttackSpeed(), new FabricItemSettings().group(RAAMaterials.RAA_TOOLS).stacksTo(1)));
 
 		this.axe = InnerRegistry.registerItem(this.registryName + "_axe",
-				new CustomAxeItem(toolMaterial, 6.0F, toolMaterial.getAxeAttackSpeed(), new Item.Properties().tab(RAAMaterials.RAA_TOOLS).stacksTo(1)));
+				new CustomAxeItem(toolMaterial, 6.0F, toolMaterial.getAxeAttackSpeed(), new FabricItemSettings().group(RAAMaterials.RAA_TOOLS).stacksTo(1)));
 
 		this.hoe = InnerRegistry.registerItem(this.registryName + "_hoe",
-				new CustomHoeItem(toolMaterial, toolMaterial.getHoeAttackDamage(), toolMaterial.getHoeAttackSpeed(), new Item.Properties().tab(RAAMaterials.RAA_TOOLS).stacksTo(1)));
+				new CustomHoeItem(toolMaterial, toolMaterial.getHoeAttackDamage(), toolMaterial.getHoeAttackSpeed(), new FabricItemSettings().group(RAAMaterials.RAA_TOOLS).stacksTo(1)));
 
 		this.shovel = InnerRegistry.registerItem(this.registryName + "_shovel",
-				new ShovelItem(toolMaterial, 1.5F, toolMaterial.getShovelAttackSpeed(), new Item.Properties().tab(RAAMaterials.RAA_TOOLS).stacksTo(1)));
+				new ShovelItem(toolMaterial, 1.5F, toolMaterial.getShovelAttackSpeed(), new FabricItemSettings().group(RAAMaterials.RAA_TOOLS).stacksTo(1)));
 	}
 
 	public void setBonus(int bonus) {
@@ -212,30 +213,30 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 	@Override
 	public void generate(ServerLevel world, Registry<Biome> biomeRegistry) {
-		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureCommonRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_ore_cf"));
+		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureCommonRegistryKey = ResourceKey.create(Registries.CONFIGURED_FEATURE, id(this.registryName + "_ore_cf"));
 		Holder<ConfiguredFeature<?, ?>> configuredFeatureCommon = InnerRegistry.registerConfiguredFeature(world, configuredFeatureCommonRegistryKey,
 				Feature.ORE , new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), (size / 2), hiddenChance)
 		);
-		ResourceKey<PlacedFeature> placedFeatureCommonRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_pf"));
+		ResourceKey<PlacedFeature> placedFeatureCommonRegistryKey = ResourceKey.create(Registries.PLACED_FEATURE, id(this.registryName + "_ore_pf"));
 		Holder<PlacedFeature> placedFeatureCommonHolder = InnerRegistry.registerPlacedFeature(world, placedFeatureCommonRegistryKey, configuredFeatureCommon,
 				HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)), CountPlacement.of(20),
 				RarityFilter.onAverageOnceEvery(rarity), InSquarePlacement.spread()
 		);
 
-		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureMiddleRareRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_ore_cf2"));
+		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureMiddleRareRegistryKey = ResourceKey.create(Registries.CONFIGURED_FEATURE, id(this.registryName + "_ore_cf2"));
 		Holder<ConfiguredFeature<?, ?>> configuredFeatureMiddleRare = InnerRegistry.registerConfiguredFeature(world, configuredFeatureMiddleRareRegistryKey, Feature.ORE,
 				new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), size, hiddenChance)
 		);
-		ResourceKey<PlacedFeature> placedFeatureMiddleRareRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_pf2"));
+		ResourceKey<PlacedFeature> placedFeatureMiddleRareRegistryKey = ResourceKey.create(Registries.PLACED_FEATURE, id(this.registryName + "_ore_pf2"));
 		Holder<PlacedFeature> placedFeatureMiddleRareHolder = InnerRegistry.registerPlacedFeature(world, placedFeatureMiddleRareRegistryKey, configuredFeatureMiddleRare,
 				HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)), CountPlacement.of(6),
 				RarityFilter.onAverageOnceEvery(rarity), InSquarePlacement.spread());
 
-		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureHugeRareRegistryKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id(this.registryName + "_ore_cf3"));
+		ResourceKey<ConfiguredFeature<?, ?>> configuredFeatureHugeRareRegistryKey = ResourceKey.create(Registries.CONFIGURED_FEATURE, id(this.registryName + "_ore_cf3"));
 		Holder<ConfiguredFeature<?, ?>> configuredFeatureHugeRare = InnerRegistry.registerConfiguredFeature(world, configuredFeatureHugeRareRegistryKey, Feature.ORE,
 				new OreConfiguration(new BlockMatchTest(target.block()), ore.defaultBlockState(), Mth.clamp(size * 2, 0, 64), hiddenChance)
 		);
-		ResourceKey<PlacedFeature> placedFeatureHugeRareRegistryKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id(this.registryName + "_ore_pf3"));
+		ResourceKey<PlacedFeature> placedFeatureHugeRareRegistryKey = ResourceKey.create(Registries.PLACED_FEATURE, id(this.registryName + "_ore_pf3"));
 		Holder<PlacedFeature> placedFeatureHugeRareHolder = InnerRegistry.registerPlacedFeature(world, placedFeatureHugeRareRegistryKey, configuredFeatureHugeRare,
 				HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)), CountPlacement.of(9),
 				RarityFilter.onAverageOnceEvery(rarity / 2), InSquarePlacement.spread());
@@ -247,7 +248,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 			BiomeAPI.addBiomeFeature(biomeRegistry, Holder.direct(biome),
 					GenerationStep.Decoration.UNDERGROUND_ORES, List.of(selectedFeatureHolder));
 		}
-		((BiomeSourceAccessor) world.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
+//		((BiomeSourceAccessor) world.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
 	}
 
 	@Override

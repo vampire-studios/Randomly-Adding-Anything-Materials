@@ -1,17 +1,19 @@
 package io.github.vampirestudios.raa_materials.utils;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.math.Vector3f;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
+import io.github.vampirestudios.raa_materials.testing.CloverNoise;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.Mth;
+import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 
 public class TextureHelper {
@@ -92,8 +94,8 @@ public class TextureHelper {
 
 	public static NativeImage loadImage(ResourceLocation name) {
 		try {
-			Resource input = Minecraft.getInstance().getResourceManager().getResource(name);
-			return NativeImage.read(input.getInputStream());
+			Resource input = Minecraft.getInstance().getResourceManager().getResourceOrThrow(name);
+			return NativeImage.read(input.open());
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
@@ -103,8 +105,8 @@ public class TextureHelper {
 	public static NativeImage loadImage(String name) {
 		try {
 			ResourceLocation id = RAAMaterials.id(name);
-			Resource input = Minecraft.getInstance().getResourceManager().getResource(id);
-			return NativeImage.read(input.getInputStream());
+			Resource input = Minecraft.getInstance().getResourceManager().getResourceOrThrow(id);
+			return NativeImage.read(input.open());
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -114,9 +116,9 @@ public class TextureHelper {
 
 	public static AnimationMetadataSection loadAnimation(ResourceLocation name) {
 		try {
-			Resource input = Minecraft.getInstance().getResourceManager().getResource(name);
-			AnimationMetadataSection animation = input.getMetadata(AnimationMetadataSection.SERIALIZER);
-			return animation != null ? animation : AnimationMetadataSection.EMPTY ;
+			Resource input = Minecraft.getInstance().getResourceManager().getResourceOrThrow(name);
+			Optional<AnimationMetadataSection> animation = input.metadata().getSection(AnimationMetadataSection.SERIALIZER);
+			return animation.orElse(AnimationMetadataSection.EMPTY);
 		}
 		catch (IOException e) {
 			return AnimationMetadataSection.EMPTY;
@@ -151,7 +153,8 @@ public class TextureHelper {
 		COLOR.forceRGB().setAlpha(1F);
 		for (int x = 0; x < side; x++) {
 			for (int y = 0; y < side; y++) {
-				float value = OpenSimplex2S.noise4_Fallback(seed, sin[x], cos[x], sin[y], cos[y]);
+
+				float value = (float) new CloverNoise.Noise3D(seed).fractalNoise(sin[x], cos[y], sin[y], 3);
 				COLOR.set(value, value, value);
 				texture.setPixel(x, y, COLOR);
 			}

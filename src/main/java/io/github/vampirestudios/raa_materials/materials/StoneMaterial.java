@@ -4,25 +4,22 @@ import io.github.vampirestudios.raa_materials.InnerRegistry;
 import io.github.vampirestudios.raa_materials.InnerRegistryClient;
 import io.github.vampirestudios.raa_materials.RAAMaterials;
 import io.github.vampirestudios.raa_materials.api.BiomeAPI;
-import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
 import io.github.vampirestudios.raa_materials.api.namegeneration.TestNameGenerator;
 import io.github.vampirestudios.raa_materials.blocks.BaseBlock;
 import io.github.vampirestudios.raa_materials.client.ModelHelper;
 import io.github.vampirestudios.raa_materials.client.TextureInformation;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
-import io.github.vampirestudios.raa_materials.recipes.support.ProcessingCreateRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -141,15 +138,15 @@ public class StoneMaterial extends ComplexMaterial {
 				.build();
 
 		// Item Tags //
-		TagHelper.addTag(ItemTags.STONE_BRICKS, bricks);
-		TagHelper.addTag(ItemTags.STONE_CRAFTING_MATERIALS, stone, cobbled);
-		TagHelper.addTag(ItemTags.STONE_TOOL_MATERIALS, stone, cobbled);
+//		TagHelper.addTag(ItemTags.STONE_BRICKS, bricks);
+//		TagHelper.addTag(ItemTags.STONE_CRAFTING_MATERIALS, stone, cobbled);
+//		TagHelper.addTag(ItemTags.STONE_TOOL_MATERIALS, stone, cobbled);
 
 		// Block Tags //
-		TagHelper.addTag(BlockTags.BASE_STONE_OVERWORLD, stone);
-		TagHelper.addTag(BlockTags.STONE_BRICKS, bricks);
-		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, stone, cobbled);
-		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, stone, cobbled);
+//		TagHelper.addTag(BlockTags.BASE_STONE_OVERWORLD, stone);
+//		TagHelper.addTag(BlockTags.STONE_BRICKS, bricks);
+//		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, stone, cobbled);
+//		TagHelper.addTag(BlockTags.NEEDS_STONE_TOOL, stone, cobbled);
 
 		/*Registry.register(RAAMaterials.TARGETS, RAAMaterials.id(this.registryName), new OreMaterial.Target(
 			this.stone,
@@ -160,12 +157,12 @@ public class StoneMaterial extends ComplexMaterial {
 			BlockTags.MINEABLE_WITH_PICKAXE
 		));*/
 
-		if (FabricLoader.getInstance().isModLoaded("create")){
-			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushed_to_random", this.stone, Registry.ITEM.byId(Rands.randIntRange(1, Registry.ITEM.size()-1)), 2, 0.125f)
-					.addOutput(Registry.ITEM.byId(Rands.randIntRange(1, Registry.ITEM.size()-1)), 1, 0.0625f)
-					.setProcessingTime(250)
-					.buildCrushing();
-		}
+//		if (FabricLoader.getInstance().isModLoaded("create")){
+//			ProcessingCreateRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crushed_to_random", this.stone, Registry.ITEM.byId(Rands.randIntRange(1, Registry.ITEM.size()-1)), 2, 0.125f)
+//					.addOutput(Registry.ITEM.byId(Rands.randIntRange(1, Registry.ITEM.size()-1)), 1, 0.0625f)
+//					.setProcessingTime(250)
+//					.buildCrushing();
+//		}
 	}
 
 	public void setSize(int size) {
@@ -229,31 +226,31 @@ public class StoneMaterial extends ComplexMaterial {
 
 	@Override
 	public void generate(ServerLevel world, Registry<Biome> biomeRegistry) {
-		ResourceKey<ConfiguredFeature<?, ?>> largeConfiguredStonePatchResourceKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id("configured_large_" + this.registryName + "_stone_patch"));
+		ResourceKey<ConfiguredFeature<?, ?>> largeConfiguredStonePatchResourceKey = ResourceKey.create(Registries.CONFIGURED_FEATURE, id("configured_large_" + this.registryName + "_stone_patch"));
 		Holder<ConfiguredFeature<?, ?>> largeConfiguredStonePatchHolder = InnerRegistry.registerConfiguredFeature(world, largeConfiguredStonePatchResourceKey, Feature.ORE,
 				new OreConfiguration(new TagMatchTest(BlockTags.BASE_STONE_OVERWORLD), stone.defaultBlockState(), 64)
 		);
-		ResourceKey<PlacedFeature> largeStonePatchResourceKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id("large_" + this.registryName + "_stone_patch"));
+		ResourceKey<PlacedFeature> largeStonePatchResourceKey = ResourceKey.create(Registries.PLACED_FEATURE, id("large_" + this.registryName + "_stone_patch"));
 		Holder<PlacedFeature> largeStonePatchHolder = InnerRegistry.registerPlacedFeature(world, largeStonePatchResourceKey, largeConfiguredStonePatchHolder,
 				HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)),
 				InSquarePlacement.spread(), CountPlacement.of(3), RarityFilter.onAverageOnceEvery(10)
 		);
 
-		ResourceKey<ConfiguredFeature<?, ?>> middleConfiguredStonePatchResourceKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id("configured_middle_" + this.registryName + "_stone_patch"));
+		ResourceKey<ConfiguredFeature<?, ?>> middleConfiguredStonePatchResourceKey = ResourceKey.create(Registries.CONFIGURED_FEATURE, id("configured_middle_" + this.registryName + "_stone_patch"));
 		Holder<ConfiguredFeature<?, ?>> middleConfiguredStonePatchHolder = InnerRegistry.registerConfiguredFeature(world, middleConfiguredStonePatchResourceKey, Feature.ORE,
 				new OreConfiguration(new TagMatchTest(BlockTags.BASE_STONE_OVERWORLD), stone.defaultBlockState(), 32)
 		);
-		ResourceKey<PlacedFeature> middleStonePatchResourceKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id("middle_" + this.registryName + "_stone_patch"));
+		ResourceKey<PlacedFeature> middleStonePatchResourceKey = ResourceKey.create(Registries.PLACED_FEATURE, id("middle_" + this.registryName + "_stone_patch"));
 		Holder<PlacedFeature> middleStonePatchHolder = InnerRegistry.registerPlacedFeature(world, middleStonePatchResourceKey, middleConfiguredStonePatchHolder,
 				HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)),
 				InSquarePlacement.spread(), CountPlacement.of(3), RarityFilter.onAverageOnceEvery(10)
 		);
 
-		ResourceKey<ConfiguredFeature<?, ?>> smallConfiguredStonePatchResourceKey = ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id("configured_small_" + this.registryName + "_stone_patch"));
+		ResourceKey<ConfiguredFeature<?, ?>> smallConfiguredStonePatchResourceKey = ResourceKey.create(Registries.CONFIGURED_FEATURE, id("configured_small_" + this.registryName + "_stone_patch"));
 		Holder<ConfiguredFeature<?, ?>> smallConfiguredStonePatchHolder = InnerRegistry.registerConfiguredFeature(world, smallConfiguredStonePatchResourceKey, Feature.ORE,
 				new OreConfiguration(new TagMatchTest(BlockTags.BASE_STONE_OVERWORLD), stone.defaultBlockState(), 16)
 		);
-		ResourceKey<PlacedFeature> smallStonePatchResourceKey = ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id("small_" + this.registryName + "_stone_patch"));
+		ResourceKey<PlacedFeature> smallStonePatchResourceKey = ResourceKey.create(Registries.PLACED_FEATURE, id("small_" + this.registryName + "_stone_patch"));
 		Holder<PlacedFeature> smallStonePatchHolder = InnerRegistry.registerPlacedFeature(world, smallStonePatchResourceKey, smallConfiguredStonePatchHolder,
 				HeightRangePlacement.uniform(VerticalAnchor.absolute(this.minHeight), VerticalAnchor.absolute(this.maxHeight)),
 				InSquarePlacement.spread(), CountPlacement.of(6), RarityFilter.onAverageOnceEvery(10)
@@ -266,7 +263,7 @@ public class StoneMaterial extends ComplexMaterial {
 			BiomeAPI.addBiomeFeature(biomeRegistry, Holder.direct(biome),
 					GenerationStep.Decoration.UNDERGROUND_ORES, List.of(selectedFeatureHolder));
 		}
-		((BiomeSourceAccessor) world.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
+//		((BiomeSourceAccessor) world.getChunkSource().getGenerator().getBiomeSource()).raa_rebuildFeatures();
 	}
 
 	@Override

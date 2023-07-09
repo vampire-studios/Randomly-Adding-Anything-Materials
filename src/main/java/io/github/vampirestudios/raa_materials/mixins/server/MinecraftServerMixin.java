@@ -28,7 +28,7 @@ public class MinecraftServerMixin {
 	}
 
 	private void raa_injectRecipes() {
-		RecipeManagerAccessor accessor = (RecipeManagerAccessor) resources.managers.getRecipeManager();
+		RecipeManagerAccessor accessor = (RecipeManagerAccessor) resources.managers().getRecipeManager();
 		accessor.raa_setRecipesByName(CustomRecipeManager.getMapByName(accessor.raa_getRecipesByName()));
 		accessor.raa_setRecipes(CustomRecipeManager.getMap(accessor.raa_getRecipes()));
 	}

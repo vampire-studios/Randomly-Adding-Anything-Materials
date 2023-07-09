@@ -9,6 +9,7 @@ public class FurnaceRecipe {
 	private static final FurnaceRecipe INSTANCE = new FurnaceRecipe();
 	
 	private ResourceLocation id;
+	private CookingBookCategory category;
 	private ItemLike input;
 	private ItemLike output;
 	private boolean exist;
@@ -26,6 +27,7 @@ public class FurnaceRecipe {
 	public static FurnaceRecipe make(ResourceLocation id, ItemLike input, ItemLike output) {
 		INSTANCE.id = id;
 		INSTANCE.group = "";
+		INSTANCE.category = CookingBookCategory.BLOCKS;
 		INSTANCE.input = input;
 		INSTANCE.output = output;
 		INSTANCE.count = 1;
@@ -54,7 +56,12 @@ public class FurnaceRecipe {
 		this.time = time;
 		return this;
 	}
-	
+
+	public FurnaceRecipe setCategory(CookingBookCategory category) {
+		this.category = category;
+		return this;
+	}
+
 	public void build() {
 		build(false, false, false);
 	}
@@ -75,6 +82,7 @@ public class FurnaceRecipe {
 		SmeltingRecipe recipe = new SmeltingRecipe(
 			new ResourceLocation(id + "_smelting"),
 			group,
+			category,
 			Ingredient.of(input),
 			new ItemStack(output, count),
 			xp,
@@ -86,6 +94,7 @@ public class FurnaceRecipe {
 			BlastingRecipe recipe2 = new BlastingRecipe(
 				new ResourceLocation(id + "_blasting"),
 				group,
+				category,
 				Ingredient.of(input),
 				new ItemStack(output, count),
 				xp,
@@ -98,6 +107,7 @@ public class FurnaceRecipe {
 			CampfireCookingRecipe recipe2 = new CampfireCookingRecipe(
 				new ResourceLocation(id + "_campfire"),
 				group,
+				category,
 				Ingredient.of(input),
 				new ItemStack(output, count),
 				xp,
@@ -110,6 +120,7 @@ public class FurnaceRecipe {
 			SmokingRecipe recipe2 = new SmokingRecipe(
 				new ResourceLocation(id + "_smoker"),
 				group,
+				category,
 				Ingredient.of(input),
 				new ItemStack(output, count),
 				xp,

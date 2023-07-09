@@ -20,17 +20,13 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 @Mixin(MappedRegistry.class)
-public abstract class RegistryMixin<T> extends Registry<T> implements ExtendedRegistry<T> {
+public abstract class RegistryMixin<T> implements ExtendedRegistry<T>, Registry<T> {
 	@Shadow private boolean frozen;
-	@Shadow @Final private @Nullable Function<T, Holder.Reference<T>> customHolderProvider;
-	@Shadow private @Nullable Map<T, Holder.Reference<T>> intrusiveHolderCache;
 
 	@Final
 	@Shadow
@@ -53,10 +49,10 @@ public abstract class RegistryMixin<T> extends Registry<T> implements ExtendedRe
 	@Shadow private @Nullable List<Holder.Reference<T>> holdersInOrder;
 
 	protected RegistryMixin(ResourceKey<? extends Registry<T>> resourceKey, Lifecycle lifecycle) {
-		super(resourceKey, lifecycle);
+		super();
 	}
 
-	@Shadow public abstract Optional<Holder<T>> getHolder(@NotNull ResourceKey<T> key);
+	@Shadow public abstract Optional<Holder.Reference<T>> getHolder(@NotNull ResourceKey<T> key);
 
 	@SuppressWarnings("unchecked")
 	private final Event<RegistryEntryDeletedCallback<T>> dynreg$entryDeletedEvent = EventFactory.createArrayBacked(RegistryEntryDeletedCallback.class, callbacks -> (rawId, entry) -> {
@@ -101,7 +97,5 @@ public abstract class RegistryMixin<T> extends Registry<T> implements ExtendedRe
 	@Override
 	public void dynreg$unfreeze() {
 		frozen = false;
-		if (customHolderProvider != null)
-			this.intrusiveHolderCache = new IdentityHashMap<>();
 	}
 }

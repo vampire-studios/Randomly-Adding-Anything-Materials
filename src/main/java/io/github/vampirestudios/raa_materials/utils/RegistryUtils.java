@@ -27,16 +27,12 @@ package io.github.vampirestudios.raa_materials.utils;
 import io.github.vampirestudios.raa_materials.api.ExtendedRegistry;
 import io.github.vampirestudios.raa_materials.items.RAABlockItem;
 import io.github.vampirestudios.raa_materials.items.RAABlockItemAlt;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.core.Registry;
-import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Item.Properties;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -51,27 +47,27 @@ public class RegistryUtils {
     public static final List<ResourceKey<?>> REGISTERED_KEYS = new ArrayList<>();
 
     public static Block register(Block block, ResourceLocation name, CreativeModeTab itemGroup, String upperCaseName, RAABlockItem.BlockType blockType) {
-        if (Registry.BLOCK.get(name) == Blocks.AIR) {
-            Registry.register(Registry.ITEM, name, new RAABlockItem(upperCaseName, block, (new Properties()).tab(itemGroup), blockType));
-            return Registry.register(Registry.BLOCK, name, block);
+        if (BuiltInRegistries.BLOCK.get(name) == Blocks.AIR) {
+            Registry.register(BuiltInRegistries.ITEM, name, new RAABlockItem(upperCaseName, block, new FabricItemSettings().group(itemGroup), blockType));
+            return Registry.register(BuiltInRegistries.BLOCK, name, block);
         } else {
             return block;
         }
     }
 
     public static Block register(Block block, ResourceLocation name, CreativeModeTab itemGroup, String upperCaseName, String type) {
-        if (Registry.BLOCK.get(name) == Blocks.AIR) {
-            Registry.register(Registry.ITEM, name, new RAABlockItemAlt(upperCaseName, type, block, (new Properties()).tab(itemGroup)));
-            return Registry.register(Registry.BLOCK, name, block);
+        if (BuiltInRegistries.BLOCK.get(name) == Blocks.AIR) {
+            Registry.register(BuiltInRegistries.ITEM, name, new RAABlockItemAlt(upperCaseName, type, block, new FabricItemSettings().group(itemGroup)));
+            return Registry.register(BuiltInRegistries.BLOCK, name, block);
         } else {
             return block;
         }
     }
 
     public static Block register(Block block, ResourceLocation name, CreativeModeTab itemGroup) {
-        if (Registry.BLOCK.get(name) == Blocks.AIR) {
-            Registry.register(Registry.ITEM, name, new BlockItem(block, (new Properties()).tab(itemGroup)));
-            return Registry.register(Registry.BLOCK, name, block);
+        if (BuiltInRegistries.BLOCK.get(name) == Blocks.AIR) {
+            Registry.register(BuiltInRegistries.ITEM, name, new BlockItem(block, new FabricItemSettings().group(itemGroup)));
+            return Registry.register(BuiltInRegistries.BLOCK, name, block);
         } else {
             return block;
         }
@@ -80,26 +76,23 @@ public class RegistryUtils {
 
 
     public static Block register(Block block, ResourceLocation name) {
-        if (Registry.BLOCK.get(name) == Blocks.AIR) {
-            Registry.register(Registry.ITEM, name, new BlockItem(block, (new Properties()).tab(CreativeModeTab.TAB_BUILDING_BLOCKS)));
-            return Registry.register(Registry.BLOCK, name, block);
+        if (BuiltInRegistries.BLOCK.get(name) == Blocks.AIR) {
+            //TODO: Fix
+            Registry.register(BuiltInRegistries.ITEM, name, new BlockItem(block, (new FabricItemSettings()).group(CreativeModeTabs.BUILDING_BLOCKS)));
+            return Registry.register(BuiltInRegistries.BLOCK, name, block);
         } else {
             return block;
         }
     }
 
     public static Block registerBlockWithoutItem(Block block, ResourceLocation identifier) {
-        Registry.register(Registry.BLOCK, identifier, block);
+        Registry.register(BuiltInRegistries.BLOCK, identifier, block);
         return block;
     }
 
-    public static Biome registerBiome(ResourceLocation name, Biome biome) {
-        return Registry.register(BuiltinRegistries.BIOME, name, biome);
-    }
-
     public static Item registerItem(Item item, ResourceLocation name) {
-        if (Registry.ITEM.get(name) == Items.AIR) {
-            return Registry.register(Registry.ITEM, name, item);
+        if (BuiltInRegistries.ITEM.get(name) == Items.AIR) {
+            return Registry.register(BuiltInRegistries.ITEM, name, item);
         } else {
             return item;
         }
@@ -107,7 +100,7 @@ public class RegistryUtils {
 
     public static <T extends BlockEntity> BlockEntityType<T> registerBlockEntity(Builder<T> builder, ResourceLocation name) {
         BlockEntityType<T> blockEntityType = builder.build(null);
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, name, blockEntityType);
+        Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, name, blockEntityType);
         return blockEntityType;
     }
 
@@ -129,7 +122,7 @@ public class RegistryUtils {
 
     @SuppressWarnings("unchecked")
     public static <T> Optional<Registry<T>> getRegistryOf(ResourceKey<T> key) {
-        return (Optional<Registry<T>>) Registry.REGISTRY.getOptional(key.registry());
+        return (Optional<Registry<T>>) BuiltInRegistries.REGISTRY.getOptional(key.registry());
     }
 
     public static void addRegisteredKey(ResourceLocation registryId, ResourceLocation entryId) {

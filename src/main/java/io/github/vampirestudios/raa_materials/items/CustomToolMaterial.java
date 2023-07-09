@@ -1,8 +1,8 @@
 package io.github.vampirestudios.raa_materials.items;
 
 import io.github.vampirestudios.raa_materials.utils.Rands;
-import io.github.vampirestudios.vampirelib.utils.Utils;
-import net.minecraft.core.Registry;
+import io.github.vampirestudios.raa_materials.utils.Utils;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
@@ -62,7 +62,7 @@ public class CustomToolMaterial implements Tier {
 
     @Override
     public Ingredient getRepairIngredient() {
-        return Ingredient.of(Registry.ITEM.get(Utils.appendToPath(materialId, metal ? "_ingot" : "_gem")));
+        return Ingredient.of(BuiltInRegistries.ITEM.get(Utils.appendToPath(materialId, metal ? "_ingot" : "_gem")));
     }
 
     public float getSwordAttackSpeed() {

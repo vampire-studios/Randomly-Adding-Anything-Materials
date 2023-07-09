@@ -124,7 +124,7 @@ public class TextureTest {
 
     public static BufferTexture makeStoneTexture(float[] values, Random random) {
         Rands.setRand(random);
-        int size = 16 * 4;
+        int size = 64 * 4;
         BufferTexture highFreq = TextureHelper.simpleTileable(TextureHelper.makeNoiseTexture(random, size, Rands.randFloatRange(1F, 1.6F) / (size/16F)));
 
         BufferTexture midFreq = TextureHelper.edgeTileable(TextureHelper.downScaleCrop(

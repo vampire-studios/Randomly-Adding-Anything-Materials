@@ -1,3 +1,4 @@
+/*
 package io.github.vampirestudios.raa_materials.mixins.server;
 
 import io.github.vampirestudios.raa_materials.api.BiomeSourceAccessor;
@@ -18,11 +19,11 @@ public abstract class BiomeSourceMixin implements BiomeSourceAccessor {
 	@Shadow public abstract List<BiomeSource.StepFeatureData> buildFeaturesPerStep(List<Holder<Biome>> list, boolean bl);
 	
 	@Shadow public abstract Set<Holder<Biome>> possibleBiomes();
-	
+
 	@Mutable @Shadow public Supplier<List<StepFeatureData>> featuresPerStep;
 
 	@Override
 	public void raa_rebuildFeatures(){
 		featuresPerStep = () -> buildFeaturesPerStep(this.possibleBiomes().stream().toList(), true);
 	}
-}
+}*/

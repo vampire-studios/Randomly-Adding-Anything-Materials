@@ -7,6 +7,7 @@ import io.github.vampirestudios.raa_materials.utils.ColorDualGradient;
 import io.github.vampirestudios.raa_materials.utils.ColorGradient;
 import io.github.vampirestudios.raa_materials.utils.CustomColor;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -153,7 +154,7 @@ public abstract class ComplexMaterial {
 				int crushedOreAmount = compound.getInt("crushedOreAmount");
 				ColorDualGradient metallicGradient = new ColorDualGradient(gradient, corrodedGradient);
 				material = new MetalOreMaterial(parsedName, random, metallicGradient, compassGradient, compassNeedleGradient,
-						textureInformation, target, tier, hasOreVein, randXOffset, randZOffset, ResourceKey.create(Registry.DIMENSION_REGISTRY,
+						textureInformation, target, tier, hasOreVein, randXOffset, randZOffset, ResourceKey.create(Registries.DIMENSION,
 						new ResourceLocation(compassDimension)), crushedOreAmount);
 				OreMaterial oreMaterial = (OreMaterial) material;
 				oreMaterial.setBonus(bonus);

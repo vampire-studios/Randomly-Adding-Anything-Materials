@@ -3,6 +3,7 @@ package io.github.vampirestudios.raa_materials.recipes;
 import com.google.common.collect.Maps;
 import io.github.vampirestudios.raa_materials.utils.CollectionsUtil;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -55,12 +56,12 @@ public class CustomRecipeManager {
 	}
 	
 	public static <S extends RecipeSerializer<T>, T extends Recipe<?>> S registerSerializer(String modID, String id, S serializer) {
-		return Registry.register(Registry.RECIPE_SERIALIZER, modID + ":" + id, serializer);
+		return Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, modID + ":" + id, serializer);
 	}
 	
 	public static <T extends Recipe<?>> RecipeType<T> registerType(String modID, String type) {
 		ResourceLocation recipeTypeId = new ResourceLocation(modID, type);
-		return Registry.register(Registry.RECIPE_TYPE, recipeTypeId, new RecipeType<T>() {
+		return Registry.register(BuiltInRegistries.RECIPE_TYPE, recipeTypeId, new RecipeType<T>() {
 			public String toString() {
 				return type;
 			}
@@ -69,10 +70,10 @@ public class CustomRecipeManager {
 	
 	public static boolean exists(ItemLike item) {
 		if (item instanceof Block) {
-			return Registry.BLOCK.getKey((Block) item) != Registry.BLOCK.getDefaultKey();
+			return BuiltInRegistries.BLOCK.getKey((Block) item) != BuiltInRegistries.BLOCK.getDefaultKey();
 		}
 		else {
-			return Registry.ITEM.getKey(item.asItem()) != Registry.ITEM.getDefaultKey();
+			return BuiltInRegistries.ITEM.getKey(item.asItem()) != BuiltInRegistries.ITEM.getDefaultKey();
 		}
 	}
 	

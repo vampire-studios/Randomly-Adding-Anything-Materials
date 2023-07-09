@@ -1,7 +1,7 @@
 package io.github.vampirestudios.raa_materials.utils;
 
-import com.mojang.math.Vector3f;
 import net.minecraft.util.Mth;
+import org.joml.Vector3f;
 
 import java.util.Random;
 

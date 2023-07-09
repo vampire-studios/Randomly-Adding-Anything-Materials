@@ -1,7 +1,6 @@
 package io.github.vampirestudios.raa_materials.utils;
 
 import com.mojang.datafixers.util.Pair;
-import io.github.vampirestudios.raa_materials.RAAMaterials;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
@@ -136,7 +135,7 @@ public class ProceduralTextures {
 
 	public static BufferTexture makeStoneTexture(float[] values, Random random) {
 		Rands.setRand(random);
-		int size = RAAMaterials.CONFIG.textureSize * 4;
+		int size = 16 * 4;
 		BufferTexture highFreq = TextureHelper.simpleTileable(TextureHelper.makeNoiseTexture(random, size, Rands.randFloatRange(1F, 1.6F) / (size/16F)));
 		BufferTexture midFreq = TextureHelper.edgeTileable(TextureHelper.downScaleCrop(
 				TextureHelper.offset(highFreq, Rands.randInt(size), Rands.randInt(size)),

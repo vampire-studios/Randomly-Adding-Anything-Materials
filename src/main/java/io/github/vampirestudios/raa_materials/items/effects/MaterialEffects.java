@@ -2,7 +2,7 @@ package io.github.vampirestudios.raa_materials.items.effects;
 
 import com.google.gson.JsonElement;
 import io.github.vampirestudios.raa_materials.utils.Rands;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 public enum MaterialEffects {
     LIGHTNING(ItemEffectHandler::spawnLightning, (element -> element.getAsJsonObject().addProperty("chance", Rands.randIntRange(2, 8)))),
     EFFECT(ItemEffectHandler::statusEffectForTarget, (element -> {
-        element.getAsJsonObject().addProperty("type", Rands.list(new ArrayList<>(Registry.MOB_EFFECT.keySet())).toString());
+        element.getAsJsonObject().addProperty("type", Rands.list(new ArrayList<>(BuiltInRegistries.MOB_EFFECT.keySet())).toString());
         element.getAsJsonObject().addProperty("duration", Rands.randIntRange(5, 15));
         element.getAsJsonObject().addProperty("amplifier", Rands.randIntRange(0, 2));
     })),

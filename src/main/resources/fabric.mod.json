@@ -33,10 +33,6 @@
     {
       "config": "raa_materials_client.mixins.json",
       "environment": "client"
-    },
-    {
-      "config": "fabric-recipe-api-v1.mixins.json",
-      "environment": "*"
     }
   ],
   "accessWidener": "raa_materials.accesswidener",
