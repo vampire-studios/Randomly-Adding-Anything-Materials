@@ -154,7 +154,7 @@ public class TextureHelper {
 		for (int x = 0; x < side; x++) {
 			for (int y = 0; y < side; y++) {
 
-				float value = (float) new CloverNoise.Noise3D(seed).fractalNoise(sin[x], cos[y], sin[y], 3);
+				float value = (float) new CloverNoise.Noise2D(seed).fractalNoise(sin[x], cos[y], Rands.randIntRange(2, 4));
 				COLOR.set(value, value, value);
 				texture.setPixel(x, y, COLOR);
 			}

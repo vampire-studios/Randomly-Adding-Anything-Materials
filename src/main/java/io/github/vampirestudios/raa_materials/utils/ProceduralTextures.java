@@ -7,6 +7,24 @@ import net.minecraft.util.Mth;
 import java.util.Random;
 
 public class ProceduralTextures {
+
+	private static final float HUE_LOWER_BOUND = 0F;
+	private static final float HUE_UPPER_BOUND = 1F;
+	private static final float SAT_LOWER_BOUND = 0.07f;
+	private static final float SAT_UPPER_BOUND = 0.4f;
+
+	private static final int DEFAULT_SIZE = 16 * 4;
+	private static final float DEFAULT_MIN_BRIGHTNESS = 0.1F;
+	private static final float DEFAULT_MAX_BRIGHTNESS = 0.8F;
+
+	private static CustomColor createCustomColor(final Random random, final float satLowerBound, final float satUpperBound) {
+		CustomColor color = new CustomColor(random.nextFloat(), random.nextFloat(), random.nextFloat());
+		float sat = Rands.randFloatRange(random, satLowerBound, satUpperBound);
+		float val = Rands.randFloatRange(random, 0.3F, 0.7F);
+		color.switchToHSV().setSaturation(sat).setBrightness(val);
+		return color;
+	}
+
 	public static ColorGradient makeStonePalette(Random random) {
 		Rands.setRand(random);
 		CustomColor color = new CustomColor(true)
@@ -24,17 +42,10 @@ public class ProceduralTextures {
 	}
 
 	public static ColorGradient makeDirtPalette(Random random) {
-		CustomColor color = new CustomColor(
-				random.nextFloat(),
-				random.nextFloat(),
-				random.nextFloat()
-		);
-		float sat = Rands.randFloatRange(random, 0, 0.2F);
-		float val = Rands.randFloatRange(random, 0.3F, 0.7F);
-		color.switchToHSV().setSaturation(sat).setBrightness(val);
+		CustomColor color = createCustomColor(random, SAT_LOWER_BOUND, SAT_UPPER_BOUND);
 		float hue = Rands.randFloatRange(random, 0, 0.3F);
-		sat = random.nextFloat() * 0.3F;
-		val = Rands.randFloatRange(random, 0.3F, 0.5F);
+		float sat = random.nextFloat() * 0.3F;
+		float val = Rands.randFloatRange(random, 0.3F, 0.5F);
 		return TextureHelper.makeDistortedPalette(color, hue, sat, val);
 	}
 
@@ -135,7 +146,7 @@ public class ProceduralTextures {
 
 	public static BufferTexture makeStoneTexture(float[] values, Random random) {
 		Rands.setRand(random);
-		int size = 16 * 4;
+		int size = DEFAULT_SIZE;
 		BufferTexture highFreq = TextureHelper.simpleTileable(TextureHelper.makeNoiseTexture(random, size, Rands.randFloatRange(1F, 1.6F) / (size/16F)));
 		BufferTexture midFreq = TextureHelper.edgeTileable(TextureHelper.downScaleCrop(
 				TextureHelper.offset(highFreq, Rands.randInt(size), Rands.randInt(size)),
@@ -166,59 +177,50 @@ public class ProceduralTextures {
 		return result;
 	}
 
+	// existing overloaded methods
 	public static BufferTexture makeBlurredTexture(BufferTexture texture) {
-		BufferTexture result = texture.cloneTexture();
-		BufferTexture b1 = TextureHelper.offset(texture,  1,  0);
-		BufferTexture b2 = TextureHelper.offset(texture, -1,  0);
-		BufferTexture b3 = TextureHelper.offset(texture,  0,  1);
-		BufferTexture b4 = TextureHelper.offset(texture,  0, -1);
-		result = TextureHelper.blend(result, b1, 0.01F);
-		result = TextureHelper.blend(result, b2, 0.01F);
-		result = TextureHelper.blend(result, b3, 0.01F);
-		result = TextureHelper.blend(result, b4, 0.01F);
-		return result;
+		return makeBlurredTexture(texture, 0.01F, 4);
 	}
 
 	public static BufferTexture makeBlurredTexture(BufferTexture texture, float strength, int steps) {
 		BufferTexture result = texture.cloneTexture();
 		for (int i = 0; i < steps; i++) {
-			BufferTexture b1 = TextureHelper.offset(result,  1,  0);
-			BufferTexture b2 = TextureHelper.offset(result, -1,  0);
-			BufferTexture b3 = TextureHelper.offset(result,  0,  1);
-			BufferTexture b4 = TextureHelper.offset(result,  0, -1);
-			result = TextureHelper.blend(result, b1, strength);
-			result = TextureHelper.blend(result, b2, strength);
-			result = TextureHelper.blend(result, b3, strength);
-			result = TextureHelper.blend(result, b4, strength);
+			result = blendWithOffsets(result, strength, 1, 0, -1, 0, 0, 1, 0, -1);
+		}
+		return result;
+	}
+
+	private static BufferTexture blendWithOffsets(BufferTexture texture, float blendStrength, int... offsets) {
+		BufferTexture result = texture.cloneTexture();
+		for (int i = 0; i < offsets.length; i += 2) {
+			result = TextureHelper.blend(result, TextureHelper.offset(result, offsets[i], offsets[i + 1]), blendStrength);
 		}
 		return result;
 	}
 
 
+	// existing overloaded methods
 	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture overlay) {
 		return TextureHelper.cover(texture, overlay.cloneTexture());
 	}
 
 	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture[] overlay, Random random, ColorGradient gradient) {
-		BufferTexture over = TextureHelper.applyGradient(overlay[random.nextInt(overlay.length)].cloneTexture(), gradient);
-		return TextureHelper.cover(texture, over);
+		return coverWithOverlay(texture, overlay[random.nextInt(overlay.length)].cloneTexture(), gradient);
 	}
 
+	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture overlay, ColorGradient gradient) {
+		return TextureHelper.cover(texture, TextureHelper.applyGradient(overlay.cloneTexture(), gradient));
+	}
+
+	// existing overloaded methods
 	public static BufferTexture clampCoverWithOverlay(BufferTexture texture, BufferTexture overlay, int levels) {
-		BufferTexture over = TextureHelper.cover(texture, overlay);
-		return TextureHelper.clamp(over, levels);
+		return TextureHelper.clamp(TextureHelper.cover(texture, overlay), levels);
 	}
 
 	public static BufferTexture clampCoverWithOverlay(BufferTexture texture, BufferTexture overlay, float... levels) {
 		if (texture.width > overlay.width) texture = TextureHelper.downScale(texture, texture.width / overlay.width);
 		if (texture.width < overlay.width) texture = TextureHelper.upScale(texture, overlay.width / texture.width);
-		BufferTexture over = TextureHelper.cover(texture, overlay.cloneTexture());
-		return TextureHelper.clampValue(over, levels);
-	}
-
-	public static BufferTexture coverWithOverlay(BufferTexture texture, BufferTexture overlay, ColorGradient gradient) {
-		BufferTexture over = TextureHelper.applyGradient(overlay.cloneTexture(), gradient);
-		return TextureHelper.cover(texture, over);
+		return TextureHelper.clampValue(TextureHelper.cover(texture, overlay.cloneTexture()), levels);
 	}
 
 	public static BufferTexture coverWithOverlayAndBlend(BufferTexture texture, BufferTexture overlay) {

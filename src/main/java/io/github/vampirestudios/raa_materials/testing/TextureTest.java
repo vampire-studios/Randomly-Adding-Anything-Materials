@@ -16,7 +16,7 @@ import java.util.Random;
 public class TextureTest {
     public static void main(String[] args) throws Exception {
         Random random = new Random(Rands.getRandom().nextLong());
-        for(int i =0; i < 200; i++) {
+        for(int i =0; i < 100; i++) {
             new TextureTest(random,i);
         }
     }
@@ -69,7 +69,7 @@ public class TextureTest {
 
         float[] values = new float[]{0.13f,0.22f,0.34f,0.53f,0.60f,0.70f,0.85f,0.90f};
 
-        ResourceLocation stoneTexID = notTextureHelper.makeBlockTextureID("aaaa_"+textureBaseName);
+        ResourceLocation stoneTexID = notTextureHelper.makeBlockTextureID("aaaa_" + textureBaseName);
         BufferTexture texture = makeStoneTexture(values, random); //from procedural texture
         float[] temp = TextureHelper.getValues(texture);
         values = new float[temp.length+1];
@@ -79,52 +79,52 @@ public class TextureTest {
         BufferTexture variant = TextureHelper.applyGradient(texture.cloneTexture(), gradient);
         notInnerRegistry.registerTexture(stoneTexID, variant);
 
-        texture = ProceduralTextures.makeBlurredTexture(texture);
+//        texture = ProceduralTextures.makeBlurredTexture(texture);
         //texture = TextureHelper.clampValue(texture, values);
 
-        BufferTexture overlayTexture = notTextureHelper.loadTexture(stoneFrame);
-        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
-
-        TextureHelper.applyGradient(variant, gradient);
-        ResourceLocation frameTexID = notTextureHelper.makeBlockTextureID("polished_" + textureBaseName);
-        notInnerRegistry.registerTexture(frameTexID, variant);
-
-        overlayTexture = notTextureHelper.loadTexture(stoneBrick);
-        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
-        TextureHelper.applyGradient(variant, gradient);
-        ResourceLocation bricksTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_bricks");
-        notInnerRegistry.registerTexture(bricksTexID, variant);
-
-        overlayTexture = notTextureHelper.loadTexture(stoneTile);
-        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
-
-        TextureHelper.applyGradient(variant, gradient);
-        ResourceLocation tilesTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
-        notInnerRegistry.registerTexture(tilesTexID, variant);
-
-        overlayTexture = notTextureHelper.loadTexture(stoneCobbled);
-        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
-
-        TextureHelper.applyGradient(variant, gradient);
-        ResourceLocation cobbledTexID = notTextureHelper.makeBlockTextureID("cobbled_" + textureBaseName);
-        notInnerRegistry.registerTexture(cobbledTexID, variant);
-
-        overlayTexture = notTextureHelper.loadTexture(stoneChiseled);
-        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
-        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
-
-        TextureHelper.applyGradient(variant, gradient);
-        ResourceLocation chiseledTexID = notTextureHelper.makeBlockTextureID("chiseled_" + textureBaseName);
-        notInnerRegistry.registerTexture(chiseledTexID, variant);
+//        BufferTexture overlayTexture = notTextureHelper.loadTexture(stoneFrame);
+//        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+//        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
+//
+//        TextureHelper.applyGradient(variant, gradient);
+//        ResourceLocation frameTexID = notTextureHelper.makeBlockTextureID("polished_" + textureBaseName);
+//        notInnerRegistry.registerTexture(frameTexID, variant);
+//
+//        overlayTexture = notTextureHelper.loadTexture(stoneBrick);
+//        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+//        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
+//        TextureHelper.applyGradient(variant, gradient);
+//        ResourceLocation bricksTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_bricks");
+//        notInnerRegistry.registerTexture(bricksTexID, variant);
+//
+//        overlayTexture = notTextureHelper.loadTexture(stoneTile);
+//        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+//        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
+//
+//        TextureHelper.applyGradient(variant, gradient);
+//        ResourceLocation tilesTexID = notTextureHelper.makeBlockTextureID(textureBaseName + "_tiles");
+//        notInnerRegistry.registerTexture(tilesTexID, variant);
+//
+//        overlayTexture = notTextureHelper.loadTexture(stoneCobbled);
+//        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+//        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
+//
+//        TextureHelper.applyGradient(variant, gradient);
+//        ResourceLocation cobbledTexID = notTextureHelper.makeBlockTextureID("cobbled_" + textureBaseName);
+//        notInnerRegistry.registerTexture(cobbledTexID, variant);
+//
+//        overlayTexture = notTextureHelper.loadTexture(stoneChiseled);
+//        TextureHelper.normalize(overlayTexture, 0.1F, 1F);
+//        variant = ProceduralTextures.clampCoverWithOverlay(texture, overlayTexture, values);
+//
+//        TextureHelper.applyGradient(variant, gradient);
+//        ResourceLocation chiseledTexID = notTextureHelper.makeBlockTextureID("chiseled_" + textureBaseName);
+//        notInnerRegistry.registerTexture(chiseledTexID, variant);
     }
 
     public static BufferTexture makeStoneTexture(float[] values, Random random) {
         Rands.setRand(random);
-        int size = 64 * 4;
+        int size = 32 * 4;
         BufferTexture highFreq = TextureHelper.simpleTileable(TextureHelper.makeNoiseTexture(random, size, Rands.randFloatRange(1F, 1.6F) / (size/16F)));
 
         BufferTexture midFreq = TextureHelper.edgeTileable(TextureHelper.downScaleCrop(
@@ -135,7 +135,7 @@ public class TextureTest {
                 TextureHelper.offset(highFreq, Rands.randInt(size), Rands.randInt(size)),
                 8),4, 0.95f, (size/16)/2),2);
 
-        midFreq = TextureHelper.blur(midFreq, 0.1f, Rands.randIntRange(2, 6), Rands.randIntRange(2, 6));
+//        midFreq = TextureHelper.blur(midFreq, 0.1f, Rands.randIntRange(2, 6), Rands.randIntRange(2, 6));
 
         BufferTexture pass = TextureHelper.heightPass(midFreq, -1, -1);
 
