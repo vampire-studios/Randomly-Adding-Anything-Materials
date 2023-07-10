@@ -6,8 +6,7 @@
 
     fabric = "0.85.0+1.19.4"
 
-    vampirelib = "6.3.0+build.2-1.19.4"
-    raa_core = "2.4.0+build.1-1.19"
+    raa_core = "2.5.0+build.1-1.19.4"
 
     create = "mc1.18.2_v0.4.1+580"
     spectrum = "b05db8e86c"
@@ -20,7 +19,6 @@
 
     fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric" }
 
-    vampirelib = { module = "io.github.vampirestudios:VampireLib-Fabric", version.ref = "vampirelib" }
     raa_core = { module = "io.github.vampirestudios:Randomly-Adding-Anything-Core", version.ref = "raa_core" }
 
 #    create = { module = "com.simibubi:Create", version.ref = "create" }

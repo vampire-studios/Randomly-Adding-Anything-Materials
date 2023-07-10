@@ -1,7 +1,6 @@
 package io.github.vampirestudios.raa_materials;
 
 import com.google.common.collect.Lists;
-import de.guntram.mcmod.crowdintranslate.CrowdinTranslate;
 import io.github.vampirestudios.raa_core.api.RAAAddon;
 import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
 import io.github.vampirestudios.raa_materials.api.namegeneration.NameGenerator;
@@ -11,8 +10,8 @@ import io.github.vampirestudios.raa_materials.utils.Rands;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.EnvType;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
@@ -42,11 +41,12 @@ public class RAAMaterials implements RAAAddon {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 
-	public static final CreativeModeTab RAA_ORES = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "ores"), () -> new ItemStack(Blocks.IRON_ORE));
-	public static final CreativeModeTab RAA_RESOURCES = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "resources"), () -> new ItemStack(Items.IRON_INGOT));
-	public static final CreativeModeTab RAA_TOOLS = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "tools"), () -> new ItemStack(Items.IRON_PICKAXE));
-	public static final CreativeModeTab RAA_WEAPONS = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "weapons"), () -> new ItemStack(Items.IRON_SWORD));
-	public static final CreativeModeTab RAA_STONE_TYPES = FabricItemGroupBuilder.build(new ResourceLocation(MOD_ID, "stone_types"), () -> new ItemStack(Items.STONE));
+	public static final CreativeModeTab RAA_ORES = FabricItemGroup.builder(new ResourceLocation(MOD_ID, "ores")).icon(() -> new ItemStack(Blocks.IRON_ORE)).build();
+	public static final CreativeModeTab RAA_RESOURCES = FabricItemGroup.builder(new ResourceLocation(MOD_ID, "resources")).icon(() -> new ItemStack(Items.IRON_INGOT)).build();
+	public static final CreativeModeTab RAA_TOOLS = FabricItemGroup.builder(new ResourceLocation(MOD_ID, "tools")).icon(() -> new ItemStack(Items.IRON_PICKAXE)).build();
+	public static final CreativeModeTab RAA_WEAPONS = FabricItemGroup.builder(new ResourceLocation(MOD_ID, "weapons")).icon(() -> new ItemStack(Items.IRON_SWORD)).build();
+	public static final CreativeModeTab RAA_STONE_TYPES = FabricItemGroup.builder(new ResourceLocation(MOD_ID, "stone_types")).icon(() -> new ItemStack(Items.STONE)).build();
+
 	public static final Registry<OreMaterial.Target> TARGETS = FabricRegistryBuilder.createSimple(OreMaterial.Target.class, id("ore_targets")).buildAndRegister();
 	public static GeneralConfig CONFIG;
 
@@ -170,7 +170,7 @@ public class RAAMaterials implements RAAAddon {
 		AutoConfig.register(GeneralConfig.class, GsonConfigSerializer::new);
 		CONFIG = AutoConfig.getConfigHolder(GeneralConfig.class).getConfig();
 
-		CrowdinTranslate.downloadTranslations("randomly-adding-anything-mater", MOD_ID);
+//		CrowdinTranslate.downloadTranslations("randomly-adding-anything-mater", MOD_ID);
 
 		Registry.register(TARGETS, minecraftId("stone"), OreMaterial.Target.STONE);
 		Registry.register(TARGETS, minecraftId("diorite"), OreMaterial.Target.DIORITE);
@@ -198,6 +198,7 @@ public class RAAMaterials implements RAAAddon {
 		Registry.register(TARGETS, minecraftId("mycelium"), OreMaterial.Target.MYCELIUM);
 		Registry.register(TARGETS, minecraftId("podzol"), OreMaterial.Target.PODZOL);
 
+		WorldEventsImpl.ON_WORLD_LOAD.register(LifeCycleAPI::_runBeforeLevelLoad);
 		LifeCycleAPI.onLevelLoad((biomeWorld, seed, biomes) -> onServerStart(biomeWorld, seed, biomes, biomeWorld.dimension().equals(Level.OVERWORLD)));
 	}
 

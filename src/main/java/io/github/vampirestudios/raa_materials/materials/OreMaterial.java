@@ -15,6 +15,7 @@ import io.github.vampirestudios.raa_materials.items.*;
 import io.github.vampirestudios.raa_materials.items.effects.MaterialEffects;
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -129,7 +130,8 @@ public abstract class OreMaterial extends ComplexMaterial {
 		this.shovelStickTexture = textureInformation.shovelStick();
 
 		BlockBehaviour.Properties material = FabricBlockSettings.copyOf(target.block()).requiresTool().mapColor(MaterialColor.COLOR_GRAY);
-		this.droppedItem = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), rawType);
+		this.droppedItem = RAASimpleItem.register(this.registryName, new FabricItemSettings(), rawType);
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_RESOURCES).register(entries -> entries.accept(droppedItem));
 		this.ore = InnerRegistry.registerBlockAndItem(this.registryName + "_ore", new BaseDropBlock(material, this.droppedItem), RAAMaterials.RAA_ORES);
 //		TagHelper.addTag(target.toolType(), this.ore);
 //		TagHelper.addTag(switch (tier) {
@@ -152,19 +154,24 @@ public abstract class OreMaterial extends ComplexMaterial {
 
 		this.sword = InnerRegistry.registerItem(this.registryName + "_sword",
 				new CustomSwordItem(this, toolMaterial, 3, toolMaterial.getSwordAttackSpeed(),
-						new FabricItemSettings().group(RAAMaterials.RAA_WEAPONS).stacksTo(1)));
+						new FabricItemSettings().stacksTo(1)));
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_WEAPONS).register(entries -> entries.accept(sword));
 
 		this.pickaxe = InnerRegistry.registerItem(this.registryName + "_pickaxe",
-				new CustomPickaxeItem(toolMaterial, 1, toolMaterial.getPickaxeAttackSpeed(), new FabricItemSettings().group(RAAMaterials.RAA_TOOLS).stacksTo(1)));
+				new CustomPickaxeItem(toolMaterial, 1, toolMaterial.getPickaxeAttackSpeed(), new FabricItemSettings().stacksTo(1)));
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_TOOLS).register(entries -> entries.accept(pickaxe));
 
 		this.axe = InnerRegistry.registerItem(this.registryName + "_axe",
-				new CustomAxeItem(toolMaterial, 6.0F, toolMaterial.getAxeAttackSpeed(), new FabricItemSettings().group(RAAMaterials.RAA_TOOLS).stacksTo(1)));
+				new CustomAxeItem(toolMaterial, 6.0F, toolMaterial.getAxeAttackSpeed(), new FabricItemSettings().stacksTo(1)));
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_TOOLS).register(entries -> entries.accept(axe));
 
 		this.hoe = InnerRegistry.registerItem(this.registryName + "_hoe",
-				new CustomHoeItem(toolMaterial, toolMaterial.getHoeAttackDamage(), toolMaterial.getHoeAttackSpeed(), new FabricItemSettings().group(RAAMaterials.RAA_TOOLS).stacksTo(1)));
+				new CustomHoeItem(toolMaterial, toolMaterial.getHoeAttackDamage(), toolMaterial.getHoeAttackSpeed(), new FabricItemSettings().stacksTo(1)));
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_TOOLS).register(entries -> entries.accept(hoe));
 
 		this.shovel = InnerRegistry.registerItem(this.registryName + "_shovel",
-				new ShovelItem(toolMaterial, 1.5F, toolMaterial.getShovelAttackSpeed(), new FabricItemSettings().group(RAAMaterials.RAA_TOOLS).stacksTo(1)));
+				new ShovelItem(toolMaterial, 1.5F, toolMaterial.getShovelAttackSpeed(), new FabricItemSettings().stacksTo(1)));
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_TOOLS).register(entries -> entries.accept(shovel));
 	}
 
 	public void setBonus(int bonus) {

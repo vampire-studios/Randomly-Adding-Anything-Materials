@@ -17,6 +17,7 @@ import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.renderer.RenderType;
@@ -142,7 +143,8 @@ public class CrystalMaterial extends ComplexMaterial {
 		this.tintedGlass = InnerRegistry.registerBlockAndItem("tinted_" + this.registryName + "_glass", new TintedGlassBlock(FabricBlockSettings.copyOf(Blocks.TINTED_GLASS)), RAA_ORES);
 		this.buddingBlock = InnerRegistry.registerBlockAndItem("budding_" + this.registryName + "_block", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.BUDDING_AMETHYST)), RAA_ORES);
 		this.crystalBricks = InnerRegistry.registerBlockAndItem(this.registryName + "_crystal_bricks", new CustomCrystalBlock(FabricBlockSettings.copyOf(Blocks.AMETHYST_BLOCK)), RAA_ORES);
-		this.shard = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHARD);
+		this.shard = RAASimpleItem.register(this.registryName, new FabricItemSettings(), RAASimpleItem.SimpleItemType.SHARD);
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_RESOURCES).register(entries -> entries.accept(shard));
 		this.crystal = InnerRegistry.registerBlockAndItem(this.registryName + "_crystal", new CustomCrystalClusterBlock(BlockBehaviour.Properties.copy(Blocks.AMETHYST_CLUSTER), shard), RAA_ORES);
 
 //		TagHelper.addTag(BlockTags.MINEABLE_WITH_PICKAXE, block);
@@ -250,8 +252,10 @@ public class CrystalMaterial extends ComplexMaterial {
 		}*/
 
 		if (FabricLoader.getInstance().isModLoaded("immersive_amethyst")) {
-			geodeCore = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEODE_CORE);
-			enrichedGeodeCore = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.ENRICHED_GEODE_CORE);
+			geodeCore = RAASimpleItem.register(this.registryName, new FabricItemSettings(), RAASimpleItem.SimpleItemType.GEODE_CORE);
+			enrichedGeodeCore = RAASimpleItem.register(this.registryName, new FabricItemSettings(), RAASimpleItem.SimpleItemType.ENRICHED_GEODE_CORE);
+			ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_RESOURCES).register(entries -> entries.accept(geodeCore));
+			ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_RESOURCES).register(entries -> entries.accept(enrichedGeodeCore));
 		}
 
 		GridRecipe.make(RAAMaterials.MOD_ID, this.registryName + "_crystal_block", block)

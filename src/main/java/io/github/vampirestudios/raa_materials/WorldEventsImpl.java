@@ -19,7 +19,19 @@ public class WorldEventsImpl {
             }
     );
 
+
+    public static final Event<OnWorldLoad> ON_WORLD_LOAD = EventFactory.createArrayBacked(OnWorldLoad.class, callbacks -> () -> {
+                for (var callback : callbacks) {
+                    callback.onLoad();
+                }
+            }
+    );
+
     public interface BeforeAddingTags {
         void apply(String directory, Map<ResourceLocation, List<TagLoader.EntryWithSource>> tagsMap);
+    }
+
+    public interface OnWorldLoad {
+        void onLoad();
     }
 }

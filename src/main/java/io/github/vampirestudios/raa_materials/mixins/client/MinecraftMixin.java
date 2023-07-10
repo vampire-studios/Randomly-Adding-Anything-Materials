@@ -1,3 +1,4 @@
+/*
 package io.github.vampirestudios.raa_materials.mixins.client;
 
 import io.github.vampirestudios.raa_materials.api.LifeCycleAPI;
@@ -21,4 +22,4 @@ public abstract class MinecraftMixin {
 	private void raa_initPatchData(String worldName, LevelSettings levelInfo, RegistryAccess registryAccess, WorldGenSettings generatorOptions, CallbackInfo ci) {
 		LifeCycleAPI._runBeforeLevelLoad();
 	}
-}
+}*/

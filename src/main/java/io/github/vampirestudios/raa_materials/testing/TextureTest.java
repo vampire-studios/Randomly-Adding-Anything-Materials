@@ -66,14 +66,19 @@ public class TextureTest {
         String stoneChiseled = chiseled[id % chiseled.length];
 
         String textureBaseName = "test_" + id + "_";
+
         this.gradient = ProceduralTextures.makeStonePalette(random);
+
         float[] values = new float[]{0.13f,0.22f,0.34f,0.53f,0.60f,0.70f,0.85f,0.90f};
-        ResourceLocation stoneTexID = TextureHelper.makeBlockTextureID("aaaa_" + textureBaseName);
+
+        ResourceLocation stoneTexID = notTextureHelper.makeBlockTextureID("aaaa_" + textureBaseName);
         BufferTexture texture = makeStoneTexture(values, random);
+
         float[] temp = TextureHelper.getValues(texture);
         values = new float[temp.length+1];
         System.arraycopy(temp, 0, values, 0, temp.length);
         values[temp.length] = 0.9f;
+
         BufferTexture variant = TextureHelper.applyGradient(texture.cloneTexture(), gradient);
         InnerRegistry.registerTexture(stoneTexID, variant);
 
@@ -160,7 +165,7 @@ public class TextureTest {
 
 
 
-    private static class notTextureHelper {
+    public static class notTextureHelper {
 
         public static ResourceLocation makeBlockTextureID(String name) {
             return new ResourceLocation("raa", ("block/" + name).replaceAll("'|`|\\^|/| |´", ""));

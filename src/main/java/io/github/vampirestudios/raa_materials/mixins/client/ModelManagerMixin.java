@@ -1,3 +1,4 @@
+/*
 package io.github.vampirestudios.raa_materials.mixins.client;
 
 import net.minecraft.client.resources.model.ModelBakery;
@@ -15,4 +16,4 @@ public class ModelManagerMixin {
 	private void raa_loadCustomModels(ResourceManager resourceManager, ProfilerFiller profilerFiller, CallbackInfoReturnable<ModelBakery> info) {
 //		RAAMaterialsClient.modelBakery.loadCustomModels(resourceManager);
 	}
-}
+}*/

@@ -4,25 +4,28 @@
   "package": "io.github.vampirestudios.raa_materials.mixins.server",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-	"BiomeMixin",
-//	"BiomeSourceMixin",
-	"ChunkSectionMixin",
-	"DeletableObjectsMixin",
-	"GenerationSettingsAccessor",
-	"IdListMixin",
-	"MainMixin",
-	"MappedRegistryFreezingMixin",
-	"MappedRegistryMixin",
-	"MinecraftServerMixin",
-	"RecipeManagerAccessor",
-	"RecipeManagerMixin",
-//	"RegistryAccessMixin",
-	"RegistryMixin",
-	"ServerLevelMixin",
-	"ServerWorldMixin",
-	"TagGroupLoaderMixin"
+    "BiomeMixin",
+    //	"BiomeSourceMixin",
+    "ChunkSectionMixin",
+    "DeletableObjectsMixin",
+    "GenerationSettingsAccessor",
+    "IdListMixin",
+    "MainMixin",
+    "MappedRegistryFreezingMixin",
+    "MappedRegistryMixin",
+    "MinecraftServerMixin",
+    "RecipeManagerAccessor",
+    "RecipeManagerMixin",
+    //	"RegistryAccessMixin",
+    "RegistryMixin",
+    "ServerLevelMixin",
+    "ServerWorldMixin",
+    "TagGroupLoaderMixin"
   ],
   "injectors": {
-	"defaultRequire": 1
-  }
+    "defaultRequire": 1
+  },
+  "client": [
+    "WorldOpenFlowsMixin"
+  ]
 }

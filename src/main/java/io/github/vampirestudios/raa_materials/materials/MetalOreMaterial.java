@@ -14,6 +14,7 @@ import io.github.vampirestudios.raa_materials.recipes.FurnaceRecipe;
 import io.github.vampirestudios.raa_materials.recipes.GridRecipe;
 import io.github.vampirestudios.raa_materials.utils.*;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.registry.OxidizableBlocksRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -259,16 +260,25 @@ public class MetalOreMaterial extends OreMaterial {
 //			default -> throw new IllegalStateException("Unexpected value: " + tier);
 //		}, casing);
 
-		ingot = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.INGOT);
-		nugget = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.NUGGET);
-		gear = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.GEAR);
-		dust = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.DUST);
-		small_dust = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SMALL_DUST);
-		sheet = RAASimpleItem.register(this.registryName,  new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.SHEETS);
-		compass = RAASimpleItem.register(this.registryName,  new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.COMPASS);
+		ingot = RAASimpleItem.register(this.registryName, new FabricItemSettings(), RAASimpleItem.SimpleItemType.INGOT);
+		nugget = RAASimpleItem.register(this.registryName, new FabricItemSettings(), RAASimpleItem.SimpleItemType.NUGGET);
+		gear = RAASimpleItem.register(this.registryName, new FabricItemSettings(), RAASimpleItem.SimpleItemType.GEAR);
+		dust = RAASimpleItem.register(this.registryName, new FabricItemSettings(), RAASimpleItem.SimpleItemType.DUST);
+		small_dust = RAASimpleItem.register(this.registryName, new FabricItemSettings(), RAASimpleItem.SimpleItemType.SMALL_DUST);
+		sheet = RAASimpleItem.register(this.registryName,  new FabricItemSettings(), RAASimpleItem.SimpleItemType.SHEETS);
+		compass = RAASimpleItem.register(this.registryName,  new FabricItemSettings(), RAASimpleItem.SimpleItemType.COMPASS);
+
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_RESOURCES).register(entries -> entries.accept(ingot));
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_RESOURCES).register(entries -> entries.accept(nugget));
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_RESOURCES).register(entries -> entries.accept(gear));
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_RESOURCES).register(entries -> entries.accept(dust));
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_RESOURCES).register(entries -> entries.accept(small_dust));
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_RESOURCES).register(entries -> entries.accept(sheet));
+		ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_RESOURCES).register(entries -> entries.accept(compass));
 
 		if (FabricLoader.getInstance().isModLoaded("create")) {
-			crushedOre = RAASimpleItem.register(this.registryName, new FabricItemSettings().group(RAAMaterials.RAA_RESOURCES), RAASimpleItem.SimpleItemType.CRUSHED_ORE);
+			crushedOre = RAASimpleItem.register(this.registryName, new FabricItemSettings(), RAASimpleItem.SimpleItemType.CRUSHED_ORE);
+			ItemGroupEvents.modifyEntriesEvent(RAAMaterials.RAA_RESOURCES).register(entries -> entries.accept(crushedOre));
 		}
 
 //		brainTreeBlock = InnerRegistry.registerBlockAndItem(this.registryName + "_brain_tree_block", new BrainTreeBlock(MaterialColor.GOLD), RAAMaterials.RAA_ORES);

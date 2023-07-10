@@ -15,6 +15,7 @@ import io.github.vampirestudios.raa_materials.materials.MetalOreMaterial;
 import io.github.vampirestudios.raa_materials.materials.StoneMaterial;
 import io.github.vampirestudios.raa_materials.utils.RegistryUtils;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.*;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -129,7 +130,8 @@ public class InnerRegistry {
 
 		if (!BuiltInRegistries.BLOCK.containsKey(id)) {
 			registerBlock(id, block);
-			registerItem(id, new BlockItem(block, new FabricItemSettings().group(group)));
+			Item item = registerItem(id, new BlockItem(block, new FabricItemSettings()));
+			ItemGroupEvents.modifyEntriesEvent(group).register(entries -> entries.accept(item));
 			return block;
 		} else {
 			return BuiltInRegistries.BLOCK.get(id); //honestly this can return null, material names are fucked if this gets called can there is no good way to cast it correctly

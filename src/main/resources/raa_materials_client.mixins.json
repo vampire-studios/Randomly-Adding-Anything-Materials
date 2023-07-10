@@ -6,9 +6,9 @@
   "mixins": [
 	"ItemModelsMixin",
 	"MinecraftClientMixin",
-	"MinecraftMixin",
+//	"MinecraftMixin",
 	"ModelLoaderMixin",
-	"ModelManagerMixin",
+//	"ModelManagerMixin",
 //	"SpriteAtlasTextureMixin",
 	"TranslationStorageMixin",
     "LanguageManagerMixin"

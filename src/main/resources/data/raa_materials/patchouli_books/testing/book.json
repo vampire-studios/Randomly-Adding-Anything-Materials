@@ -1,0 +1,10 @@
+{
+  "name": "RAA Materials",
+  "landing_text": "Learn about your new world!",
+  "version": 1,
+  "creative_tab": "minecraft:tools_and_utilities",
+  "use_resource_pack": true,
+  "book_texture": "patchouli:textures/gui/book_purple.png",
+  "model": "patchouli:book_purple",
+  "use_blocky_font": true
+}
