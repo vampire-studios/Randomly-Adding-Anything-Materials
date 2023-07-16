@@ -369,7 +369,7 @@ public abstract class OreMaterial extends ComplexMaterial {
 		ResourceLocation textureID = TextureHelper.makeItemTextureID(textureName);
 		InnerRegistryClient.registerTexture(textureID, texture);
 		InnerRegistryClient.registerItemModel(item, ModelHelper.makeFlatItem(textureID));
-		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem)item).getItemType().apply(registryName), translatableName, name);
+		NameGenerator.addTranslation("item.raa_materials." + ((RAASimpleItem) item).getItemType().apply(registryName), translatableName, name);
 	}
 
 //	public static void makeColoredCloakedItemAssets(BufferTexture bufferTexture, Item item, ColorGradient gradient, String textureName, String registryName, String translatableName, String name) {

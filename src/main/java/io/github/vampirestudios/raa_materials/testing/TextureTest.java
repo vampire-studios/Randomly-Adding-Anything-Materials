@@ -168,7 +168,7 @@ public class TextureTest {
     public static class notTextureHelper {
 
         public static ResourceLocation makeBlockTextureID(String name) {
-            return new ResourceLocation("raa", ("block/" + name).replaceAll("'|`|\\^|/| |´", ""));
+            return new ResourceLocation("raa", ("block/" + name).replaceAll("['`^/ ´]", ""));
         }
 
         private static BufferedImage loadImage(String name) {

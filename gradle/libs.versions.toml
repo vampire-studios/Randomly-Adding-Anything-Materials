@@ -1,17 +1,17 @@
 [versions]
-    minecraft = "1.19.4"
-    quilt_mappings = "1.19.4+build.10"
+    minecraft = "1.20.1"
+    quilt_mappings = "1.20.1+build.20"
     fabric-loader = "0.14.21"
-    parchment = "2023.06.26"
+    parchment = "2023.07.09"
 
-    fabric = "0.85.0+1.19.4"
+    fabric = "0.85.0+1.20.1"
 
     raa_core = "2.5.0+build.1-1.19.4"
 
     create = "mc1.18.2_v0.4.1+580"
     spectrum = "b05db8e86c"
 
-    crowdin_translate = "1.4+1.18.2"
+    crowdin_translate = "1.4+1.19.3"
 
 [libraries]
     minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }

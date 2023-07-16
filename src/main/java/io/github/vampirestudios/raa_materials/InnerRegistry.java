@@ -38,9 +38,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
-import static io.github.vampirestudios.raa_materials.RAAMaterials.LOGGER;
 import static io.github.vampirestudios.raa_materials.RAAMaterials.isClient;
-import static io.github.vampirestudios.raa_materials.utils.RegistryUtils.REGISTERED_KEYS;
 
 public class InnerRegistry {
 
@@ -68,16 +66,16 @@ public class InnerRegistry {
 
 //		TagHelper.clearTags();
 
-		if (REGISTERED_KEYS.size() > 0) {
-			for (var key : REGISTERED_KEYS) {
-				try {
-					if (key != null) RegistryUtils.remove(key);
-				} catch (Exception e) {
-					LOGGER.error("Couldn't remove {}", key, e);
-				}
-			}
-			REGISTERED_KEYS.clear();
-		}
+//		if (REGISTERED_KEYS.size() > 0) {
+//			for (var key : REGISTERED_KEYS) {
+//				try {
+//					if (key != null) RegistryUtils.remove(key);
+//				} catch (Exception e) {
+//					LOGGER.error("Couldn't remove {}", key, e);
+//				}
+//			}
+//			REGISTERED_KEYS.clear();
+//		}
 
 		BLOCKS.forEach((resourceLocation, block) -> RegistryUtils.removeRegisteredKey(Registries.BLOCK.location(), resourceLocation));
 		ITEMS.forEach((resourceLocation, item) -> RegistryUtils.removeRegisteredKey(Registries.ITEM.location(), resourceLocation));

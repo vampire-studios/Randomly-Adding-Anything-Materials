@@ -544,8 +544,8 @@ public class MetalOreMaterial extends OreMaterial {
 	@Override
 	public void initClient(Random random) {
 		super.initClient(random);
-		BufferTexture metalShinglesTexture = TextureHelper.loadTexture("textures/block/metal_shingles.png");
-		BufferTexture metalPlateTexture = TextureHelper.loadTexture("textures/block/metal_plate.png");
+		BufferTexture metalShinglesTexture = TextureHelper.loadTexture("textures/block/metal/metal_shingles.png");
+		BufferTexture metalPlateTexture = TextureHelper.loadTexture("textures/block/metal/metal_plate.png");
 
 		ModelHelper.generateOreAssets(this.ore, oreVeinTexture, registryName, name, oreGradient, target);
 

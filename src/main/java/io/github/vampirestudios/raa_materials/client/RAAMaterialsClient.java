@@ -17,8 +17,6 @@ public class RAAMaterialsClient implements RAAAddonClient {
 	@Override
 	public void onClientInitialize() {
 		modelBakery = new CustomModelBakery();
-//		ModelLoadingRegistry.INSTANCE.registerResourceProvider(rm -> this);
-//		ModelLoadingRegistry.INSTANCE.registerVariantProvider(rm -> this);
 
 		KeyMapping keyBinding = KeyBindingHelper.registerKeyBinding(new KeyMapping(
 				"key.raa_materials.fully_reload_assets", // The translation key of the keybinding's name

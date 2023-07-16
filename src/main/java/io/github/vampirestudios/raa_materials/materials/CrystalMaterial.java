@@ -73,19 +73,19 @@ public class CrystalMaterial extends ComplexMaterial {
 	static {
 		crystalBlocks = new ResourceLocation[5];
 		for (int i = 0; i < crystalBlocks.length; i++) {
-			crystalBlocks[i] = RAAMaterials.id("textures/block/crystal_block_" + (i + 1) + ".png");
+			crystalBlocks[i] = RAAMaterials.id("textures/block/crystal/crystal_block_" + (i + 1) + ".png");
 		}
 		buddingCrystalBlocks = new ResourceLocation[1];
 		for (int i = 0; i < buddingCrystalBlocks.length; i++) {
-			buddingCrystalBlocks[i] = RAAMaterials.id("textures/block/budding_crystal_block_" + (i + 1) + ".png");
+			buddingCrystalBlocks[i] = RAAMaterials.id("textures/block/crystal/budding_crystal_block_" + (i + 1) + ".png");
 		}
 		crystals = new ResourceLocation[9];
 		for (int i = 0; i < crystals.length; i++) {
-			crystals[i] = RAAMaterials.id("textures/block/crystal_" + (i + 1) + ".png");
+			crystals[i] = RAAMaterials.id("textures/block/crystal/crystal_" + (i + 1) + ".png");
 		}
 		shards = new ResourceLocation[7];
 		for (int i = 0; i < shards.length; i++) {
-			shards[i] = RAAMaterials.id("textures/item/shard_" + (i + 1) + ".png");
+			shards[i] = RAAMaterials.id("textures/item/crystal_items/shard_" + (i + 1) + ".png");
 		}
 	}
 
@@ -359,8 +359,8 @@ public class CrystalMaterial extends ComplexMaterial {
 		Rands.setRand(random);
 
 		BufferTexture crystalBlockTexture = TextureHelper.loadTexture(crystalBlock);
-		BufferTexture tintedGlassTexture = TextureHelper.loadTexture("textures/block/tinted_glass_" + this.tintedGlassVariantInt + ".png");
-		BufferTexture crystalBricksTexture = TextureHelper.loadTexture("textures/block/crystal_bricks.png");
+		BufferTexture tintedGlassTexture = TextureHelper.loadTexture("textures/block/crystal/tinted_glass_" + this.tintedGlassVariantInt + ".png");
+		BufferTexture crystalBricksTexture = TextureHelper.loadTexture("textures/block/crystal/crystal_bricks.png");
 
 		ResourceLocation textureID = TextureHelper.makeBlockTextureID(this.registryName + "_block");
 		BufferTexture texture = ProceduralTextures.randomColored(crystalBlockTexture, gradient);
@@ -417,23 +417,23 @@ public class CrystalMaterial extends ComplexMaterial {
 	}
 
 	public void initModdedClient() {
-		BufferTexture basaltLampTexture = TextureHelper.loadTexture("textures/block/basalt_lamp.png");
-		BufferTexture calciteLampTexture = TextureHelper.loadTexture("textures/block/calcite_lamp.png");
-		BufferTexture crystalGlassTexture = TextureHelper.loadTexture("textures/block/crystal_glass.png");
-		BufferTexture crystalDecostoneTexture = TextureHelper.loadTexture("textures/block/crystal_decostone.png");
-		BufferTexture lampOverlayTexture = TextureHelper.loadTexture(String.format("textures/block/lamp_overlay%d.png", crystalLampOverlayTextureInt));
-		BufferTexture chiseledBasaltTexture = TextureHelper.loadTexture(String.format("textures/block/chiseled_basalt%d.png", chiseledVariantInt));
-		BufferTexture chiseledCalciteTexture = TextureHelper.loadTexture(String.format("textures/block/chiseled_calcite%d.png", chiseledVariantInt));
-		BufferTexture chiseledOverlayTexture = TextureHelper.loadTexture(String.format("textures/block/chiseled_overlay%d.png", chiseledVariantInt));
-		BufferTexture oreTexture = TextureHelper.loadTexture("textures/block/crystal_ore.png");
-		BufferTexture deepslateOreTexture = TextureHelper.loadTexture("textures/block/crystal_deepslate_ore.png");
-		BufferTexture oreOverlayTexture = TextureHelper.loadTexture("textures/block/crystal_ore_overlay_deepslate.png");
-		BufferTexture oreOverlay2Texture = TextureHelper.loadTexture("textures/block/crystal_ore_overlay_normal.png");
-		BufferTexture storageBlockTexture = TextureHelper.loadTexture("textures/block/crystal_storage_block.png");
+		BufferTexture basaltLampTexture = TextureHelper.loadTexture("textures/block/crystal/basalt_lamp.png");
+		BufferTexture calciteLampTexture = TextureHelper.loadTexture("textures/block/crystal/calcite_lamp.png");
+		BufferTexture crystalGlassTexture = TextureHelper.loadTexture("textures/block/crystal/crystal_glass.png");
+		BufferTexture crystalDecostoneTexture = TextureHelper.loadTexture("textures/block/crystal/crystal_decostone.png");
+		BufferTexture lampOverlayTexture = TextureHelper.loadTexture(String.format("textures/block/crystal/lamp_overlay%d.png", crystalLampOverlayTextureInt));
+		BufferTexture chiseledBasaltTexture = TextureHelper.loadTexture(String.format("textures/block/crystal/chiseled_basalt%d.png", chiseledVariantInt));
+		BufferTexture chiseledCalciteTexture = TextureHelper.loadTexture(String.format("textures/block/crystal/chiseled_calcite%d.png", chiseledVariantInt));
+		BufferTexture chiseledOverlayTexture = TextureHelper.loadTexture(String.format("textures/block/crystal/chiseled_overlay%d.png", chiseledVariantInt));
+		BufferTexture oreTexture = TextureHelper.loadTexture("textures/block/crystal/crystal_ore.png");
+		BufferTexture deepslateOreTexture = TextureHelper.loadTexture("textures/block/crystal/crystal_deepslate_ore.png");
+		BufferTexture oreOverlayTexture = TextureHelper.loadTexture("textures/block/crystal/crystal_ore_overlay_deepslate.png");
+		BufferTexture oreOverlay2Texture = TextureHelper.loadTexture("textures/block/crystal/crystal_ore_overlay_normal.png");
+		BufferTexture storageBlockTexture = TextureHelper.loadTexture("textures/block/crystal/crystal_storage_block.png");
 
-		BufferTexture geodeCoreTexture = TextureHelper.loadTexture("textures/item/geode_core.png");
-		BufferTexture enrichedGeodeCoreTexture = TextureHelper.loadTexture("textures/item/enriched_geode_core.png");
-		BufferTexture geodeCoreOverlayTexture = TextureHelper.loadTexture("textures/item/geode_core_overlay.png");
+		BufferTexture geodeCoreTexture = TextureHelper.loadTexture("textures/item/crystal_items/geode_core.png");
+		BufferTexture enrichedGeodeCoreTexture = TextureHelper.loadTexture("textures/item/crystal_items/enriched_geode_core.png");
+		BufferTexture geodeCoreOverlayTexture = TextureHelper.loadTexture("textures/item/crystal_items/geode_core_overlay.png");
 
 		/*if (FabricLoader.getInstance().isModLoaded("spectrum")) {
 			registerColoredRisingParticle(this.risingParticle, particleColor.getRed(), particleColor.getGreen(), particleColor.getBlue());

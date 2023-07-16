@@ -27,3 +27,9 @@ accessible field net/minecraft/world/item/CreativeModeTabs SPAWN_EGGS Lnet/minec
 accessible field net/minecraft/world/item/CreativeModeTabs OP_BLOCKS Lnet/minecraft/world/item/CreativeModeTab;
 
 accessible field net/minecraft/world/entity/ai/village/poi/PoiTypes TYPE_BY_STATE Ljava/util/Map;
+
+accessible field net/minecraft/world/level/block/entity/BlockEntityType validBlocks Ljava/util/Set;
+mutable field net/minecraft/world/level/block/entity/BlockEntityType validBlocks Ljava/util/Set;
+
+accessible field net/minecraft/server/MinecraftServer storageSource Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;
+mutable field net/minecraft/server/MinecraftServer storageSource Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;

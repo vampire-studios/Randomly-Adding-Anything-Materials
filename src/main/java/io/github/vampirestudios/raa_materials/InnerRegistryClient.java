@@ -15,6 +15,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +56,21 @@ public class InnerRegistryClient {
 
 	public static void registerTexture(ResourceLocation id, BufferTexture image) {
 		TEXTURES.put(id, image);
+		try {
+			ImageIO.write(makeImage(image), "PNG", new File("../src/main/resources/assets/raa_materials/textures/%s.png".formatted(id.getPath())));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static BufferedImage makeImage(BufferTexture tex) {
+		BufferedImage img = new BufferedImage(tex.getWidth(), tex.getHeight(),2);
+		for(int y = 0; y < img.getHeight(); y++) {
+			for (int x = 0; x < img.getWidth(); x++) {
+				img.setRGB(x, y, tex.getPixel(x, y));
+			}
+		}
+		return img;
 	}
 
 	public static void registerBlockModel(BlockState state, String json) {

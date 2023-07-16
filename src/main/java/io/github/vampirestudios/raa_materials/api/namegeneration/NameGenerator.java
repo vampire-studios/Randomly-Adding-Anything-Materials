@@ -15,12 +15,12 @@ public class NameGenerator {
 	public static void init() {}
 
 	public static void addTranslation(String raw, String translated) {
-		NAMES.put(raw.replaceAll("'|`|\\^| |´", ""), translated);
+		NAMES.put(raw.replaceAll("['`^ ´]", ""), translated);
 	}
 
 	public static void addTranslation(String raw, String rawBase, String base) {
 		Object[] data = {base, base.toLowerCase(), base.toLowerCase().charAt(0), base.toLowerCase().charAt(base.length() - 1)};
-		String prepedKey = raw.replaceAll("'|`|\\^| |´", "");
+		String prepedKey = raw.replaceAll("['`^ ´]", "");
 		String baseKey = "text.raa_materials."+rawBase;
 		BASEKEYS.put(prepedKey, baseKey);
 		BASENAMES.put(prepedKey, data);

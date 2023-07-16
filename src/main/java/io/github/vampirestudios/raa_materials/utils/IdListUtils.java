@@ -1,6 +1,5 @@
 package io.github.vampirestudios.raa_materials.utils;
 
-import io.github.vampirestudios.raa_materials.api.ExtendedIdList;
 import net.minecraft.core.IdMapper;
 
 public final class IdListUtils {

@@ -24,7 +24,6 @@
 
 package io.github.vampirestudios.raa_materials.utils;
 
-import io.github.vampirestudios.raa_materials.api.ExtendedRegistry;
 import io.github.vampirestudios.raa_materials.items.RAABlockItem;
 import io.github.vampirestudios.raa_materials.items.RAABlockItemAlt;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -42,7 +41,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType.Builder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class RegistryUtils {
     public static final List<ResourceKey<?>> REGISTERED_KEYS = new ArrayList<>();
@@ -106,27 +104,6 @@ public class RegistryUtils {
         BlockEntityType<T> blockEntityType = builder.build(null);
         Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, name, blockEntityType);
         return blockEntityType;
-    }
-
-    public static void unfreeze(Registry<?> registry) {
-        ((ExtendedRegistry<?>) registry).dynreg$unfreeze();
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> void remove(ResourceKey<T> key) {
-        if (getRegistryOf(key).isPresent()) {
-            ((ExtendedRegistry<T>) getRegistryOf(key).get()).dynreg$remove(key);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static void remove(Registry<?> registry, ResourceLocation id) {
-        ((ExtendedRegistry<Object>) registry).dynreg$remove(ResourceKey.create((ResourceKey<? extends Registry<Object>>) registry.key(), id));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> Optional<Registry<T>> getRegistryOf(ResourceKey<T> key) {
-        return (Optional<Registry<T>>) BuiltInRegistries.REGISTRY.getOptional(key.registry());
     }
 
     public static void addRegisteredKey(ResourceLocation registryId, ResourceLocation entryId) {

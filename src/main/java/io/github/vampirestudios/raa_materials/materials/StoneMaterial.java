@@ -347,23 +347,23 @@ public class StoneMaterial extends ComplexMaterial {
 	static {
 		stoneFrames = new ResourceLocation[10];
 		for (int i = 0; i < stoneFrames.length; i++) {
-			stoneFrames[i] = id("textures/block/stone_frame_0" + (i+1) + ".png");
+			stoneFrames[i] = id("textures/block/stone/stone_frame_0" + (i+1) + ".png");
 		}
 		stoneBricks = new ResourceLocation[18];
 		for (int i = 0; i < stoneBricks.length; i++) {
-			stoneBricks[i] = id("textures/block/stone_bricks_0" + (i+1) + ".png");
+			stoneBricks[i] = id("textures/block/stone/stone_bricks_0" + (i+1) + ".png");
 		}
 		stoneTiles = new ResourceLocation[8];
 		for (int i = 0; i < stoneTiles.length; i++) {
-			stoneTiles[i] = id("textures/block/stone_tiles_0" + (i+1) + ".png");
+			stoneTiles[i] = id("textures/block/stone/stone_tiles_0" + (i+1) + ".png");
 		}
 		stoneCobbledTextures = new ResourceLocation[7];
 		for (int i = 0; i < stoneCobbledTextures.length; i++) {
-			stoneCobbledTextures[i] = id("textures/block/stone_cobbled_0" + (i+1) + ".png");
+			stoneCobbledTextures[i] = id("textures/block/stone/stone_cobbled_0" + (i+1) + ".png");
 		}
 		stoneChiseledTextures = new ResourceLocation[3];
 		for (int i = 0; i < stoneChiseledTextures.length; i++) {
-			stoneChiseledTextures[i] = id("textures/block/stone_chiseled_0" + (i+1) + ".png");
+			stoneChiseledTextures[i] = id("textures/block/stone/stone_chiseled_0" + (i+1) + ".png");
 		}
 	}
 }

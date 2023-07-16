@@ -29,10 +29,10 @@ public class TestNameGenerator {
 	public static Pair<String, String> generateOreName(Random random) {
 		Rands.setRand(random);
 		String name = generate(random, Rands.chance(50) ? (Rands.chance(100) ? 2 : 3) : (Rands.chance(100) ? 3 : 4), Rands.chance(30) ? 20 : 12);
-		while(generatedNames.containsKey(name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", ""))) {
+		while(generatedNames.containsKey(name.replaceAll("['`^ ´&¤%!?+\\-.,]", ""))) {
 			name = generate(random, Rands.chance(50) ? (Rands.chance(100) ? 2 : 3) : (Rands.chance(100) ? 3 : 4), Rands.chance(30) ? 20 : 12);
 		}
-		String registryName = name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", "");
+		String registryName = name.replaceAll("['`^ ´&¤%!?+\\-.,]", "");
 		for (Pair<String, String> stringStringPair : specialLettersTesting) {
 			String[] strings = stringStringPair.getValue().split("\\|");
 			for (String string : strings) {
@@ -46,10 +46,10 @@ public class TestNameGenerator {
 	public static Pair<String, String> generateStoneName(Random random) {
 		Rands.setRand(random);
 		String name = generate(random, 5, 15);
-		while(generatedNames.containsKey(name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", ""))) {
+		while(generatedNames.containsKey(name.replaceAll("['`^ ´&¤%!?+\\-.,]", ""))) {
 			name = generate(random, 5, 15);
 		}
-		String registryName = name.replaceAll("'|`|\\^| |´|&|¤|%|!|\\?|\\+|-|\\.|,", "");
+		String registryName = name.replaceAll("['`^ ´&¤%!?+\\-.,]", "");
 		for (Pair<String, String> stringStringPair : specialLettersTesting) {
 			String[] strings = stringStringPair.getValue().split("\\|");
 			for (String string : strings) {
